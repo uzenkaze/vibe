@@ -351,6 +351,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .btn-delete:hover {
             background: #e11d48;
             color: white;
@@ -664,29 +665,38 @@
     <div id="loginScreen" class="login-screen">
         <div class="login-card" id="loginFormContainer">
             <h1>자산 관리 로그인</h1>
-            <div id="loginError" style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem;">아이디 또는 비밀번호가 일치하지 않습니다.</div>
+            <div id="loginError"
+                style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem;">아이디 또는 비밀번호가
+                일치하지 않습니다.</div>
             <div class="login-input">
                 <input type="text" id="loginId" placeholder="아이디" onkeypress="if(event.key === 'Enter') attemptLogin()">
             </div>
             <div class="login-input">
-                <input type="password" id="loginPw" placeholder="비밀번호" onkeypress="if(event.key === 'Enter') attemptLogin()">
+                <input type="password" id="loginPw" placeholder="비밀번호"
+                    onkeypress="if(event.key === 'Enter') attemptLogin()">
             </div>
-            <div style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; margin-bottom: 1.5rem; padding-left: 0.25rem;">
+            <div
+                style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; margin-bottom: 1.5rem; padding-left: 0.25rem;">
                 <input type="checkbox" id="rememberId" style="width: auto; cursor: pointer;">
-                <label for="rememberId" style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; user-select: none;">아이디 저장</label>
+                <label for="rememberId"
+                    style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; user-select: none;">아이디
+                    저장</label>
             </div>
             <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
-            
+
             <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">처음이시거나 다른 기기에서 오셨나요?</p>
-                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput').click()" style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">처음이시거나 다른 기기에서 오셨나요?
+                </p>
+                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput').click()"
+                    style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
                 <input type="file" id="loginFileInput" class="hidden" accept=".json" onchange="uploadData(event)">
             </div>
         </div>
-        
+
         <div class="login-card" id="adminCreateContainer" style="display: none;">
             <h1>초기 관리자 등록</h1>
-            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가 없습니다. 관리자 계정을 생성해주세요.</p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가 없습니다.
+                관리자 계정을 생성해주세요.</p>
             <div class="login-input">
                 <input type="text" id="adminName" placeholder="사용자 이름 (ex. 본인 이름)">
             </div>
@@ -698,8 +708,10 @@
             </div>
             <button class="btn btn-add login-btn" onclick="createAdminAccount()">관리자 등록</button>
             <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">기존 데이터 파일이 있으신가요?</p>
-                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput2').click()" style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">기존 데이터 파일이 있으신가요?
+                </p>
+                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput2').click()"
+                    style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
                 <input type="file" id="loginFileInput2" class="hidden" accept=".json" onchange="uploadData(event)">
             </div>
         </div>
@@ -933,12 +945,15 @@
                     <tbody id="tbody-installment"></tbody>
                 </table>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 2rem; padding: 1rem; background: #f8fafc; border-radius: 8px; font-weight: 700; font-size: 0.95rem;">
+            <div
+                style="display: flex; justify-content: flex-end; gap: 2rem; padding: 1rem; background: #f8fafc; border-radius: 8px; font-weight: 700; font-size: 0.95rem;">
                 <div>전체 금액 합계: <span id="installment-total-amount" style="color: var(--accent-blue);">0</span>원</div>
-                <div>이번 달 원금 합계: <span id="installment-total-principal" style="color: var(--accent-purple);">0</span>원</div>
+                <div>이번 달 원금 합계: <span id="installment-total-principal" style="color: var(--accent-purple);">0</span>원
+                </div>
                 <div>할부 총 잔액: <span id="total-installment" style="color: var(--accent-red);">0</span>원</div>
             </div>
-            <button class="btn btn-add" style="margin-top: 1rem; display: none;" onclick="addRow('installment')">+ 할부 추가</button>
+            <button class="btn btn-add" style="margin-top: 1rem; display: none;" onclick="addRow('installment')">+ 할부
+                추가</button>
         </div>
     </div>
 
@@ -966,7 +981,8 @@
                 </table>
             </div>
             <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
-                 <span style="font-size: 0.85rem; color: var(--text-secondary);">해당 데이터는 브라우저 내부(localStorage)에 안전하게 별도 보관됩니다.</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">해당 데이터는 브라우저 내부(localStorage)에 안전하게 별도
+                    보관됩니다.</span>
             </div>
         </div>
     </div>
@@ -1223,7 +1239,7 @@
             item.currentMonth = Math.max(0, Math.min(item.totalMonths, parseInt(item.currentMonth) || 0));
             item.amount = parseFloat(String(item.amount).replace(/,/g, '')) || 0;
             item.monthlyPrincipal = Math.floor(item.amount / item.totalMonths);
-            
+
             if (item.date) {
                 const p = item.date.split(/[-./ ]/);
                 if (p.length >= 2) {
@@ -1386,7 +1402,7 @@
                     const prin = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.monthlyPrincipal) || 0), 0);
                     const rem = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.remAmount) || 0), 0);
                     expense += prin;
-                    
+
                     const amtEl = document.getElementById('installment-total-amount');
                     const priEl = document.getElementById('installment-total-principal');
                     const remEl = document.getElementById('total-installment');
@@ -1570,7 +1586,7 @@
                 document.getElementById('loginFormContainer').style.display = 'block';
                 document.getElementById('adminCreateContainer').style.display = 'none';
                 document.getElementById('mainContainer').style.display = 'none';
-                
+
                 // 아이디 저장 로드
                 const savedId = localStorage.getItem('savedLoginId');
                 if (savedId) {
@@ -1602,9 +1618,9 @@
         function attemptLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
-            
+
             const user = accountsData.find(a => a.userid === id && a.password === pw);
-            
+
             if (user) {
                 // 아이디 저장 처리
                 if (document.getElementById('rememberId').checked) {
@@ -1625,7 +1641,7 @@
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             document.getElementById('loginError').style.display = 'none';
-            initSelectors(); 
+            initSelectors();
             loadData();
         }
         // ---------------------------
@@ -1705,10 +1721,30 @@
 
                     // 1. 연도별 통합 포맷인 경우 (months 속성 존재)
                     if (uploaded.months) {
-                        const yearKey = `assetData_${uploaded.year}`;
+                        const uploadedYear = String(uploaded.year);
+                        const yearKey = `assetData_${uploadedYear}`;
                         localStorage.setItem(yearKey, JSON.stringify(uploaded));
 
-                        if (isLoggedIn && uploaded.year === document.getElementById('yearSelect').value) {
+                        if (isLoggedIn) {
+                            const ySelect = document.getElementById('yearSelect');
+                            // Select에 해당 연도가 없으면 추가
+                            if (!Array.from(ySelect.options).some(opt => opt.value === uploadedYear)) {
+                                const opt = document.createElement('option');
+                                opt.value = uploadedYear;
+                                opt.textContent = uploadedYear + '년';
+                                ySelect.appendChild(opt);
+                            }
+                            ySelect.value = uploadedYear;
+
+                            // 현재 불러온 연도에 현재 월 데이터가 없다면, 데이터가 있는 최신 월로 변경
+                            let targetM = document.getElementById('monthSelect').value;
+                            if (!uploaded.months[targetM]) {
+                                const availableMonths = Object.keys(uploaded.months).sort().reverse();
+                                if (availableMonths.length > 0) {
+                                    document.getElementById('monthSelect').value = availableMonths[0];
+                                }
+                            }
+
                             loadData();
                         }
                     }

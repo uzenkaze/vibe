@@ -1,9 +1,0 @@
-# Asset Management Data Files (Sensitive Information)
-*.json
-
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
