@@ -1796,6 +1796,8 @@
                     if (!isLoggedIn) {
                         checkLoginState();
                         alert('데이터 파일이 등록되었습니다. 관리자 정보로 로그인을 진행해 주세요.');
+                    } else {
+                        setTimeout(() => alert('데이터를 성공적으로 불러왔습니다.'), 50);
                     }
                 } catch (err) { alert('오류: ' + err.message); }
                 finally { document.getElementById('loadingSpinner').style.display = 'none'; e.target.value = ''; }
