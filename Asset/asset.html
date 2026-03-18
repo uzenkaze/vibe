@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset & Liability Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100..900&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f4f7;
+            --glass-bg: #ffffff;
+            --glass-border: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent-blue: #00a3c4;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --section-header-bg: rgba(0, 163, 196, 0.04);
+            --table-header-bg: #f1f5f9;
+            --item-hover: #f8fafc;
+            --transition: all 0.2s ease;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Pretendard', 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-blue);
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .value-income {
+            color: var(--accent-blue);
+        }
+
+        .value-expense {
+            color: var(--accent-red);
+        }
+
+        .value-credit {
+            color: var(--accent-green);
+        }
+
+        .value-net {
+            color: var(--accent-purple);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .unified-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            height: fit-content;
+        }
+
+        .unified-card-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-box {
+            background: #ffffff;
+            border: 1px solid var(--glass-border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            padding: 1rem 1.25rem;
+            background: var(--section-header-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--text-primary);
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: var(--accent-blue);
+            border-radius: 1px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9375rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 1px solid var(--glass-border);
+            background: var(--table-header-bg);
+            font-size: 0.85rem;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--item-hover);
+        }
+
+        .col-category {
+            width: 140px;
+        }
+
+        .col-amount {
+            width: 100px;
+            text-align: right;
+        }
+
+        .col-desc {
+            width: 220px;
+        }
+
+        .col-actions {
+            width: 110px;
+            text-align: center;
+        }
+
+        input {
+            background: #ffffff;
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.375rem;
+            width: 100%;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 163, 196, 0.1);
+        }
+
+        input[readonly] {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+            color: #475569 !important;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .amount {
+            text-align: right !important;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .text-left {
+            text-align: left !important;
+        }
+
+        select {
+            background: #ffffff;
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.5rem 2rem 0.5rem 1rem;
+            border-radius: 0.5rem;
+            width: auto;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px;
+            transition: var(--transition);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 163, 196, 0.1);
+        }
+
+        .step-container {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--glass-border);
+            border-radius: 0.375rem;
+            padding: 1px;
+            background: #fff;
+            height: 32px;
+        }
+
+        .btn-step {
+            background: #f8fafc;
+            border: none;
+            color: var(--text-secondary);
+            width: 24px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .btn-step:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .input-step {
+            width: 36px !important;
+            border: none !important;
+            text-align: center;
+            padding: 0 !important;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .btn {
+            cursor: pointer;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add {
+            background: var(--accent-blue);
+            color: #ffffff;
+            padding: 0.35rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-delete {
+            background: #fff1f2;
+            border: 1px solid #fee2e2;
+            color: #e11d48;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-delete:hover {
+            background: #e11d48;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .btn-close {
+            background: #f1f5f9;
+            border: none;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.25rem;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .btn-close:hover {
+            background: #e2e8f0;
+            color: var(--accent-red);
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .action-cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            min-width: 100px;
+        }
+
+        /* Hover Layer Styles */
+        .details-hover-layer {
+            position: absolute;
+            z-index: 1000;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 12px;
+            display: none;
+            pointer-events: none;
+            border: 1px solid #e2e8f0;
+            min-width: 200px;
+        }
+
+        .details-hover-layer table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .details-hover-layer th {
+            text-align: left;
+            padding: 4px 8px;
+            border-bottom: 1px solid #edf2f7;
+            color: #64748b;
+        }
+
+        .details-hover-layer td {
+            padding: 4px 8px;
+            color: #1e293b;
+        }
+
+        .details-hover-layer.summary-tooltip {
+            font-size: 1.15rem;
+            max-width: 400px;
+            padding: 1rem 1.25rem;
+            line-height: 1.5;
+            font-weight: 500;
+            background: #f8fafc;
+            border-color: var(--accent-blue);
+        }
+
+        .btn-tool {
+            background: #ffffff;
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.4rem 0.8rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .section-footer {
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            text-align: right;
+            font-weight: 700;
+            display: flex;
+            justify-content: flex-end;
+            gap: 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .net-worth-banner {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #00a3c4, #008ca8);
+            padding: 1.75rem;
+            border-radius: 1rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-top: 2rem;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .item-card {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid var(--glass-border);
+            border-radius: 0.25rem;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        .item-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .item-thumb {
+            width: 80px;
+            height: 80px;
+            min-width: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-right: 1.25rem;
+            background: #f8fafc;
+        }
+
+        .item-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .item-title span {
+            font-weight: 800;
+            margin-right: 0.5rem;
+        }
+
+        .item-meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .item-chevron {
+            color: #4a5568;
+            margin-left: 1rem;
+        }
+
+        .card-section table thead {
+            display: none;
+        }
+
+        .card-section table,
+        .card-section tbody,
+        .card-section tr,
+        .card-section td {
+            display: block;
+            width: 100%;
+        }
+
+        .card-section td {
+            padding: 0;
+            border: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        .login-input {
+            margin-bottom: 1rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card" id="loginFormContainer">
+            <h1>자산 관리 로그인</h1>
+            <div id="loginError" style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem;">아이디 또는 비밀번호가 일치하지 않습니다.</div>
+            <div class="login-input">
+                <input type="text" id="loginId" placeholder="아이디" onkeypress="if(event.key === 'Enter') attemptLogin()">
+            </div>
+            <div class="login-input">
+                <input type="password" id="loginPw" placeholder="비밀번호" onkeypress="if(event.key === 'Enter') attemptLogin()">
+            </div>
+            <div style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; margin-bottom: 1.5rem; padding-left: 0.25rem;">
+                <input type="checkbox" id="rememberId" style="width: auto; cursor: pointer;">
+                <label for="rememberId" style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; user-select: none;">아이디 저장</label>
+            </div>
+            <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
+            
+            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">처음이시거나 다른 기기에서 오셨나요?</p>
+                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput').click()" style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
+                <input type="file" id="loginFileInput" class="hidden" accept=".json" onchange="uploadData(event)">
+            </div>
+        </div>
+        
+        <div class="login-card" id="adminCreateContainer" style="display: none;">
+            <h1>초기 관리자 등록</h1>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가 없습니다. 관리자 계정을 생성해주세요.</p>
+            <div class="login-input">
+                <input type="text" id="adminName" placeholder="사용자 이름 (ex. 본인 이름)">
+            </div>
+            <div class="login-input">
+                <input type="text" id="adminId" placeholder="아이디">
+            </div>
+            <div class="login-input">
+                <input type="password" id="adminPw" placeholder="비밀번호">
+            </div>
+            <button class="btn btn-add login-btn" onclick="createAdminAccount()">관리자 등록</button>
+            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">기존 데이터 파일이 있으신가요?</p>
+                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput2').click()" style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
+                <input type="file" id="loginFileInput2" class="hidden" accept=".json" onchange="uploadData(event)">
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <div
+                style="display: flex; align-items: center; gap: 0.75rem; background: #ffffff; padding: 0.4rem 0.75rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); box-shadow: var(--shadow-sm);">
+                <select id="yearSelect" style="min-width: 120px;"></select>
+                <select id="monthSelect" style="min-width: 90px;"></select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <button class="btn btn-add" onclick="openInstallmentModal()">할부 내역 관리</button>
+                <button class="btn btn-tool" id="btnCarryOver" onclick="manualCarryOver()">이전 달 데이터 이월</button>
+                <button class="btn btn-tool" style="color: var(--accent-red);" onclick="deleteMonthData()">월 데이터
+                    삭제</button>
+                <button class="btn btn-tool" onclick="downloadData()">다운로드</button>
+                <button class="btn btn-tool" onclick="document.getElementById('fileInput').click()">불러오기</button>
+                <button class="btn btn-tool" onclick="openAccountModal()">계정</button>
+                <button class="btn btn-tool" onclick="openManualModal()">매뉴얼</button>
+            </div>
+            <input type="file" id="fileInput" class="hidden" accept=".json" onchange="uploadData(event)">
+        </div>
+
+        <div class="summary-bar">
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '수입 내역의 전체 합계')"
+                onmouseleave="hideHoverLayer()"><span class="summary-label">총 수입</span><span
+                    class="summary-value value-income" id="summary-income">0</span></div>
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '변동/고정 지출 + 할부 원금 합계')"
+                onmouseleave="hideHoverLayer()"><span class="summary-label">총 지출</span><span
+                    class="summary-value value-expense" id="summary-expense">0</span></div>
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '총 수입 - 총 지출')"
+                onmouseleave="hideHoverLayer()"><span class="summary-label">가용 잔액</span><span
+                    class="summary-value value-credit" id="summary-credit">0</span></div>
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '총 자산 - 총 부채')"
+                onmouseleave="hideHoverLayer()"><span class="summary-label">순자산</span><span
+                    class="summary-value value-net" id="summary-net">0</span></div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="unified-card">
+                <div class="unified-card-title">자산 및 수입</div>
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2 class="section-title">현금성 자산</h2><button class="btn btn-add" onclick="addRow('cash')">+
+                            추가</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 150px;">분류</th>
+                                <th style="width: 350px;">내용</th>
+                                <th style="width: 180px;">금액</th>
+                                <th style="width: 350px;">비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-cash"></tbody>
+                    </table>
+                    <div class="section-footer">소계: <span id="total-cash">0</span></div>
+                </div>
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2 class="section-title">비현금성 자산</h2><button class="btn btn-add" onclick="addRow('non-cash')">+
+                            추가</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 150px;">분류</th>
+                                <th style="width: 350px;">내용</th>
+                                <th style="width: 180px;">금액</th>
+                                <th style="width: 350px;">비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-non-cash"></tbody>
+                    </table>
+                    <div class="section-footer">소계: <span id="total-non-cash">0</span></div>
+                </div>
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2 class="section-title">수입 내역</h2><button class="btn btn-add" onclick="addRow('income')">+
+                            추가</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 150px;">분류</th>
+                                <th style="width: 350px;">내용</th>
+                                <th style="width: 180px;">금액</th>
+                                <th style="width: 350px;">비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-income"></tbody>
+                    </table>
+                    <div class="section-footer">소계: <span id="total-income">0</span></div>
+                </div>
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2 class="section-title">부동산</h2><button class="btn btn-add" onclick="addRow('real-estate')">+
+                            추가</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 150px;">분류</th>
+                                <th style="width: 350px;">내용</th>
+                                <th style="width: 180px;">금액</th>
+                                <th style="width: 350px;">비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-real-estate"></tbody>
+                    </table>
+                    <div class="section-footer">소계: <span id="total-real-estate">0</span></div>
+                </div>
+            </div>
+
+            <div class="unified-card">
+                <div class="unified-card-title">부채 및 지출</div>
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2 class="section-title">부채</h2><button class="btn btn-add" onclick="addRow('debt')">+
+                            추가</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 200px;">분류</th>
+                                <th style="width: 350px;">내용</th>
+                                <th style="width: 280px;">원금</th>
+                                <th style="width: 140px;">이율(%)</th>
+                                <th style="width: 280px;">잔여금</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-debt"></tbody>
+                    </table>
+                    <div class="section-footer">총 부채: <span id="total-debt">0</span></div>
+                </div>
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2 class="section-title">변동 지출</h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-tool" onclick="openExpenseChart('v-expense')">📊 그래프</button>
+                            <button class="btn btn-add" onclick="addRow('v-expense')">+ 추가</button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">분류</th>
+                                <th style="width: 200px;">금액</th>
+                                <th style="width: 650px;">비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-v-expense"></tbody>
+                    </table>
+                    <div class="section-footer">소계: <span id="total-v-expense">0</span></div>
+                </div>
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2 class="section-title">고정 지출</h2><button class="btn btn-add" onclick="addRow('f-expense')">+
+                            추가</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">분류</th>
+                                <th style="width: 200px;">금액</th>
+                                <th style="width: 650px;">비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-f-expense"></tbody>
+                    </table>
+                    <div class="section-footer">소계: <span id="total-f-expense">0</span></div>
+                </div>
+            </div>
+            <div class="net-worth-banner" id="net-worth-display">순자산: 0 원</div>
+        </div>
+    </div>
+
+    <!-- Expense Detail Modal -->
+    <div class="modal-overlay" id="expenseDetailModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <span class="modal-title" id="expenseDetailTitle">상세 지출 내역</span>
+                <button class="btn-close" onclick="closeExpenseDetailModal()">&times;</button>
+            </div>
+            <table style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th style="width: 200px;">내용</th>
+                        <th style="width: 150px;">금액</th>
+                        <th style="width: 350px;">비고</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-expense-details"></tbody>
+            </table>
+            <button class="btn btn-add" style="margin-top: 1rem;" onclick="addExpenseDetailRow()">+ 상세 추가</button>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button class="btn btn-tool" onclick="closeExpenseDetailModal()">취소</button>
+                <button class="btn btn-add" onclick="saveExpenseDetailModal()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Installment Modal -->
+    <div class="modal-overlay" id="installmentModal">
+        <div class="modal-content" style="max-width: 1400px;">
+            <div class="modal-header">
+                <span class="modal-title">카드 할부 관리</span>
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <button class="btn btn-add" onclick="addRow('installment')">+ 할부 추가</button>
+                    <button class="btn-close" onclick="closeInstallmentModal()">&times;</button>
+                </div>
+            </div>
+            <div style="overflow-x: auto; margin-bottom: 1rem;">
+                <table style="font-size: 0.85rem;">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">날짜</th>
+                            <th style="width: 100px;">카드</th>
+                            <th style="width: 380px;">사용처</th>
+                            <th style="width: 170px;">금액</th>
+                            <th style="width: 140px;">회차 (현재/전체)</th>
+                            <th style="width: 120px;">원금</th>
+                            <th style="width: 120px;">잔액</th>
+                            <th style="width: 110px;">종료</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-installment"></tbody>
+                </table>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 2rem; padding: 1rem; background: #f8fafc; border-radius: 8px; font-weight: 700; font-size: 0.95rem;">
+                <div>전체 금액 합계: <span id="installment-total-amount" style="color: var(--accent-blue);">0</span>원</div>
+                <div>이번 달 원금 합계: <span id="installment-total-principal" style="color: var(--accent-purple);">0</span>원</div>
+                <div>할부 총 잔액: <span id="total-installment" style="color: var(--accent-red);">0</span>원</div>
+            </div>
+            <button class="btn btn-add" style="margin-top: 1rem; display: none;" onclick="addRow('installment')">+ 할부 추가</button>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div class="modal-overlay" id="accountModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <span class="modal-title">계정 등록 및 관리</span>
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <button class="btn btn-add" onclick="addAccountRow()">+ 계정 추가</button>
+                    <button class="btn-close" onclick="closeAccountModal()">&times;</button>
+                </div>
+            </div>
+            <div style="overflow-x: auto; margin-bottom: 1rem; max-height: 60vh; overflow-y: auto;">
+                <table style="font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th style="width: 200px;">사용자 이름</th>
+                            <th style="width: 200px;">아이디 (ID)</th>
+                            <th style="width: 200px;">비밀번호 (PW)</th>
+                            <th style="width: 250px;">비고</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-accounts"></tbody>
+                </table>
+            </div>
+            <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                 <span style="font-size: 0.85rem; color: var(--text-secondary);">해당 데이터는 브라우저 내부(localStorage)에 안전하게 별도 보관됩니다.</span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Expense Chart Modal -->
+    <div class="modal-overlay" id="expenseChartModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <span class="modal-title" id="chartModalTitle">지출 분석 그래프</span>
+                <button class="btn-close" onclick="closeExpenseChart()">&times;</button>
+            </div>
+            <div id="chartContainer" style="display: flex; flex-direction: column; align-items: center; gap: 2rem;">
+                <div id="pieChartSvgContainer" style="width: 300px; height: 300px;"></div>
+                <div id="chartLegend"
+                    style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
+                </div>
+            </div>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                <button class="btn btn-tool" onclick="closeExpenseChart()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Modal -->
+    <div class="modal-overlay" id="manualModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <span class="modal-title">자산 관리 앱 사용 매뉴얼</span>
+                <button class="btn-close" onclick="closeManualModal()">&times;</button>
+            </div>
+            <div style="line-height: 1.6; color: var(--text-primary);">
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. 기본 사용법</h3>
+                <p>상단 연도와 월을 선택하여 해당 월을 관리합니다. 데이터가 없는 달은 '신규 입력 모드'로 시작됩니다.</p>
+
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">2. 이전 데이터 이월</h3>
+                <p><strong>[이전 달 데이터 이월]</strong> 버튼을 누르면 가장 최근에 입력했던 달의 항목들을 그대로 가져옵니다. 매달 반복되는 항목을 일일이 입력할 필요가 없습니다.
+                </p>
+
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">3. 지출 항목 관리</h3>
+                <p>모든 항목은 분류, 내용, 금액, 비고 순으로 입력합니다. 금액은 숫자만 입력하며 자동으로 콤마(,) 처리가 됩니다.</p>
+
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">4. 주요 계산 로직</h3>
+                <ul>
+                    <li><strong>총 지출:</strong> 변동 지출 + 고정 지출 + 할부 원금 합계</li>
+                    <li><strong>가용 잔액:</strong> 총 수입 - 총 지출</li>
+                    <li><strong>순자산:</strong> (현금+비현금+부동산) - (부채+할부 잔액)</li>
+                </ul>
+            </div>
+            <button class="btn btn-add" style="margin-top: 2rem; width: 100%; justify-content: center;"
+                onclick="closeManualModal()">닫기</button>
+        </div>
+    </div>
+
+    <script>
+        function getEmptyState() {
+            return {
+                sections: {
+                    cash: [], 'non-cash': [], income: [], 'real-estate': [],
+                    retirement: [], debt: [], 'v-expense': [], 'f-expense': [],
+                    'y-expense': [], installment: []
+                }
+            };
+        }
+
+        function mergeState(uploaded) {
+            const base = getEmptyState();
+            if (!uploaded || typeof uploaded !== 'object') return base;
+            let src = uploaded.sections || uploaded;
+            for (let k in base.sections) {
+                if (Array.isArray(src[k])) {
+                    base.sections[k] = src[k].map(item => ({
+                        ...item,
+                        id: item.id || (Date.now() + Math.random()),
+                        details: Array.isArray(item.details) ? item.details : [],
+                        amount: parseFloat(String(item.amount || '0').replace(/,/g, '')) || 0,
+                        remAmount: parseFloat(String(item.remAmount || '0').replace(/,/g, '')) || 0
+                    }));
+                }
+            }
+            return base;
+        }
+
+        let state = getEmptyState();
+
+        function initSelectors() {
+            const now = new Date();
+            const yEl = document.getElementById('yearSelect');
+            const mEl = document.getElementById('monthSelect');
+            const currentYear = now.getFullYear();
+
+            yEl.innerHTML = '';
+            // 2026년을 기준으로 현재 연도 + 1년까지 표시
+            const startYear = 2026;
+            const endYear = Math.max(startYear, currentYear + 1);
+
+            for (let i = startYear; i <= endYear; i++) {
+                const opt = document.createElement('option');
+                opt.value = i; opt.textContent = i + '년';
+                if (i === currentYear) opt.selected = true;
+                yEl.appendChild(opt);
+            }
+            mEl.innerHTML = '';
+            for (let i = 1; i <= 12; i++) {
+                const opt = document.createElement('option');
+                opt.value = String(i).padStart(2, '0'); opt.textContent = i + '월';
+                if (i === now.getMonth() + 1) opt.selected = true;
+                mEl.appendChild(opt);
+            }
+            yEl.onchange = loadData;
+            mEl.onchange = loadData;
+        }
+
+        function getYearKey() {
+            return `assetData_${document.getElementById('yearSelect').value}`;
+        }
+
+        function getMonthKey() {
+            return document.getElementById('monthSelect').value;
+        }
+
+        function saveData() {
+            const yearKey = getYearKey();
+            const monthKey = getMonthKey();
+
+            // 기존 연도 데이터 가져오기 (없으면 새로 생성)
+            let yearData = localStorage.getItem(yearKey);
+            yearData = yearData ? JSON.parse(yearData) : { year: document.getElementById('yearSelect').value, months: {} };
+
+            // 현재 월 데이터 업데이트
+            yearData.months[monthKey] = state;
+
+            localStorage.setItem(yearKey, JSON.stringify(yearData));
+            console.log('Saved to Year:', yearKey, 'Month:', monthKey);
+        }
+
+        function migrateOldData() {
+            const yearVal = document.getElementById('yearSelect').value;
+            const yearKey = `assetData_${yearVal}`;
+            let yearData = localStorage.getItem(yearKey);
+            yearData = yearData ? JSON.parse(yearData) : { year: yearVal, months: {} };
+
+            let migrated = false;
+            // 1월부터 12월까지 기존 키 검사 (예: assetData_2026-03)
+            for (let m = 1; m <= 12; m++) {
+                const monthStr = String(m).padStart(2, '0');
+                if (!yearData.months[monthStr]) {
+                    const oldKey = `assetData_${yearVal}-${monthStr}`;
+                    const oldData = localStorage.getItem(oldKey);
+                    if (oldData) {
+                        yearData.months[monthStr] = JSON.parse(oldData);
+                        migrated = true;
+                        console.log(`Migrated: ${oldKey} -> ${yearKey}.months["${monthStr}"]`);
+                    }
+                }
+            }
+            if (migrated) {
+                localStorage.setItem(yearKey, JSON.stringify(yearData));
+            }
+        }
+
+        function loadData() {
+            migrateOldData(); // 로드 전 마이그레이션 실행
+
+            const yearKey = getYearKey();
+            const monthKey = getMonthKey();
+
+            const yearDataStr = localStorage.getItem(yearKey);
+            if (yearDataStr) {
+                const yearData = JSON.parse(yearDataStr);
+                if (yearData.months && yearData.months[monthKey]) {
+                    state = mergeState(yearData.months[monthKey]);
+                    console.log('Loaded Month Data:', yearKey, monthKey);
+                } else {
+                    // 해당 월 데이터가 없으면 빈 상태로 시작 (수동 이월은 버튼으로 수행)
+                    state = getEmptyState();
+                    console.log('New Input Mode: No data for this month.');
+                }
+            } else {
+                state = getEmptyState();
+            }
+            render();
+        }
+
+        function addRow(s) {
+            const item = { id: Date.now() + Math.random(), category: '', content: '', amount: 0, desc: '', remAmount: 0, rate: 0, details: [] };
+            if (s === 'installment') {
+                const now = new Date();
+                item.date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                item.card = '롯데';
+                item.totalMonths = 1; item.currentMonth = 1; item.monthlyPrincipal = 0; item.endDate = '';
+            }
+            state.sections[s].push(item);
+            if (s === 'installment') {
+                updateValue(s, item.id, 'date', item.date);
+            } else {
+                saveData(); render();
+            }
+        }
+
+        function manualCarryOver() {
+            const yearKey = getYearKey();
+            const monthKey = getMonthKey();
+            const yearDataStr = localStorage.getItem(yearKey);
+
+            if (!yearDataStr) {
+                alert('이월할 수 있는 이전 데이터가 없습니다.');
+                return;
+            }
+
+            const yearData = JSON.parse(yearDataStr);
+            const months = Object.keys(yearData.months).sort().reverse();
+            let prevData = null;
+            let prevMonth = '';
+
+            for (let key of months) {
+                if (key < monthKey) {
+                    prevData = yearData.months[key];
+                    prevMonth = key;
+                    break;
+                }
+            }
+
+            if (prevData) {
+                if (confirm(`${prevMonth}월 데이터를 현재 월(${monthKey}월)로 이월하시겠습니까?\n(기존에 입력된 정보가 있다면 덮어씌워집니다.)`)) {
+                    state = mergeState(prevData);
+                    saveData();
+                    render();
+                    alert(`${prevMonth}월 데이터를 이월했습니다.`);
+                }
+            } else {
+                alert('이월할 수 있는 이전 달 데이터가 없습니다.');
+            }
+        }
+
+        function deleteRow(s, id) {
+            const item = state.sections[s].find(i => i.id === id);
+            if (item) {
+                const hasData = (item.amount > 0) || (item.remAmount > 0) || (item.category && item.category.trim() !== '') ||
+                    (item.content && item.content.trim() !== '') || (item.card && item.card.trim() !== '') ||
+                    (item.desc && item.desc.trim() !== '') || (item.details && item.details.length > 0);
+
+                if (hasData && !confirm('입력된 데이터가 있습니다. 정말 삭제하시겠습니까?')) {
+                    return;
+                }
+            }
+            state.sections[s] = state.sections[s].filter(i => i.id !== id);
+            saveData(); render();
+        }
+
+        function calculateInstallment(item) {
+            item.totalMonths = Math.max(1, parseInt(item.totalMonths) || 1);
+            item.currentMonth = Math.max(0, Math.min(item.totalMonths, parseInt(item.currentMonth) || 0));
+            item.amount = parseFloat(String(item.amount).replace(/,/g, '')) || 0;
+            item.monthlyPrincipal = Math.floor(item.amount / item.totalMonths);
+            
+            if (item.date) {
+                const p = item.date.split(/[-./ ]/);
+                if (p.length >= 2) {
+                    let y = parseInt(p[0]), m = parseInt(p[1]) + item.totalMonths;
+                    y += Math.floor((m - 1) / 12); m = (m - 1) % 12 + 1;
+                    item.endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
+                }
+            }
+            item.remAmount = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
+            return item;
+        }
+
+        function updateValue(s, id, f, v) {
+            const item = state.sections[s].find(i => i.id === id);
+            if (!item) return;
+            if (['amount', 'remAmount', 'totalMonths', 'currentMonth'].includes(f)) {
+                item[f] = parseFloat(String(v).replace(/,/g, '')) || 0;
+            } else { item[f] = v; }
+
+            if (s === 'installment') {
+                calculateInstallment(item);
+            }
+            saveData(); updateCalculations();
+            if (s === 'installment') render();
+        }
+
+        function formatNumber(n) {
+            return new Intl.NumberFormat('ko-KR').format(parseFloat(String(n).replace(/,/g, '')) || 0);
+        }
+
+        function handleAmountFocus(el) { el.value = el.value.replace(/,/g, '') === '0' ? '' : el.value.replace(/,/g, ''); el.select(); }
+        function handleAmountBlur(el, s, id, f) {
+            let v = el.value.replace(/,/g, ''); if (v === '' || isNaN(v)) v = '0';
+            updateValue(s, id, f, v); el.value = formatNumber(v);
+        }
+
+        function deleteMonthData() {
+            if (confirm('현재 선택된 월의 데이터를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+                state = getEmptyState();
+                saveData();
+                render();
+                alert('데이터가 초기화되었습니다.');
+            }
+        }
+
+        function openManualModal() { document.getElementById('manualModal').style.display = 'flex'; }
+        function closeManualModal() { document.getElementById('manualModal').style.display = 'none'; }
+
+        function stepValue(s, id, f, delta) {
+            const item = state.sections[s].find(i => i.id === id);
+            if (!item) return;
+            let newVal;
+            if (f === 'totalMonths') {
+                newVal = Math.max(1, (item.totalMonths || 1) + delta);
+            } else if (f === 'currentMonth') {
+                newVal = Math.max(0, Math.min(item.totalMonths || 1, (item.currentMonth || 1) + delta));
+            }
+            updateValue(s, id, f, newVal);
+            render();
+        }
+
+        function render() {
+            if (!state || !state.sections) return;
+            for (let s in state.sections) {
+                const tbody = document.getElementById(`tbody-${s}`);
+                if (!tbody) continue;
+                tbody.innerHTML = '';
+                state.sections[s].forEach(item => {
+                    if (s === 'installment') calculateInstallment(item);
+                    const tr = document.createElement('tr');
+                    if (s === 'installment') {
+                        tr.innerHTML = `
+                            <td><input type="text" style="width: 105px; text-align: center; font-size: 0.9rem;" value="${item.date}" onchange="updateValue('${s}', ${item.id}, 'date', this.value)" placeholder="YYYY-MM-DD"></td>
+                            <td>
+                                <select style="padding: 0.35rem 1.5rem 0.35rem 0.6rem; font-size: 0.85rem; font-weight: 500;" onchange="updateValue('${s}', ${item.id}, 'card', this.value)">
+                                    <option value="국민" ${item.card === '국민' ? 'selected' : ''}>국민</option>
+                                    <option value="신한" ${item.card === '신한' ? 'selected' : ''}>신한</option>
+                                    <option value="롯데" ${item.card === '롯데' ? 'selected' : ''}>롯데</option>
+                                    ${!['국민', '신한', '롯데'].includes(item.card) && item.card ? `<option value="${item.card}" selected>${item.card}</option>` : ''}
+                                </select>
+                            </td>
+                            <td><input type="text" class="text-left" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
+                            <td>
+                                <input type="text" class="amount" style="font-size: 1.1rem; color: var(--accent-blue); width: 100%;" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')">
+                            </td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:4px;">
+                                    <div class="step-container">
+                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'currentMonth', -1)">-</button>
+                                        <input type="text" class="input-step" style="color: ${item.currentMonth === item.totalMonths ? 'var(--accent-green)' : 'var(--accent-blue)'}" value="${item.currentMonth}" readonly>
+                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'currentMonth', 1)">+</button>
+                                    </div>
+                                    <span style="color:var(--text-secondary); font-weight:700;">/</span>
+                                    <div class="step-container">
+                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'totalMonths', -1)">-</button>
+                                        <input type="text" class="input-step" value="${item.totalMonths}" readonly>
+                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'totalMonths', 1)">+</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><div class="amount" style="font-weight: 700;">${formatNumber(item.monthlyPrincipal)}</div></td>
+                            <td><div class="amount" style="font-weight: 700; color: var(--accent-red);">${formatNumber(item.remAmount)}</div></td>
+                            <td style="display: flex; align-items: center; gap: 8px;">
+                                <div class="text-left" style="flex: 1; font-weight: 600; color: var(--text-secondary);">${item.endDate}</div>
+                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})" style="flex-shrink: 0;">&times;</button>
+                            </td>
+                        `;
+                    } else if (s === 'debt') {
+                        tr.innerHTML = `
+                            <td><input type="text" class="text-left" style="font-size: 0.9rem;" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
+                            <td><input type="text" class="text-left" style="font-size: 0.9rem;" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
+                            <td><input type="text" class="amount" style="font-size: 0.9rem; color: var(--text-primary); font-weight: 600;" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')"></td>
+                            <td><input type="text" style="width: 100%; text-align: right; font-size: 0.9rem; font-weight: 600;" value="${parseFloat(item.rate || 0).toFixed(3)}" onblur="updateValue('${s}', ${item.id}, 'rate', parseFloat(this.value) || 0)"></td>
+                            <td style="display: flex; align-items: center; gap: 8px;">
+                                <input type="text" class="amount" style="flex: 1; font-size: 0.9rem; color: var(--accent-red); font-weight: 600;" value="${formatNumber(item.remAmount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'remAmount')">
+                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})" style="flex-shrink: 0;">&times;</button>
+                            </td>
+                        `;
+                    } else if (['v-expense', 'f-expense'].includes(s)) {
+                        tr.innerHTML = `
+                            <td><input type="text" class="text-left" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
+                            <td><input type="text" class="amount" value="${formatNumber(item.amount)}" readonly></td>
+                            <td style="display: flex; align-items: center; gap: 8px;">
+                                <input type="text" class="text-left" style="flex: 1;" value="${item.desc}" onchange="updateValue('${s}', ${item.id}, 'desc', this.value)">
+                                <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                                    <button class="btn btn-tool" onmouseenter="showHoverLayer(event, '${s}', ${item.id})" onmouseleave="hideHoverLayer()" onclick="openExpenseDetailModal('${s}', ${item.id})">상세</button>
+                                    <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        tr.innerHTML = `
+                            <td><input type="text" class="text-left" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
+                            <td><input type="text" class="text-left" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
+                            <td><input type="text" class="amount" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')"></td>
+                            <td style="display: flex; align-items: center; gap: 8px;">
+                                <input type="text" class="text-left" style="flex: 1;" value="${item.desc}" onchange="updateValue('${s}', ${item.id}, 'desc', this.value)">
+                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})" style="flex-shrink: 0;">&times;</button>
+                            </td>
+                        `;
+                    }
+                    tbody.appendChild(tr);
+                });
+            }
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            let assets = 0, debts = 0, income = 0, expense = 0;
+            for (let s in state.sections) {
+                const total = state.sections[s].reduce((sum, i) => sum + (parseFloat(['debt', 'installment'].includes(s) ? i.remAmount : i.amount) || 0), 0);
+                const el = document.getElementById(`total-${s}`);
+                if (el) el.innerText = formatNumber(total);
+                if (['cash', 'non-cash', 'real-estate', 'retirement'].includes(s)) assets += total;
+                if (s === 'debt' || s === 'installment') debts += total;
+                if (s === 'income') income = total;
+                if (['v-expense', 'f-expense'].includes(s)) expense += total;
+                if (s === 'installment') {
+                    const totalAmt = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+                    const prin = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.monthlyPrincipal) || 0), 0);
+                    const rem = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.remAmount) || 0), 0);
+                    expense += prin;
+                    
+                    const amtEl = document.getElementById('installment-total-amount');
+                    const priEl = document.getElementById('installment-total-principal');
+                    const remEl = document.getElementById('total-installment');
+                    if (amtEl) amtEl.innerText = formatNumber(totalAmt);
+                    if (priEl) priEl.innerText = formatNumber(prin);
+                    if (remEl) remEl.innerText = formatNumber(rem);
+                }
+            }
+            document.getElementById('summary-income').innerText = formatNumber(income);
+            document.getElementById('summary-expense').innerText = formatNumber(expense);
+            document.getElementById('summary-credit').innerText = formatNumber(income - expense);
+            document.getElementById('summary-net').innerText = formatNumber(assets - debts);
+            document.getElementById('net-worth-display').innerText = `순자산: ${formatNumber(assets - debts)} 원`;
+        }
+
+        let curExp = null;
+        function openExpenseDetailModal(s, id) {
+            const item = state.sections[s].find(i => i.id === id);
+            if (!item) return;
+            curExp = { s, id, details: JSON.parse(JSON.stringify(item.details)) };
+            renderExpenseModalDetails();
+            document.getElementById('expenseDetailModal').style.display = 'flex';
+        }
+        function addExpenseDetailRow() { curExp.details.push({ content: '', amount: 0, remarks: '' }); renderExpenseModalDetails(); }
+        function renderExpenseModalDetails() {
+            const tbody = document.getElementById('tbody-expense-details'); tbody.innerHTML = '';
+            curExp.details.forEach((d, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="text" value="${d.content}" onchange="curExp.details[${idx}].content = this.value"></td>
+                    <td><input type="text" class="amount" value="${formatNumber(d.amount)}" onfocus="handleAmountFocus(this)" onblur="let v = this.value.replace(/,/g, ''); curExp.details[${idx}].amount = parseFloat(v)||0; this.value = formatNumber(v);"></td>
+                    <td style="display: flex; align-items: center; gap: 8px;">
+                        <input type="text" style="flex: 1;" value="${d.remarks || ''}" onchange="curExp.details[${idx}].remarks = this.value">
+                        <button class="btn btn-delete" onclick="curExp.details.splice(${idx},1); renderExpenseModalDetails();">&times;</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        function saveExpenseDetailModal() {
+            const item = state.sections[curExp.s].find(i => i.id === curExp.id);
+            if (item) {
+                item.details = curExp.details;
+                item.amount = item.details.reduce((sum, d) => sum + d.amount, 0);
+                saveData(); closeExpenseDetailModal(); render();
+            }
+        }
+        function closeExpenseDetailModal() { document.getElementById('expenseDetailModal').style.display = 'none'; curExp = null; }
+
+        function showHoverLayer(e, s, id) {
+            const item = state.sections[s].find(i => i.id === id);
+            if (!item || !item.details || item.details.length === 0) return;
+
+            const layer = document.getElementById('hoverLayer');
+            let html = '<table><thead><tr><th>내용</th><th style="text-align:right">금액</th></tr></thead><tbody>';
+            item.details.forEach(d => {
+                html += `<tr><td>${d.content}</td><td class="amount">${formatNumber(d.amount)}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            layer.innerHTML = html;
+            layer.style.display = 'block';
+
+            const rect = e.target.getBoundingClientRect();
+            layer.style.top = (rect.top + window.scrollY - layer.offsetHeight - 10) + 'px';
+            layer.style.left = (rect.left + window.scrollX - (layer.offsetWidth / 2) + (rect.width / 2)) + 'px';
+        }
+
+        function hideHoverLayer() {
+            const layer = document.getElementById('hoverLayer');
+            layer.style.display = 'none';
+            layer.classList.remove('summary-tooltip');
+        }
+
+        function showSummaryTooltip(e, text) {
+            const layer = document.getElementById('hoverLayer');
+            layer.innerHTML = `<div style="padding: 5px;">${text}</div>`;
+            layer.classList.add('summary-tooltip');
+            layer.style.display = 'block';
+
+            const rect = e.currentTarget.getBoundingClientRect();
+            layer.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+            layer.style.left = (rect.left + window.scrollX + (rect.width / 2) - (layer.offsetWidth / 2)) + 'px';
+        }
+
+        function openInstallmentModal() { document.getElementById('installmentModal').style.display = 'flex'; render(); }
+        function closeInstallmentModal() { document.getElementById('installmentModal').style.display = 'none'; }
+
+
+
+        function openExpenseChart(s) {
+            const items = state.sections[s];
+            if (!items || items.length === 0) { alert('데이터가 없습니다.'); return; }
+            const titleMap = { 'v-expense': '변동 지출 분석', 'f-expense': '고정 지출 분석' };
+            document.getElementById('chartModalTitle').innerText = titleMap[s] || '지출 분석 그래프';
+            const dataMap = {};
+            items.forEach(item => {
+                const cat = (item.category || '기타').trim() || '기타';
+                dataMap[cat] = (dataMap[cat] || 0) + (item.amount || 0);
+            });
+            const chartData = Object.entries(dataMap)
+                .map(([name, value]) => ({ name, value }))
+                .filter(d => d.value > 0)
+                .sort((a, b) => b.value - a.value);
+            if (chartData.length === 0) { alert('금액이 입력된 데이터가 없습니다.'); return; }
+            drawPieChart(chartData);
+            document.getElementById('expenseChartModal').style.display = 'flex';
+        }
+
+        function closeExpenseChart() {
+            document.getElementById('expenseChartModal').style.display = 'none';
+        }
+
+        // --- Account Management Logic ---
+        let accountsData = [];
+
+        function loadAccounts() {
+            const data = localStorage.getItem('assetManagerAccounts');
+            accountsData = data ? JSON.parse(data) : [];
+        }
+
+        function saveAccounts() {
+            localStorage.setItem('assetManagerAccounts', JSON.stringify(accountsData));
+        }
+
+        function openAccountModal() {
+            loadAccounts();
+            renderAccounts();
+            document.getElementById('accountModal').style.display = 'flex';
+        }
+
+        function closeAccountModal() {
+            saveAccounts(); // Save on close just in case
+            document.getElementById('accountModal').style.display = 'none';
+        }
+
+        function renderAccounts() {
+            const tbody = document.getElementById('tbody-accounts');
+            tbody.innerHTML = '';
+            accountsData.forEach((acc, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="text" value="${acc.site || ''}" onchange="accountsData[${idx}].site = this.value; saveAccounts();" placeholder="ex) Google"></td>
+                    <td><input type="text" value="${acc.userid || ''}" onchange="accountsData[${idx}].userid = this.value; saveAccounts();"></td>
+                    <td><input type="text" value="${acc.password || ''}" onchange="accountsData[${idx}].password = this.value; saveAccounts();"></td>
+                    <td style="display: flex; align-items: center; gap: 8px;">
+                        <input type="text" style="flex: 1;" value="${acc.remarks || ''}" onchange="accountsData[${idx}].remarks = this.value; saveAccounts();">
+                        <button class="btn btn-delete" onclick="deleteAccountRow(${idx})">&times;</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addAccountRow() {
+            accountsData.push({ site: '', userid: '', password: '', remarks: '' });
+            saveAccounts();
+            renderAccounts();
+        }
+
+        function deleteAccountRow(idx) {
+            if (confirm('해당 계정 정보를 삭제하시겠습니까?')) {
+                accountsData.splice(idx, 1);
+                saveAccounts();
+                renderAccounts();
+            }
+        }
+        // --------------------------------
+
+        // --- Login & Admin Logic ---
+        let isLoggedIn = false;
+
+        function checkLoginState() {
+            loadAccounts();
+            if (accountsData.length === 0) {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('loginFormContainer').style.display = 'none';
+                document.getElementById('adminCreateContainer').style.display = 'block';
+                document.getElementById('mainContainer').style.display = 'none';
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('loginFormContainer').style.display = 'block';
+                document.getElementById('adminCreateContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'none';
+                
+                // 아이디 저장 로드
+                const savedId = localStorage.getItem('savedLoginId');
+                if (savedId) {
+                    document.getElementById('loginId').value = savedId;
+                    document.getElementById('rememberId').checked = true;
+                    document.getElementById('loginPw').focus();
+                } else {
+                    document.getElementById('loginId').focus();
+                }
+            }
+        }
+
+        function createAdminAccount() {
+            const name = document.getElementById('adminName').value.trim();
+            const id = document.getElementById('adminId').value.trim();
+            const pw = document.getElementById('adminPw').value.trim();
+
+            if (!name || !id || !pw) {
+                alert('모든 항목을 입력해주세요.');
+                return;
+            }
+
+            accountsData = [{ site: name, userid: id, password: pw, remarks: '최초 관리자' }];
+            saveAccounts();
+            alert('관리자 계정이 생성되었습니다. 해당 계정으로 로그인합니다.');
+            loginSuccess();
+        }
+
+        function attemptLogin() {
+            const id = document.getElementById('loginId').value.trim();
+            const pw = document.getElementById('loginPw').value.trim();
+            
+            const user = accountsData.find(a => a.userid === id && a.password === pw);
+            
+            if (user) {
+                // 아이디 저장 처리
+                if (document.getElementById('rememberId').checked) {
+                    localStorage.setItem('savedLoginId', id);
+                } else {
+                    localStorage.removeItem('savedLoginId');
+                }
+                loginSuccess();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function loginSuccess() {
+            isLoggedIn = true;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('loginId').value = '';
+            document.getElementById('loginPw').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            initSelectors(); 
+            loadData();
+        }
+        // ---------------------------
+
+        function drawPieChart(data) {
+            const container = document.getElementById('pieChartSvgContainer');
+            const legend = document.getElementById('chartLegend');
+            container.innerHTML = ''; legend.innerHTML = '';
+            const total = data.reduce((sum, d) => sum + d.value, 0);
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#475569'];
+            let currentAngle = 0;
+            const centerX = 150, centerY = 150, radius = 120;
+            let svg = `<svg viewBox="0 0 300 300" style="width:100%; height:100%;">`;
+            data.forEach((d, i) => {
+                const sliceAngle = (d.value / total) * 360;
+                const color = colors[i % colors.length];
+                if (sliceAngle >= 359.9) {
+                    svg += `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="${color}" />`;
+                } else {
+                    const x1 = centerX + radius * Math.cos(Math.PI * (currentAngle - 90) / 180);
+                    const y1 = centerY + radius * Math.sin(Math.PI * (currentAngle - 90) / 180);
+                    const x2 = centerX + radius * Math.cos(Math.PI * (currentAngle + sliceAngle - 90) / 180);
+                    const y2 = centerY + radius * Math.sin(Math.PI * (currentAngle + sliceAngle - 90) / 180);
+                    const largeArcFlag = sliceAngle > 180 ? 1 : 0;
+                    svg += `<path d="M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z" fill="${color}" stroke="white" stroke-width="2" />`;
+                }
+                currentAngle += sliceAngle;
+                const percent = ((d.value / total) * 100).toFixed(1);
+                legend.innerHTML += `<div style="display: flex; align-items: center; gap: 8px;"><div style="width: 12px; height: 12px; border-radius: 3px; background: ${color}"></div><span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.name}</span><span style="font-weight: 600;">${percent}%</span></div>`;
+            });
+            svg += `</svg>`;
+            container.innerHTML = svg;
+        }
+        function downloadData() {
+            const yearKey = getYearKey();
+            let yearData = localStorage.getItem(yearKey);
+
+            // 현재 메모리상의 데이터가 최신일 수 있으므로 병합 처리
+            yearData = yearData ? JSON.parse(yearData) : { year: document.getElementById('yearSelect').value, months: {} };
+            yearData.months[getMonthKey()] = state;
+
+            // Encrypt and append accountsData (Option A)
+            loadAccounts();
+            if (accountsData.length > 0) {
+                try {
+                    yearData._secureAccounts = btoa(encodeURIComponent(JSON.stringify(accountsData)));
+                } catch (e) {
+                    console.error("Encryption failed", e);
+                }
+            }
+
+            const blob = new Blob([JSON.stringify(yearData, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = `${yearKey}.json`;
+            a.click();
+        }
+        function uploadData(e) {
+            const file = e.target.files[0]; if (!file) return;
+            document.getElementById('loadingSpinner').style.display = 'flex';
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const uploaded = JSON.parse(ev.target.result);
+
+                    // Restore encrypted accounts if they exist (Option A)
+                    if (uploaded._secureAccounts) {
+                        try {
+                            const decrypted = JSON.parse(decodeURIComponent(atob(uploaded._secureAccounts)));
+                            if (Array.isArray(decrypted)) {
+                                accountsData = decrypted;
+                                saveAccounts();
+                            }
+                        } catch (e) {
+                            console.error("Decryption failed", e);
+                        }
+                    }
+
+                    // 1. 연도별 통합 포맷인 경우 (months 속성 존재)
+                    if (uploaded.months) {
+                        const yearKey = `assetData_${uploaded.year}`;
+                        localStorage.setItem(yearKey, JSON.stringify(uploaded));
+
+                        if (isLoggedIn && uploaded.year === document.getElementById('yearSelect').value) {
+                            loadData();
+                        }
+                    }
+                    // 2. 기존 월별 포맷인 경우 (섹션 데이터 직접 포함)
+                    else {
+                        const newState = mergeState(uploaded);
+                        state = newState;
+
+                        if (isLoggedIn) {
+                            // 업로드된 파일의 baseDate나 파일명을 분석하여 해당 월로 이동 시도
+                            let targetY = document.getElementById('yearSelect').value;
+                            let targetM = document.getElementById('monthSelect').value;
+
+                            if (uploaded.baseDate) {
+                                const d = uploaded.baseDate.split('-');
+                                targetY = d[0]; targetM = d[1];
+                            } else if (file.name.includes('_20')) {
+                                const match = file.name.match(/(\d{4})-(\d{2})/);
+                                if (match) { targetY = match[1]; targetM = match[2]; }
+                            }
+
+                            document.getElementById('yearSelect').value = targetY;
+                            document.getElementById('monthSelect').value = targetM;
+
+                            saveData(); // 추출된 연도/월에 저장
+                            render();
+                        } else {
+                            // Not logged in but uploading legacy format. Save to local storage for latest year/month.
+                            const tempDate = new Date();
+                            const y = tempDate.getFullYear().toString();
+                            const m = String(tempDate.getMonth() + 1).padStart(2, '0');
+                            let yData = localStorage.getItem(`assetData_${y}`);
+                            yData = yData ? JSON.parse(yData) : { year: y, months: {} };
+                            yData.months[`${y}-${m}`] = newState;
+                            localStorage.setItem(`assetData_${y}`, JSON.stringify(yData));
+                        }
+                    }
+
+                    if (!isLoggedIn) {
+                        checkLoginState();
+                        alert('데이터를 성공적으로 불러왔습니다. 로그인을 진행해주세요.');
+                    } else {
+                        alert('데이터를 성공적으로 불러왔습니다.');
+                    }
+                } catch (err) { alert('오류: ' + err.message); }
+                finally { document.getElementById('loadingSpinner').style.display = 'none'; e.target.value = ''; }
+            };
+            reader.readAsText(file);
+        }
+        window.onload = () => { checkLoginState(); };
+    </script>
+    <div id="hoverLayer" class="details-hover-layer"></div>
+</body>
+
+</html>
