@@ -272,6 +272,28 @@
             font-size: 0.9rem;
         }
 
+        .btn-header-tool {
+            background: #f8fafc;
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            height: 38px;
+        }
+
+        .btn-header-tool:hover {
+            background: #f1f5f9;
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
         input:focus {
             outline: none;
             border-color: var(--accent-blue);
@@ -935,18 +957,29 @@
             style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem;">
             <div
                 style="display: flex; align-items: center; gap: 0.75rem; background: #ffffff; padding: 0.4rem 0.75rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); box-shadow: var(--shadow-sm);">
-                <select id="yearSelect" style="min-width: 120px;"></select>
-                <select id="monthSelect" style="min-width: 90px;"></select>
+                <select id="yearSelect" style="min-width: 120px; height: 38px;"></select>
+                <select id="monthSelect" style="min-width: 90px; height: 38px;"></select>
+                <div style="width: 1px; height: 20px; background: var(--glass-border); margin: 0 0.25rem;"></div>
+                <button class="btn-header-tool" onclick="openInstallmentModal()">
+                    <span style="font-size: 1.1rem;">💳</span>
+                    <span>할부 관리</span>
+                </button>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <button class="btn btn-add" onclick="openInstallmentModal()">할부 내역 관리</button>
-                <button class="btn btn-teal" id="btnCarryOver" onclick="manualCarryOver()">이전 달 데이터 이월</button>
-                <button class="btn btn-danger-bg" onclick="deleteMonthData()">월 데이터 삭제</button>
-                <button class="btn btn-purple" onclick="openDataManageModal()">⚙️ 데이터 관리</button>
-                <button class="btn btn-blue" onclick="openGitHubModal()">☁️ GitHub 연동</button>
-                <button class="btn btn-orange" onclick="openAccountModal()">계정</button>
-                <button class="btn btn-gray" onclick="openManualModal()">매뉴얼</button>
-                <button class="btn" style="background: #334155; color: white;" onclick="logout()">로그아웃</button>
+            
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <!-- Main Action Group -->
+                <div style="display: flex; gap: 0.5rem; padding-right: 0.75rem; border-right: 1px solid var(--glass-border);">
+                    <button class="btn btn-teal" id="btnCarryOver" onclick="manualCarryOver()">전달 데이터 이월</button>
+                    <button class="btn btn-blue" onclick="openGitHubModal()">☁️ GitHub 연동</button>
+                </div>
+
+                <!-- Tool Group -->
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button class="btn-header-tool" onclick="openDataManageModal()" title="데이터 관리">⚙️</button>
+                    <button class="btn-header-tool" onclick="openAccountModal()" title="계정">👤</button>
+                    <button class="btn-header-tool" onclick="openManualModal()" title="매뉴얼">📖</button>
+                    <button class="btn" style="background: #334155; color: white; padding: 0.4rem 0.8rem; border-radius: 0.375rem; font-size: 0.85rem;" onclick="logout()">로그아웃</button>
+                </div>
             </div>
         </div>
 
