@@ -1,0 +1,4 @@
+# Data files
+Asset/*.json
+Asset/data/*.json
+*.json
