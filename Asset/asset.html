@@ -2266,6 +2266,18 @@
             document.getElementById('gitHubModal').style.display = 'none';
         }
 
+        function togglePatVisibility() {
+            const tokenInput = document.getElementById('ghToken');
+            const toggleIcon = document.getElementById('patToggleIcon');
+            if (tokenInput.type === 'password') {
+                tokenInput.type = 'text';
+                toggleIcon.innerText = '🙈';
+            } else {
+                tokenInput.type = 'password';
+                toggleIcon.innerText = '👁️';
+            }
+        }
+
         function saveGitHubConfig() {
             const config = {
                 token: document.getElementById('ghToken').value.trim(),
@@ -2576,10 +2588,15 @@
                     GitHub API를 통해 데이터를 원격 저장소에 보관합니다.<br>
                     <a href="https://github.com/settings/tokens" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">GitHub PAT(Personal Access Token)</a>이 필요합니다. (권한: repo)
                 </p>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
                         <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">GitHub 토큰 (PAT)</label>
-                        <input type="password" id="ghToken" class="data-modal-textarea" style="height: 38px; padding: 0 10px;" placeholder="ghp_xxxxxxxxxxxx">
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="password" id="ghToken" class="data-modal-textarea" style="height: 38px; padding: 0 40px 0 12px; width: 100%;" placeholder="ghp_xxxxxxxxxxxx">
+                            <button type="button" onclick="togglePatVisibility()" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); padding: 5px;">
+                                <span id="patToggleIcon">👁️</span>
+                            </button>
+                        </div>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 2;">
@@ -2591,10 +2608,10 @@
                             <input type="text" id="ghBranch" class="data-modal-textarea" style="height: 38px; padding: 0 10px;" value="main">
                         </div>
                     </div>
-                    <div style="background: rgba(59, 130, 246, 0.05); padding: 10px; border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.1);">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
-                            <input type="checkbox" id="ghAutoSync" checked>
-                            <span>데이터 변경 시 자동 업로드</span>
+                    <div style="background: rgba(59, 130, 246, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1); margin-top: 5px;">
+                        <label style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; width: fit-content;">
+                            <input type="checkbox" id="ghAutoSync" style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" checked>
+                            <span style="white-space: nowrap; font-weight: 600; color: var(--text-primary); flex-shrink: 0;">데이터 변경 시 자동 업로드</span>
                         </label>
                     </div>
                 </div>
