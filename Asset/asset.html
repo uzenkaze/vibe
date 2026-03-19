@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset & Liability Management</title>
+    <title>Asset Management</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -335,6 +336,60 @@
             font-size: 0.875rem;
         }
 
+        .btn-green {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-green:hover {
+            background: #059669;
+        }
+
+        .btn-purple {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background: #7c3aed;
+        }
+
+        .btn-orange {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-orange:hover {
+            background: #d97706;
+        }
+
+        .btn-gray {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-gray:hover {
+            background: #475569;
+        }
+
+        .btn-danger-bg {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger-bg:hover {
+            background: #dc2626;
+        }
+
+        .btn-teal {
+            background: #14b8a6;
+            color: white;
+        }
+
+        .btn-teal:hover {
+            background: #0d9488;
+        }
+
         .btn-delete {
             background: #fff1f2;
             border: 1px solid #fee2e2;
@@ -465,7 +520,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 5000;
         }
 
         .modal-content {
@@ -653,6 +708,71 @@
             font-size: 1rem;
             margin-top: 1rem;
         }
+
+        /* Drag & Drop Overlays */
+        #dropZone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 163, 196, 0.4);
+            border: 8px dashed var(--accent-blue);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            pointer-events: auto;
+        }
+
+        #debugLog {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 300px;
+            max-height: 200px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-y: auto;
+            z-index: 9999;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Data Management Modal Styles */
+        .data-modal-textarea {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid var(--glass-border);
+            color: #000000;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+            margin-top: 1rem;
+        }
+
+        .data-modal-btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .data-modal-textarea.drag-over {
+            border: 2px dashed var(--accent-blue);
+            background: rgba(0, 163, 196, 0.1);
+            transform: scale(1.01);
+        }
     </style>
 </head>
 
@@ -684,13 +804,9 @@
             </div>
             <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
 
-            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">처음이시거나 다른 기기에서 오셨나요?
-                </p>
-                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput').click()"
-                    style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
-                <input type="file" id="loginFileInput" class="hidden" accept=".json" onchange="uploadData(event)">
-            </div>
+            <button class="btn btn-tool" style="width: 100%; justify-content: center;" onclick="openDataManageModal()">
+                ⚙️ 데이터 관리
+            </button>
         </div>
 
         <div class="login-card" id="adminCreateContainer" style="display: none;">
@@ -708,11 +824,12 @@
             </div>
             <button class="btn btn-add login-btn" onclick="createAdminAccount()">관리자 등록</button>
             <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">기존 데이터 파일이 있으신가요?
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">기존 데이터 관리
                 </p>
-                <button class="btn btn-tool" onclick="document.getElementById('loginFileInput2').click()"
-                    style="width: 100%; justify-content: center;">데이터 파일 불러오기</button>
-                <input type="file" id="loginFileInput2" class="hidden" accept=".json" onchange="uploadData(event)">
+                <button class="btn btn-tool" style="width: 100%; justify-content: center;"
+                    onclick="openDataManageModal()">
+                    ⚙️ 데이터 관리
+                </button>
             </div>
         </div>
     </div>
@@ -727,15 +844,13 @@
             </div>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <button class="btn btn-add" onclick="openInstallmentModal()">할부 내역 관리</button>
-                <button class="btn btn-tool" id="btnCarryOver" onclick="manualCarryOver()">이전 달 데이터 이월</button>
-                <button class="btn btn-tool" style="color: var(--accent-red);" onclick="deleteMonthData()">월 데이터
-                    삭제</button>
-                <button class="btn btn-tool" onclick="downloadData()">다운로드</button>
-                <button class="btn btn-tool" onclick="document.getElementById('fileInput').click()">불러오기</button>
-                <button class="btn btn-tool" onclick="openAccountModal()">계정</button>
-                <button class="btn btn-tool" onclick="openManualModal()">매뉴얼</button>
+                <button class="btn btn-teal" id="btnCarryOver" onclick="manualCarryOver()">이전 달 데이터 이월</button>
+                <button class="btn btn-danger-bg" onclick="deleteMonthData()">월 데이터 삭제</button>
+                <button class="btn btn-purple" onclick="openDataManageModal()">⚙️ 데이터 관리</button>
+                <button class="btn btn-orange" onclick="openAccountModal()">계정</button>
+                <button class="btn btn-gray" onclick="openManualModal()">매뉴얼</button>
+                <button class="btn" style="background: #334155; color: white;" onclick="logout()">로그아웃</button>
             </div>
-            <input type="file" id="fileInput" class="hidden" accept=".json" onchange="uploadData(event)">
         </div>
 
         <div class="summary-bar">
@@ -1039,6 +1154,167 @@
     </div>
 
     <script>
+        console.log("[Init] Main script parsing start...");
+        // --- 1. Global State Variables ---
+        let state = { sections: { cash: [], 'non-cash': [], income: [], 'real-estate': [], retirement: [], debt: [], 'v-expense': [], 'f-expense': [], 'y-expense': [], installment: [] } };
+        let accountsData = [];
+        let isLoggedIn = false;
+
+        // --- 2. Data Management Logic ---
+        function openDataManageModal() {
+            document.getElementById('dataManageModal').style.display = 'flex';
+            const yearVal = document.getElementById('yearSelect')?.value || '연도';
+            const yearText = document.querySelector('#dataManageModal .modal-body p');
+            if (yearText) yearText.innerText = `현재 연도(${yearVal}년)의 데이터를 관리합니다.`;
+
+            // 드래그 앤 드롭 이벤트 초기화 (한 번만 설정)
+            const textarea = document.getElementById('importJsonText');
+            if (textarea && !textarea.dataset.dropBound) {
+                // 상위 모달에서도 드래그 이벤트를 막아줘야 텍스트 영역으로 원활하게 버블링됨
+                const modalBody = textarea.closest('.modal-body');
+                if (modalBody) {
+                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                        modalBody.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+                    });
+                }
+
+                textarea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    textarea.classList.add('drag-over');
+                });
+                textarea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    textarea.classList.remove('drag-over');
+                });
+                textarea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    textarea.classList.remove('drag-over');
+
+                    const files = e.dataTransfer.files;
+                    if (files && files.length > 0) {
+                        const file = files[0];
+                        if (file.name.toLowerCase().endsWith('.json')) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                                textarea.value = ev.target.result;
+                                console.log("[D&D] File content read successfully.");
+                                alert('JSON 파일의 내용을 읽어왔습니다.');
+                            };
+                            reader.onerror = (err) => {
+                                console.error("[D&D] File read error:", err);
+                                alert('파일을 읽는 중 오류가 발생했습니다.');
+                            };
+                            reader.readAsText(file);
+                        } else {
+                            alert('JSON 확장자(.json) 파일만 가능합니다.');
+                        }
+                    }
+                });
+                textarea.dataset.dropBound = "true";
+            }
+        }
+
+        function closeDataManageModal() {
+            document.getElementById('dataManageModal').style.display = 'none';
+            document.getElementById('importJsonText').value = '';
+        }
+
+        function copyDataToClipboard() {
+            const yearKey = getYearKey();
+            let yearData = localStorage.getItem(yearKey);
+
+            // 현재 메모리상의 데이터 병합
+            yearData = yearData ? JSON.parse(yearData) : { year: document.getElementById('yearSelect').value, months: {} };
+            yearData.months[getMonthKey()] = state;
+
+            // 계정 정보 포함
+            loadAccounts();
+            if (accountsData.length > 0) {
+                try {
+                    yearData._secureAccounts = btoa(encodeURIComponent(JSON.stringify(accountsData)));
+                } catch (e) { console.error("Encryption failed", e); }
+            }
+
+            const dataStr = JSON.stringify(yearData, null, 2);
+            navigator.clipboard.writeText(dataStr).then(() => {
+                alert('연도 데이터가 클립보드에 복사되었습니다. (JSON 형식)');
+            }).catch(err => {
+                alert('복사 실패: ' + err);
+            });
+        }
+
+        function importDataFromText() {
+            const jsonText = document.getElementById('importJsonText').value.trim();
+            if (!jsonText) return alert('가져올 JSON 데이터를 입력해주세요.');
+
+            if (!confirm('현재 연도의 데이터를 덮어쓰고 새로운 데이터를 가져오시겠습니까?\n(기존 데이터는 삭제됩니다.)')) return;
+
+            try {
+                const uploaded = JSON.parse(jsonText);
+
+                // 기본 구조 검증
+                if (!uploaded.months && !uploaded.sections) {
+                    throw new Error('올바른 데이터 형식이 아닙니다. (months 또는 sections 필드 필요)');
+                }
+
+                document.getElementById('loadingSpinner').style.display = 'flex';
+
+                // 계정 정보 복원
+                if (uploaded._secureAccounts) {
+                    try {
+                        accountsData = JSON.parse(decodeURIComponent(atob(uploaded._secureAccounts)));
+                        saveAccounts();
+                    } catch (e) { console.warn("계정 복원 실패", e); }
+                }
+
+                // 데이터 병합 및 저장
+                let targetYear = "";
+                let targetMonth = "";
+                let updatedYearData = null;
+
+                if (uploaded.months) {
+                    targetYear = String(uploaded.year || document.getElementById('yearSelect').value);
+                    const months = Object.keys(uploaded.months).sort().reverse();
+                    targetMonth = months.length > 0 ? String(months[0]).padStart(2, '0') : "01";
+                    updatedYearData = uploaded;
+                } else {
+                    const tempDate = new Date();
+                    targetYear = (uploaded.baseDate ? uploaded.baseDate.split('-')[0] : document.getElementById('yearSelect').value);
+                    targetMonth = String(uploaded.baseDate ? uploaded.baseDate.split('-')[1] : (tempDate.getMonth() + 1)).padStart(2, '0');
+                    const existingData = localStorage.getItem(`assetData_${targetYear}`);
+                    updatedYearData = existingData ? JSON.parse(existingData) : { year: targetYear, months: {} };
+                    updatedYearData.months[targetMonth] = mergeState(uploaded);
+                }
+
+                localStorage.setItem(`assetData_${targetYear}`, JSON.stringify(updatedYearData));
+
+                // 로그인 세션 강제 활성화 (관리자 데이터 등을 불러왔을 경우 대비)
+                if (!isLoggedIn) {
+                    sessionStorage.setItem('assetLoginSession', 'true');
+                    setCookie('assetLoginSession', 'true');
+                    isLoggedIn = true;
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = 'block';
+                }
+
+                // UI 반영
+                initSelectors();
+                document.getElementById('yearSelect').value = targetYear;
+                document.getElementById('monthSelect').value = targetMonth;
+                loadData();
+
+                closeDataManageModal();
+                alert(`${targetYear}년 데이터를 성공적으로 가져왔습니다.`);
+            } catch (err) {
+                alert("가져오기 실패: " + err.message);
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
         function getEmptyState() {
             return {
                 sections: {
@@ -1067,7 +1343,6 @@
             return base;
         }
 
-        let state = getEmptyState();
 
         function initSelectors() {
             const now = new Date();
@@ -1076,7 +1351,6 @@
             const currentYear = now.getFullYear();
 
             yEl.innerHTML = '';
-            // 2026년을 기준으로 현재 연도 + 1년까지 표시
             const startYear = 2026;
             const endYear = Math.max(startYear, currentYear + 1);
 
@@ -1086,15 +1360,19 @@
                 if (i === currentYear) opt.selected = true;
                 yEl.appendChild(opt);
             }
+
             mEl.innerHTML = '';
             for (let i = 1; i <= 12; i++) {
+                const monthStr = String(i).padStart(2, '0'); // 항상 2자리 문자열로 생성
                 const opt = document.createElement('option');
-                opt.value = String(i).padStart(2, '0'); opt.textContent = i + '월';
+                opt.value = monthStr;
+                opt.textContent = i + '월';
                 if (i === now.getMonth() + 1) opt.selected = true;
                 mEl.appendChild(opt);
             }
             yEl.onchange = loadData;
             mEl.onchange = loadData;
+            console.log("[Init] initSelectors 완료");
         }
 
         function getYearKey() {
@@ -1102,6 +1380,7 @@
         }
 
         function getMonthKey() {
+            // value 자체가 "01", "02" 형식이므로 그대로 반환
             return document.getElementById('monthSelect').value;
         }
 
@@ -1146,6 +1425,7 @@
         }
 
         function loadData() {
+            console.log("[Load] loadData 시작");
             migrateOldData(); // 로드 전 마이그레이션 실행
 
             const yearKey = getYearKey();
@@ -1278,17 +1558,30 @@
 
         function deleteMonthData() {
             if (confirm('현재 선택된 월의 데이터를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
-                const yearKey = getYearKey();
-                const monthKey = getMonthKey();
+                const yearVal = document.getElementById('yearSelect').value;
+                const monthVal = document.getElementById('monthSelect').value;
+
+                // 1. 통합 연도 데이터 키 처리
+                const yearKey = `assetData_${yearVal}`;
                 let yearData = localStorage.getItem(yearKey);
                 if (yearData) {
                     yearData = JSON.parse(yearData);
-                    delete yearData.months[monthKey];
-                    localStorage.setItem(yearKey, JSON.stringify(yearData));
+                    if (yearData.months && yearData.months[monthVal]) {
+                        delete yearData.months[monthVal];
+                        localStorage.setItem(yearKey, JSON.stringify(yearData));
+                    }
                 }
+
+                // 2. 구형 개별 월 키(Legacy)까지 완벽 삭제 (마이그레이션 방지)
+                const legacyKey = `assetData_${yearVal}-${monthVal}`;
+                localStorage.removeItem(legacyKey);
+
+                // 3. 현재 상태 초기화 및 화면 갱신
                 state = getEmptyState();
                 render();
-                alert('데이터가 초기화되었습니다.');
+
+                console.log(`Deleted: ${yearKey}[${monthVal}] and ${legacyKey}`);
+                alert(`${yearVal}년 ${monthVal}월 데이터가 완전히 삭제되었습니다.\n새로운 데이터를 입력하거나 파일을 불러와 주세요.`);
             }
         }
 
@@ -1309,6 +1602,7 @@
         }
 
         function render() {
+            console.log("[Render] render 시작");
             if (!state || !state.sections) return;
             for (let s in state.sections) {
                 const tbody = document.getElementById(`tbody-${s}`);
@@ -1523,8 +1817,6 @@
         }
 
         // --- Account Management Logic ---
-        let accountsData = [];
-
         function loadAccounts() {
             const data = localStorage.getItem('assetManagerAccounts');
             accountsData = data ? JSON.parse(data) : [];
@@ -1578,11 +1870,38 @@
         }
         // --------------------------------
 
-        // --- Login & Admin Logic ---
-        let isLoggedIn = false;
+        // --- Cookie Helpers ---
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Strict";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
 
         function checkLoginState() {
+            console.log("[Login] checkLoginState 시작");
             loadAccounts();
+
+            // Check session storage or cookie
+            if (sessionStorage.getItem('assetLoginSession') === 'true' || getCookie('assetLoginSession') === 'true') {
+                loginSuccess();
+                return;
+            }
+
             if (accountsData.length === 0) {
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('loginFormContainer').style.display = 'none';
@@ -1642,7 +1961,12 @@
         }
 
         function loginSuccess() {
+            console.log("[Login] loginSuccess 시작");
             isLoggedIn = true;
+            // Set session storage and cookie for persistence
+            setCookie('assetLoginSession', 'true');
+            sessionStorage.setItem('assetLoginSession', 'true');
+
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainContainer').style.display = 'block';
             document.getElementById('loginId').value = '';
@@ -1650,6 +1974,18 @@
             document.getElementById('loginError').style.display = 'none';
             initSelectors();
             loadData();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('assetLoginSession');
+            isLoggedIn = false;
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('loginFormContainer').style.display = 'block';
+            document.getElementById('adminCreateContainer').style.display = 'none';
+            document.getElementById('loginId').value = '';
+            document.getElementById('loginPw').value = '';
+            alert('로그아웃 되었습니다.');
         }
         // ---------------------------
 
@@ -1705,108 +2041,48 @@
             a.download = `${yearKey}.json`;
             a.click();
         }
-        function uploadData(e) {
-            const file = e.target.files[0]; if (!file) return;
-            document.getElementById('loadingSpinner').style.display = 'flex';
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                try {
-                    const uploaded = JSON.parse(ev.target.result);
-
-                    // Restore encrypted accounts if they exist (Option A)
-                    if (uploaded._secureAccounts) {
-                        try {
-                            const decrypted = JSON.parse(decodeURIComponent(atob(uploaded._secureAccounts)));
-                            if (Array.isArray(decrypted)) {
-                                accountsData = decrypted;
-                                saveAccounts();
-                            }
-                        } catch (e) {
-                            console.error("Decryption failed", e);
-                        }
-                    }
-
-                    // 1. 연도별 통합 포맷인 경우 (months 속성 존재)
-                    if (uploaded.months) {
-                        const uploadedYear = String(uploaded.year);
-                        const yearKey = `assetData_${uploadedYear}`;
-                        localStorage.setItem(yearKey, JSON.stringify(uploaded));
-
-                        if (isLoggedIn) {
-                            const ySelect = document.getElementById('yearSelect');
-                            if (!Array.from(ySelect.options).some(opt => opt.value === uploadedYear)) {
-                                const opt = document.createElement('option');
-                                opt.value = uploadedYear;
-                                opt.textContent = uploadedYear + '년';
-                                ySelect.appendChild(opt);
-                            }
-                            ySelect.value = uploadedYear;
-
-                            let targetM = document.getElementById('monthSelect').value;
-                            if (!uploaded.months[targetM]) {
-                                const availableMonths = Object.keys(uploaded.months).sort().reverse();
-                                if (availableMonths.length > 0) {
-                                    document.getElementById('monthSelect').value = availableMonths[0];
-                                }
-                            }
-                            loadData();
-                        }
-                    }
-                    // 2. 기존 월별 포맷인 경우 (섹션 데이터 직접 포함)
-                    else {
-                        const newState = mergeState(uploaded);
-                        
-                        if (isLoggedIn) {
-                            let targetY = document.getElementById('yearSelect').value;
-                            let targetM = document.getElementById('monthSelect').value;
-
-                            if (uploaded.baseDate) {
-                                const d = uploaded.baseDate.split('-');
-                                targetY = d[0]; targetM = d[1];
-                            } else if (file.name.includes('_20')) {
-                                const match = file.name.match(/(\d{4})-(\d{2})/);
-                                if (match) { targetY = match[1]; targetM = match[2]; }
-                            }
-
-                            const ySelect = document.getElementById('yearSelect');
-                            if (!Array.from(ySelect.options).some(opt => opt.value === targetY)) {
-                                const opt = document.createElement('option');
-                                opt.value = targetY;
-                                opt.textContent = targetY + '년';
-                                ySelect.appendChild(opt);
-                            }
-                            ySelect.value = targetY;
-                            document.getElementById('monthSelect').value = targetM;
-
-                            state = newState;
-                            saveData(); // 추출된 연도/월에 저장
-                            render();
-                        } else {
-                            // 로그인하지 않은 상태에서 레거시 포맷 업로드 시, 현재 기준으로 생성
-                            const tempDate = new Date();
-                            const y = tempDate.getFullYear().toString();
-                            const m = String(tempDate.getMonth() + 1).padStart(2, '0');
-                            let yData = localStorage.getItem(`assetData_${y}`);
-                            yData = yData ? JSON.parse(yData) : { year: y, months: {} };
-                            yData.months[`${y}-${m}`] = newState;
-                            localStorage.setItem(`assetData_${y}`, JSON.stringify(yData));
-                        }
-                    }
-
-                    if (!isLoggedIn) {
-                        checkLoginState();
-                        alert('데이터 파일이 등록되었습니다. 관리자 정보로 로그인을 진행해 주세요.');
-                    } else {
-                        setTimeout(() => alert('데이터를 성공적으로 불러왔습니다.'), 50);
-                    }
-                } catch (err) { alert('오류: ' + err.message); }
-                finally { document.getElementById('loadingSpinner').style.display = 'none'; e.target.value = ''; }
-            };
-            reader.readAsText(file);
-        }
-        window.onload = () => { checkLoginState(); };
+        window.onload = () => {
+            console.log("[Init] Window Loaded - Logic Start");
+            try {
+                checkLoginState();
+            } catch (e) {
+                console.error("[Init] Error during checkLoginState:", e);
+            }
+        };
     </script>
     <div id="hoverLayer" class="details-hover-layer"></div>
+
+    <!-- 데이터 관리 모달 -->
+    <div class="modal-overlay" id="dataManageModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <span class="modal-title">⚙️ 데이터 관리 (백업 및 복구)</span>
+                <button class="btn-close" onclick="closeDataManageModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    현재 연도의 데이터를 관리합니다.
+                </p>
+                <div class="data-modal-btn-group">
+                    <button class="btn btn-tool" style="flex: 1; justify-content: center;" onclick="downloadData()">💾
+                        파일로 다운로드</button>
+                    <button class="btn btn-tool" style="flex: 1; justify-content: center;"
+                        onclick="copyDataToClipboard()">📋 JSON 복사하기</button>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">데이터 가져오기 (JSON 붙여넣기)</label>
+                    <textarea id="importJsonText" class="data-modal-textarea" rows="10"
+                        placeholder='여기에 JSON 데이터를 붙여넣으세요...'></textarea>
+                </div>
+            </div>
+            <div class="modal-footer"
+                style="padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn btn-tool" onclick="closeDataManageModal()">닫기</button>
+                <button class="btn btn-add" style="background: var(--accent-green);" onclick="importDataFromText()">✅
+                    가져오기 적용</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
