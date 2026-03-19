@@ -610,6 +610,85 @@
             border-top: 1px solid var(--glass-border);
         }
 
+        .btn-summary {
+            background: rgba(0, 163, 196, 0.1);
+            border: 1px solid rgba(0, 163, 196, 0.2);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-left: auto;
+        }
+
+        .btn-summary:hover {
+            background: var(--accent-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 163, 196, 0.2);
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .summary-table th {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        .summary-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.95rem;
+        }
+
+        .summary-section-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin: 1.5rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .summary-section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+
+        .summary-total-row {
+            background: #f1f5f9;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .summary-grand-total {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--section-header-bg);
+            border-radius: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 163, 196, 0.2);
+        }
+
+
 
         .hidden {
             display: none;
@@ -1003,6 +1082,7 @@
                 <div class="unified-card-title">
                     <span class="card-icon">💰</span>
                     자산 및 수입
+                    <button class="btn-summary" onclick="openSummary('assets')">요약 보기</button>
                 </div>
                 <div class="section-box">
                     <div class="section-header">
@@ -1082,6 +1162,7 @@
                 <div class="unified-card-title">
                     <span class="card-icon">💸</span>
                     부채 및 지출
+                    <button class="btn-summary" onclick="openSummary('expenses')">요약 보기</button>
                 </div>
                 <div class="section-box">
                     <div class="section-header">
@@ -1258,6 +1339,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Summary Modal -->
+    <div class="modal-overlay" id="summaryModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <span class="modal-title" id="summaryModalTitle">요약 정보</span>
+                <button class="btn-close" onclick="closeSummaryModal()">&times;</button>
+            </div>
+            <div id="summaryModalContent">
+                <!-- Content will be injected by JavaScript -->
+            </div>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                <button class="btn btn-tool" onclick="closeSummaryModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Manual Modal -->
     <div class="modal-overlay" id="manualModal">
@@ -2011,6 +2109,95 @@
 
         function closeExpenseChart() {
             document.getElementById('expenseChartModal').style.display = 'none';
+        }
+
+        function openSummary(type) {
+            const contentEl = document.getElementById('summaryModalContent');
+            const titleEl = document.getElementById('summaryModalTitle');
+            contentEl.innerHTML = '';
+
+            let totalGrand = 0;
+            const sections = type === 'assets' 
+                ? ['cash', 'non-cash', 'income', 'real-estate'] 
+                : ['debt', 'v-expense', 'f-expense'];
+            
+            const titleMap = {
+                'assets': '자산 및 수입 상세 요약',
+                'expenses': '부채 및 지출 상세 요약',
+                'cash': '현금성 자산',
+                'non-cash': '비현금성 자산',
+                'income': '수입 내역',
+                'real-estate': '부동산',
+                'debt': '부채',
+                'v-expense': '변동 지출',
+                'f-expense': '고정 지출'
+            };
+
+            titleEl.innerText = titleMap[type] || '요약 정보';
+
+            sections.forEach(s => {
+                const items = state.sections[s] || [];
+                if (items.length === 0) return;
+
+                const sectionTitle = document.createElement('h3');
+                sectionTitle.className = 'summary-section-title';
+                sectionTitle.innerText = titleMap[s] || s;
+                contentEl.appendChild(sectionTitle);
+
+                const table = document.createElement('table');
+                table.className = 'summary-table';
+                
+                let headHtml = '<thead><tr>';
+                if (s === 'debt') {
+                    headHtml += '<th>분류</th><th>내용</th><th style="text-align:right">잔여금</th>';
+                } else if (['v-expense', 'f-expense'].includes(s)) {
+                    headHtml += '<th>분류</th><th>비고</th><th style="text-align:right">금액</th>';
+                } else {
+                    headHtml += '<th>분류</th><th>내용</th><th style="text-align:right">금액</th>';
+                }
+                headHtml += '</tr></thead>';
+                table.innerHTML = headHtml;
+
+                const tbody = document.createElement('tbody');
+                let sectionSum = 0;
+
+                items.forEach(item => {
+                    const tr = document.createElement('tr');
+                    const amount = parseFloat(['debt', 'installment'].includes(s) ? item.remAmount : item.amount) || 0;
+                    sectionSum += amount;
+
+                    if (s === 'debt') {
+                        tr.innerHTML = `<td>${item.category || '-'}</td><td>${item.content || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
+                    } else if (['v-expense', 'f-expense'].includes(s)) {
+                        tr.innerHTML = `<td>${item.category || '-'}</td><td>${item.desc || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
+                    } else {
+                        tr.innerHTML = `<td>${item.category || '-'}</td><td>${item.content || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
+                    }
+                    tbody.appendChild(tr);
+                });
+
+                // Section Total Row
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'summary-total-row';
+                totalRow.innerHTML = `<td colspan="2" style="text-align:right">소계</td><td class="amount">${formatNumber(sectionSum)}</td>`;
+                tbody.appendChild(totalRow);
+
+                table.appendChild(tbody);
+                contentEl.appendChild(table);
+                totalGrand += sectionSum;
+            });
+
+            // Grand Total
+            const grandTotalDiv = document.createElement('div');
+            grandTotalDiv.className = 'summary-grand-total';
+            grandTotalDiv.innerHTML = `<span>총 합계</span><span>${formatNumber(totalGrand)}</span>`;
+            contentEl.appendChild(grandTotalDiv);
+
+            document.getElementById('summaryModal').style.display = 'flex';
+        }
+
+        function closeSummaryModal() {
+            document.getElementById('summaryModal').style.display = 'none';
         }
 
         // --- Account Management Logic ---
