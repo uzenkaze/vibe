@@ -2051,6 +2051,7 @@
         }
 
         function logout() {
+            setCookie('assetLoginSession', '', -1); // 쿠키 삭제 추가
             sessionStorage.removeItem('assetLoginSession');
             isLoggedIn = false;
             document.getElementById('mainContainer').style.display = 'none';
