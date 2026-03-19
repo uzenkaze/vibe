@@ -693,20 +693,39 @@
         }
 
         .login-card h1 {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
+            font-size: 2rem;
+            margin-bottom: 2.5rem;
             color: var(--text-primary);
+            font-weight: 800;
         }
 
         .login-input {
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .login-btn-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .login-btn {
             width: 100%;
-            padding: 0.75rem;
-            font-size: 1rem;
-            margin-top: 1rem;
+            padding: 0.875rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            justify-content: center;
+        }
+
+        .login-helper-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .login-footer-section {
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
         }
 
         /* Drag & Drop Overlays */
@@ -784,7 +803,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="login-card" id="loginFormContainer">
-            <h1>자산 관리 로그인</h1>
+            <h1>로그인</h1>
             <div id="loginError"
                 style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem;">아이디 또는 비밀번호가
                 일치하지 않습니다.</div>
@@ -802,11 +821,17 @@
                     style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; user-select: none;">아이디
                     저장</label>
             </div>
-            <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
+            <div class="login-btn-container">
+                <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
+            </div>
 
-            <button class="btn btn-tool" style="width: 100%; justify-content: center;" onclick="openDataManageModal()">
-                ⚙️ 데이터 관리
-            </button>
+            <div class="login-footer-section">
+                <p class="login-helper-text">처음이시거나 다른 기기에서 오셨나요?</p>
+                <button class="btn btn-tool" style="width: 100%; justify-content: center;"
+                    onclick="openDataManageModal()">
+                    ⚙️ 데이터 관리
+                </button>
+            </div>
         </div>
 
         <div class="login-card" id="adminCreateContainer" style="display: none;">
