@@ -1149,14 +1149,15 @@
                 <table style="font-size: 0.85rem;">
                     <thead>
                         <tr>
-                            <th style="width: 120px;">날짜</th>
-                            <th style="width: 100px;">카드</th>
-                            <th style="width: 380px;">사용처</th>
-                            <th style="width: 170px;">금액</th>
-                            <th style="width: 140px;">회차 (현재/전체)</th>
-                            <th style="width: 120px;">원금</th>
-                            <th style="width: 120px;">잔액</th>
-                            <th style="width: 110px;">종료</th>
+                            <th style="width: 120px; text-align: center;">사용일</th>
+                            <th style="width: 100px; text-align: center;">카드</th>
+                            <th style="width: 380px; text-align: center;">사용처</th>
+                            <th style="width: 170px; text-align: center;">금액</th>
+                            <th style="width: 140px; text-align: center;">회차 (현재/전체)</th>
+                            <th style="width: 120px; text-align: center;">원금</th>
+                            <th style="width: 120px; text-align: center;">잔액</th>
+                            <th style="width: 110px; text-align: center;">종료</th>
+                            <th style="width: 50px;"></th>
                         </tr>
                     </thead>
                     <tbody id="tbody-installment"></tbody>
@@ -1767,9 +1768,15 @@
                 if (!tbody) continue;
                 tbody.innerHTML = '';
                 state.sections[s].forEach(item => {
-                    if (s === 'installment') calculateInstallment(item);
                     const tr = document.createElement('tr');
                     if (s === 'installment') {
+                        calculateInstallment(item);
+                        const monthsLeft = item.totalMonths - item.currentMonth;
+                        // 1개남은 경우 배경색 강조
+                        if (monthsLeft === 1) {
+                            tr.style.backgroundColor = '#fffbeb';
+                        }
+                        
                         tr.innerHTML = `
                             <td><input type="text" style="width: 105px; text-align: center; font-size: 0.9rem;" value="${item.date}" onchange="updateValue('${s}', ${item.id}, 'date', this.value)" placeholder="YYYY-MM-DD"></td>
                             <td>
@@ -1785,7 +1792,7 @@
                                 <input type="text" class="amount" style="font-size: 1.1rem; color: var(--accent-blue); width: 100%;" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')">
                             </td>
                             <td>
-                                <div style="display:flex; align-items:center; gap:4px;">
+                                <div style="display:flex; align-items:center; justify-content: center; gap:4px;">
                                     <div class="step-container">
                                         <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'currentMonth', -1)">-</button>
                                         <input type="text" class="input-step" style="color: ${item.currentMonth === item.totalMonths ? 'var(--accent-green)' : 'var(--accent-blue)'}" value="${item.currentMonth}" readonly>
@@ -1801,9 +1808,9 @@
                             </td>
                             <td><div class="amount" style="font-weight: 700;">${formatNumber(item.monthlyPrincipal)}</div></td>
                             <td><div class="amount" style="font-weight: 700; color: var(--accent-red);">${formatNumber(item.remAmount)}</div></td>
-                            <td style="display: flex; align-items: center; gap: 8px;">
-                                <div class="text-left" style="flex: 1; font-weight: 600; color: var(--text-secondary);">${item.endDate}</div>
-                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})" style="flex-shrink: 0;">&times;</button>
+                            <td><div style="font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; text-align: center; width: 100%;">${item.endDate}</div></td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
                             </td>
                         `;
                     } else if (s === 'debt') {
