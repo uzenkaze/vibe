@@ -835,6 +835,45 @@
             background: rgba(0, 163, 196, 0.1);
             transform: scale(1.01);
         }
+
+        /* Manual Modal Tabs */
+        .manual-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .manual-tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .manual-tab-btn:hover {
+            color: var(--accent-blue);
+        }
+
+        .manual-tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .manual-tab-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 
@@ -1200,12 +1239,19 @@
 
     <!-- Manual Modal -->
     <div class="modal-overlay" id="manualModal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
                 <span class="modal-title">자산 관리 앱 사용 매뉴얼</span>
                 <button class="btn-close" onclick="closeManualModal()">&times;</button>
             </div>
-            <div style="line-height: 1.6; color: var(--text-primary);">
+
+            <!-- Tab Navigation -->
+            <div class="manual-tabs">
+                <button class="manual-tab-btn active" onclick="switchManualTab('usage', this)">자산관리앱 사용 방법</button>
+                <button class="manual-tab-btn" onclick="switchManualTab('github', this)">Github 데이터 연동</button>
+            </div>
+
+            <div id="manual-usage" class="manual-tab-content" style="line-height: 1.6; color: var(--text-primary);">
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. 기본 사용법</h3>
                 <p>상단 연도와 월을 선택하여 해당 월을 관리합니다. 데이터가 없는 달은 '신규 입력 모드'로 시작됩니다.</p>
 
@@ -1223,6 +1269,26 @@
                     <li><strong>순자산:</strong> (현금+비현금+부동산) - (부채+할부 잔액)</li>
                 </ul>
             </div>
+
+            <div id="manual-github" class="manual-tab-content" style="line-height: 1.6; color: var(--text-primary); display: none;">
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. GitHub 연동의 장점</h3>
+                <p>GitHub 연동을 통해 데이터를 클라우드에 안전하게 보관하고, 여러 기기(PC, 모바일 등)에서 동일한 데이터를 동기화하여 사용할 수 있습니다. 브라우저의 로컬 스토리지가 삭제되어도 데이터가 안전하게 유지됩니다.</p>
+
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">2. 연동 설정 방법</h3>
+                <p>오른쪽 상단의 <strong>[☁️ GitHub 연동]</strong> 버튼을 클릭하여 설정을 시작합니다.</p>
+                <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><strong>Personal Access Token:</strong> GitHub 계정에서 발급받은 토큰(fine-grained 또는 classic)을 입력합니다. (최소 repo 권한 필요)</li>
+                    <li><strong>Repository:</strong> 데이터를 저장할 클라우드 저장소 이름(ex: username/repo-name)을 입력합니다.</li>
+                    <li><strong>Path:</strong> 데이터 파일이 저장될 경로(ex: data/)를 지정합니다.</li>
+                </ol>
+
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">3. 자동 데이터 동기화</h3>
+                <p><strong>[자동 동기화]</strong> 옵션을 활성화하면 데이터를 저장할 때마다 자동으로 GitHub에 업로드(Push)되고, 앱을 새로고침하거나 월을 변경할 때 최신 데이터를 다운로드(Pull)하여 동기화합니다.</p>
+
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">4. 수동 동기화 및 관리</h3>
+                <p>설정 메뉴에서 필요할 때마다 <strong>업로드</strong> 또는 <strong>다운로드</strong> 버튼을 눌러 수동으로 데이터를 주고받을 수 있습니다. 동기화 성공 여부는 하단에 메시지로 표시됩니다.</p>
+            </div>
+
             <button class="btn btn-add" style="margin-top: 2rem; width: 100%; justify-content: center;"
                 onclick="closeManualModal()">닫기</button>
         </div>
@@ -1671,8 +1737,26 @@
             }
         }
 
-        function openManualModal() { document.getElementById('manualModal').style.display = 'flex'; }
-        function closeManualModal() { document.getElementById('manualModal').style.display = 'none'; }
+        function openManualModal() {
+            document.getElementById('manualModal').style.display = 'flex';
+            // Reset to first tab
+            const firstTabBtn = document.querySelector('.manual-tab-btn');
+            if (firstTabBtn) switchManualTab('usage', firstTabBtn);
+        }
+
+        function closeManualModal() {
+            document.getElementById('manualModal').style.display = 'none';
+        }
+
+        function switchManualTab(tabId, btn) {
+            // Update buttons
+            document.querySelectorAll('.manual-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update contents
+            document.querySelectorAll('.manual-tab-content').forEach(c => c.style.display = 'none');
+            document.getElementById(`manual-${tabId}`).style.display = 'block';
+        }
 
         function stepValue(s, id, f, delta) {
             const item = state.sections[s].find(i => i.id === id);
