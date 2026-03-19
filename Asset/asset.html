@@ -915,6 +915,7 @@
                 <button class="btn btn-teal" id="btnCarryOver" onclick="manualCarryOver()">이전 달 데이터 이월</button>
                 <button class="btn btn-danger-bg" onclick="deleteMonthData()">월 데이터 삭제</button>
                 <button class="btn btn-purple" onclick="openDataManageModal()">⚙️ 데이터 관리</button>
+                <button class="btn btn-blue" onclick="openGitHubModal()">☁️ GitHub 연동</button>
                 <button class="btn btn-orange" onclick="openAccountModal()">계정</button>
                 <button class="btn btn-gray" onclick="openManualModal()">매뉴얼</button>
                 <button class="btn" style="background: #334155; color: white;" onclick="logout()">로그아웃</button>
@@ -1471,6 +1472,12 @@
 
             localStorage.setItem(yearKey, JSON.stringify(yearData));
             console.log('Saved to Year:', yearKey, 'Month:', monthKey);
+
+            // GitHub 자동 업로드 (설정 및 자동 동기화 활성화 시)
+            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+            if (config.token && config.repo && config.autoSync !== false) {
+                syncWithGitHub('upload');
+            }
         }
 
         function migrateOldData() {
@@ -1498,12 +1505,19 @@
             }
         }
 
-        function loadData() {
+        async function loadData() {
             console.log("[Load] loadData 시작");
             migrateOldData(); // 로드 전 마이그레이션 실행
 
             const yearKey = getYearKey();
             const monthKey = getMonthKey();
+
+            // GitHub 동기화 시도 (설정된 경우)
+            const ghData = await syncWithGitHub('download');
+            if (ghData) {
+                localStorage.setItem(yearKey, JSON.stringify(ghData));
+                console.log("[GitHub] Remote data synced to local.");
+            }
 
             const yearDataStr = localStorage.getItem(yearKey);
             if (yearDataStr) {
@@ -1512,9 +1526,7 @@
                     state = mergeState(yearData.months[monthKey]);
                     console.log('Loaded Month Data:', yearKey, monthKey);
                 } else {
-                    // 해당 월 데이터가 없으면 빈 상태로 시작 (수동 이월은 버튼으로 수행)
                     state = getEmptyState();
-                    console.log('New Input Mode: No data for this month.');
                 }
             } else {
                 state = getEmptyState();
@@ -1942,6 +1954,98 @@
                 renderAccounts();
             }
         }
+        // --- GitHub Integration Logic ---
+        function openGitHubModal() {
+            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+            document.getElementById('ghToken').value = config.token || '';
+            document.getElementById('ghRepo').value = config.repo || '';
+            document.getElementById('ghBranch').value = config.branch || 'main';
+            document.getElementById('ghAutoSync').checked = config.autoSync !== false;
+            document.getElementById('gitHubModal').style.display = 'flex';
+        }
+
+        function closeGitHubModal() {
+            document.getElementById('gitHubModal').style.display = 'none';
+        }
+
+        function saveGitHubConfig() {
+            const config = {
+                token: document.getElementById('ghToken').value.trim(),
+                repo: document.getElementById('ghRepo').value.trim(),
+                branch: document.getElementById('ghBranch').value.trim(),
+                autoSync: document.getElementById('ghAutoSync').checked
+            };
+            if (config.token && !config.repo) { alert('저장소 정보를 입력해주세요.'); return; }
+            localStorage.setItem('assetGitHubConfig', JSON.stringify(config));
+            alert('GitHub 설정이 저장되었습니다.');
+            closeGitHubModal();
+        }
+
+        async function syncWithGitHub(action = 'upload') {
+            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+            if (!config.token || !config.repo) return;
+
+            const yearKey = getYearKey();
+            const filePath = `Asset/data/${yearKey}.json`;
+            const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${config.branch}`;
+            const headers = {
+                'Authorization': `token ${config.token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                if (action === 'download') {
+                    const res = await fetch(url, { headers });
+                    if (res.status === 404) { console.log("GitHub data not found."); return null; }
+                    const json = await res.json();
+                    const content = decodeURIComponent(escape(atob(json.content)));
+                    return JSON.parse(content);
+                } else {
+                    // Upload
+                    let sha = null;
+                    const checkRes = await fetch(url, { headers });
+                    if (checkRes.ok) {
+                        const checkJson = await checkRes.json();
+                        sha = checkJson.sha;
+                    }
+
+                    const yearDataStr = localStorage.getItem(yearKey);
+                    if (!yearDataStr) return;
+                    
+                    const body = {
+                        message: `Update asset data: ${yearKey}`,
+                        content: btoa(unescape(encodeURIComponent(yearDataStr))),
+                        branch: config.branch
+                    };
+                    if (sha) body.sha = sha;
+
+                    const putRes = await fetch(url, {
+                        method: 'PUT',
+                        headers,
+                        body: JSON.stringify(body)
+                    });
+                    if (putRes.ok) {
+                        console.log("GitHub Sync Success!");
+                        showSyncToast();
+                    } else {
+                        const err = await putRes.json();
+                        console.error("GitHub Sync Error:", err);
+                        alert("GitHub 동기화 실패: " + (err.message || '알 수 없는 오류'));
+                    }
+                }
+            } catch (e) {
+                console.error("GitHub Sync Exception:", e);
+            }
+        }
+
+        function showSyncToast() {
+            const toast = document.createElement('div');
+            toast.style.cssText = `position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:30px; font-size:0.85rem; z-index:10000; animation: fadeOut 3s forwards; pointer-events:none;`;
+            toast.innerText = '☁️ GitHub 동기화 완료';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
         // --------------------------------
 
         // --- Cookie Helpers ---
@@ -2155,6 +2259,47 @@
                 <button class="btn btn-tool" onclick="closeDataManageModal()">닫기</button>
                 <button class="btn btn-add" style="background: var(--accent-green);" onclick="importDataFromText()">✅
                     가져오기 적용</button>
+            </div>
+        </div>
+    </div>
+    <!-- GitHub 설정 모달 -->
+    <div class="modal-overlay" id="gitHubModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title">☁️ GitHub 저장소 설정</span>
+                <button class="btn-close" onclick="closeGitHubModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.2rem; line-height: 1.5;">
+                    GitHub API를 통해 데이터를 원격 저장소에 보관합니다.<br>
+                    <a href="https://github.com/settings/tokens" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">GitHub PAT(Personal Access Token)</a>이 필요합니다. (권한: repo)
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">GitHub 토큰 (PAT)</label>
+                        <input type="password" id="ghToken" class="data-modal-textarea" style="height: 38px; padding: 0 10px;" placeholder="ghp_xxxxxxxxxxxx">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 2;">
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">저장소 (Owner/Repo)</label>
+                            <input type="text" id="ghRepo" class="data-modal-textarea" style="height: 38px; padding: 0 10px;" placeholder="uzenkaze/vibe">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">브랜치</label>
+                            <input type="text" id="ghBranch" class="data-modal-textarea" style="height: 38px; padding: 0 10px;" value="main">
+                        </div>
+                    </div>
+                    <div style="background: rgba(59, 130, 246, 0.05); padding: 10px; border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                            <input type="checkbox" id="ghAutoSync" checked>
+                            <span>데이터 변경 시 자동 업로드</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn btn-tool" onclick="closeGitHubModal()">취소</button>
+                <button class="btn btn-add" style="background: var(--accent-blue);" onclick="saveGitHubConfig()">💾 설정 저장</button>
             </div>
         </div>
     </div>
