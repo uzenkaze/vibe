@@ -122,6 +122,19 @@
             flex-direction: column;
             gap: 1.5rem;
             height: fit-content;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .unified-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-income {
+            border-top: 5px solid #10b981;
+        }
+
+        .card-expense {
+            border-top: 5px solid #ef4444;
         }
 
         .unified-card-title {
@@ -130,10 +143,40 @@
             color: var(--text-primary);
             margin-bottom: 0.25rem;
             padding-bottom: 0.75rem;
-            border-bottom: 2px solid var(--accent-blue);
+            border-bottom: 2px solid var(--glass-border);
             display: flex;
             align-items: center;
             gap: 0.75rem;
+        }
+
+        .card-income .unified-card-title {
+            color: #059669;
+            border-bottom-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .card-expense .unified-card-title {
+            color: #dc2626;
+            border-bottom-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 0.75rem;
+        }
+
+        .card-income .card-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .card-expense .card-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
         }
 
         .section-box {
@@ -894,8 +937,11 @@
         </div>
 
         <div class="dashboard-grid">
-            <div class="unified-card">
-                <div class="unified-card-title">자산 및 수입</div>
+            <div class="unified-card card-income">
+                <div class="unified-card-title">
+                    <span class="card-icon">💰</span>
+                    자산 및 수입
+                </div>
                 <div class="section-box">
                     <div class="section-header">
                         <h2 class="section-title">현금성 자산</h2><button class="btn btn-add" onclick="addRow('cash')">+
@@ -970,8 +1016,11 @@
                 </div>
             </div>
 
-            <div class="unified-card">
-                <div class="unified-card-title">부채 및 지출</div>
+            <div class="unified-card card-expense">
+                <div class="unified-card-title">
+                    <span class="card-icon">💸</span>
+                    부채 및 지출
+                </div>
                 <div class="section-box">
                     <div class="section-header">
                         <h2 class="section-title">부채</h2><button class="btn btn-add" onclick="addRow('debt')">+
