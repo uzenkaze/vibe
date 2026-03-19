@@ -588,17 +588,6 @@
             border-top: 1px solid var(--glass-border);
         }
 
-        .net-worth-banner {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #00a3c4, #008ca8);
-            padding: 1.75rem;
-            border-radius: 1rem;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-top: 2rem;
-            color: white;
-        }
 
         .hidden {
             display: none;
@@ -1118,7 +1107,6 @@
                     <div class="section-footer">소계: <span id="total-f-expense">0</span></div>
                 </div>
             </div>
-            <div class="net-worth-banner" id="net-worth-display">순자산: 0 원</div>
         </div>
     </div>
 
@@ -1886,7 +1874,6 @@
             document.getElementById('summary-expense').innerText = formatNumber(expense);
             document.getElementById('summary-credit').innerText = formatNumber(income - expense);
             document.getElementById('summary-net').innerText = formatNumber(assets - debts);
-            document.getElementById('net-worth-display').innerText = `순자산: ${formatNumber(assets - debts)} 원`;
         }
 
         let curExp = null;
