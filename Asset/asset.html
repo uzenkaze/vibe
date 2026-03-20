@@ -754,18 +754,20 @@
 
         .pension-table {
             width: 100%;
-            border-collapse: collapse;
-            border: 1px solid #e2e8f0;
-            margin-top: 1rem;
             border-collapse: separate;
-            border-spacing: 0 10px;
+            border-spacing: 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-top: 1rem;
         }
 
         .pension-table th {
             width: 150px;
-            padding: 1rem;
+            padding: 1.25rem 1rem;
             background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
             text-align: left;
             font-weight: 700;
             color: #475569;
@@ -773,10 +775,15 @@
         }
 
         .pension-table td {
-            padding: 0.5rem 1rem;
-            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
             text-align: right;
             background: #ffffff;
+        }
+
+        .pension-table tr:last-child th,
+        .pension-table tr:last-child td {
+            border-bottom: none;
         }
 
         .pension-input {
@@ -2908,20 +2915,26 @@
     <!-- Pension Modal -->
     <div class="modal-overlay" id="pensionModal">
         <div class="modal-content" style="max-width: 600px; padding: 2rem;">
-            <div class="modal-header" style="margin-bottom: 2rem;">
-                <span class="modal-title">예상 연금 정보</span>
+            <div class="modal-header" style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">💎</span>
+                    <span class="modal-title">예상 연금 정보</span>
+                </div>
                 <button class="btn-close" onclick="closePensionModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="pension-alert-box pension-alert-orange">
+                <div class="pension-alert-box pension-alert-orange" style="text-align: center;">
                     <span id="pensionHeaderDate">2039년 03월</span>(<span id="pensionHeaderAge">65세</span>)부터<br>
                     받게될 예상 연금액은 매월 <span id="pensionHeaderAmount">0</span>원 입니다.
                 </div>
-                <div class="pension-alert-box pension-info-blue">
+                <div class="pension-alert-box pension-info-blue" style="text-align: left; line-height: 1.6; font-weight: 500; word-break: keep-all; padding: 1rem 1.5rem;">
                     ※ 위 금액은 향후 소득, 물가가 변동 없으며, 60세(현재월 기준)까지 보험료 납부를 가정하여 산정 (단, 납부 중단자는 기존 보험료 내역만을 반영)
                 </div>
 
-                <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem; font-weight: 800; color: #1e293b;">예상 노령연금액</h3>
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin: 2rem 0 1rem;">
+                    <span style="font-size: 1.2rem;">📈</span>
+                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">예상 노령연금액</h3>
+                </div>
                 
                 <table class="pension-table">
                     <tr>
