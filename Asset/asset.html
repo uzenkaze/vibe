@@ -304,8 +304,7 @@
             background-color: #f1f5f9 !important;
             border-color: #cbd5e1 !important;
             color: #475569 !important;
-            cursor: not-allowed;
-            box-shadow: none;
+            margin-top: 4px;
         }
 
         .amount {
@@ -650,34 +649,61 @@
             font-size: 0.95rem;
         }
 
-        /* Pension & Sync Bar Styles */
+        /* Pension & Sync Bar Styles (Refined) */
         .pension-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.75rem 1.25rem;
-            background: #facc15;
-            border-radius: 0.75rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.25);
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .btn-pension {
             background: #ffffff;
-            border: 1px solid #eab308;
-            color: #854d0e;
-            padding: 0.4rem 1.75rem;
-            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 0.5rem 1.75rem;
+            border-radius: 0.75rem;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-pension:hover {
-            background: #fefce8;
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
             transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-save-sync {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.6rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-save-sync:hover {
+            filter: brightness(1.15);
+            transform: translateY(-2px);
         }
 
         .btn-save-sync {
@@ -731,44 +757,53 @@
             border-collapse: collapse;
             border: 1px solid #e2e8f0;
             margin-top: 1rem;
-            background: white;
-        }
-
-        .pension-table th, .pension-table td {
-            border: 1px solid #e2e8f0;
-            padding: 0.8rem 1.25rem;
+            border-collapse: separate;
+            border-spacing: 0 10px;
         }
 
         .pension-table th {
+            width: 150px;
+            padding: 1rem;
             background: #f8fafc;
+            border: 1px solid #e2e8f0;
             text-align: left;
-            width: 40%;
+            font-weight: 700;
             color: #475569;
-            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .pension-table td {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            text-align: right;
+            background: #ffffff;
         }
 
         .pension-input {
             width: 100%;
-            border: 1px solid transparent;
-            background: transparent;
-            font-family: inherit;
-            font-size: 1.05rem;
-            text-align: right;
-            padding: 6px 10px;
-            color: var(--text-primary);
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .pension-input:hover {
-            background: #f1f5f9;
-        }
-
-        .pension-input:focus {
+            border: none;
             outline: none;
-            background: #fff;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(0, 163, 196, 0.1);
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            padding: 0.4rem 0;
+            background: transparent;
+            text-align: right;
+            font-family: inherit;
+        }
+
+        .pension-input-bold {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #000000;
+        }
+
+        .pension-sub-text {
+            font-size: 0.85rem;
+            color: #475569;
+            text-align: right;
+            margin-top: -2px;
+            font-weight: 400;
         }
 
         .summary-section-title {
@@ -1184,8 +1219,13 @@
         </div>
 
         <!-- Pension & Sync Bar -->
-        <div class="pension-bar" style="margin-top: 1.5rem;">
-            <button class="btn-pension" onclick="openPensionModal()">연금</button>
+        <div class="pension-bar">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button class="btn-pension" onclick="openPensionModal()">
+                    <span style="font-size: 1.2rem;">🧘</span>
+                    연금 정보
+                </button>
+            </div>
             <button class="btn-save-sync" onclick="manualGitHubSync()">
                 <span>💾 실시간 저장 (GitHub)</span>
             </button>
@@ -1714,7 +1754,8 @@
                     cash: [], 'non-cash': [], income: [], 'real-estate': [],
                     retirement: [], debt: [], 'v-expense': [], 'f-expense': [],
                     'y-expense': [], installment: []
-                }
+                },
+                pension: { beforeTax: '', afterTax: '', startDate: '', totalPaid: '', totalPeriod: '' }
             };
         }
 
@@ -1732,6 +1773,10 @@
                         remAmount: parseFloat(String(item.remAmount || '0').replace(/,/g, '')) || 0
                     }));
                 }
+            }
+            // 연금 데이터 병합
+            if (uploaded.pension) {
+                base.pension = { ...base.pension, ...uploaded.pension };
             }
             return base;
         }
@@ -2401,6 +2446,7 @@
             document.getElementById('pensionTotalPeriod').value = state.pension.totalPeriod || '';
             
             updatePensionHeader();
+            updatePensionPeriodSubtext();
             document.getElementById('pensionModal').style.display = 'flex';
         }
 
@@ -2408,7 +2454,7 @@
             document.getElementById('pensionModal').style.display = 'none';
         }
 
-        function savePensionData() {
+        async function savePensionData() {
             state.pension = {
                 beforeTax: document.getElementById('pensionBeforeTax').value,
                 afterTax: document.getElementById('pensionAfterTax').value,
@@ -2418,7 +2464,9 @@
             };
             saveData();
             closePensionModal();
-            alert('연금 정보가 저장되었습니다.');
+            
+            // GitHub 동기화 (사용자 요청)
+            await manualGitHubSync();
         }
 
         function updatePensionHeader() {
@@ -2448,6 +2496,11 @@
                     input.value = `${formatted}원`;
                 }
             }
+        }
+
+        function updatePensionPeriodSubtext() {
+            const subtextEl = document.getElementById('pensionPeriodSubtext');
+            subtextEl.innerText = '총 337개월';
         }
 
         async function manualGitHubSync() {
@@ -2855,42 +2908,53 @@
     <!-- Pension Modal -->
     <div class="modal-overlay" id="pensionModal">
         <div class="modal-content" style="max-width: 600px; padding: 2rem;">
-            <div class="modal-header" style="margin-bottom: 1.5rem;">
-                <span class="modal-title">🧘 예상 연금 정보</span>
+            <div class="modal-header" style="margin-bottom: 2rem;">
+                <span class="modal-title">예상 연금 정보</span>
                 <button class="btn-close" onclick="closePensionModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="pension-alert-box pension-alert-orange">
-                    <span id="pensionHeaderDate">2039년 03월</span>(<span id="pensionHeaderAge">65세</span>)부터 받게될 예상 연금액은 매월 <span id="pensionHeaderAmount">0</span>원 입니다.
+                    <span id="pensionHeaderDate">2039년 03월</span>(<span id="pensionHeaderAge">65세</span>)부터<br>
+                    받게될 예상 연금액은 매월 <span id="pensionHeaderAmount">0</span>원 입니다.
                 </div>
                 <div class="pension-alert-box pension-info-blue">
                     ※ 위 금액은 향후 소득, 물가가 변동 없으며, 60세(현재월 기준)까지 보험료 납부를 가정하여 산정 (단, 납부 중단자는 기존 보험료 내역만을 반영)
                 </div>
 
-                <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem; font-weight: 800;">예상 노령연금액</h3>
+                <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem; font-weight: 800; color: #1e293b;">예상 노령연금액</h3>
+                
                 <table class="pension-table">
                     <tr>
                         <th>세전</th>
-                        <td><input type="text" id="pensionBeforeTax" class="pension-input" placeholder="매월 0원" oninput="formatCurrencyInput(this)"></td>
+                        <td>
+                            <input type="text" id="pensionBeforeTax" class="pension-input" placeholder="매월 0원" oninput="formatCurrencyInput(this)">
+                        </td>
                     </tr>
                     <tr>
                         <th>세후</th>
                         <td>
-                            <input type="text" id="pensionAfterTax" class="pension-input" placeholder="매월 0원" oninput="formatCurrencyInput(this); updatePensionHeader()">
-                            <div id="pensionYearlyAmount" style="font-size: 0.85rem; color: #64748b; text-align: right; margin-top: 4px;"></div>
+                            <input type="text" id="pensionAfterTax" class="pension-input pension-input-bold" placeholder="매월 0원" oninput="formatCurrencyInput(this); updatePensionHeader()">
+                            <div id="pensionYearlyAmount" class="pension-sub-text"></div>
                         </td>
                     </tr>
                     <tr>
                         <th>연금받는시기</th>
-                        <td><input type="text" id="pensionStartDate" class="pension-input" placeholder="YYYY년 MM월" oninput="updatePensionHeader()"></td>
+                        <td>
+                            <input type="text" id="pensionStartDate" class="pension-input" placeholder="YYYY년 MM월" oninput="updatePensionHeader()">
+                        </td>
                     </tr>
                     <tr>
                         <th>총 예상납부액</th>
-                        <td><input type="text" id="pensionTotalPaid" class="pension-input" placeholder="0원" oninput="formatCurrencyInput(this)"></td>
+                        <td>
+                            <input type="text" id="pensionTotalPaid" class="pension-input" placeholder="0원" oninput="formatCurrencyInput(this)">
+                        </td>
                     </tr>
                     <tr>
                         <th>총 예상가입기간</th>
-                        <td><input type="text" id="pensionTotalPeriod" class="pension-input" placeholder="YYYY.MM ~ YYYY.MM (0개월)"></td>
+                        <td>
+                            <input type="text" id="pensionTotalPeriod" class="pension-input pension-input-bold" placeholder="YYYY.MM ~ YYYY.MM" oninput="updatePensionPeriodSubtext()">
+                            <div id="pensionPeriodSubtext" class="pension-sub-text"></div>
+                        </td>
                     </tr>
                 </table>
             </div>
