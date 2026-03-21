@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 
 <head>
@@ -1158,38 +1158,48 @@
             </div>
             <div class="login-btn-container">
                 <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
+                <button class="btn btn-tool login-btn" style="margin-top: 0.75rem; border: 1px solid var(--accent-blue); color: var(--accent-blue);" onclick="loginWithPasskey()">
+                    <span style="margin-right:0.5rem;">🆔</span> 지문 / 안면 인식 로그인
+                </button>
             </div>
 
             <div class="login-footer-section">
                 <p class="login-helper-text">처음이시거나 다른 기기에서 오셨나요?</p>
-                <button class="btn btn-tool" style="width: 100%; justify-content: center;"
-                    onclick="openDataManageModal()">
-                    ⚙️ 데이터 관리
-                </button>
             </div>
         </div>
 
         <div class="login-card" id="adminCreateContainer" style="display: none;">
-            <h1>초기 관리자 등록</h1>
-            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가 없습니다.
-                관리자 계정을 생성해주세요.</p>
-            <div class="login-input">
-                <input type="text" id="adminName" placeholder="사용자 이름 (ex. 본인 이름)">
+            <h1>시작하기</h1>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가 없습니다.<br>기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
+            
+            <!-- Primary Option: Data Import -->
+            <div style="margin-bottom: 2rem; padding: 1rem; background: rgba(0, 163, 196, 0.05); border: 1px dashed var(--accent-blue); border-radius: 0.5rem;">
+                <p style="font-size: 0.85rem; color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">기존 데이터 복원 (권장)</p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">JSON 파일을 이 화면에 드래그하여 드롭하세요.</p>
+                <button class="btn btn-blue" style="width: 100%; font-size: 0.85rem;" onclick="openGitHubModal()">☁️ GitHub에서 가져오기</button>
             </div>
-            <div class="login-input">
-                <input type="text" id="adminId" placeholder="아이디">
+
+            <!-- Secondary Option: New Registration (Restricted) -->
+            <div id="setupKeySection">
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">새로운 환경을 시작하시겠습니까?</p>
+                <div class="login-input">
+                    <input type="password" id="setupMasterKey" placeholder="설치 마스터 키 입력" onkeypress="if(event.key === 'Enter') verifySetupKey()">
+                </div>
+                <button class="btn btn-tool" style="width: 100%; justify-content: center;" onclick="verifySetupKey()">인증 및 등록 시작</button>
             </div>
-            <div class="login-input">
-                <input type="password" id="adminPw" placeholder="비밀번호">
-            </div>
-            <button class="btn btn-add login-btn" onclick="createAdminAccount()">관리자 등록</button>
-            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">기존 데이터 관리
-                </p>
-                <button class="btn btn-tool" style="width: 100%; justify-content: center;"
-                    onclick="openDataManageModal()">
-                    ⚙️ 데이터 관리
-                </button>
+
+            <div id="adminFieldsSection" style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1rem;">
+                <p style="font-size: 0.85rem; color: var(--accent-blue); font-weight: 700; margin-bottom: 1rem;">신규 관리자 계정 생성</p>
+                <div class="login-input">
+                    <input type="text" id="adminName" placeholder="사용자 이름 (ex. 본인 이름)">
+                </div>
+                <div class="login-input">
+                    <input type="text" id="adminId" placeholder="아이디">
+                </div>
+                <div class="login-input">
+                    <input type="password" id="adminPw" placeholder="비밀번호">
+                </div>
+                <button class="btn btn-add login-btn" onclick="createAdminAccount()">관리자 등록</button>
             </div>
         </div>
     </div>
@@ -1217,6 +1227,7 @@
 
                 <!-- Tool Group -->
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button class="btn-header-tool" onclick="registerPasskey()" title="Passkey(생체인증) 등록">🔑</button>
                     <button class="btn-header-tool" onclick="openDataManageModal()" title="데이터 관리">⚙️</button>
                     <button class="btn-header-tool" onclick="openAccountModal()" title="계정">👤</button>
                     <button class="btn-header-tool" onclick="openManualModal()" title="매뉴얼">📖</button>
@@ -1600,6 +1611,145 @@
         let accountsData = [];
         let isLoggedIn = false;
 
+        // --- Setup & Security Keys ---
+        const MASTER_SETUP_KEY = "vibe2026"; 
+
+        function verifySetupKey() {
+            const inputKey = document.getElementById('setupMasterKey').value.trim();
+            if (inputKey === MASTER_SETUP_KEY) {
+                document.getElementById('setupKeySection').style.display = 'none';
+                document.getElementById('adminFieldsSection').style.display = 'block';
+                document.getElementById('adminName').focus();
+            } else {
+                alert('잘못된 설치 마스터 키입니다. 관리자에게 문의하세요.');
+            }
+        }
+
+        // --- Security & Crypto Helpers ---
+        async function deriveKey(password, salt) {
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey(
+                "raw", enc.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"]
+            );
+            return crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                keyMaterial, { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]
+            );
+        }
+
+        async function encryptData(dataObj, password) {
+            const text = JSON.stringify(dataObj);
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveKey(password, salt);
+            const encoded = new TextEncoder().encode(text);
+            const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, encoded);
+            
+            const combined = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
+            combined.set(salt, 0);
+            combined.set(iv, salt.length);
+            combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
+            
+            return {
+                _isEncrypted: true,
+                payload: btoa(String.fromCharCode(...combined))
+            };
+        }
+
+        async function decryptData(encryptedObj, password) {
+            if (!encryptedObj || !encryptedObj._isEncrypted) return encryptedObj;
+            try {
+                const combined = new Uint8Array(atob(encryptedObj.payload).split("").map(c => c.charCodeAt(0)));
+                const salt = combined.slice(0, 16);
+                const iv = combined.slice(16, 28);
+                const ciphertext = combined.slice(28);
+                const key = await deriveKey(password, salt);
+                const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
+                return JSON.parse(new TextDecoder().decode(decrypted));
+            } catch (e) {
+                console.error("Decryption failed:", e);
+                return null;
+            }
+        }
+        // --------------------------------
+
+        async function registerPasskey() {
+            if (!window.PublicKeyCredential) return alert("이 브라우저는 생체 인증을 지원하지 않습니다.");
+            const id = prompt("인증할 아이디를 입력하세요:");
+            const pw = prompt("해당 계정의 비밀번호를 입력하세요 (패스키 등록을 위해 필요):");
+            const account = accountsData.find(a => a.userid === id && a.password === pw);
+            if (!account) return alert("계정 정보가 일치하지 않습니다.");
+
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const userID = crypto.getRandomValues(new Uint8Array(16));
+                
+                const publicKeyCredentialCreationOptions = {
+                    challenge,
+                    rp: { name: "Vibe Asset Manager", id: window.location.hostname || "localhost" },
+                    user: { id: userID, name: id, displayName: id },
+                    pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+                    authenticatorSelection: { userVerification: "required" },
+                    timeout: 60000
+                };
+
+                const credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
+                if (credential) {
+                    const passkeyData = {
+                        credentialId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+                        encryptedPw: btoa(encodeURIComponent(pw)) 
+                    };
+                    localStorage.setItem(`passkey_${id}`, JSON.stringify(passkeyData));
+                    alert("Passkey가 성공적으로 등록되었습니다. 이제 지문/안면 인식으로 로그인할 수 있습니다.");
+                }
+            } catch (e) {
+                console.error("Passkey registration failed", e);
+                alert("Passkey 등록에 실패했습니다.");
+            }
+        }
+
+        async function loginWithPasskey() {
+            if (!window.PublicKeyCredential) return alert("이 브라우저는 생체 인증을 지원하지 않습니다.");
+            
+            const savedId = localStorage.getItem('savedLoginId') || prompt("로그인할 아이디를 입력하세요:");
+            if (!savedId) return;
+            
+            const passkeyStr = localStorage.getItem(`passkey_${savedId}`);
+            if (!passkeyStr) return alert("등록된 Passkey가 없습니다. 먼저 일반 로그인 후 등록해주세요.");
+            
+            const passkeyData = JSON.parse(passkeyStr);
+
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const publicKeyCredentialRequestOptions = {
+                    challenge,
+                    allowCredentials: [{
+                        id: new Uint8Array(atob(passkeyData.credentialId).split("").map(c => c.charCodeAt(0))),
+                        type: 'public-key'
+                    }],
+                    userVerification: "required",
+                    timeout: 60000
+                };
+
+                const assertion = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
+                if (assertion) {
+                    const pw = decodeURIComponent(atob(passkeyData.encryptedPw));
+                    sessionStorage.setItem('temp_master_pw', pw);
+                    
+                    isLoggedIn = true;
+                    sessionStorage.setItem('assetLoginSession', 'true');
+                    setCookie('assetLoginSession', 'true', 1);
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = 'block';
+                    loadData();
+                    console.log("[Passkey] Login successful");
+                }
+            } catch (e) {
+                console.error("Passkey login failed", e);
+                alert("생체 인증에 실패했거나 취소되었습니다.");
+            }
+        }
+
         // --- 2. Data Management Logic ---
         function openDataManageModal() {
             document.getElementById('dataManageModal').style.display = 'flex';
@@ -1829,19 +1979,37 @@
             return document.getElementById('monthSelect').value;
         }
 
-        function saveData() {
+        async function saveData() {
             const yearKey = getYearKey();
             const monthKey = getMonthKey();
 
-            // 기존 연도 데이터 가져오기 (없으면 새로 생성)
-            let yearData = localStorage.getItem(yearKey);
-            yearData = yearData ? JSON.parse(yearData) : { year: document.getElementById('yearSelect').value, months: {} };
-
-            // 현재 월 데이터 업데이트
+            let yearDataStr = localStorage.getItem(yearKey);
+            let yearData = null;
+            
+            if (yearDataStr) {
+                try {
+                    const parsed = JSON.parse(yearDataStr);
+                    if (parsed._isEncrypted) {
+                        const password = sessionStorage.getItem('temp_master_pw');
+                        yearData = await decryptData(parsed, password);
+                    } else {
+                        yearData = parsed;
+                    }
+                } catch(e) { console.error("SaveData: load error", e); }
+            }
+            
+            yearData = yearData || { year: document.getElementById('yearSelect').value, months: {} };
             yearData.months[monthKey] = state;
 
-            localStorage.setItem(yearKey, JSON.stringify(yearData));
-            console.log('Saved to Year:', yearKey, 'Month:', monthKey);
+            const finalPassword = sessionStorage.getItem('temp_master_pw');
+            if (finalPassword) {
+                const encrypted = await encryptData(yearData, finalPassword);
+                localStorage.setItem(yearKey, JSON.stringify(encrypted));
+            } else {
+                localStorage.setItem(yearKey, JSON.stringify(yearData));
+            }
+            
+            console.log('Saved to Year:', yearKey, 'Month:', monthKey, finalPassword ? '(Encrypted)' : '(Plain)');
         }
 
         function migrateOldData() {
@@ -1871,25 +2039,39 @@
 
         async function loadData() {
             console.log("[Load] loadData 시작");
-            migrateOldData(); // 로드 전 마이그레이션 실행
+            migrateOldData(); 
 
             const yearKey = getYearKey();
             const monthKey = getMonthKey();
 
-            // GitHub 동기화 시도 (설정된 경우)
-            const ghData = await syncWithGitHub('download');
-            if (ghData) {
-                localStorage.setItem(yearKey, JSON.stringify(ghData));
+            const ghDataEnc = await syncWithGitHub('download');
+            if (ghDataEnc) {
+                localStorage.setItem(yearKey, JSON.stringify(ghDataEnc));
                 console.log("[GitHub] Remote data synced to local.");
             }
 
             const yearDataStr = localStorage.getItem(yearKey);
             if (yearDataStr) {
-                const yearData = JSON.parse(yearDataStr);
-                if (yearData.months && yearData.months[monthKey]) {
-                    state = mergeState(yearData.months[monthKey]);
-                    console.log('Loaded Month Data:', yearKey, monthKey);
-                } else {
+                try {
+                    let yearData = JSON.parse(yearDataStr);
+                    if (yearData._isEncrypted) {
+                        const password = sessionStorage.getItem('temp_master_pw');
+                        yearData = await decryptData(yearData, password);
+                        if (!yearData) {
+                            alert("데이터 복호화에 실패했습니다. 올바른 비밀번호인지 확인해주세요.");
+                            logout();
+                            return;
+                        }
+                    }
+                    
+                    if (yearData.months && yearData.months[monthKey]) {
+                        state = mergeState(yearData.months[monthKey]);
+                        console.log('Loaded Month Data:', yearKey, monthKey);
+                    } else {
+                        state = getEmptyState();
+                    }
+                } catch (e) {
+                    console.error("LoadData failed", e);
                     state = getEmptyState();
                 }
             } else {
@@ -1898,7 +2080,7 @@
             render();
         }
 
-        function addRow(s) {
+        async function addRow(s) {
             const item = { id: Date.now() + Math.random(), category: '', content: '', amount: 0, desc: '', remAmount: 0, rate: 0, details: [] };
             if (s === 'installment') {
                 const now = new Date();
@@ -1908,13 +2090,13 @@
             }
             state.sections[s].push(item);
             if (s === 'installment') {
-                updateValue(s, item.id, 'date', item.date);
+                await updateValue(s, item.id, 'date', item.date);
             } else {
-                saveData(); render();
+                await saveData(); render();
             }
         }
 
-        function manualCarryOver() {
+        async function manualCarryOver() {
             const yearKey = getYearKey();
             const monthKey = getMonthKey();
             const yearDataStr = localStorage.getItem(yearKey);
@@ -1940,7 +2122,7 @@
             if (prevData) {
                 if (confirm(`${prevMonth}월 데이터를 현재 월(${monthKey}월)로 이월하시겠습니까?\n(기존에 입력된 정보가 있다면 덮어씌워집니다.)`)) {
                     state = mergeState(prevData);
-                    saveData();
+                    await saveData();
                     render();
                     alert(`${prevMonth}월 데이터를 이월했습니다.`);
                 }
@@ -1949,7 +2131,7 @@
             }
         }
 
-        function deleteRow(s, id) {
+        async function deleteRow(s, id) {
             const item = state.sections[s].find(i => i.id === id);
             if (item) {
                 const hasData = (item.amount > 0) || (item.remAmount > 0) || (item.category && item.category.trim() !== '') ||
@@ -1961,7 +2143,7 @@
                 }
             }
             state.sections[s] = state.sections[s].filter(i => i.id !== id);
-            saveData(); render();
+            await saveData(); render();
         }
 
         function calculateInstallment(item) {
@@ -1982,7 +2164,7 @@
             return item;
         }
 
-        function updateValue(s, id, f, v) {
+        async function updateValue(s, id, f, v) {
             const item = state.sections[s].find(i => i.id === id);
             if (!item) return;
             if (['amount', 'remAmount', 'totalMonths', 'currentMonth'].includes(f)) {
@@ -1992,7 +2174,7 @@
             if (s === 'installment') {
                 calculateInstallment(item);
             }
-            saveData(); updateCalculations();
+            await saveData(); updateCalculations();
             if (s === 'installment') render();
         }
 
@@ -2216,12 +2398,12 @@
                 tbody.appendChild(tr);
             });
         }
-        function saveExpenseDetailModal() {
+        async function saveExpenseDetailModal() {
             const item = state.sections[curExp.s].find(i => i.id === curExp.id);
             if (item) {
                 item.details = curExp.details;
                 item.amount = item.details.reduce((sum, d) => sum + d.amount, 0);
-                saveData(); closeExpenseDetailModal(); render();
+                await saveData(); closeExpenseDetailModal(); render();
             }
         }
         function closeExpenseDetailModal() { document.getElementById('expenseDetailModal').style.display = 'none'; curExp = null; }
@@ -2572,7 +2754,7 @@
                 totalPaid: document.getElementById('pensionTotalPaid').value,
                 totalPeriod: document.getElementById('pensionTotalPeriod').value
             };
-            saveData();
+            await saveData();
             closePensionModal();
             
             // GitHub 동기화 (사용자 요청)
@@ -2628,7 +2810,7 @@
                 btn.disabled = true;
                 
                 // 1. 현재 화면 데이터 저장
-                saveData(); 
+                await saveData(); 
                 
                 // 2. GitHub 업로드
                 const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
@@ -2782,10 +2964,14 @@
             console.log("[Login] checkLoginState 시작");
             loadAccounts();
 
-            // Check session storage or cookie
-            if (sessionStorage.getItem('assetLoginSession') === 'true' || getCookie('assetLoginSession') === 'true') {
+            // Check session storage (must have temp_master_pw for encrypted data)
+            if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
                 loginSuccess();
                 return;
+            } else {
+                // If session is invalid or password missing, clear everything and force login
+                sessionStorage.removeItem('assetLoginSession');
+                setCookie('assetLoginSession', '', -1);
             }
 
             if (accountsData.length === 0) {
@@ -2823,17 +3009,24 @@
 
             accountsData = [{ site: name, userid: id, password: pw, remarks: '최초 관리자' }];
             saveAccounts();
+            
+            // 세션용 임시 비밀번호 저장
+            sessionStorage.setItem('temp_master_pw', pw);
+            
             alert('관리자 계정이 생성되었습니다. 해당 계정으로 로그인합니다.');
             loginSuccess();
         }
 
-        function attemptLogin() {
+        async function attemptLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
 
             const user = accountsData.find(a => a.userid === id && a.password === pw);
 
             if (user) {
+                // 세션용 임시 비밀번호 저장 (메모리상에만 존재)
+                sessionStorage.setItem('temp_master_pw', pw);
+                
                 // 아이디 저장 처리
                 if (document.getElementById('rememberId').checked) {
                     localStorage.setItem('savedLoginId', id);
@@ -2863,8 +3056,9 @@
         }
 
         function logout() {
-            setCookie('assetLoginSession', '', -1); // 쿠키 삭제 추가
+            setCookie('assetLoginSession', '', -1); 
             sessionStorage.removeItem('assetLoginSession');
+            sessionStorage.removeItem('temp_master_pw'); // 비밀번호 흔적 제거
             isLoggedIn = false;
             document.getElementById('mainContainer').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'flex';
