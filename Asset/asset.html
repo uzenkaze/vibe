@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Management</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/png" href="favicon.png?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -2858,7 +2858,7 @@
             }
         }
 
-        function saveGitHubConfig() {
+        async function saveGitHubConfig() {
             const config = {
                 token: document.getElementById('ghToken').value.trim(),
                 repo: document.getElementById('ghRepo').value.trim(),
@@ -2867,7 +2867,41 @@
             };
             if (config.token && !config.repo) { alert('저장소 정보를 입력해주세요.'); return; }
             localStorage.setItem('assetGitHubConfig', JSON.stringify(config));
-            alert('GitHub 설정이 저장되었습니다.');
+            
+            // 설정 저장 즉시 데이터 동기화 시도
+            try {
+                const yearKey = getYearKey();
+                const downloadedData = await syncWithGitHub('download');
+                if (downloadedData) {
+                    localStorage.setItem(yearKey, JSON.stringify(downloadedData));
+                    
+                    // 만약 현재 로그인 전이라면 (초기 설정 중일 때)
+                    if (!isLoggedIn) {
+                        const pw = prompt("가져온 데이터를 해독하기 위한 마스터 비밀번호를 입력해주세요:");
+                        if (pw) {
+                            // 복호화 테스트
+                            const decrypted = await decryptData(downloadedData, pw);
+                            if (decrypted) {
+                                sessionStorage.setItem('temp_master_pw', pw);
+                                alert('GitHub 설정이 저장되었으며, 데이터를 성공적으로 가져왔습니다.');
+                                loginSuccess(); // 이제 메인으로 진입
+                            } else {
+                                alert('비밀번호가 틀려 데이터를 해독할 수 없습니다. 다시 시도해주세요.');
+                            }
+                        }
+                    } else {
+                        // 이미 로그인 된 상태라면 그냥 로드
+                        await loadData(); 
+                        alert('GitHub 설정이 저장되었으며, 최신 데이터를 성공적으로 가져왔습니다.');
+                    }
+                } else {
+                    alert('GitHub 설정이 저장되었습니다. (가져올 데이터가 없음)');
+                }
+            } catch (e) {
+                console.error("Initial sync after config save failed:", e);
+                alert('GitHub 설정이 저장되었습니다. (데이터 로드 중 오류 발생)');
+            }
+            
             closeGitHubModal();
         }
 
