@@ -2002,6 +2002,10 @@
             yearData.months[monthKey] = state;
 
             const finalPassword = sessionStorage.getItem('temp_master_pw');
+            
+            // 하이브리드 백업: 계정 정보를 데이터 객체에 포함
+            yearData._backupAccounts = accountsData;
+
             if (finalPassword) {
                 const encrypted = await encryptData(yearData, finalPassword);
                 localStorage.setItem(yearKey, JSON.stringify(encrypted));
@@ -2061,6 +2065,13 @@
                             alert("데이터 복호화에 실패했습니다. 올바른 비밀번호인지 확인해주세요.");
                             logout();
                             return;
+                        }
+                        
+                        // 하이브리드 백업에서 계정 정보 복원
+                        if (yearData._backupAccounts && yearData._backupAccounts.length > 0) {
+                            accountsData = yearData._backupAccounts;
+                            saveAccounts(); // 로컬 기기 동기화
+                            console.log("[Migration] Remote accounts restored to local device.");
                         }
                     }
                     
@@ -2879,14 +2890,16 @@
                     if (!isLoggedIn) {
                         const pw = prompt("가져온 데이터를 해독하기 위한 마스터 비밀번호를 입력해주세요:");
                         if (pw) {
-                            // 복호화 테스트
-                            const decrypted = await decryptData(downloadedData, pw);
-                            if (decrypted) {
-                                sessionStorage.setItem('temp_master_pw', pw);
+                            // 복호화 테스트 및 계정 복구를 포함하는 loadData 호출
+                            sessionStorage.setItem('temp_master_pw', pw);
+                            await loadData(); 
+                            
+                            // loadData 내부에서 accountsData가 복구되었다면 로그인 성공 처리
+                            if (accountsData.length > 0) {
                                 alert('GitHub 설정이 저장되었으며, 데이터를 성공적으로 가져왔습니다.');
-                                loginSuccess(); // 이제 메인으로 진입
+                                loginSuccess(); 
                             } else {
-                                alert('비밀번호가 틀려 데이터를 해독할 수 없습니다. 다시 시도해주세요.');
+                                alert('데이터는 가져왔으나 등록된 계정 정보를 찾을 수 없습니다. 신규 등록을 진행해주세요.');
                             }
                         }
                     } else {
@@ -2997,6 +3010,40 @@
         function checkLoginState() {
             console.log("[Login] checkLoginState 시작");
             loadAccounts();
+
+            // 초기 관리자 등록 화면을 위한 드롭 리스너 추가 (최초 1회)
+            const adminContainer = document.getElementById('adminCreateContainer');
+            if (adminContainer && !adminContainer.dataset.dropBound) {
+                adminContainer.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });
+                adminContainer.addEventListener('drop', async (e) => {
+                    e.preventDefault(); e.stopPropagation();
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.name.endsWith('.json')) {
+                        const reader = new FileReader();
+                        reader.onload = async (event) => {
+                            try {
+                                const data = JSON.parse(event.target.result);
+                                const yearKey = getYearKey();
+                                localStorage.setItem(yearKey, JSON.stringify(data));
+                                
+                                const pw = prompt("파일 데이터를 해독하기 위한 마스터 비밀번호를 입력해주세요:");
+                                if (pw) {
+                                    sessionStorage.setItem('temp_master_pw', pw);
+                                    await loadData();
+                                    if (accountsData.length > 0) {
+                                        alert("계정 정보와 데이터를 성공적으로 복구했습니다.");
+                                        loginSuccess();
+                                    } else {
+                                        alert("데이터는 복구되었으나 계정 정보를 찾을 수 없습니다. 신규 등록을 진행해주세요.");
+                                    }
+                                }
+                            } catch (err) { alert("파일 처리 중 오류가 발생했습니다."); }
+                        };
+                        reader.readAsText(file);
+                    }
+                });
+                adminContainer.dataset.dropBound = "true";
+            }
 
             // Check session storage (must have temp_master_pw for encrypted data)
             if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
