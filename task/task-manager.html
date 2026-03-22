@@ -838,19 +838,101 @@
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <header class="header">
-            <h1>Personal work status</h1>
-            <div class="file-status-bar" style="display: flex; gap: 0.5rem;">
-                <button class="btn-file" onclick="openDataModal()">⚙️ 데이터 관리</button>
-                <button class="btn-file" onclick="openManualModal()">📖 사용 방법</button>
-            </div>
-        </header>
+    <div class="store-header">
+        <h1>Task Store</h1>
+        <p style="font-size: 1.25rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 500;">
+            The best way to manage your project tasks, right here.
+        </p>
+    </div>
 
-        <!-- 대시보드 레이아웃 -->
-        <div class="dashboard-layout">
-            <div style="display: flex; flex-direction: column;">
+    <div class="category-nav-wrapper">
+        <div class="category-nav">
+            <div class="category-item active" onclick="setCategory('all')">
+                <div class="category-icon">📂</div>
+                <div class="category-label">모든 일감</div>
+            </div>
+            <div class="category-item" onclick="setCategory('todo')">
+                <div class="category-icon">📝</div>
+                <div class="category-label">진행전</div>
+            </div>
+            <div class="category-item" onclick="setCategory('progress')">
+                <div class="category-icon">⚙️</div>
+                <div class="category-label">진행중</div>
+            </div>
+            <div class="category-item" onclick="setCategory('done')">
+                <div class="category-icon">✅</div>
+                <div class="category-label">작업완료</div>
+            </div>
+            <div class="category-item" onclick="openDataModal()">
+                <div class="category-icon">⚙️</div>
+                <div class="category-label">데이터 관리</div>
+            </div>
+            <div class="category-item" onclick="openManualModal()">
+                <div class="category-icon">📖</div>
+                <div class="category-label">사용방법</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="hero-section-title">The latest. <span style="color: var(--text-muted);">Take a look at what's new.</span></h2>
+        
+        <div class="hero-grid">
+            <!-- All Tasks Card -->
+            <div class="hero-card light" onclick="setCategory('all')">
+                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_all_tasks_1774223743183.png" class="hero-card-img" alt="All Tasks">
+                <div class="hero-card-content">
+                    <div class="hero-card-tag">OVERALL</div>
+                    <div class="hero-card-title">All Tasks.</div>
+                    <div class="hero-card-desc">Manage everything in one place.</div>
+                </div>
+                <div class="hero-card-footer">
+                    <div class="hero-card-val" id="stat-total">0</div>
+                </div>
+            </div>
+            
+            <!-- Todo Card -->
+            <div class="hero-card light" onclick="setCategory('todo')">
+                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_todo_tasks_1774223759710.png" class="hero-card-img" alt="Todo">
+                <div class="hero-card-content">
+                    <div class="hero-card-tag">NEW</div>
+                    <div class="hero-card-title">To-Do List.</div>
+                    <div class="hero-card-desc">Prepare for your next big thing.</div>
+                </div>
+                <div class="hero-card-footer">
+                    <div class="hero-card-val" id="stat-todo">0</div>
+                </div>
+            </div>
+            
+            <!-- Progress Card -->
+            <div class="hero-card dark" onclick="setCategory('progress')">
+                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_progress_tasks_1774223774596.png" class="hero-card-img" alt="Progress">
+                <div class="hero-card-content">
+                    <div class="hero-card-title">In Progress.</div>
+                    <div class="hero-card-desc">Power through your development.</div>
+                </div>
+                <div class="hero-card-footer">
+                    <div class="hero-card-val" id="stat-progress">0</div>
+                </div>
+            </div>
+            
+            <!-- Done Card -->
+            <div class="hero-card light" onclick="setCategory('done')">
+                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_done_tasks_1774223794322.png" class="hero-card-img" alt="Done">
+                <div class="hero-card-content">
+                    <div class="hero-card-tag">COMPLETED</div>
+                    <div class="hero-card-title">Done Tasks.</div>
+                    <div class="hero-card-desc">Celebrate your achievements.</div>
+                </div>
+                <div class="hero-card-footer">
+                    <div class="hero-card-val" id="stat-done">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Section -->
+        <div class="dashboard-grid">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                 <div class="weather-widget-wrap" id="weather-widget" onclick="openMapModal()">
                     <div class="weather-widget-header">
                         <h3>🌤 오늘의 날씨 (서울)</h3>
@@ -867,20 +949,21 @@
                     </div>
                 </div>
 
+                <div class="recent-task-card">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🕐 최근 작업사항</div>
+                    <div id="recent-task-text" style="flex: 1; font-size: 1rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0.5rem 0;">등록된 일감이 없습니다.</div>
+                    <button class="btn-outline" onclick="copyRecentTask()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">복사</button>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                 <div class="dashboard-calendar">
                     <div class="calendar-header">
                         <button class="btn-icon" onclick="changeMonth(-1)">&#60;</button>
                         <h3 id="calendar-month-title"></h3>
                         <button class="btn-icon" onclick="changeMonth(1)">&#62;</button>
-                        <button class="btn-icon" onclick="toggleCalendar()" style="margin-left:auto;">
-                            <svg id="cal-toggle-icon" width="14" height="14" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
                     </div>
-                    <div id="calendar-body" style="display:none;">
+                    <div id="calendar-body">
                         <div class="calendar-grid-header">
                             <div class="cal-day-header" style="color:var(--danger);">일</div>
                             <div class="cal-day-header">월</div>
@@ -893,58 +976,11 @@
                         <div class="calendar-grid-cells" id="calendar-grid-cells"></div>
                     </div>
                 </div>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <h3>전체 일감</h3>
-                        <p class="total-val" id="stat-total">0</p>
-                    </div>
-                    <div class="stat-card w-todo">
-                        <h3>진행전 대기</h3>
-                        <p class="todo-val" id="stat-todo">0</p>
-                    </div>
-                    <div class="stat-card w-progress">
-                        <h3>개발 진행중</h3>
-                        <p class="progress-val" id="stat-progress">0</p>
-                    </div>
-                    <div class="stat-card w-done">
-                        <h3>완료</h3>
-                        <p class="done-val" id="stat-done">0</p>
-                    </div>
-                </div>
-                <div class="recent-task-card">
-                    <div
-                        style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                        🕐 최근 작업사항</div>
-                    <div id="recent-task-text"
-                        style="flex: 1; font-size: 0.88rem; font-weight: 600; color: #93c5fd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 0.75rem;">
-                        등록된 일감이 없습니다.</div>
-                    <button class="btn-icon" onclick="copyRecentTask()" title="복사"
-                        style="width: 32px; height: 32px; flex-shrink: 0;">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                    </button>
-                </div>
 
                 <div class="news-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; gap: 0.5rem;">
-                        <div style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; white-space: nowrap;">📰 뉴스 검색</div>
-                        <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; justify-content: flex-end;">
-                            <input type="text" id="news-keyword" class="form-control" placeholder="검색어 입력..." 
-                                value="핫뉴스"
-                                onkeypress="if(event.key === 'Enter') fetchNews()"
-                                style="font-size: 0.7rem; padding: 0.2rem 0.6rem; height: 24px; width: 100px; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text-primary); transition: width 0.3s ease;"
-                                onfocus="this.style.width='150px'" onblur="this.style.width='100px'">
-                            <button class="btn-icon" onclick="fetchNews()" title="검색/새로고침" style="width: 24px; height: 24px;">
-                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </button>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">📰 뉴스 검색</div>
+                        <button class="btn-icon" onclick="fetchNews()">🔄</button>
                     </div>
                     <div id="news-list-container" class="news-list-mini">
                         <div class="loading-news">뉴스를 불러오는 중...</div>
@@ -1253,6 +1289,7 @@
         let tasks = [];
         let visibleCount = 5;
         let currentSearchQuery = '';
+        let currentCategory = 'all'; // Apple Store Style Category
         let currentCalendarDate = new Date();
 
         // 초기 로드
@@ -1728,13 +1765,32 @@
         // =========================================
         // 렌더링 및 UI 로직
         // =========================================
+        function setCategory(type) {
+            currentCategory = type;
+            visibleCount = 5; // 필터 변경 시 더보기 초기화
+
+            // 네비게이션 UI 활성화 상태 변경
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${type}'`)) {
+                    item.classList.add('active');
+                }
+            });
+
+            render();
+        }
+
         function render() {
             const list = document.getElementById('task-list');
-            const filtered = tasks.filter(t =>
-                t.title.includes(currentSearchQuery) ||
-                (t.work_no && t.work_no.includes(currentSearchQuery)) ||
-                (t.task_no && t.task_no.includes(currentSearchQuery))
-            );
+            const filtered = tasks.filter(t => {
+                const matchesSearch = t.title.includes(currentSearchQuery) ||
+                    (t.work_no && t.work_no.includes(currentSearchQuery)) ||
+                    (t.task_no && t.task_no.includes(currentSearchQuery));
+                
+                const matchesCategory = currentCategory === 'all' || t.status === currentCategory;
+                
+                return matchesSearch && matchesCategory;
+            });
 
             list.innerHTML = '';
             const toShow = filtered.slice(0, visibleCount);
@@ -1891,10 +1947,15 @@
         }
 
         function updateStats() {
-            document.getElementById('stat-total').innerText = tasks.length;
-            document.getElementById('stat-todo').innerText = tasks.filter(t => t.status === 'todo').length;
-            document.getElementById('stat-progress').innerText = tasks.filter(t => t.status === 'progress').length;
-            document.getElementById('stat-done').innerText = tasks.filter(t => t.status === 'done').length;
+            const total = tasks.length;
+            const todo = tasks.filter(t => t.status === 'todo').length;
+            const progress = tasks.filter(t => t.status === 'progress').length;
+            const done = tasks.filter(t => t.status === 'done').length;
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-todo').innerText = todo;
+            document.getElementById('stat-progress').innerText = progress;
+            document.getElementById('stat-done').innerText = done;
         }
 
         function confirmSearch() {
