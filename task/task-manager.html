@@ -8,62 +8,82 @@
     <!-- Leaflet CSS & JS for Weather Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* 프리미엄 다크 테마 변수 설정 */
+        /* Apple-style Premium Light Theme variables */
         :root {
-            --bg-base: #0f172a;
-            --bg-surface: #1e293b;
-            --bg-surface-hover: #334155;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
+            --bg-base: #f5f5f7;
+            --bg-surface: rgba(255, 255, 255, 0.82);
+            --bg-surface-hover: rgba(245, 245, 247, 0.9);
+            --primary: #0071e3;
+            --primary-hover: #0077ed;
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --border: rgba(0, 0, 0, 0.08);
+            --danger: #ff3b30;
+            --success: #34c759;
+            --warning: #ff9500;
+            --glass-bg: rgba(255, 255, 255, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-base: #000000;
+                --bg-surface: rgba(28, 28, 30, 0.82);
+                --bg-surface-hover: rgba(44, 44, 46, 0.9);
+                --primary: #0071e3;
+                --primary-hover: #0077ed;
+                --text-main: #f5f5f7;
+                --text-muted: #86868b;
+                --border: rgba(255, 255, 255, 0.12);
+                --danger: #ff453a;
+                --success: #32d74b;
+                --warning: #ff9f0a;
+                --glass-bg: rgba(28, 28, 30, 0.72);
+                --glass-border: rgba(255, 255, 255, 0.1);
+            }
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Custom Scrollbar */
+        /* Custom Scrollbar - Minimal */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg-base);
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            border: 2px solid var(--bg-base);
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-
-        /* For Firefox */
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.1) var(--bg-base);
+        @media (prefers-color-scheme: dark) {
+            ::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+            }
         }
 
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 2rem;
-            line-height: 1.5;
+            padding: 2.5rem 1.5rem;
+            line-height: 1.47059;
+            letter-spacing: -0.011em;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
@@ -71,29 +91,27 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         h1 {
-            font-size: 2.25rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.025em;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.022em;
+            color: var(--text-main);
         }
 
         /* Dashboard Layout */
         .dashboard-layout {
             display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-            min-height: 400px;
+            grid-template-columns: 340px 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
             .dashboard-layout {
                 grid-template-columns: 1fr;
             }
@@ -101,171 +119,141 @@
 
         .dashboard-calendar {
             background: var(--bg-surface);
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 0.6rem 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0;
-        }
-
-        #cal-toggle-icon {
-            transition: transform 0.25s ease;
+            margin-bottom: 1rem;
         }
 
         #calendar-body {
-            margin-top: 0.75rem;
+            margin-top: 0.5rem;
         }
 
         .calendar-header h3 {
             font-size: 1.1rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text-main);
         }
 
         .calendar-grid-header {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 2px;
             margin-bottom: 0.5rem;
         }
 
         .calendar-grid-cells {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            flex: 1;
+            gap: 2px;
         }
 
         .cal-day-header {
             text-align: center;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 500;
             color: var(--text-muted);
+            padding: 0.5rem 0;
         }
 
         .cal-cell {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 0.25rem;
-            padding: 0.2rem;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            padding: 0.25rem;
             display: flex;
             flex-direction: column;
-            border: 1px solid transparent;
-            font-size: 0.7rem;
-            min-height: 50px;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .cal-cell:hover {
+            background: var(--bg-surface-hover);
         }
 
         .cal-cell.today {
-            border-color: var(--primary);
-            background: rgba(59, 130, 246, 0.1);
+            background: var(--primary);
+            color: white;
+        }
+
+        .cal-cell.today .cal-date-num {
+            color: white;
         }
 
         .cal-cell.other-month {
+            color: var(--text-muted);
             opacity: 0.3;
         }
 
         .cal-date-num {
-            text-align: right;
-            margin-bottom: 2px;
-            color: var(--text-muted);
-        }
-
-        .cal-cell.today .cal-date-num {
-            color: var(--primary);
-            font-weight: bold;
+            font-weight: 500;
         }
 
         .cal-events {
-            flex: 1;
-            overflow-y: auto;
+            margin-top: 2px;
             display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            gap: 4px;
-            padding-top: 2px;
-        }
-
-        .cal-events::-webkit-scrollbar {
-            width: 2px;
+            gap: 2px;
         }
 
         .cal-event-dot {
-            width: 8px;
-            height: 8px;
+            width: 4px;
+            height: 4px;
             border-radius: 50%;
-            background-color: var(--danger);
-            cursor: pointer;
-            transition: transform 0.2s;
+            background-color: var(--primary);
         }
 
-        .cal-event-dot:hover {
-            transform: scale(1.3);
+        .cal-cell.today .cal-event-dot {
+            background-color: white;
         }
 
-        /* Dashboard Styles */
+        /* Dashboard Stats */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            align-content: start;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.25rem;
         }
 
         .stat-card {
             background: var(--bg-surface);
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-        }
-
-        .stat-card.w-todo::before {
-            background: var(--text-muted);
-        }
-
-        .stat-card.w-progress::before {
-            background: var(--warning);
-        }
-
-        .stat-card.w-done::before {
-            background: var(--success);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
         }
 
         .stat-card h3 {
-            font-size: 0.875rem;
+            font-size: 0.85rem;
+            font-weight: 500;
             color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            margin-bottom: 0.75rem;
         }
 
         .stat-card p {
             font-size: 2rem;
             font-weight: 700;
-            line-height: 1;
+            letter-spacing: -0.01em;
         }
 
         .stat-card p.total-val {
@@ -284,469 +272,207 @@
             color: var(--success);
         }
 
-        /* 날씨 위젯 - 3일 예보 */
+        /* Weather Widget */
         .weather-widget-wrap {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(167, 139, 250, 0.08));
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
-            margin-bottom: 1rem;
+            background: var(--bg-surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.25rem;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
         }
 
         .weather-widget-wrap:hover {
-            transform: scale(1.01);
-            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.2);
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
         }
 
         .weather-widget-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
         }
 
         .weather-widget-header h3 {
             font-size: 0.8rem;
             color: var(--text-muted);
             font-weight: 600;
-            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .weather-widget-header .weather-curr-temp {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
+        .weather-curr-temp {
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
-        .weather-widget-header .weather-curr-temp svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* 3일 예보 그리드 */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
+            padding: 0.75rem;
+            gap: 0.5rem;
         }
 
         .forecast-day {
-            padding: 0.65rem 0.5rem;
+            padding: 0.75rem 0.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.3rem;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            transition: background 0.15s;
-        }
-
-        .forecast-day:last-child {
-            border-right: none;
+            gap: 0.4rem;
+            border-radius: 12px;
+            transition: background 0.2s;
         }
 
         .forecast-day:hover {
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--bg-surface-hover);
         }
 
         .forecast-day-label {
             font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .forecast-day-label.today-label {
-            color: var(--primary);
-        }
-
-        .forecast-day-icon {
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .forecast-day-icon svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .forecast-ampm {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.15rem;
-            width: 100%;
-        }
-
-        .forecast-ampm-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 0 0.15rem;
-        }
-
-        .forecast-am-label,
-        .forecast-pm-label {
-            font-size: 0.62rem;
             font-weight: 600;
             color: var(--text-muted);
         }
 
-        .forecast-am-temp {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #93c5fd;
+        .forecast-am-temp { color: #0071e3; font-weight: 600; font-size: 0.85rem; }
+        .forecast-pm-temp { color: #ff3b30; font-weight: 600; font-size: 0.85rem; }
+
+        /* Recent Task & News Card */
+        .recent-task-card, .news-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
         }
 
-        .forecast-pm-temp {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #fca5a5;
+        .news-item-mini {
+            padding: 0.75rem;
+            border-radius: 12px;
+            background: transparent;
+            transition: all 0.2s;
+            border: 1px solid transparent;
         }
 
-        .forecast-desc {
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.2;
+        .news-item-mini:hover {
+            background: var(--bg-surface-hover);
+            border-color: var(--border);
+            transform: translateX(4px);
         }
-
-        .weather-icon {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-        }
-
-        .weather-icon svg {
-            width: 28px;
-            height: 28px;
-            color: var(--primary);
-        }
-
-        /* 고급 날씨 대시보드 모달 */
-        .weather-dashboard {
-            background-color: #bbc1c6;
-            padding: 1rem;
-            border-radius: 8px;
-            color: #111827;
-            text-shadow: none;
-        }
-
-        .weather-panel-card {
-            background-color: #cfd4d8;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .weather-panel-header {
-            padding: 0.75rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #4b5563;
-        }
-
-        .weather-panel-body {
-            padding: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .weather-main-col {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .weather-top-row {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .w-icon-large svg {
-            width: 80px;
-            height: 80px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-        }
-
-        .w-temp-box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .w-temp-large {
-            font-size: 4.5rem;
-            font-weight: 300;
-            line-height: 1;
-            color: #000;
-            display: flex;
-            align-items: flex-start;
-            letter-spacing: -2px;
-        }
-
-        .w-temp-unit {
-            font-size: 1.5rem;
-            margin-top: 0.5rem;
-            color: #4b5563;
-            font-weight: 400;
-            letter-spacing: normal;
-        }
-
-        .w-realfeel {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-top: 0.5rem;
-            color: #000;
-        }
-
-        .w-desc {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-top: 1rem;
-            color: #000;
-        }
-
-        .w-link {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-top: 0.25rem;
-            color: #000;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .weather-details-col {
-            flex: 1;
-            min-width: 250px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-
-        .w-detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 0.95rem;
-        }
-
-        .w-detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .w-detail-label {
-            color: #4b5563;
-        }
-
-        .w-detail-value {
-            font-weight: 600;
-            color: #111827;
-            font-size: 1.1rem;
-        }
-
-        .aqi-bad {
-            color: #d97706;
-        }
-
-        .aqi-good {
-            color: #16a34a;
-        }
-
-        .aqi-moderate {
-            color: #ca8a04;
-        }
-
-        /* Leaflet Map panel */
-        #leaflet-weather-map {
-            width: 100%;
-            height: 350px;
-            background-color: #e2e8f0;
-            z-index: 1;
-        }
-
-        /* Leaflet 지도상 커스텀 날씨 마커 라벨 */
-        .leaflet-map-city-label {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            line-height: 1;
-        }
-
-        .leaflet-map-city-label span.min {
-            color: #93c5fd;
-        }
-
-        /* 조금 밝은 파랑 */
-        .leaflet-map-city-label span.max {
-            color: #fca5a5;
-        }
-
-        /* 조금 밝은 빨강 */
 
         /* Actions area */
         .actions-bar {
+            margin: 2rem 0;
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .form-control {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.8rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
         }
 
         .btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.95rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
         }
 
         .btn:hover {
             background: var(--primary-hover);
-            transform: scale(1.02);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 113, 227, 0.3);
         }
 
         .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
+            background: var(--bg-surface);
             color: var(--text-main);
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
         .btn-outline:hover {
             background: var(--bg-surface-hover);
+            border-color: var(--text-muted);
         }
 
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .btn-danger:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        /* Table Styles */
+        /* Table */
         .table-wrapper {
             background: var(--bg-surface);
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--border);
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            table-layout: fixed;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
         }
 
         th {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1.25rem 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.02);
+            padding: 1rem 1.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            border-bottom: 2px solid var(--border);
-            white-space: nowrap;
+            border-bottom: 1px solid var(--border);
         }
 
         td {
-            padding: 1.25rem 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.9rem;
-            vertical-align: middle;
-            color: var(--text-muted);
+            padding: 1.25rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        tbody tr:hover td {
-            color: var(--text-main);
-        }
-
-        tbody tr {
-            transition: background 0.2s;
-        }
-
-        tbody tr:hover {
-            background: rgba(255, 255, 255, 0.03);
+        tr:last-child td {
+            border-bottom: none;
         }
 
         .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 600;
-            white-space: nowrap;
         }
 
-        .badge.todo {
-            background: rgba(148, 163, 184, 0.15);
-            color: #cbd5e1;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-        }
+        .badge.todo { background: #f2f2f7; color: #8e8e93; }
+        .badge.progress { background: #fff9e6; color: #ff9500; }
+        .badge.done { background: #eafaf1; color: #34c759; }
 
-        .badge.progress {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+        @media (prefers-color-scheme: dark) {
+            .badge.todo { background: #1c1c1e; color: #8e8e93; }
+            .badge.progress { background: #2c2401; color: #ff9f0a; }
+            .badge.done { background: #0c1c0e; color: #32d74b; }
         }
-
-        .badge.done {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
         .date-text {
             color: var(--text-muted);
             font-variant-numeric: tabular-nums;
@@ -763,22 +489,23 @@
             display: block;
         }
 
-        /* Modal Styles */
+        /* Modal Styles - Apple Style */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3000;
             padding: 1rem;
         }
 
@@ -790,14 +517,15 @@
         .modal-content {
             background: var(--bg-surface);
             width: 100%;
-            max-width: 1200px;
-            border-radius: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transform: scale(0.95) translateY(20px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 800px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
             max-height: 90vh;
         }
 
@@ -806,39 +534,45 @@
         }
 
         .modal-header {
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--border);
+            padding: 2rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .modal-header h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .modal-close {
-            background: transparent;
+            background: var(--bg-surface-hover);
             border: none;
             color: var(--text-muted);
-            font-size: 1.5rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: color 0.2s;
+            font-size: 1.25rem;
+            transition: all 0.2s;
         }
 
         .modal-close:hover {
             color: var(--text-main);
+            transform: scale(1.1);
         }
 
         .modal-body {
-            padding: 2rem;
+            padding: 0 2.5rem 2rem 2.5rem;
             overflow-y: auto;
         }
 
         .modal-footer {
-            padding: 1.5rem 2rem;
-            border-top: 1px solid var(--border);
+            padding: 1.5rem 2.5rem 2rem 2.5rem;
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
@@ -1282,16 +1016,14 @@
     <!-- 상세 정보 사이드 패널 -->
     <div class="detail-modal-overlay" id="detail-modal" onclick="closeDetail()">
         <div class="detail-panel" onclick="event.stopPropagation()">
-            <div class="modal-header" style="background: rgba(255,255,255,0.02); padding: 1.5rem 2rem;">
-                <h2 id="detail-title"
-                    style="font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
-                    일감 상세 정보</h2>
+            <div class="modal-header">
+                <h2 id="detail-title">일감 상세 정보</h2>
                 <button class="modal-close" onclick="closeDetail()">&times;</button>
             </div>
-            <div class="modal-body" id="detail-content" style="padding: 2rem;">
+            <div class="modal-body" id="detail-content">
                 <!-- 상세 내용이 여기에 동적으로 삽입됩니다 -->
             </div>
-            <div class="modal-footer" style="background: rgba(255,255,255,0.02); padding: 1.5rem 2rem;">
+            <div class="modal-footer">
                 <button class="btn btn-outline" style="width: 100%; justify-content: center;"
                     onclick="closeDetail()">닫기</button>
             </div>
@@ -1299,15 +1031,14 @@
     </div>
 
     <!-- 내용 전체보기 레이어 -->
-    <div class="modal-overlay" id="content-view-modal" style="z-index: 3000;">
-        <div class="modal-content" style="max-width: 800px;">
+    <div class="modal-overlay" id="content-view-modal">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2 id="content-view-title">내용 상세보기</h2>
                 <button class="modal-close" onclick="closeContentView()">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="content-view-body"
-                    style="white-space: pre-wrap; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 0.5rem; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto;">
+                <div id="content-view-body" style="white-space: pre-wrap; line-height: 1.6;">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1323,15 +1054,11 @@
                 <h2>📖 애플리케이션 사용 가이드</h2>
                 <button class="modal-close" onclick="closeManualModal()">&times;</button>
             </div>
-            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 2rem; color: #cbd5e1; line-height: 1.7;">
+            <div class="modal-body" style="flex: 1; overflow-y: auto;">
                 <section style="margin-bottom: 2rem;">
-                    <h3
-                        style="color: var(--primary); margin-bottom: 0.75rem; border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding-bottom: 0.5rem;">
-                        ⚙️ JSON 데이터 관리 (백업 및 복원)</h3>
-                    <p style="font-size: 0.95rem; margin-bottom: 1rem;">본 서비스는 브라우저의 로컬 스토리지에 데이터를 저장합니다. <strong>데이터 유실
-                            방지를 위해 주기적인 백업을 권장드립니다.</strong></p>
-                    <div
-                        style="background: rgba(0,0,0,0.2); border-radius: 0.5rem; padding: 1.25rem; font-size: 0.9rem;">
+                    <h3 style="color: var(--primary); margin-bottom: 0.75rem;">⚙️ 데이터 관리</h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 1rem;">본 서비스는 <code>task-manager.json</code> 파일 및 브라우저의 로컬 스토리지를 통해 데이터를 관리합니다.</p>
+                    <div style="background: var(--bg-surface-hover); border-radius: 12px; padding: 1.25rem; font-size: 0.9rem;">
                         <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 0.75rem;">
                             <li>• <strong>파일로 다운로드</strong>: 현재 등록된 모든 일감 데이터를 <code>.json</code> 파일로 즉시 저장합니다.</li>
                             <li>• <strong>JSON 복사하기</strong>: 데이터 구조를 텍스트 형식으로 클립보드에 복사합니다.</li>
@@ -1422,7 +1149,7 @@
     </div>
 
     <!-- 뉴스 요약 모달 -->
-    <div class="modal-overlay" id="news-summary-modal" style="z-index: 4500;">
+    <div class="modal-overlay" id="news-summary-modal">
         <div class="modal-content" style="max-width: 650px;">
             <div class="modal-header">
                 <h2 id="news-summary-title">뉴스 요약</h2>
@@ -1431,39 +1158,14 @@
             <div class="modal-body">
                 <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
                     <span id="news-summary-date" style="font-size: 0.8rem; color: var(--text-muted);"></span>
-                    <span style="color: rgba(255,255,255,0.1);">|</span>
+                    <span style="opacity: 0.2; color: var(--text-muted);">|</span>
                     <span id="news-summary-origin" style="font-size: 0.8rem; color: var(--primary); font-weight: 600;"></span>
                 </div>
-                <div id="news-summary-content"
-                    style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 0.5rem; color: #fff; line-height: 1.8; font-size: 1rem; min-height: 200px; white-space: pre-wrap;">
+                <div id="news-summary-content" style="line-height: 1.8; font-size: 1rem; min-height: 200px; white-space: pre-wrap;">
                 </div>
             </div>
             <div class="modal-footer" style="justify-content: space-between;">
-                <a id="news-full-link" href="#" target="_blank" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary);">기사 원문보기</a>
-                <button class="btn btn-outline" onclick="closeNewsSummary()">닫기</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 뉴스 요약 모달 -->
-    <div class="modal-overlay" id="news-summary-modal" style="z-index: 4500;">
-        <div class="modal-content" style="max-width: 650px;">
-            <div class="modal-header">
-                <h2 id="news-summary-title">뉴스 요약</h2>
-                <button class="modal-close" onclick="closeNewsSummary()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <span id="news-summary-date" style="font-size: 0.8rem; color: var(--text-muted);"></span>
-                    <span style="color: rgba(255,255,255,0.1);">|</span>
-                    <span id="news-summary-origin" style="font-size: 0.8rem; color: var(--primary); font-weight: 600;"></span>
-                </div>
-                <div id="news-summary-content"
-                    style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 0.5rem; color: #fff; line-height: 1.8; font-size: 1rem; min-height: 200px; white-space: pre-wrap;">
-                </div>
-            </div>
-            <div class="modal-footer" style="justify-content: space-between;">
-                <a id="news-full-link" href="#" target="_blank" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary);">기사 원문보기</a>
+                <a id="news-full-link" href="#" target="_blank" class="btn btn-outline" style="color: var(--primary);">기사 원문보기</a>
                 <button class="btn btn-outline" onclick="closeNewsSummary()">닫기</button>
             </div>
         </div>
@@ -1554,16 +1256,38 @@
         let currentCalendarDate = new Date();
 
         // 초기 로드
-        function init() {
+        async function init() {
+            // 1. LocalStorage 데이터 우선 확인
             const savedData = localStorage.getItem('tasks');
             if (savedData) {
                 try {
                     tasks = JSON.parse(savedData);
                 } catch (e) {
-                    console.error("데이터 로드 실패", e);
-                    tasks = [];
+                    console.error("LocalStorage 데이터 로드 실패", e);
                 }
             }
+
+            // 2. task-manager.json 파일에서 데이터 조회 (최초 접속 또는 갱신용)
+            try {
+                const response = await fetch('task-manager.json', { cache: 'no-store' });
+                if (response.ok) {
+                    const jsonData = await response.json();
+                    
+                    // JSON 파일의 데이터를 LocalStorage와 병합 (ID 기준으로 중복 제거)
+                    const taskMap = new Map();
+                    // LocalStorage 데이터 먼저 넣기
+                    tasks.forEach(t => taskMap.set(String(t.id), t));
+                    // JSON 데이터로 덮어쓰거나 추가하기 (JSON이 최신 소스라고 가정)
+                    jsonData.forEach(t => taskMap.set(String(t.id), t));
+                    
+                    tasks = Array.from(taskMap.values());
+                    // 병합된 데이터 다시 저장
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                }
+            } catch (e) {
+                console.warn("task-manager.json 파일을 찾을 수 없거나 로드할 수 없습니다. 기본 데이터를 사용합니다.", e);
+            }
+
             render();
             updateStats();
             renderCalendar();
