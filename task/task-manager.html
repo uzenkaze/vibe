@@ -9,26 +9,30 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <style>
-        /* 프리미엄 다크 테마 변수 설정 */
+        /* AirPods 스타일 라이트 테마 변수 설정 */
         :root {
-            --bg-base: #0f172a;
-            --bg-surface: #1e293b;
-            --bg-surface-hover: #334155;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
+            --bg-base: #ffffff;
+            --bg-surface: #f5f5f7;
+            --bg-card: #ffffff;
+            --bg-surface-hover: #e8e8ed;
+            --primary: #0066cc;
+            --primary-hover: #004499;
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --border: #d2d2d7;
+            --danger: #ff3b30;
+            --success: #34c759;
+            --warning: #ff9500;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* Custom Scrollbar */
@@ -37,66 +41,66 @@
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg-base);
+            background: var(--bg-surface);
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            border: 2px solid var(--bg-base);
+            background: #d2d2d7;
+            border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-
-        /* For Firefox */
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.1) var(--bg-base);
+            background: #86868b;
         }
 
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 2rem;
-            line-height: 1.5;
+            padding: 0;
+            line-height: 1.47;
+            letter-spacing: -0.011em;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 4rem 2rem;
         }
 
         .header {
+            text-align: center;
+            margin-bottom: 5rem;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
+            gap: 1rem;
         }
 
         h1 {
-            font-size: 2.25rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.025em;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.015em;
+            line-height: 1.1;
+        }
+
+        .header-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         /* Dashboard Layout */
         .dashboard-layout {
             display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-            min-height: 400px;
+            grid-template-columns: 1fr;
+            gap: 4rem;
+            margin-bottom: 5rem;
         }
 
-        @media (max-width: 900px) {
-            .dashboard-layout {
-                grid-template-columns: 1fr;
-            }
+        .side-widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .dashboard-calendar {
@@ -209,376 +213,238 @@
             transform: scale(1.3);
         }
 
-        /* Dashboard Styles */
-        .dashboard-grid {
+        /* Dashboard Styles - AirPods Card Aesthetic */
+        .stat-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
-            align-content: start;
+            margin-bottom: 3rem;
         }
 
-        .stat-card {
+        .stat-card-apple {
             background: var(--bg-surface);
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 2.5rem 2rem;
+            border-radius: 1.5rem;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .stat-card-apple:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card-apple h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-card-apple p {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        .stat-card-apple.total { background-color: #f5f5f7; }
+        .stat-card-apple.todo { background-color: #fff4f4; --accent: var(--danger); }
+        .stat-card-apple.progress { background-color: #fff9f0; --accent: var(--warning); }
+        .stat-card-apple.done { background-color: #f2faf4; --accent: var(--success); }
+
+        .stat-card-apple.todo p { color: var(--danger); }
+        .stat-card-apple.progress p { color: var(--warning); }
+        .stat-card-apple.done p { color: var(--success); }
+
+        /* Task Card Grid */
+        .task-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .task-card-apple {
+            background: var(--bg-card);
+            border-radius: 1.5rem;
+            padding: 2.5rem 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
             position: relative;
+            cursor: pointer;
+            border: 1px solid transparent;
+            min-height: 380px;
+        }
+
+        .task-card-apple:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(0, 102, 204, 0.1);
+        }
+
+        .card-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.25;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            display: box;
+            line-clamp: 3;
+            box-orient: vertical;
             overflow: hidden;
+            flex-grow: 1;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-        }
-
-        .stat-card.w-todo::before {
-            background: var(--text-muted);
-        }
-
-        .stat-card.w-progress::before {
-            background: var(--warning);
-        }
-
-        .stat-card.w-done::before {
-            background: var(--success);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-card h3 {
+        .card-meta {
             font-size: 0.875rem;
             color: var(--text-muted);
-            margin-bottom: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .card-badge {
+            font-size: 0.75rem;
             font-weight: 600;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            background: #f5f5f7;
+            color: var(--text-main);
         }
 
-        .stat-card p {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1;
+        .card-badge.todo { color: var(--danger); background: #fff4f4; }
+        .card-badge.progress { color: var(--warning); background: #fff9f0; }
+        .card-badge.done { color: var(--success); background: #f2faf4; }
+
+        .btn-plus-circle {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: #f5f5f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
         }
 
-        .stat-card p.total-val {
-            color: var(--primary);
+        .task-card-apple:hover .btn-plus-circle {
+            background: #e8e8ed;
         }
 
-        .stat-card p.todo-val {
-            color: var(--text-muted);
-        }
-
-        .stat-card p.progress-val {
-            color: var(--warning);
-        }
-
-        .stat-card p.done-val {
-            color: var(--success);
-        }
-
-        /* 날씨 위젯 - 3일 예보 */
+        /* Weather & News Widgets - Apple Content Style */
         .weather-widget-wrap {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(167, 139, 250, 0.08));
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+            background: #f5f5f7;
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow);
             margin-bottom: 1rem;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
 
         .weather-widget-wrap:hover {
-            transform: scale(1.01);
-            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+            box-shadow: var(--shadow-lg);
         }
 
         .weather-widget-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e8e8ed;
         }
 
         .weather-widget-header h3 {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             font-weight: 600;
-            letter-spacing: 0.03em;
         }
 
-        .weather-widget-header .weather-curr-temp {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .weather-widget-header .weather-curr-temp svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* 3일 예보 그리드 */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
+            padding: 0.5rem;
         }
 
         .forecast-day {
-            padding: 0.65rem 0.5rem;
+            padding: 1rem 0.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.3rem;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            transition: background 0.15s;
-        }
-
-        .forecast-day:last-child {
-            border-right: none;
+            gap: 0.5rem;
+            border-radius: 1rem;
+            transition: background 0.2s;
         }
 
         .forecast-day:hover {
-            background: rgba(255, 255, 255, 0.04);
+            background: #ffffff;
         }
 
         .forecast-day-label {
-            font-size: 0.7rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
         }
 
         .forecast-day-label.today-label {
             color: var(--primary);
         }
 
-        .forecast-day-icon {
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .forecast-am-temp { color: #0066cc; font-weight: 600; }
+        .forecast-pm-temp { color: #ff3b30; font-weight: 600; }
 
-        .forecast-day-icon svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .forecast-ampm {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.15rem;
-            width: 100%;
-        }
-
-        .forecast-ampm-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 0 0.15rem;
-        }
-
-        .forecast-am-label,
-        .forecast-pm-label {
-            font-size: 0.62rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .forecast-am-temp {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #93c5fd;
-        }
-
-        .forecast-pm-temp {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #fca5a5;
-        }
-
-        .forecast-desc {
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .weather-icon {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-        }
-
-        .weather-icon svg {
-            width: 28px;
-            height: 28px;
-            color: var(--primary);
-        }
-
-        /* 고급 날씨 대시보드 모달 */
-        .weather-dashboard {
-            background-color: #bbc1c6;
-            padding: 1rem;
-            border-radius: 8px;
-            color: #111827;
-            text-shadow: none;
-        }
-
-        .weather-panel-card {
-            background-color: #cfd4d8;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .weather-panel-header {
-            padding: 0.75rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #4b5563;
-        }
-
-        .weather-panel-body {
-            padding: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .weather-main-col {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .weather-top-row {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .w-icon-large svg {
-            width: 80px;
-            height: 80px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-        }
-
-        .w-temp-box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .w-temp-large {
-            font-size: 4.5rem;
-            font-weight: 300;
-            line-height: 1;
-            color: #000;
-            display: flex;
-            align-items: flex-start;
-            letter-spacing: -2px;
-        }
-
-        .w-temp-unit {
-            font-size: 1.5rem;
-            margin-top: 0.5rem;
-            color: #4b5563;
-            font-weight: 400;
-            letter-spacing: normal;
-        }
-
-        .w-realfeel {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-top: 0.5rem;
-            color: #000;
-        }
-
-        .w-desc {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-top: 1rem;
-            color: #000;
-        }
-
-        .w-link {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-top: 0.25rem;
-            color: #000;
+        /* News Section */
+        .news-item-mini {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f5f5f7;
+            transition: background 0.2s;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 2px;
         }
 
-        .weather-details-col {
-            flex: 1;
-            min-width: 250px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
+        .news-item-mini:hover {
+            background: #f5f5f7;
         }
 
-        .w-detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 0.95rem;
-        }
-
-        .w-detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .w-detail-label {
-            color: #4b5563;
-        }
-
-        .w-detail-value {
+        .news-item-title {
+            font-size: 1rem;
             font-weight: 600;
-            color: #111827;
-            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
         }
 
-        .aqi-bad {
-            color: #d97706;
-        }
-
-        .aqi-good {
-            color: #16a34a;
-        }
-
-        .aqi-moderate {
-            color: #ca8a04;
+        .news-item-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 0.5rem;
         }
 
         /* Leaflet Map panel */
@@ -591,20 +457,18 @@
 
         /* Leaflet 지도상 커스텀 날씨 마커 라벨 */
         .leaflet-map-city-label {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 3px 6px;
-            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 4px 8px;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 600;
-            white-space: nowrap;
             display: flex;
             align-items: center;
             gap: 0.25rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            line-height: 1;
+            box-shadow: var(--shadow);
+            white-space: nowrap;
         }
 
         .leaflet-map-city-label span.min {
@@ -752,7 +616,6 @@
             font-variant-numeric: tabular-nums;
             white-space: nowrap;
         }
-
         .task-title {
             font-weight: 600;
             color: var(--text-main);
@@ -763,21 +626,21 @@
             display: block;
         }
 
-        /* Modal Styles */
+        /* Modal Styles - Apple Style */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             padding: 1rem;
         }
@@ -788,17 +651,17 @@
         }
 
         .modal-content {
-            background: var(--bg-surface);
+            background: var(--bg-card);
             width: 100%;
-            max-width: 1200px;
-            border-radius: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transform: scale(0.95) translateY(20px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 900px;
+            border-radius: 2rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+            transform: scale(0.9) translateY(40px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
             max-height: 90vh;
+            overflow: hidden;
         }
 
         .modal-overlay.active .modal-content {
@@ -806,39 +669,45 @@
         }
 
         .modal-header {
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--border);
+            padding: 2.5rem 3rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .modal-header h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
         .modal-close {
-            background: transparent;
+            background: #f5f5f7;
             border: none;
             color: var(--text-muted);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
             font-size: 1.5rem;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-close:hover {
+            background: #e8e8ed;
             color: var(--text-main);
         }
 
         .modal-body {
-            padding: 2rem;
+            padding: 1rem 3rem 2.5rem;
             overflow-y: auto;
         }
 
         .modal-footer {
-            padding: 1.5rem 2rem;
-            border-top: 1px solid var(--border);
+            padding: 1.5rem 3rem 2.5rem;
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
@@ -848,7 +717,7 @@
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .col-span-2 {
@@ -1200,59 +1069,41 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; gap: 0.5rem;">
                         <div style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; white-space: nowrap;">📰 뉴스 검색</div>
                         <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; justify-content: flex-end;">
-                            <input type="text" id="news-keyword" class="form-control" placeholder="검색어 입력..." 
-                                value="핫뉴스"
-                                onkeypress="if(event.key === 'Enter') fetchNews()"
-                                style="font-size: 0.7rem; padding: 0.2rem 0.6rem; height: 24px; width: 100px; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text-primary); transition: width 0.3s ease;"
-                                onfocus="this.style.width='150px'" onblur="this.style.width='100px'">
-                            <button class="btn-icon" onclick="fetchNews()" title="검색/새로고침" style="width: 24px; height: 24px;">
-                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </button>
-                        </div>
+                    <div class="calendar-header" onclick="toggleCalendar()" style="cursor: pointer; padding: 1rem 0;">
+                        <h3>📅 업무 캘린더</h3>
+                        <svg id="cal-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
-                    <div id="news-list-container" class="news-list-mini">
-                        <div class="loading-news">뉴스를 불러오는 중...</div>
+                    <div id="calendar-body">
+                        <div class="calendar-header" style="margin-bottom: 1.5rem;">
+                            <button class="btn-icon" onclick="changeMonth(-1)">prev</button>
+                            <h3 id="calendar-month-title" style="font-size: 1.25rem;"></h3>
+                            <button class="btn-icon" onclick="changeMonth(1)">next</button>
+                        </div>
+                        <div id="calendar-grid-header" class="calendar-grid-header"></div>
+                        <div id="calendar-grid-cells" class="calendar-grid-cells"></div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="actions-bar"
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem;">
-            <div style="display: flex; gap: 0.5rem; flex: 1; max-width: 500px;">
-                <input type="text" id="search-input" class="form-control" placeholder="업무명, 업무번호, 일감번호로 검색..."
-                    onkeypress="if(event.key === 'Enter') confirmSearch()">
-                <button class="btn btn-outline" style="min-width: 80px;" onclick="confirmSearch()">검색</button>
-            </div>
-            <button class="btn" onclick="openModal()"
-                style="background: var(--primary); border: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">✨ 새 일감
-                등록</button>
-        </div>
+                <div class="weather-widget-wrap" onclick="openMapModal()">
+                    <div class="weather-widget-header">
+                        <h3>🌤 실시간 날씨</h3>
+                        <div class="weather-curr-temp"><span id="weather-icon-sm"></span> <span id="weather-temp"></span>°</div>
+                    </div>
+                    <div id="forecast-grid" class="forecast-grid"></div>
+                </div>
 
-        <div class="table-wrapper">
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 50px; text-align: center;">No.</th>
-                            <th style="width: 70px;">상태</th>
-                            <th style="width: 70px;">배포</th>
-                            <th style="width: 100px;">접수일</th>
-                            <th style="width: 100px;">업무번호</th>
-                            <th style="width: 100px;">일감번호</th>
-                            <th>업무명</th>
-                            <th style="width: 150px; text-align: center;">관리</th>
-                        </tr>
-                    </thead>
-                    <tbody id="task-list"></tbody>
-                </table>
+                <div class="weather-widget-wrap" style="cursor: default;">
+                    <div class="weather-widget-header" style="border-bottom: none;">
+                        <h3>🗞 실시간 뉴스</h3>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="text" id="news-keyword" class="form-control" placeholder="키워드..." 
+                                   style="width: 100px; font-size: 0.75rem; padding: 0.3rem 0.6rem;">
+                            <button class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;" onclick="fetchNews()">검색</button>
+                        </div>
+                    </div>
+                    <div id="news-list-container" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
             </div>
-        </div>
-        <div id="pagination-container" style="margin-top: 1.5rem; display: none; justify-content: center; gap: 0.75rem;">
-            <button id="btn-load-more" class="btn btn-outline" onclick="loadMore()" style="min-width: 120px; border-color: var(--primary); color: var(--primary);">더보기 (+5)</button>
-            <button id="btn-reset-start" class="btn btn-outline" onclick="resetToStart()" style="min-width: 120px;">처음으로</button>
         </div>
     </div>
 
@@ -1307,7 +1158,7 @@
             </div>
             <div class="modal-body">
                 <div id="content-view-body"
-                    style="white-space: pre-wrap; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 0.5rem; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto;">
+                    style="white-space: pre-wrap; background: #f5f5f7; padding: 1.5rem; border-radius: 0.5rem; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; max-height: 60vh; overflow-y: auto;">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1323,7 +1174,6 @@
                 <h2>📖 애플리케이션 사용 가이드</h2>
                 <button class="modal-close" onclick="closeManualModal()">&times;</button>
             </div>
-            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 2rem; color: #cbd5e1; line-height: 1.7;">
                 <section style="margin-bottom: 2rem;">
                     <h3
                         style="color: var(--primary); margin-bottom: 0.75rem; border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding-bottom: 0.5rem;">
@@ -1331,7 +1181,7 @@
                     <p style="font-size: 0.95rem; margin-bottom: 1rem;">본 서비스는 브라우저의 로컬 스토리지에 데이터를 저장합니다. <strong>데이터 유실
                             방지를 위해 주기적인 백업을 권장드립니다.</strong></p>
                     <div
-                        style="background: rgba(0,0,0,0.2); border-radius: 0.5rem; padding: 1.25rem; font-size: 0.9rem;">
+                        style="background: #f5f5f7; border-radius: 0.5rem; padding: 1.25rem; font-size: 0.9rem;">
                         <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 0.75rem;">
                             <li>• <strong>파일로 다운로드</strong>: 현재 등록된 모든 일감 데이터를 <code>.json</code> 파일로 즉시 저장합니다.</li>
                             <li>• <strong>JSON 복사하기</strong>: 데이터 구조를 텍스트 형식으로 클립보드에 복사합니다.</li>
@@ -1341,23 +1191,31 @@
                     </div>
                 </section>
 
-                <section style="margin-bottom: 2rem;">
-                    <h3
-                        style="color: var(--primary); margin-bottom: 0.75rem; border-bottom: 1px solid rgba(59, 130, 246, 0.2); padding-bottom: 0.5rem;">
-                        📋 데이터 구조 이해</h3>
-                    <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">JSON 데이터 내 주요 필드의 의미는 다음과 같습니다:</p>
-                    <div
-                        style="background: rgba(0,0,0,0.2); border-radius: 0.5rem; padding: 1rem; font-family: monospace; font-size: 0.85rem;">
-                        <div style="margin-bottom: 0.4rem;"><span style="color: #60a5fa;">"title"</span>: <span
-                                style="color: #94a3b8;">"업무 명칭"</span></div>
-                        <div style="margin-bottom: 0.4rem;"><span style="color: #60a5fa;">"status"</span>: <span
-                                style="color: #94a3b8;">"todo(진행전), progress(진행중), done(완료)"</span></div>
-                        <div style="margin-bottom: 0.4rem;"><span style="color: #60a5fa;">"work_no"</span>: <span
-                                style="color: #94a3b8;">"하이지스 업무번호"</span></div>
-                        <div style="margin-bottom: 0.4rem;"><span style="color: #60a5fa;">"task_no"</span>: <span
-                                style="color: #94a3b8;">"포탈 일감번호"</span></div>
-                        <div style="margin-bottom: 0.4rem;"><span style="color: #60a5fa;">"receive_date"</span>: <span
-                                style="color: #94a3b8;">"접수일 YYYY-MM-DD"</span></div>
+                <section style="margin-bottom: 3rem;">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; border-bottom: 1px solid #f5f5f7; padding-bottom: 1rem; font-size: 1.5rem;">
+                        ⚙️ 데이터 관리 (백업 및 복원)
+                    </h3>
+                    <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                        브라우저 저장소의 데이터를 관리하거나 외부 JSON 파일로 백업할 수 있습니다.
+                    </p>
+                    <div style="background: var(--bg-surface); border-radius: 1.5rem; padding: 2rem; font-size: 1rem;">
+                        <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 1rem;">
+                            <li>• <b>파일로 다운로드</b>: 현재 일감을 <code>.json</code> 파일로 즉시 백업합니다.</li>
+                            <li>• <b>JSON 복사하기</b>: 데이터를 텍스트 형식으로 클립보드에 복사합니다.</li>
+                            <li>• <b>데이터 가져오기</b>: 백업된 JSON을 입력하여 즉시 데이터를 복구합니다.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section style="margin-bottom: 3rem;">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; border-bottom: 1px solid #f5f5f7; padding-bottom: 1rem; font-size: 1.5rem;">
+                        📋 데이터 구조 이해
+                    </h3>
+                    <div style="background: var(--bg-surface); border-radius: 1.5rem; padding: 2rem; font-family: 'SF Mono', monospace; font-size: 0.95rem;">
+                        <div style="margin-bottom: 0.5rem;"><span style="color: var(--primary);">"title"</span>: "업무 명칭"</div>
+                        <div style="margin-bottom: 0.5rem;"><span style="color: var(--primary);">"status"</span>: "todo, progress, done"</div>
+                        <div style="margin-bottom: 0.5rem;"><span style="color: var(--primary);">"work_no"</span>: "하이지스 업무번호"</div>
+                        <div style="margin-bottom: 0.5rem;"><span style="color: var(--primary);">"task_no"</span>: "포탈 일감번호"</div>
                     </div>
                 </section>
 
@@ -1399,24 +1257,35 @@
                 <button class="modal-close" onclick="closeDataModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    로컬 저장소의 데이터를 백업하거나 다른 브라우저로 옮길 수 있습니다.
+                <p style="font-size: 1rem; color: var(--text-main); margin-bottom: 2rem; font-weight: 500;">
+                    로컬 저장소의 데이터를 백업하거나 다른 브라우저로 안전하게 옮길 수 있습니다.
                 </p>
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-                    <button class="btn btn-outline" style="flex: 1;" onclick="exportToJSONFile()">💾 파일로 다운로드</button>
-                    <button class="btn btn-outline" style="flex: 1;" onclick="copyJSONToClipboard()">📋 JSON
-                        복사하기</button>
+                <div style="display: flex; gap: 1rem; margin-bottom: 2.5rem;">
+                    <button class="btn btn-outline" style="flex: 1; padding: 1rem;" onclick="exportToJSONFile()">파일로 다운로드</button>
+                    <button class="btn btn-outline" style="flex: 1; padding: 1rem;" onclick="copyJSONToClipboard()">JSON 복사하기</button>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">데이터 가져오기 (JSON 붙여넣기)</label>
+                    <label class="form-label" style="font-size: 0.9rem; margin-bottom: 1rem;">데이터 가져오기 (JSON 붙여넣기)</label>
                     <textarea id="import-json-area" class="form-control" rows="8"
+                        style="background: #f5f5f7; border: 1px solid #e8e8ed; padding: 1.5rem; border-radius: 1rem;"
                         placeholder='JSON 데이터를 여기에 붙여넣으세요...'></textarea>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="border-top: 1px solid #f5f5f7;">
                 <button class="btn btn-outline" onclick="closeDataModal()">닫기</button>
-                <button class="btn" onclick="importFromJSON()" style="background: var(--success); border: none;">✅ 가져오기
-                    적용</button>
+                <button class="btn" onclick="importFromJSON()" style="background: var(--primary); border: none;">데이터 적용하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상세 보기 모달 -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal-content" style="max-width: 850px; padding: 0;">
+            <div class="modal-header" style="border: none; position: absolute; top: 1.5rem; right: 1.5rem; z-index: 10;">
+                <button class="modal-close" onclick="closeDetail()">&times;</button>
+            </div>
+            <div class="modal-body" id="detail-content" style="padding: 4rem 3rem;">
+                <!-- JS에서 내용이 채워집니다 -->
             </div>
         </div>
     </div>
@@ -1429,40 +1298,16 @@
                 <button class="modal-close" onclick="closeNewsSummary()">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <span id="news-summary-date" style="font-size: 0.8rem; color: var(--text-muted);"></span>
-                    <span style="color: rgba(255,255,255,0.1);">|</span>
-                    <span id="news-summary-origin" style="font-size: 0.8rem; color: var(--primary); font-weight: 600;"></span>
+                <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <span id="news-summary-date" style="font-size: 0.875rem; color: var(--text-muted);"></span>
+                    <span style="color: #e8e8ed;">|</span>
+                    <span id="news-summary-origin" style="font-size: 0.875rem; color: var(--primary); font-weight: 600;"></span>
                 </div>
                 <div id="news-summary-content"
-                    style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 0.5rem; color: #fff; line-height: 1.8; font-size: 1rem; min-height: 200px; white-space: pre-wrap;">
+                    style="background: #f5f5f7; padding: 2rem; border-radius: 1rem; color: var(--text-main); line-height: 1.8; font-size: 1.1rem; min-height: 250px; white-space: pre-wrap;">
                 </div>
             </div>
-            <div class="modal-footer" style="justify-content: space-between;">
-                <a id="news-full-link" href="#" target="_blank" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary);">기사 원문보기</a>
-                <button class="btn btn-outline" onclick="closeNewsSummary()">닫기</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 뉴스 요약 모달 -->
-    <div class="modal-overlay" id="news-summary-modal" style="z-index: 4500;">
-        <div class="modal-content" style="max-width: 650px;">
-            <div class="modal-header">
-                <h2 id="news-summary-title">뉴스 요약</h2>
-                <button class="modal-close" onclick="closeNewsSummary()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <span id="news-summary-date" style="font-size: 0.8rem; color: var(--text-muted);"></span>
-                    <span style="color: rgba(255,255,255,0.1);">|</span>
-                    <span id="news-summary-origin" style="font-size: 0.8rem; color: var(--primary); font-weight: 600;"></span>
-                </div>
-                <div id="news-summary-content"
-                    style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 0.5rem; color: #fff; line-height: 1.8; font-size: 1rem; min-height: 200px; white-space: pre-wrap;">
-                </div>
-            </div>
-            <div class="modal-footer" style="justify-content: space-between;">
+            <div class="modal-footer" style="justify-content: space-between; border-top: 1px solid #f5f5f7;">
                 <a id="news-full-link" href="#" target="_blank" class="btn btn-outline" style="color: var(--primary); border-color: var(--primary);">기사 원문보기</a>
                 <button class="btn btn-outline" onclick="closeNewsSummary()">닫기</button>
             </div>
@@ -1867,7 +1712,7 @@
                     attributionControl: false
                 });
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                     maxZoom: 19
                 }).addTo(weatherMap);
             } else {
@@ -1891,16 +1736,16 @@
                     const customIcon = L.divIcon({
                         className: 'custom-weather-marker',
                         html: `
-                            <div style="background: rgba(30, 41, 59, 0.9); border: 1px solid var(--primary); border-radius: 8px; padding: 4px 8px; color: #fff; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                                <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">${name}</div>
-                                <div style="display: flex; align-items: center; gap: 4px;">
-                                    <span style="font-size: 1rem;">${icon}</span>
-                                    <span style="font-size: 0.85rem; font-weight: 800;">${temp}°</span>
+                            <div style="background: rgba(255, 255, 255, 0.95); border: 1px solid #e8e8ed; border-radius: 12px; padding: 6px 12px; color: var(--text-main); white-space: nowrap; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 4px; backdrop-filter: blur(4px);">
+                                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">${name}</div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="font-size: 1.25rem;">${icon}</span>
+                                    <span style="font-size: 1rem; font-weight: 700;">${temp}°</span>
                                 </div>
                             </div>
                         `,
-                        iconSize: [60, 45],
-                        iconAnchor: [30, 22]
+                        iconSize: [80, 55],
+                        iconAnchor: [40, 27]
                     });
 
                     L.marker([coord.lat, coord.lon], { icon: customIcon }).addTo(weatherMap);
@@ -2033,82 +1878,78 @@
         }
 
         // =========================================
-        // 렌더링 및 UI 로직
+        // 렌더링 및 UI 로직 - AirPods Card Style
         // =========================================
         function render() {
-            const list = document.getElementById('task-list');
+            const container = document.getElementById('task-card-container');
             const filtered = tasks.filter(t =>
                 t.title.includes(currentSearchQuery) ||
                 (t.work_no && t.work_no.includes(currentSearchQuery)) ||
                 (t.task_no && t.task_no.includes(currentSearchQuery))
             );
 
-            list.innerHTML = '';
+            container.innerHTML = '';
             const toShow = filtered.slice(0, visibleCount);
 
-            toShow.forEach((t, i) => {
-                // D-Day 계산 (개발배포일 기준)
+            if (toShow.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 5rem; color: var(--text-muted); font-size: 1.25rem;">등록된 일감이 없습니다.</div>`;
+            }
+
+            toShow.forEach((t) => {
+                const card = document.createElement('div');
+                card.className = 'task-card-apple';
+                card.onclick = () => showDetail(t.id);
+
+                // D-Day 계산
                 let dDayHtml = '';
                 if (t.dev_date) {
-                    try {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        const target = new Date(t.dev_date);
-                        target.setHours(0, 0, 0, 0);
-                        const diffTime = target - today;
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        
-                        if (diffDays === 0) {
-                            dDayHtml = `<span style="margin-left: 0.5rem; font-size: 0.7rem; color: #f87171; font-weight: 800;">[D-Day]</span>`;
-                        } else if (diffDays > 0) {
-                            dDayHtml = `<span style="margin-left: 0.5rem; font-size: 0.7rem; color: #fbbf24; font-weight: 700;">[D-${diffDays}]</span>`;
-                        } else {
-                            dDayHtml = `<span style="margin-left: 0.5rem; font-size: 0.7rem; color: var(--text-muted);">(종료)</span>`;
-                        }
-                    } catch (e) {
-                        dDayHtml = '';
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const target = new Date(t.dev_date);
+                    if (!isNaN(target)) {
+                        const diffDays = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+                        if (diffDays === 0) dDayHtml = `<span style="color:var(--danger); font-weight:700;">[오늘 배포]</span>`;
+                        else if (diffDays > 0) dDayHtml = `<span style="color:var(--warning); font-weight:700;">[D-${diffDays}]</span>`;
                     }
                 }
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="text-align: center;">${tasks.length - tasks.indexOf(t)}</td>
-                    <td><span class="badge ${t.status}">${t.status === 'todo' ? '진행전' : t.status === 'progress' ? '진행중' : '완료'}</span></td>
-                    <td><span class="badge ${t.prod_date ? 'done' : 'todo'}">${t.prod_date ? '완료' : '대기'}</span></td>
-                    <td class="date-text">${(t.receive_date || '-').replace(/[()]/g, '').replace(/\./g, '-')}</td>
-                    <td class="date-text">${t.work_no || '-'}</td>
-                    <td class="date-text">${t.task_no || '-'}</td>
-                    <td>
-                        <div style="display: flex; align-items: center;">
-                            <span class="task-title" title="클릭하여 상세 정보 보기" style="cursor: pointer; color: #93c5fd; text-decoration: none;" onclick="showDetail('${t.id}')">${t.title}</span>
-                            ${dDayHtml}
+                const statusLabel = t.status === 'todo' ? '진행전' : t.status === 'progress' ? '진행중' : '완료';
+                
+                card.innerHTML = `
+                    <div class="card-category">업무번호 #${t.work_no || '미정'}</div>
+                    <div class="card-title">${t.title}</div>
+                    <div class="card-meta">
+                        <div>접수일: ${formatDate(t.receive_date)}</div>
+                        <div>일감번호: ${t.task_no || '-'}</div>
+                        ${dDayHtml ? `<div>${dDayHtml}</div>` : ''}
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-badge ${t.status}">${statusLabel}</span>
+                        <div class="btn-plus-circle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
                         </div>
-                    </td>
-                    <td style="text-align: center;">
-                        <div style="display: flex; gap: 0.4rem; justify-content: center; white-space: nowrap;">
-                            <button class="btn-file" onclick="openModal('${t.id}')" style="padding: 0.3rem 0.6rem;">수정</button>
-                            <button class="btn-file" onclick="deleteTask('${t.id}')" style="color: var(--danger); padding: 0.3rem 0.6rem;">삭제</button>
-                        </div>
-                    </td>
+                    </div>
                 `;
-                list.appendChild(tr);
+                container.appendChild(card);
             });
 
-            const pagContainer = document.getElementById('pagination-container');
+            // 더보기 버튼 제어
             const loadMoreBtn = document.getElementById('btn-load-more');
             const resetBtn = document.getElementById('btn-reset-start');
-            
-            // 데이터가 5건보다 많으면 컨테이너 표시
-            pagContainer.style.display = filtered.length > 5 ? 'flex' : 'none';
-            // 더 보여줄게 있으면 더보기 버튼 표시
             loadMoreBtn.style.display = filtered.length > visibleCount ? 'inline-block' : 'none';
-            // 기본 5건보다 많이 보고 있으면 처음으로 버튼 표시
             resetBtn.style.display = visibleCount > 5 ? 'inline-block' : 'none';
 
-            if (tasks.length > 0) {
-                const t = tasks[0];
-                document.getElementById('recent-task-text').innerText = `#${t.task_no || '-'} [${t.work_no || '-'}] ${t.title}`;
-            }
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = tasks.length;
+            document.getElementById('stat-todo').innerText = tasks.filter(t => t.status === 'todo').length;
+            document.getElementById('stat-progress').innerText = tasks.filter(t => t.status === 'progress').length;
+            document.getElementById('stat-done').innerText = tasks.filter(t => t.status === 'done').length;
         }
 
         function showDetail(id) {
@@ -2117,43 +1958,53 @@
 
             const content = document.getElementById('detail-content');
             content.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div class="form-group">
-                        <label class="form-label" style="color: var(--primary);">업무명</label>
-                        <div style="font-size: 1.2rem; font-weight: 700; color: #fff; line-height: 1.4;">${t.title}</div>
+                <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+                    <!-- Title Area -->
+                    <div style="border-bottom: 1px solid #f5f5f7; padding-bottom: 2rem;">
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Task Detail.</div>
+                        <h3 style="font-size: 2.5rem; font-weight: 700; color: var(--text-main); line-height: 1.2;">${t.title}</h3>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="form-group"><label class="form-label">상태</label><div><span class="badge ${t.status}">${t.status === 'todo' ? '진행전' : t.status === 'progress' ? '진행중' : '완료'}</span></div></div>
-                        <div class="form-group"><label class="form-label">접수일</label><div class="date-text">${(t.receive_date || '-').replace(/[()]/g, '').replace(/\./g, '-')}</div></div>
-                        <div class="form-group"><label class="form-label">업무번호</label><div class="date-text">${t.work_no || '-'}</div></div>
-                        <div class="form-group"><label class="form-label">일감번호</label><div class="date-text">${t.task_no || '-'}</div></div>
-                        <div class="form-group"><label class="form-label">시작일</label><div class="date-text">${(t.start_date || '-').replace(/[()]/g, '').replace(/\./g, '-')}</div></div>
-                        <div class="form-group"><label class="form-label">종료일</label><div class="date-text">${(t.end_date || '-').replace(/[()]/g, '').replace(/\./g, '-')}</div></div>
-                        <div class="form-group"><label class="form-label">개발배포일</label><div class="date-text">${(t.dev_date || '-').replace(/[()]/g, '').replace(/\./g, '-')}</div></div>
-                        <div class="form-group"><label class="form-label">운영배포일</label><div class="date-text">${(t.prod_date || '-').replace(/[()]/g, '').replace(/\./g, '-')}</div></div>
+
+                    <!-- Info Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+                        <div class="form-group">
+                            <label class="form-label">상태</label>
+                            <div><span class="card-badge ${t.status}" style="font-size: 1rem; padding: 0.5rem 1.5rem;">${t.status === 'todo' ? '진행전' : t.status === 'progress' ? '진행중' : '완료'}</span></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">접수일</label><div style="font-size: 1.1rem; font-weight: 500;">${formatDate(t.receive_date)}</div></div>
+                        <div class="form-group"><label class="form-label">업무번호</label><div style="font-size: 1.1rem; font-weight: 500;">${t.work_no || '-'}</div></div>
+                        <div class="form-group"><label class="form-label">일감번호</label><div style="font-size: 1.1rem; font-weight: 500;">${t.task_no || '-'}</div></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">테스트 상품번호</label>
-                        <div style="background: rgba(0,0,0,0.2); border-radius: 0.5rem; padding: 1rem; color: #cbd5e1; min-height: 60px; white-space: pre-wrap; font-family: monospace; font-size: 0.85rem;">${t.test_product_no || '내용 없음'}</div>
+
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; background: #f5f5f7; padding: 2rem; border-radius: 1.5rem;">
+                        <div class="form-group"><label class="form-label">시작일</label><div>${formatDate(t.start_date)}</div></div>
+                        <div class="form-group"><label class="form-label">종료일</label><div>${formatDate(t.end_date)}</div></div>
+                        <div class="form-group"><label class="form-label">개발배포</label><div>${formatDate(t.dev_date)}</div></div>
+                        <div class="form-group"><label class="form-label">운영배포</label><div>${formatDate(t.prod_date)}</div></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" style="color: #4ade80;">참고내용</label>
-                        <div style="background: rgba(74, 222, 128, 0.05); border-radius: 0.5rem; padding: 1rem; color: #4ade80; min-height: 100px; white-space: pre-wrap;">${t.reference || '내용 없음'}</div>
+
+                    <!-- Detailed Content Area -->
+                    <div style="display: flex; flex-direction: column; gap: 2rem;">
+                        <div class="form-group">
+                            <label class="form-label">참고내용</label>
+                            <div style="background: #ffffff; border: 1px solid #e8e8ed; padding: 1.5rem; border-radius: 1rem; line-height: 1.6; white-space: pre-wrap;">${t.reference || '내용 없음'}</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">퍼블 내용</label>
+                            <div style="background: #ffffff; border: 1px solid #e8e8ed; padding: 1.5rem; border-radius: 1rem; line-height: 1.6; white-space: pre-wrap;">${t.pub_content || '내용 없음'}</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">수정 파일</label>
+                            <div style="background: #ffffff; border: 1px solid #e8e8ed; padding: 1rem; border-radius: 1rem; font-family: monospace; font-size: 0.9rem; color: var(--text-muted);">${t.modified_files || '없음'}</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">퍼블 내용</label>
-                        <div style="background: rgba(0,0,0,0.2); border-radius: 0.5rem; padding: 1rem; color: #cbd5e1; min-height: 60px; white-space: pre-wrap;">${t.pub_content || '내용 없음'}</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">비고 (Notes)</label>
-                        <div style="background: rgba(255,255,0,0.05); border-radius: 0.5rem; padding: 1rem; color: #fde047; min-height: 40px; white-space: pre-wrap;">${t.notes || '내용 없음'}</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">수정 파일</label>
-                        <div style="background: rgba(0,0,0,0.2); border-radius: 0.5rem; padding: 1rem; color: #94a3b8; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap;">${t.modified_files || '내용 없음'}</div>
-                    </div>
-                    <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05);">
-                         <div style="font-size: 0.75rem; color: var(--text-muted);">업데이트: ${formatDate(t.updated_at)}</div>
+
+                    <div style="margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid #f5f5f7; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Last Updated: ${formatDate(t.updated_at)}</span>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="openModal('${t.id}')">수정하기</button>
+                            <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.875rem; background: var(--danger);" onclick="deleteTask('${t.id}')">삭제</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2165,44 +2016,26 @@
             if (!isoString) return '-';
             try {
                 const d = new Date(isoString);
-                if (isNaN(d.getTime())) return '-';
+                if (isNaN(d.getTime())) return isoString.replace(/[()]/g, '').replace(/\./g, '-');
                 const y = d.getFullYear();
                 const m = String(d.getMonth() + 1).padStart(2, '0');
                 const day = String(d.getDate()).padStart(2, '0');
                 return `${y}-${m}-${day}`;
             } catch (e) {
-                return '-';
+                return isoString;
             }
         }
 
         function viewFullContent(fieldId) {
             const el = document.getElementById(fieldId);
             if (!el) return;
-
-            let title = '내용 상세보기';
-            if (fieldId === 'reference') title = '참고내용 상세보기';
-            else if (fieldId === 'pub_content') title = '퍼블 내용 상세보기';
-            else if (fieldId === 'notes') title = '비고 상세보기';
-
-            document.getElementById('content-view-title').innerText = title;
+            document.getElementById('content-view-title').innerText = '상세 정보';
             document.getElementById('content-view-body').innerText = el.value;
             document.getElementById('content-view-modal').classList.add('active');
         }
 
-        function closeContentView() {
-            document.getElementById('content-view-modal').classList.remove('active');
-        }
-
-        function closeDetail() {
-            document.getElementById('detail-modal').classList.remove('active');
-        }
-
-        function updateStats() {
-            document.getElementById('stat-total').innerText = tasks.length;
-            document.getElementById('stat-todo').innerText = tasks.filter(t => t.status === 'todo').length;
-            document.getElementById('stat-progress').innerText = tasks.filter(t => t.status === 'progress').length;
-            document.getElementById('stat-done').innerText = tasks.filter(t => t.status === 'done').length;
-        }
+        function closeContentView() { document.getElementById('content-view-modal').classList.remove('active'); }
+        function closeDetail() { document.getElementById('detail-modal').classList.remove('active'); }
 
         function confirmSearch() {
             currentSearchQuery = document.getElementById('search-input').value;
