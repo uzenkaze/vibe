@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work management - 개발 일감 관리 현황판</title>
-    <!-- Leaflet CSS & JS for Weather Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <style>
-        /* [1. AirPods Style Design Tokens] */
         :root {
             --bg-base: #ffffff;
             --bg-surface: #f5f5f7;
@@ -21,673 +19,156 @@
             --danger: #ff3b30;
             --success: #34c759;
             --warning: #ff9500;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.08);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --shadow-lg: 0 12px 36px rgba(0,0,0,0.08);
             --sidebar-width: 250px;
             --sidebar-collapsed-width: 80px;
         }
 
-        /* [2. Reset & Typography] */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; -webkit-font-smoothing: antialiased; }
+        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; line-height: 1.47; overflow: hidden; }
 
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            min-height: 100vh;
-            line-height: 1.47;
-            letter-spacing: -0.011em;
-            overflow: hidden; /* Prevent body scroll due to App wrapper */
-        }
+        .app-wrapper { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
 
-        /* [App Layout Wrapper] */
-        .app-wrapper {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-        }
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-width); background: #ffffff; border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 100; flex-shrink: 0; }
+        .sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+        .sidebar-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); transition: all 0.3s; }
+        .sidebar.collapsed .sidebar-header { padding: 1rem 0; align-items: center; }
+        .sidebar-header .title-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .sidebar.collapsed .title-wrapper { justify-content: center; margin-bottom: 0; }
+        .sidebar-header h2 { font-size: 1.5rem; font-weight: 700; }
+        .sidebar.collapsed h2 { display: none; }
+        .btn-toggle-sidebar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); padding: 0.5rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; }
+        .btn-toggle-sidebar:hover { background: var(--bg-hover); }
+        .sidebar-nav { flex: 1; padding: 1.5rem 1rem; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; padding: 0.8rem 1rem; border-radius: 0.8rem; margin-bottom: 0.5rem; transition: background 0.2s; cursor: pointer; white-space: nowrap; }
+        .nav-item:hover { background: var(--bg-hover); }
+        .nav-item.active { background: #e5f0fa; color: var(--primary); font-weight: 700; }
+        .nav-icon { width: 24px; font-size: 1.3rem; margin-right: 1rem; flex-shrink: 0; display: flex; justify-content: center; }
+        .sidebar.collapsed .nav-text { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; }
+        .sidebar.collapsed .nav-icon { margin-right: 0; }
 
-        /* [Sidebar Styles] */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #ffffff;
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 100;
-            flex-shrink: 0;
-        }
+        /* Main Content */
+        .main-content { flex: 1; background: var(--bg-base); overflow-y: auto; position: relative; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 3rem 4rem; }
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .sidebar.collapsed {
-            width: var(--sidebar-collapsed-width);
-        }
-
-        .sidebar-header {
-            padding: 1rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            border-bottom: 1px solid var(--border);
-            height: auto;
-            white-space: nowrap;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .sidebar.collapsed .sidebar-header {
-            padding: 1rem 0;
-            align-items: center;
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-            transition: opacity 0.2s;
-        }
-
-        .sidebar.collapsed .sidebar-header h2 {
-            display: none;
-        }
-
-        .sidebar-header .title-wrapper {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .sidebar.collapsed .sidebar-header .title-wrapper {
-            justify-content: center;
-            margin-bottom: 0;
-        }
-
-        .btn-toggle-sidebar {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            flex-shrink: 0;
-        }
-        .btn-toggle-sidebar:hover {
-            background: var(--bg-hover);
-        }
-
-        /* Menu registration button in header */
-        .sidebar.collapsed .btn-add-menu {
-            width: 40px !important;
-            padding: 0.6rem 0 !important;
-            margin-top: 1rem;
-        }
-        .sidebar.collapsed .btn-add-menu span:last-child {
-            display: none;
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            padding: 1.5rem 1rem;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1rem;
-            border-radius: 0.8rem;
-            color: var(--text-main);
-            text-decoration: none;
-            margin-bottom: 0.5rem;
-            transition: background 0.2s;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .nav-item:hover {
-            background: var(--bg-hover);
-        }
-
-        .nav-item.active {
-            background: #e5f0fa;
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-
-        .sidebar.collapsed .nav-text {
-            opacity: 0;
-            width: 0;
-            pointer-events: none;
-        }
-        
-        .sidebar.collapsed .nav-item {
-            justify-content: center;
-            padding: 0.8rem 0;
-        }
-
-        .sidebar.collapsed .nav-icon {
-            margin-right: 0;
-            font-size: 1.5rem;
-        }
-
-        .sidebar-footer {
-            padding: 1.5rem 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .sidebar.collapsed .sidebar-footer {
-            padding: 1.5rem 0.5rem;
-        }
-
-        .sidebar.collapsed .btn-add-menu span {
-            display: none;
-        }
-
-        /* [Main Content Styles] */
-        .main-content {
-            flex: 1;
-            background: var(--bg-base);
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 3rem 4rem;
-        }
-
-        /* View sections */
-        .view-section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .view-section.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* [3. Header Section] */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 3rem;
-        }
-
-        .header-left h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: -0.02em;
-        }
-
-        .header-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 1.5rem;
-        }
-
+        /* Header & Stats */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem; }
+        .header-left h1 { font-size: 3rem; font-weight: 700; letter-spacing: -0.02em; }
+        .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1.5rem; }
         .header-actions { display: flex; gap: 0.75rem; }
-
         .stat-grid-header { display: flex; gap: 1rem; }
-
-        .stat-card-mini {
-            background: var(--bg-surface);
-            border-radius: 1rem;
-            padding: 1rem 1.5rem;
-            min-width: 100px;
-            text-align: center;
-        }
+        .stat-card-mini { background: var(--bg-surface); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 100px; text-align: center; }
         .stat-card-mini h3 { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem; }
         .stat-card-mini .stat-value { font-size: 1.5rem; font-weight: 700; }
 
-        /* [Calendar Dashboard Styles] */
-        .calendar-dashboard {
-            background: var(--bg-surface);
-            border-radius: 2rem;
-            padding: 3rem;
-            margin-top: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-        }
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .calendar-header h3 { font-size: 2.2rem; font-weight: 700; color: var(--text-main); }
-        .month-selector {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            font-size: 1.6rem;
-            font-weight: 700;
-        }
-        .cal-nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
-        }
-        .cal-nav-btn:hover { transform: scale(1.1); background: #0055b3; }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1rem;
-        }
-        .cal-day-header {
-            text-align: center;
-            font-weight: 700;
-            color: var(--text-muted);
-            padding-bottom: 0.8rem;
-            font-size: 1.1rem;
-        }
+        /* Dashboard Row */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+        .dashboard-title h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .dashboard-title p { color: var(--text-muted); font-size: 1.1rem; }
+        .dashboard-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-card-apple { background: #ffffff; border-radius: 1.2rem; padding: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #efeff2; position: relative; transition: transform 0.2s; }
+        .stat-card-apple:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        .stat-card-label { font-size: 0.95rem; font-weight: 600; color: #4b4b4b; }
+        .stat-card-value { font-size: 2.4rem; font-weight: 800; margin: 0.5rem 0; }
+        .stat-card-subtext { font-size: 0.85rem; color: var(--text-muted); }
+        .stat-card-icon { position: absolute; top: 1.8rem; right: 1.8rem; width: 24px; color: #b0b0b5; }
+
+        /* Calendar */
+        .start-section { background: #ffffff; border-radius: 1.5rem; padding: 2.5rem; border: 1px solid #efeff2; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .start-section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .calendar-dashboard { background: #fafafa; border-radius: 1.5rem; padding: 2rem; border: 1px solid #f0f0f5; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .month-selector { display: flex; align-items: center; gap: 1.5rem; font-size: 1.25rem; font-weight: 700; }
+        .cal-nav-btn { background: var(--primary); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #efeff2; border: 1px solid #efeff2; border-radius: 1.2rem; overflow: hidden; }
+        .cal-day-header { background: #fdfdfd; text-align: center; font-weight: 700; color: var(--text-muted); padding: 1rem 0; font-size: 0.9rem; }
         .cal-day-header.sun { color: var(--danger); }
         .cal-day-header.sat { color: var(--primary); }
-        
-        .cal-cell {
-            background: white;
-            border-radius: 1.2rem;
-            min-height: 120px;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid transparent;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        .cal-cell:hover {
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
-            transform: translateY(-4px);
-        }
-        .cal-cell.today {
-            background: #fff8e1;
-            border-color: #ffd54f;
-        }
-        .cal-cell.other-month {
-            opacity: 0.4;
-            background: transparent;
-            box-shadow: none;
-        }
-        .cal-cell.other-month:hover { transform: none; box-shadow: none; border-color: transparent; cursor: default; }
-        
-        .cal-date-num {
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        .cal-date-num.sun { color: var(--danger); }
-        .cal-date-num.sat { color: var(--primary); }
-        
-        .cal-events {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-            flex: 1;
-            overflow-y: auto;
-            margin-top: 0.5rem;
-        }
-
-        /* [7. Calendar UI Refinement] */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background: #efeff2;
-            border: 1px solid #efeff2;
-            border-radius: 1.2rem;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-        .cal-day-header {
-            background: #fdfdfd;
-            text-align: center;
-            font-weight: 700;
-            color: var(--text-muted);
-            padding: 1rem 0;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-        .cal-day-header.sun { color: var(--danger); }
-        .cal-day-header.sat { color: var(--primary); }
-
-        .cal-cell {
-            background: #ffffff;
-            height: 120px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-        .cal-cell:hover {
-            background: #fafafb;
-            z-index: 10;
-        }
-        .cal-cell.today {
-            background: #fdfcff;
-        }
-        .cal-cell.today::after {
-            content: '';
-            position: absolute;
-            top: 6px; right: 6px; bottom: 6px; left: 6px;
-            border: 1.5px solid #5e5ce6;
-            border-radius: 0.8rem;
-            pointer-events: none;
-        }
-        .cal-cell.today .cal-date-num {
-            color: #5e5ce6;
-            font-weight: 800;
-        }
-
-        .cal-cell.other-month {
-            background: #fcfcfd;
-            color: #dcdce0;
-        }
-        .cal-cell.other-month .cal-date-num { color: #dcdce0; }
-
-        .cal-date-num {
-            font-weight: 700;
-            font-size: 1.05rem;
-            margin-bottom: 0.5rem;
-            color: #1d1d1f;
-        }
-
-        .cal-events {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-            flex: 1;
-            overflow: hidden; /* 영역 안에서만 표시 */
-        }
-
-        .cal-event-dot-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.78rem;
-            font-weight: 500;
-            color: #1d1d1f;
-            background: #f5f5f7;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.4rem;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        .cal-event-dot-wrapper:hover {
-            background: #e8e8ed;
-        }
-        .cal-event-dot-wrapper span {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .cal-event-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
+        .cal-cell { background: #ffffff; height: 120px; padding: 1rem; display: flex; flex-direction: column; transition: all 0.2s; position: relative; }
+        .cal-cell:hover { background: #fafafb; z-index: 10; }
+        .cal-cell.today::after { content: ''; position: absolute; top: 6px; right: 6px; bottom: 6px; left: 6px; border: 1.5px solid #5e5ce6; border-radius: 0.8rem; pointer-events: none; }
+        .cal-cell.other-month { background: #fcfcfd; color: #dcdce0; }
+        .cal-date-num { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; }
+        .cal-events { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; overflow: hidden; }
+        .cal-event-dot-wrapper { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; background: #f5f5f7; padding: 0.25rem 0.5rem; border-radius: 0.4rem; cursor: pointer; overflow: hidden; }
+        .cal-event-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
         .cal-event-dot.todo { background: var(--danger); }
         .cal-event-dot.progress { background: var(--warning); }
         .cal-event-dot.done { background: var(--success); }
 
-        /* [5. News & Generic Section] */
-        .news-box-wide {
-            background: var(--bg-surface);
-            border-radius: 2.5rem;
-            padding: 2.5rem 3.5rem;
-            text-align: left;
-        }
-        .news-item {
-            cursor: pointer;
-            transition: color 0.2s;
-            display: block;
-            margin-bottom: 0.8rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 1.1rem;
-            color: var(--text-main);
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eaeaea;
-        }
-        .news-item:hover { color: var(--primary); }
-        .news-error { color: var(--danger); font-size: 0.9rem; margin-top: 1rem; }
-
-        /* [6. Search Bar] */
+        /* Search & Banner */
         .search-bar-container { display: flex; justify-content: flex-start; margin-bottom: 3rem; }
-        .search-input-wrapper { position: relative; width: 100%; max-width: 500px; }
-        .search-input {
-            width: 100%; padding: 1.2rem 2rem; border-radius: 3rem; border: none;
-            background: var(--bg-surface); font-size: 1rem; color: var(--text-main);
-            outline: none; transition: all 0.3s;
-        }
+        .search-input-wrapper { position: relative; width: 100%; }
+        .search-input { width: 100%; padding: 1.2rem 2rem; border-radius: 3rem; border: none; background: var(--bg-surface); font-size: 1rem; outline: none; transition: all 0.3s; }
         .search-input:focus { background: white; box-shadow: 0 0 0 2px var(--primary); }
+        
+        .recent-task-banner { background: #ffffff; border: 1px solid #efeff2; border-radius: 1.2rem; padding: 1rem 1.5rem; margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); animation: fadeIn 0.4s ease; }
+        .recent-task-info { display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; font-weight: 600; overflow: hidden; }
+        .recent-task-label { font-size: 0.75rem; font-weight: 800; color: #5e5ce6; background: #f0f0ff; padding: 0.2rem 0.6rem; border-radius: 0.5rem; flex-shrink: 0; }
+        .recent-task-text-content { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-copy-action { background: var(--bg-surface); border: none; padding: 0.5rem 1rem; border-radius: 0.8rem; font-size: 0.85rem; font-weight: 700; color: var(--primary); cursor: pointer; transition: all 0.2s; flex-shrink: 0; margin-left: 1rem; }
+        .btn-copy-action:hover { background: var(--primary); color: white; }
 
-        /* [7. Card Grid] */
-        .task-card-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 4rem;
-        }
-        .task-card-apple {
-            background: var(--bg-surface); border-radius: 2rem; padding: 2rem;
-            cursor: default; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex; flex-direction: column; border: 1px solid transparent;
-            height: 260px !important; overflow: hidden !important;
-        }
-        .task-card-apple:hover {
-            background: var(--bg-card); box-shadow: var(--shadow-lg);
-            transform: translateY(-5px); border-color: #f0f0f2;
-        }
+        /* Task Cards */
+        .task-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 4rem; }
+        .task-card-apple { background: var(--bg-surface); border-radius: 2rem; padding: 2rem; border: 1px solid transparent; height: 260px; display: flex; flex-direction: column; transition: all 0.4s; overflow: hidden; }
+        .task-card-apple:hover { background: var(--bg-card); box-shadow: var(--shadow-lg); transform: translateY(-5px); border-color: #f0f0f2; }
         .card-header-info { font-size: 0.8rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem; }
-        .card-title {
-            font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.2;
-            display: block !important; width: 100% !important; overflow: hidden !important;
-            text-overflow: ellipsis !important; white-space: nowrap !important; cursor: help;
-        }
-        .card-meta-row { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem; }
-        .meta-item b { color: var(--text-main); font-weight: 600; }
+        .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f0f0f2; padding-top: 1.25rem; }
-        .card-badge { font-size: 0.75rem; font-weight: 700; padding: 0.4rem 1.2rem; border-radius: 2rem; background: #ffffff; text-transform: uppercase; }
-        .card-badge.todo { color: var(--danger); background: #fff4f4; }
-        .card-badge.progress { color: var(--warning); background: #fff9f0; }
-        .card-badge.done { color: var(--success); background: #f2faf4; }
-        .card-actions { display: flex; gap: 0.4rem; }
-        .btn-mini { padding: 0.4rem 0.75rem; font-size: 0.7rem; border-radius: 1rem; background: white; border: 1px solid var(--border); color: var(--text-main); cursor: pointer; transition: all 0.2s; font-weight: 600; }
-        .btn-mini:hover { background: var(--bg-hover); border-color: var(--text-main); }
-        .btn-mini.delete:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        /* [8. Buttons] */
-        .btn {
-            background: var(--primary); color: white; border: none; padding: 0.8rem 1.4rem;
-            border-radius: 2rem; font-size: 0.95rem; font-weight: 600; cursor: pointer;
-            transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-        }
-        .btn:hover { transform: scale(1.02); background: #005bb7; }
-        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-main); }
-        .btn-outline:hover { background: var(--bg-hover); color: var(--text-main); }
+        /* Utility Buttons */
+        .btn-purple { background: #5e5ce6; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 0.8rem; font-weight: 600; cursor: pointer; }
         .btn-blue { background: #0071e3; color: white; }
+        .btn-mini { padding: 0.4rem 0.75rem; font-size: 0.7rem; border-radius: 1rem; background: white; border: 1px solid var(--border); cursor: pointer; font-weight: 600; }
+        .btn-mini.delete:hover { background: var(--danger); color: white; }
 
-        /* [9. Modal Styles] */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px);
-            display: none; justify-content: center; align-items: center; z-index: 5000;
-        }
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); display: none; justify-content: center; align-items: center; z-index: 5000; }
         .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: #ffffff; border-radius: 2.5rem; width: 95%; max-width: 850px;
-            padding: 3rem; box-shadow: 0 40px 120px rgba(0, 0, 0, 0.1);
-            max-height: 90vh; overflow-y: auto; position: relative;
-        }
-        .modal-header { margin-bottom: 2.5rem; text-align: center; }
-        .modal-header h2 { font-size: 2rem; font-weight: 700; }
-        .modal-close {
-            position: absolute; top: 1.5rem; right: 1.5rem;
-            background: var(--bg-surface); border: none; width: 3rem; height: 3rem;
-            border-radius: 50%; cursor: pointer; font-size: 1.5rem;
-            display: flex; align-items: center; justify-content: center; transition: background 0.3s;
-        }
-        .modal-close:hover { background: var(--border); }
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
-        .col-span-2 { grid-column: span 2; }
-        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-        .form-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-        .form-control {
-            background: #fdfdfd; border: 1px solid var(--border);
-            padding: 0.85rem 1.25rem; border-radius: 0.8rem; font-size: 0.95rem;
-            outline: none; transition: all 0.2s;
-        }
-        .form-control:focus { background: white; box-shadow: 0 0 0 2px var(--primary); border-color: transparent; }
-
-        /* [Dashboard Redesign Styles] */
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 2rem;
-        }
-        .dashboard-title h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: #1d1d1f; }
-        .dashboard-title p { color: var(--text-muted); font-size: 1.1rem; }
-
-        .dashboard-stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-        .stat-card-apple {
-            background: #ffffff;
-            border-radius: 1.2rem;
-            padding: 1.8rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border: 1px solid #efeff2;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            position: relative;
-            transition: transform 0.2s;
-        }
-        .stat-card-apple:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-        .stat-card-label { font-size: 0.95rem; font-weight: 600; color: #4b4b4b; }
-        .stat-card-value { font-size: 2.4rem; font-weight: 800; color: #000; margin: 0.5rem 0; }
-        .stat-card-subtext { font-size: 0.85rem; color: var(--text-muted); }
-        .stat-card-icon {
-            position: absolute;
-            top: 1.8rem;
-            right: 1.8rem;
-            width: 24px;
-            height: 24px;
-            color: #b0b0b5;
-        }
-
-        .start-section {
-            background: #ffffff;
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            border: 1px solid #efeff2;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .start-section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .start-section-desc { color: var(--text-muted); font-size: 1rem; margin-bottom: 2.5rem; }
-
-        .btn-purple {
-            background: #5e5ce6;
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.2s;
-        }
-        .btn-purple:hover { background: #4a48c9; }
-
-        /* Calendar Adjustments for Dashboard Inner */
-        .calendar-dashboard {
-            background: #fafafa;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: none;
-            border: 1px solid #f0f0f5;
-            margin-top: 0;
-        }
+        .modal-content { background: #ffffff; border-radius: 2.5rem; width: 95%; max-width: 900px; padding: 3rem; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; border: none; width: 3rem; height: 3rem; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-label { font-size: 0.9rem; font-weight: 700; color: #4b4b4b; }
+        .form-control { background: #fdfdfd; border: 1px solid #efeff2; padding: 0.85rem 1.25rem; border-radius: 0.8rem; outline: none; transition: 0.2s; }
+        .form-control:focus { background: white; box-shadow: 0 0 0 2px var(--primary); }
+        .col-span-3 { grid-column: span 3; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #efeff2; }
+        .btn-save-main { background: #5e5ce6; color: white; padding: 0.8rem 3rem; border-radius: 1rem; font-weight: 700; font-size: 1.1rem; border: none; cursor: pointer; transition: 0.2s; }
+        
+        #status.status-todo { color: #ff3b30; font-weight: 700; background: #fff4f4; }
+        #status.status-progress { color: #ff9500; font-weight: 700; background: #fff9f0; }
+        #status.status-done { color: #34c759; font-weight: 700; background: #f2faf4; }
 
         /* Forecast Area */
         .forecast-grid { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
         .forecast-day { text-align: center; flex: 1; padding: 1.5rem; background: var(--bg-surface); border-radius: 1.5rem; }
         .forecast-icon { font-size: 2.5rem; margin: 0.5rem 0; }
-        .forecast-temp { font-weight: 700; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
     <div class="app-wrapper">
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="title-wrapper">
                     <h2>Work</h2>
                     <button class="btn-toggle-sidebar" onclick="toggleSidebar()">☰</button>
                 </div>
-                <button class="btn btn-outline btn-add-menu" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.6rem;" onclick="openMenuModal()">
-                    <span>+</span> <span>새 메뉴 등록</span>
-                </button>
             </div>
-            
-            <div class="sidebar-nav" id="sidebar-nav">
-                <!-- Navigation menus injected by JS -->
-            </div>
+            <div class="sidebar-nav" id="sidebar-nav"></div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <div class="container" style="max-width: 1200px; padding: 3rem 2rem;">
+            <div class="container">
                 
-                <!-- View 1: Dashboard (Home) -->
                 <div id="view-dashboard" class="view-section active">
                     <div class="dashboard-header">
                         <div class="dashboard-title">
@@ -698,129 +179,66 @@
                     </div>
 
                     <div class="dashboard-stats-row">
-                        <div class="stat-card-apple">
-                            <div class="stat-card-label">전체 이슈</div>
-                            <div class="stat-card-value" id="dash-stat-total">0</div>
-                            <div class="stat-card-subtext">활성 프로젝트에서</div>
-                            <div class="stat-card-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                            </div>
-                        </div>
-                        <div class="stat-card-apple">
-                            <div class="stat-card-label">진행 중</div>
-                            <div class="stat-card-value" id="dash-stat-progress" style="color: #5e5ce6;">0</div>
-                            <div class="stat-card-subtext">내 담당 이슈</div>
-                            <div class="stat-card-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17l-6-6-4 4-5-5"/></svg>
-                            </div>
-                        </div>
-                        <div class="stat-card-apple">
-                            <div class="stat-card-label">완료</div>
-                            <div class="stat-card-value" id="dash-stat-done" style="color: #34c759;">0</div>
-                            <div class="stat-card-subtext">이번 주 완료</div>
-                            <div class="stat-card-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                            </div>
-                        </div>
-                        <div class="stat-card-apple">
-                            <div class="stat-card-label">팀 멤버</div>
-                            <div class="stat-card-value">1</div>
-                            <div class="stat-card-subtext">활성 멤버</div>
-                            <div class="stat-card-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            </div>
-                        </div>
+                        <div class="stat-card-apple"><div class="stat-card-label">전체 이슈</div><div class="stat-card-value" id="dash-stat-total">0</div><div class="stat-card-subtext">활성 프로젝트에서</div></div>
+                        <div class="stat-card-apple"><div class="stat-card-label">진행 중</div><div class="stat-card-value" id="dash-stat-progress" style="color: #5e5ce6;">0</div><div class="stat-card-subtext">내 담당 이슈</div></div>
+                        <div class="stat-card-apple"><div class="stat-card-label">완료</div><div class="stat-card-value" id="dash-stat-done" style="color: #34c759;">0</div><div class="stat-card-subtext">이번 주 완료</div></div>
+                        <div class="stat-card-apple"><div class="stat-card-label">팀 멤버</div><div class="stat-card-value">1</div><div class="stat-card-subtext">활성 멤버</div></div>
                     </div>
 
                     <div class="start-section">
                         <h2 class="start-section-title">업무 캘린더</h2>
-                        
                         <div class="calendar-dashboard">
-                            <div class="calendar-header" style="margin-bottom: 1.5rem;">
-                                <div class="month-selector" style="font-size: 1.25rem;">
-                                    <button class="cal-nav-btn" onclick="prevMonth()" style="width:34px; height:34px;">&lt;</button>
-                                    <span id="cal-month-year">2026년 3월</span>
-                                    <button class="cal-nav-btn" onclick="nextMonth()" style="width:34px; height:34px;">&gt;</button>
+                            <div class="calendar-header">
+                                <div class="month-selector">
+                                    <button class="cal-nav-btn" onclick="prevMonth()">&lt;</button>
+                                    <span id="cal-month-year"></span>
+                                    <button class="cal-nav-btn" onclick="nextMonth()">&gt;</button>
                                 </div>
                             </div>
-                            <div class="calendar-grid" id="calendar-grid">
-                                <!-- Calendar Days -->
-                            </div>
+                            <div class="calendar-grid" id="calendar-grid"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- View 2: Task Manager -->
                 <div id="view-task" class="view-section">
                     <header class="header">
-                        <div class="header-left">
-                            <h1 style="margin-top: 1rem;">Work management</h1>
-                        </div>
+                        <div class="header-left"><h1>Work management</h1></div>
                         <div class="header-right">
-                            <div class="header-actions">
-                                <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="openDataModal()">⚙️ 데이터 관리</button>
-                                <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="openManualModal()">📖 사용 방법</button>
-                                <button class="btn btn-blue" onclick="openModal()">+ 새 일감 추가</button>
-                            </div>
                             <div class="stat-grid-header">
-                                <div class="stat-card-mini">
-                                    <h3>전체 일감</h3>
-                                    <div class="stat-value" id="stat-total">0</div>
-                                </div>
-                                <div class="stat-card-mini">
-                                    <h3>진행전 대기</h3>
-                                    <div class="stat-value" id="stat-todo" style="color: var(--danger);">0</div>
-                                </div>
-                                <div class="stat-card-mini">
-                                    <h3>개발 진행중</h3>
-                                    <div class="stat-value" id="stat-progress" style="color: var(--warning);">0</div>
-                                </div>
-                                <div class="stat-card-mini">
-                                    <h3>완료</h3>
-                                    <div class="stat-value" id="stat-done" style="color: var(--success);">0</div>
-                                </div>
+                                <div class="stat-card-mini"><h3>전체</h3><div id="stat-total" class="stat-value">0</div></div>
+                                <div class="stat-card-mini"><h3>진행전</h3><div id="stat-todo" class="stat-value" style="color:var(--danger)">0</div></div>
+                                <div class="stat-card-mini"><h3>진행중</h3><div id="stat-progress" class="stat-value" style="color:var(--warning)">0</div></div>
+                                <div class="stat-card-mini"><h3>완료</h3><div id="stat-done" class="stat-value" style="color:var(--success)">0</div></div>
                             </div>
+                            <button class="btn-purple" style="margin-top:1rem" onclick="openModal()">+ 새 일감 추가</button>
                         </div>
                     </header>
-
                     <div class="search-bar-container">
                         <div class="search-input-wrapper">
                             <input type="text" id="search-input" class="search-input" placeholder="일감명, 업무번호로 검색..." onkeyup="confirmSearch()">
+                            <div id="recent-task-banner" class="recent-task-banner" style="display:none">
+                                <div class="recent-task-info"><span class="recent-task-label">LATEST</span><span id="recent-task-text" class="recent-task-text-content"></span></div>
+                                <button class="btn-copy-action" onclick="copyRecentTask()">복사</button>
+                            </div>
                         </div>
                     </div>
-
                     <div id="task-card-container" class="task-card-grid"></div>
-
-                    <div style="text-align: center;">
-                        <button id="btn-load-more" class="btn btn-outline" onclick="loadMore()" style="display: none; padding: 1.2rem 4rem; font-size: 1.1rem; border-radius: 3rem;">더 보기</button>
-                        <button id="btn-reset-start" class="btn btn-outline" onclick="resetToStart()" style="display: none; margin-left: 1rem; padding: 1.2rem 4rem; font-size: 1.1rem; border-radius: 3rem;">처음으로</button>
+                    <div style="text-align:center">
+                        <button id="btn-load-more" class="btn-mini" onclick="loadMore()" style="display:none; padding:1rem 2rem; border-radius:2rem">더 보기</button>
                     </div>
                 </div>
 
-                <!-- View 3: News -->
                 <div id="view-news" class="view-section">
-                    <header class="header"><div class="header-left"><h1 style="margin-top: 1rem;">실시간 뉴스</h1></div></header>
-                    <div class="news-box-wide">
-                        <div style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 20l-7-7-7 7V4h14v16z"></path></svg>
-                            TODAY'S HOT ISSUE (10)
-                        </div>
-                        <div id="news-content" style="font-size: 1.1rem; line-height: 1.6; color: var(--text-main); font-weight: 500;">
-                            뉴스를 불러오는 중...
-                        </div>
-                    </div>
+                    <h1 style="margin-bottom:2rem">실시간 뉴스</h1>
+                    <div class="start-section" id="news-content">뉴스를 불러오는 중...</div>
                 </div>
 
-                <!-- View 4: Weather -->
                 <div id="view-weather" class="view-section">
-                    <header class="header"><div class="header-left"><h1 style="margin-top: 1rem;">지역별 날씨</h1></div></header>
-                    <div style="background: var(--bg-surface); border-radius: 2.5rem; padding: 4rem; text-align: center; max-width: 800px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                        <div style="font-size: 7rem; margin-bottom: 1rem;" id="weather-icon-lg">☀️</div>
-                        <div style="font-size: 4.5rem; font-weight: 700; margin-bottom: 1rem;" id="weather-temp-lg">--°</div>
-                        <div style="font-size: 1.4rem; color: var(--text-muted); margin-bottom: 3rem;">기온 정보 (서울 기준)</div>
-                        <div id="forecast-grid" class="forecast-grid">
-                            <!-- weather rendered here -->
-                        </div>
+                    <h1 style="margin-bottom:2rem">지역별 날씨</h1>
+                    <div class="start-section" style="text-align:center">
+                        <div style="font-size:5rem" id="weather-icon-lg">☀️</div>
+                        <div style="font-size:3rem; font-weight:700" id="weather-temp-lg">--°</div>
+                        <div id="forecast-grid" class="forecast-grid"></div>
                     </div>
                 </div>
 
@@ -828,130 +246,50 @@
         </main>
     </div>
 
-    <!-- Menus Modal -->
-    <div class="modal-overlay" id="menu-modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close" onclick="closeMenuModal()">&times;</button>
-            <div class="modal-header">
-                <h2>새 메뉴 등록</h2>
-            </div>
-            <form id="menu-form" onsubmit="event.preventDefault(); saveMenu();">
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">메뉴명 (필수)</label>
-                    <input type="text" id="menu-name" class="form-control" required placeholder="메뉴 이름 입력">
-                </div>
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">URL (선택)</label>
-                    <input type="url" id="menu-url" class="form-control" placeholder="https://example.com (외부 링크시력)">
-                </div>
-                <div class="form-group" style="margin-bottom: 2.5rem; flex-direction: row; align-items: center; gap: 0.8rem;">
-                    <input type="checkbox" id="menu-blank" style="width: 1.2rem; height: 1.2rem;">
-                    <label class="form-label" style="margin: 0;" for="menu-blank">새창으로 열기</label>
-                </div>
-                <button type="submit" class="btn btn-blue" style="width: 100%; padding: 1.2rem; font-size: 1.1rem;">메뉴 추가하기</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Task Form Modal -->
+    <!-- v2.2: Full Field Restoration + Detail Grid Fix + Date Fix -->
+    <!-- Modals -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
-            <div class="modal-header">
-                <h2 id="modal-title">일감 상세 편집</h2>
-            </div>
+            <div class="modal-header"><h2 id="modal-title">편집</h2></div>
             <form id="task-form">
                 <input type="hidden" id="task-id">
                 <div class="form-grid">
-                    <div class="form-group col-span-2"><label class="form-label">일감명</label><input type="text" id="title" class="form-control" required></div>
-                    <div class="form-group"><label class="form-label">접수일</label><input type="date" id="receive_date" class="form-control" lang="en-CA"></div>
-                    <div class="form-group"><label class="form-label">상태</label>
-                        <select id="status" class="form-control">
-                            <option value="todo">진행전</option>
-                            <option value="progress">진행중</option>
-                            <option value="done">완료</option>
-                        </select>
-                    </div>
+                    <div class="form-group col-span-3"><label class="form-label">일감명</label><input type="text" id="title" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">접수일</label><input type="text" id="receive_date" class="form-control" placeholder="YYYY-MM-DD"></div>
+                    <div class="form-group"><label class="form-label">시작일</label><input type="text" id="start_date" class="form-control" placeholder="YYYY-MM-DD"></div>
+                    <div class="form-group"><label class="form-label">종료일</label><input type="text" id="end_date" class="form-control" placeholder="YYYY-MM-DD"></div>
+                    <div class="form-group"><label class="form-label">상태</label><select id="status" class="form-control" onchange="updateStatusColor()"><option value="todo">진행전</option><option value="progress">진행중</option><option value="done">완료</option></select></div>
                     <div class="form-group"><label class="form-label">업무번호</label><input type="text" id="work_no" class="form-control"></div>
                     <div class="form-group"><label class="form-label">일감번호</label><input type="text" id="task_no" class="form-control"></div>
-                    
-                    <div class="form-group"><label class="form-label">시작일</label><input type="date" id="start_date" class="form-control" lang="en-CA"></div>
-                    <div class="form-group"><label class="form-label">종료일</label><input type="date" id="end_date" class="form-control" lang="en-CA"></div>
-                    
-                    <div class="form-group"><label class="form-label">개발배포</label><input type="date" id="dev_date" class="form-control" lang="en-CA"></div>
-                    <div class="form-group"><label class="form-label">운영배포</label><input type="date" id="prod_date" class="form-control" lang="en-CA"></div>
-                    
-                    <div class="form-group col-span-2"><label class="form-label">테스트 상품번호</label><textarea id="test_product_no" class="form-control" rows="2"></textarea></div>
-                    <div class="form-group col-span-2"><label class="form-label">참고내용</label><textarea id="reference" class="form-control" rows="3"></textarea></div>
-                    <div class="form-group col-span-2"><label class="form-label">퍼블 내용</label><textarea id="pub_content" class="form-control" rows="3"></textarea></div>
-                    <div class="form-group col-span-2"><label class="form-label">비고 (Notes)</label><textarea id="notes" class="form-control" rows="2"></textarea></div>
-                    <div class="form-group col-span-2"><label class="form-label">수정파일</label><textarea id="modified_files" class="form-control" rows="2"></textarea></div>
+                    <div class="form-group"><label class="form-label">배포일</label><input type="text" id="deploy_date" class="form-control" placeholder="YYYY-MM-DD"></div>
+                    <div class="form-group"></div>
+                    <div class="form-group"></div>
+
+                    <div class="form-group col-span-3"><label class="form-label">상품번호</label><textarea id="product_no" class="form-control" rows="2"></textarea></div>
+                    <div class="form-group col-span-3"><label class="form-label">참고내용</label><textarea id="reference" class="form-control" rows="5"></textarea></div>
+                    <div class="form-group col-span-3"><label class="form-label">퍼블내용</label><textarea id="pub_content" class="form-control" rows="3"></textarea></div>
+                    <div class="form-group col-span-3"><label class="form-label">비고</label><textarea id="remarks" class="form-control" rows="3"></textarea></div>
                 </div>
-                <div style="margin-top: 3rem; text-align: center;">
-                    <button type="button" class="btn btn-blue" onclick="saveTask()" style="width: 100%; padding: 1.25rem; font-size: 1.1rem;">정보 저장 및 업데이트</button>
-                </div>
+                <div class="modal-footer"><button type="button" class="btn-save-main" onclick="saveTask()">저장</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Detail Modal -->
     <div class="modal-overlay" id="detail-modal">
-        <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-content" style="max-width:800px">
             <button class="modal-close" onclick="closeDetail()">&times;</button>
-            <div id="detail-content" style="display: flex; flex-direction: column; gap: 2.5rem;">
-                <!-- JS Content -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Data Management Modal -->
-    <div class="modal-overlay" id="data-modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeDataModal()">&times;</button>
-            <div class="modal-header"><h2>데이터 관리</h2></div>
-            <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                <button class="btn btn-outline" style="flex: 1; padding: 1.2rem;" onclick="exportToJSONFile()">JSON 다운로드</button>
-                <button class="btn btn-outline" style="flex: 1; padding: 1.2rem;" onclick="copyJSONToClipboard()">JSON 복사</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">JSON 데이터 가져오기</label>
-                <textarea id="import-json-area" class="form-control" rows="6" placeholder="JSON 텍스트 입력..." style="background: var(--bg-surface); padding: 1.5rem;"></textarea>
-                <button class="btn btn-blue" style="margin-top: 1.5rem; width: 100%; padding: 1.2rem;" onclick="importFromJSON()">데이터 덮어쓰기</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- News Detail Modal -->
-    <div class="modal-overlay" id="news-modal">
-        <div class="modal-content" style="max-width: 700px; padding: 3rem;">
-            <button class="modal-close" onclick="closeNewsModal()">&times;</button>
-            <div id="news-detail-content">
-                <!-- JS Content -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Manual Modal -->
-    <div class="modal-overlay" id="manual-modal">
-        <div class="modal-content" style="max-width: 700px; padding: 3rem;">
-            <button class="modal-close" onclick="closeManualModal()">&times;</button>
-            <div class="modal-header">
-                <h2>사용 방법</h2>
-            </div>
-            <div style="line-height:1.6; color:var(--text-main);">
-                대시보드에서 일감을 등록 및 관리하세요.
-            </div>
+            <div id="detail-content"></div>
         </div>
     </div>
 
     <script>
-        // =========================================
-        // [JS Core Logic]
-        // =========================================
         let tasks = [];
         let newsItems = [];
         let visibleCount = 3;
         let currentSearchQuery = '';
+        let currentView = 'view-dashboard';
+        let calDate = new Date();
         
         let menus = [
             { id: 'dashboard', name: '대시보드', icon: '📊', viewId: 'view-dashboard' },
@@ -959,15 +297,6 @@
             { id: 'news', name: '실시간 뉴스', icon: '📰', viewId: 'view-news' },
             { id: 'weather', name: '지역별 날씨', icon: '⛅', viewId: 'view-weather' }
         ];
-        
-        // Load custom menus if any
-        const savedMenus = localStorage.getItem('custom_menus');
-        if (savedMenus) {
-            try { menus = JSON.parse(savedMenus); } catch(e) {}
-        }
-        
-        let currentView = 'view-dashboard';
-        let calDate = new Date();
 
         async function init() {
             renderSidebar();
@@ -975,34 +304,37 @@
             fetchNews();
             fetchWeather();
             render();
-            switchView(currentView); // will trigger renderCalendar if dashboard
+            switchView(currentView);
             setInterval(fetchNews, 15 * 60 * 1000);
         }
 
         function renderSidebar() {
             const nav = document.getElementById('sidebar-nav');
+            if(!nav) return;
             nav.innerHTML = menus.map(m => `
-                <div class="nav-item ${currentView === m.viewId ? 'active' : ''}" 
-                     onclick="handleMenuClick('${m.id}')">
+                <div class="nav-item ${currentView === m.viewId ? 'active' : ''}" onclick="handleMenuClick('${m.id}')">
                     <div class="nav-icon">${m.icon}</div>
                     <div class="nav-text">${m.name}</div>
                 </div>
             `).join('');
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
         function handleMenuClick(id) {
             const menu = menus.find(m => m.id === id);
             if (!menu) return;
-            if (menu.url) {
-                if (menu.blank) window.open(menu.url, '_blank');
-                else window.location.href = menu.url;
-            } else if (menu.viewId) {
-                switchView(menu.viewId);
-            }
+            currentView = menu.viewId || 'view-task';
+            switchView(currentView);
+            
+            // Sync Title
+            setTimeout(() => {
+                const activeViewEl = document.getElementById(currentView);
+                if (activeViewEl) {
+                    const titleH1 = activeViewEl.querySelector('h1');
+                    if (titleH1) titleH1.innerText = menu.name;
+                }
+            }, 50);
         }
 
         function switchView(viewId) {
@@ -1014,221 +346,66 @@
             if (viewId === 'view-dashboard') renderCalendar();
         }
 
-        // ====================
-        // Calendar Dashboard
-        // ====================
-        function renderCalendar() {
-            const year = calDate.getFullYear();
-            const month = calDate.getMonth();
-            document.getElementById('cal-month-year').innerText = `${year}년 ${month + 1}월`;
-            
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const daysInPrevMonth = new Date(year, month, 0).getDate();
-            
-            let html = '';
-            
-            // Fixed header
-            html += `
-                <div class="cal-day-header sun">일</div>
-                <div class="cal-day-header">월</div>
-                <div class="cal-day-header">화</div>
-                <div class="cal-day-header">수</div>
-                <div class="cal-day-header">목</div>
-                <div class="cal-day-header">금</div>
-                <div class="cal-day-header sat">토</div>
-            `;
-            
-            // Prev month padding
-            for (let i = firstDay - 1; i >= 0; i--) {
-                const d = daysInPrevMonth - i;
-                html += `<div class="cal-cell other-month"><div class="cal-date-num">${d}</div></div>`;
-            }
-            
-            // Current month days
-            const today = new Date();
-            for (let i = 1; i <= daysInMonth; i++) {
-                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === i;
-                const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-                
-                // Active tasks intersecting with this day
-                const dayTasks = tasks.filter(t => {
-                    return (t.start_date === dStr) || (!t.start_date && t.receive_date === dStr);
-                });
-                
-                const dotsHtml = dayTasks.map(t => `
-                    <div class="cal-event-dot-wrapper" title="${t.title}" onclick="event.stopPropagation(); showDetail('${t.id}')">
-                        <div class="cal-event-dot ${t.status}"></div>
-                        <span style="overflow:hidden; text-overflow:ellipsis;">${t.title}</span>
-                    </div>
-                `).join('');
-                
-                const classes = `cal-cell ${isToday ? 'today' : ''}`;
-                const numClasses = `cal-date-num ${(firstDay + i - 1) % 7 === 0 ? 'sun' : (firstDay + i - 1) % 7 === 6 ? 'sat' : ''}`;
-                
-                html += `
-                    <div class="${classes}">
-                        <div class="${numClasses}">${i}</div>
-                        <div class="cal-events">${dotsHtml}</div>
-                    </div>
-                `;
-            }
-            
-            // Next month padding
-            const totalCells = firstDay + daysInMonth;
-            const nextDays = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-            for (let i = 1; i <= nextDays; i++) {
-                html += `<div class="cal-cell other-month"><div class="cal-date-num">${i}</div></div>`;
-            }
-            
-            const grid = document.getElementById('calendar-grid');
-            if(grid) grid.innerHTML = html;
-        }
-
-        function prevMonth() { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); }
-        function nextMonth() { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); }
-        
-        function openModalForDate(dateStr) {
-            openModal();
-            setTimeout(() => {
-                document.getElementById('receive_date').value = dateStr;
-                document.getElementById('start_date').value = dateStr;
-            }, 50);
-        }
-
-        // ====================
-        // Menu Management
-        // ====================
-        function openMenuModal() {
-            document.getElementById('menu-form').reset();
-            document.getElementById('menu-modal').classList.add('active');
-        }
-        function closeMenuModal() {
-            document.getElementById('menu-modal').classList.remove('active');
-        }
-        function saveMenu() {
-            const name = document.getElementById('menu-name').value;
-            const url = document.getElementById('menu-url').value;
-            const blank = document.getElementById('menu-blank').checked;
-            
-            menus.push({
-                id: 'menu_' + Date.now(),
-                name, url, blank, icon: '🔗'
-            });
-            localStorage.setItem('custom_menus', JSON.stringify(menus));
-            closeMenuModal();
-            renderSidebar();
-        }
-
-        // ====================
-        // Tasks Logic
-        // ====================
         async function loadTasks() {
             const saved = localStorage.getItem('tasks');
             if (saved) tasks = JSON.parse(saved);
-
-            try {
-                const res = await fetch('task-manager.json', { cache: 'no-store' });
-                if (res.ok) {
-                    const jsonTasks = await res.json();
-                    if (Array.isArray(jsonTasks)) {
-                        const taskMap = new Map();
-                        tasks.forEach(t => taskMap.set(t.id, t));
-                        jsonTasks.forEach(t => taskMap.set(t.id, t));
-                        tasks = Array.from(taskMap.values()).sort((a,b) => new Date(b.updated_at || b.id) - new Date(a.updated_at || a.id));
-                        localStorage.setItem('tasks', JSON.stringify(tasks));
-                    }
-                }
-            } catch(e) { console.warn("JSON fetch skipped", e); }
         }
 
         function render() {
             const container = document.getElementById('task-card-container');
-            const filtered = tasks.filter(t => 
-                t.title.toLowerCase().includes(currentSearchQuery.toLowerCase()) || 
-                (t.work_no && t.work_no.includes(currentSearchQuery))
-            );
-
-            container.innerHTML = '';
-            const toShow = filtered.slice(0, visibleCount);
-
-            if (toShow.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 5rem; color: var(--text-muted); font-size: 1.2rem;">검색 결과가 없습니다.</div>';
-            }
-
-            toShow.forEach(t => {
-                const card = document.createElement('div');
-                card.className = 'task-card-apple';
-                card.innerHTML = `
-                    <div class="card-header-info">#${t.work_no || '미정'}</div>
-                    <div class="card-title" title="${t.title}">${t.title}</div>
-                    <div class="card-meta-row">
-                        <span class="meta-item">접수: <b>${formatDate(t.receive_date)}</b></span>
-                        <span class="meta-item">운영: <b>${formatDate(t.prod_date)}</b></span>
-                    </div>
+            if(!container) return;
+            const filtered = tasks.filter(t => t.title.toLowerCase().includes(currentSearchQuery.toLowerCase()));
+            
+            updateStats();
+            updateRecentTaskBanner();
+            
+            const displayTasks = filtered.slice(0, visibleCount);
+            container.innerHTML = displayTasks.map(t => `
+                <div class="task-card-apple">
+                    <div class="card-header-info">#${t.task_no || '-'} [${t.work_no || '-'}]</div>
+                    <div class="card-title">${t.title}</div>
                     <div class="card-footer">
-                        <span class="card-badge ${t.status}">${t.status === 'todo' ? '대기' : t.status === 'progress' ? '진행' : '완료'}</span>
+                        <div class="card-badge ${t.status}">${t.status}</div>
                         <div class="card-actions">
-                            <button class="btn-mini" onclick="event.stopPropagation(); showDetail('${t.id}')">조회</button>
-                            <button class="btn-mini" onclick="event.stopPropagation(); openModal('${t.id}')">수정</button>
-                            <button class="btn-mini delete" onclick="event.stopPropagation(); deleteTask('${t.id}')">삭제</button>
+                            <button class="btn-mini" onclick="showDetail('${t.id}')">보기</button>
+                            <button class="btn-mini" onclick="openModal('${t.id}')">수정</button>
                         </div>
                     </div>
-                `;
-                container.appendChild(card);
-            });
-
-            document.getElementById('btn-load-more').style.display = filtered.length > visibleCount ? 'inline-block' : 'none';
-            document.getElementById('btn-reset-start').style.display = visibleCount > 3 ? 'inline-block' : 'none';
-            updateStats();
+                </div>
+            `).join('');
+            
+            const btn = document.getElementById('btn-load-more');
+            if(btn) btn.style.display = filtered.length > visibleCount ? 'block' : 'none';
         }
 
         function updateStats() {
-            const total = tasks.length;
-            const todo = tasks.filter(t => t.status === 'todo').length;
-            const progress = tasks.filter(t => t.status === 'progress').length;
-            const done = tasks.filter(t => t.status === 'done').length;
-
-            if (document.getElementById('stat-total')) document.getElementById('stat-total').innerText = total;
-            if (document.getElementById('stat-todo')) document.getElementById('stat-todo').innerText = todo;
-            if (document.getElementById('stat-progress')) document.getElementById('stat-progress').innerText = progress;
-            if (document.getElementById('stat-done')) document.getElementById('stat-done').innerText = done;
-            
-            // Dashboard stats
-            if (document.getElementById('dash-stat-total')) document.getElementById('dash-stat-total').innerText = total;
-            if (document.getElementById('dash-stat-progress')) document.getElementById('dash-stat-progress').innerText = progress;
-            if (document.getElementById('dash-stat-done')) document.getElementById('dash-stat-done').innerText = done;
+            const stats = { total: tasks.length, todo: 0, progress: 0, done: 0 };
+            tasks.forEach(t => { if(stats[t.status] !== undefined) stats[t.status]++; });
+            ['stat', 'dash-stat'].forEach(prefix => {
+                ['total', 'todo', 'progress', 'done'].forEach(key => {
+                    const el = document.getElementById(`${prefix}-${key}`);
+                    if(el) el.innerText = stats[key];
+                });
+            });
         }
 
-        function showDetail(id) {
-            const t = tasks.find(x => x.id === id);
-            if (!t) return;
-            const content = document.getElementById('detail-content');
-            content.innerHTML = `
-                <div style="border-bottom: 2px solid var(--bg-surface); padding-bottom: 1.5rem;">
-                    <div style="font-size: 0.9rem; color: var(--primary); font-weight: 700; margin-bottom: 0.5rem;">TASK SPECIFICATION</div>
-                    <h2 style="font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em;">${t.title}</h2>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
-                    <div class="form-group"><label class="form-label">상태</label><div class="card-badge ${t.status}" style="display:inline-block; width:fit-content">${t.status}</div></div>
-                    <div class="form-group"><label class="form-label">업무번호</label><div style="font-weight:700">#${t.work_no || '-'}</div></div>
-                    <div class="form-group"><label class="form-label">일감번호</label><div style="font-weight:700">${t.task_no || '-'}</div></div>
-                    <div class="form-group"><label class="form-label">접수일</label><div>${t.receive_date || '-'}</div></div>
-                    <div class="form-group"><label class="form-label">시작 ~ 종료</label><div>${t.start_date || '-'} ~ ${t.end_date || '-'}</div></div>
-                    <div class="form-group"><label class="form-label">개발 ~ 운영 배포</label><div>${t.dev_date || '-'} / ${t.prod_date || '-'}</div></div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
-                    <div style="background: var(--bg-surface); padding: 2rem; border-radius: 1.5rem;">
-                        <label class="form-label">참고내용</label>
-                        <div style="white-space:pre-wrap; line-height:1.6; margin-top:0.5rem;">${t.reference || '내용 없음'}</div>
-                    </div>
-                </div>
-                <div style="display:flex; gap: 1rem; margin-top: 1rem;">
-                    <button class="btn btn-blue" style="flex:2; padding:1.2rem;" onclick="openModal('${t.id}')">정보 수정하기</button>
-                    <button class="btn" style="background: var(--danger); flex:1;" onclick="deleteTask('${t.id}')">삭제</button>
-                </div>
-            `;
-            document.getElementById('detail-modal').classList.add('active');
+        function updateRecentTaskBanner() {
+            const banner = document.getElementById('recent-task-banner');
+            const textEl = document.getElementById('recent-task-text');
+            if (!banner || !textEl) return;
+            if (tasks.length === 0) { banner.style.display = 'none'; return; }
+            banner.style.display = 'flex';
+            const latest = tasks[0];
+            textEl.innerText = `#${latest.task_no || '번호없음'} [${latest.work_no || '업무없음'}] ${latest.title}`;
+        }
+
+        function copyRecentTask() {
+            const textEl = document.getElementById('recent-task-text');
+            navigator.clipboard.writeText(textEl.innerText).then(() => {
+                const btn = document.querySelector('.btn-copy-action');
+                const old = btn.innerText; btn.innerText = '복사 완료!';
+                setTimeout(() => btn.innerText = old, 1500);
+            });
         }
 
         function saveTask() {
@@ -1240,31 +417,23 @@
                 status: document.getElementById('status').value,
                 work_no: document.getElementById('work_no').value,
                 task_no: document.getElementById('task_no').value,
+                product_no: document.getElementById('product_no').value,
+                deploy_date: document.getElementById('deploy_date').value,
+                pub_content: document.getElementById('pub_content').value,
+                remarks: document.getElementById('remarks').value,
                 start_date: document.getElementById('start_date').value,
                 end_date: document.getElementById('end_date').value,
-                dev_date: document.getElementById('dev_date').value,
-                prod_date: document.getElementById('prod_date').value,
-                test_product_no: document.getElementById('test_product_no').value,
                 reference: document.getElementById('reference').value,
-                pub_content: document.getElementById('pub_content').value,
-                notes: document.getElementById('notes').value,
-                modified_files: document.getElementById('modified_files').value,
                 updated_at: new Date().toISOString()
             };
-
-            if(!task.title) return alert("일감명을 입력하세요.");
             if(id) tasks = tasks.map(t => t.id === id ? task : t);
             else tasks.unshift(task);
-
             localStorage.setItem('tasks', JSON.stringify(tasks));
-            closeModal();
-            render();
-            if(currentView === 'view-dashboard') renderCalendar();
+            closeModal(); render();
         }
 
         function openModal(id) {
             document.getElementById('modal').classList.add('active');
-            
             if(id) {
                 const t = tasks.find(x => x.id === id);
                 document.getElementById('task-id').value = t.id;
@@ -1272,52 +441,98 @@
                 document.getElementById('status').value = t.status;
                 document.getElementById('work_no').value = t.work_no;
                 document.getElementById('task_no').value = t.task_no;
-                
-                const dateFields = ['receive_date', 'start_date', 'end_date', 'dev_date', 'prod_date'];
-                dateFields.forEach(fid => {
-                    const el = document.getElementById(fid);
-                    el.value = t[fid] || '';
-                    el.type = 'date';
-                });
-
-                document.getElementById('test_product_no').value = t.test_product_no || '';
+                document.getElementById('product_no').value = t.product_no || '';
+                document.getElementById('deploy_date').value = t.deploy_date || '';
+                document.getElementById('pub_content').value = t.pub_content || '';
+                document.getElementById('remarks').value = t.remarks || '';
+                document.getElementById('receive_date').value = t.receive_date || '';
+                document.getElementById('start_date').value = t.start_date || '';
+                document.getElementById('end_date').value = t.end_date || '';
                 document.getElementById('reference').value = t.reference || '';
-                document.getElementById('modal-title').innerText = "일감 상세 수정";
+                document.getElementById('modal-title').innerText = '일감 수정';
             } else {
                 document.getElementById('task-form').reset();
                 document.getElementById('task-id').value = '';
-                document.getElementById('modal-title').innerText = "새 일감 등록";
+                document.getElementById('modal-title').innerText = '새 일감 등록';
             }
+            updateStatusColor();
         }
 
-        // ====================
-        // Other Utils & Data
-        // ====================
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        function closeDetail() { document.getElementById('detail-modal').classList.remove('active'); }
+
+        function showDetail(id) {
+            const t = tasks.find(x => x.id === id);
+            const statusMap = { todo: '진행전', progress: '진행중', done: '완료' };
+            const statusColorMap = { todo: '#ff3b30', progress: '#ff9500', done: '#34c759' };
+            const statusColor = statusColorMap[t.status] || '#1d1d1f';
+            
+            document.getElementById('detail-content').innerHTML = `
+                <div class="modal-header">
+                    <h2 style="font-size: 1.8rem; font-weight: 800; color: #1d1d1f; margin-bottom: 0.5rem;">${t.title}</h2>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <span style="color: ${statusColor}; font-weight: 800; font-size: 1.1rem;">${statusMap[t.status] || t.status}</span>
+                        <span style="color: #0071e3; font-weight: 700; font-size: 1.1rem;">#${t.task_no || '-'}</span>
+                        <span style="color: #5e5ce6; font-weight: 700; font-size: 1.1rem;">[${t.work_no || '-'}]</span>
+                    </div>
+                </div>
+                <div class="form-grid" style="margin-top: 2rem;">
+                    <div class="form-group"><label class="form-label">접수일</label><div class="form-control" style="background: #f5f5f7; border: none;">${t.receive_date || '-'}</div></div>
+                    <div class="form-group"><label class="form-label">시작일</label><div class="form-control" style="background: #f5f5f7; border: none;">${t.start_date || '-'}</div></div>
+                    <div class="form-group"><label class="form-label">종료일</label><div class="form-control" style="background: #f5f5f7; border: none;">${t.end_date || '-'}</div></div>
+                    
+                    <div class="form-group"><label class="form-label">배포일</label><div class="form-control" style="background: #f5f5f7; border: none;">${t.deploy_date || '-'}</div></div>
+                    <div class="form-group"></div>
+                    <div class="form-group"></div>
+
+                    <div class="form-group col-span-3"><label class="form-label">상품번호</label><div class="form-control" style="background: #f5f5f7; border: none; min-height: 50px; white-space: pre-wrap;">${t.product_no || '-'}</div></div>
+                    <div class="form-group col-span-3">
+                        <label class="form-label">참고내용</label>
+                        <div class="form-control" style="background: #f5f5f7; border: none; min-height: 150px; white-space: pre-wrap;">${t.reference || '내용 없음'}</div>
+                    </div>
+                    <div class="form-group col-span-3"><label class="form-label">퍼블내용</label><div class="form-control" style="background: #f5f5f7; border: none; min-height: 80px; white-space: pre-wrap;">${t.pub_content || '-'}</div></div>
+                    <div class="form-group col-span-3"><label class="form-label">비고</label><div class="form-control" style="background: #f5f5f7; border: none; min-height: 80px; white-space: pre-wrap;">${t.remarks || '-'}</div></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-purple" style="background: #0071e3; padding: 0.8rem 3rem; border-radius: 1rem; font-weight: 700;" onclick="closeDetail(); openModal('${t.id}')">수정하기</button>
+                </div>
+            `;
+            document.getElementById('detail-modal').classList.add('active');
+        }
+
+        function renderCalendar() {
+            const year = calDate.getFullYear();
+            const month = calDate.getMonth();
+            document.getElementById('cal-month-year').innerText = `${year}년 ${month + 1}월`;
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let html = '<div class="cal-day-header sun">일</div><div class="cal-day-header">월</div><div class="cal-day-header">화</div><div class="cal-day-header">수</div><div class="cal-day-header">목</div><div class="cal-day-header">금</div><div class="cal-day-header sat">토</div>';
+            for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell other-month"></div>';
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const dayTasks = tasks.filter(t => t.receive_date === dStr);
+                const dots = dayTasks.map(t => `<div class="cal-event-dot ${t.status}"></div>`).join('');
+                html += `<div class="cal-cell"><div class="cal-date-num">${i}</div><div class="cal-events">${dots}</div></div>`;
+            }
+            document.getElementById('calendar-grid').innerHTML = html;
+        }
+
+        function prevMonth() { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); }
+        function nextMonth() { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); }
+        
+        function updateStatusColor() { const el = document.getElementById('status'); if(el) el.className = 'form-control status-' + el.value; }
+        function confirmSearch() { currentSearchQuery = document.getElementById('search-input').value; render(); }
+        function loadMore() { visibleCount += 3; render(); }
+        
         async function fetchNews() {
-            const content = document.getElementById('news-content');
             try {
-                const feedUrl = encodeURIComponent('https://news.google.com/rss/search?q=hot+issues&hl=ko&gl=KR&ceid=KR:ko');
-                const response = await fetch(`https://api.allorigins.win/get?url=${feedUrl}`);
-                if (!response.ok) throw new Error('서버 응답 오류 (' + response.status + ')');
-                
-                const data = await response.json();
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://news.google.com/rss/search?q=hot+issues&hl=ko&gl=KR&ceid=KR:ko')}`);
+                const data = await res.json();
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(data.contents, "text/xml");
                 const items = Array.from(xml.querySelectorAll('item')).slice(0, 10);
-                
-                if (items.length === 0) throw new Error('현재 핫이슈 뉴스가 없습니다.');
-                newsItems = items.map(item => ({
-                    title: item.querySelector('title')?.textContent || '제목 없음',
-                    link: item.querySelector('link')?.textContent || '#',
-                    description: item.querySelector('description')?.textContent || '상세 내용 없음'
-                }));
-                content.innerHTML = newsItems.map((item, idx) => `
-                    <div class="news-item" onclick="showNewsDetail(${idx})">
-                        <span style="color:var(--primary); font-weight:700; margin-right:0.5rem;">${idx + 1}.</span> 
-                        ${item.title.split(' - ')[0]}
-                    </div>
-                `).join('');
-            } catch (e) { content.innerHTML = `<div class="news-error">뉴스 로딩 실패: ${e.message}</div>`; }
+                document.getElementById('news-content').innerHTML = items.map((item, idx) => `<div class="news-item">${idx + 1}. ${item.querySelector('title').textContent}</div>`).join('');
+            } catch (e) { document.getElementById('news-content').innerHTML = '뉴스 로딩 실패'; }
         }
 
         const weatherIcons = { 0: '☀️', 1: '🌤', 2: '⛅', 3: '☁️', 61: '🌧', 63: '🌧', 65: '🌧', 80: '🌧', 95: '⛈', 97: '⛈', 71: '❄️', 73: '❄️' };
@@ -1325,62 +540,13 @@
             try {
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=3`);
                 const data = await res.json();
-                const wCode = data.current.weather_code;
-                const temp = Math.round(data.current.temperature_2m);
-                
-                const lgIcon = document.getElementById('weather-icon-lg');
-                const lgTemp = document.getElementById('weather-temp-lg');
-                const grid = document.getElementById('forecast-grid');
-
-                if(lgIcon) lgIcon.innerText = weatherIcons[wCode] || '⛅';
-                if(lgTemp) lgTemp.innerText = `${temp}°`;
-                
-                if(grid) {
-                    grid.innerHTML = '';
-                    for(let i=0; i<3; i++) {
-                        grid.innerHTML += `
-                            <div class="forecast-day">
-                                <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom: 0.5rem;">${i===0?'오늘':i===1?'내일':'모레'}</div>
-                                <div class="forecast-icon">${weatherIcons[data.daily.weather_code[i]] || '⛅'}</div>
-                                <div class="forecast-temp">${Math.round(data.daily.temperature_2m_min[i])}° / ${Math.round(data.daily.temperature_2m_max[i])}°</div>
-                            </div>
-                        `;
-                    }
-                }
+                document.getElementById('weather-icon-lg').innerText = weatherIcons[data.current.weather_code] || '⛅';
+                document.getElementById('weather-temp-lg').innerText = `${Math.round(data.current.temperature_2m)}°`;
+                let html = '';
+                for(let i=0; i<3; i++) html += `<div class="forecast-day"><div>${i===0?'오늘':i===1?'내일':'모레'}</div><div class="forecast-icon">${weatherIcons[data.daily.weather_code[i]] || '⛅'}</div><div>${Math.round(data.daily.temperature_2m_min[i])}° / ${Math.round(data.daily.temperature_2m_max[i])}°</div></div>`;
+                document.getElementById('forecast-grid').innerHTML = html;
             } catch(e) {}
         }
-
-        function showNewsDetail(idx) {
-            const item = newsItems[idx];
-            if (!item) return;
-            const detail = document.getElementById('news-detail-content');
-            detail.innerHTML = `
-                <div class="modal-header"><h2 style="font-size: 1.8rem;">기사 상세 요약</h2></div>
-                <div style="margin: 2rem 0; font-size: 1.1rem; line-height: 1.8; color: var(--text-main);">
-                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.3rem;">${item.title}</h3>
-                    <div style="background: var(--bg-surface); padding: 1.5rem; border-radius: 1rem; color: var(--text-muted);">${item.description}</div>
-                </div>
-                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
-                    <a href="${item.link}" target="_blank" class="btn btn-blue" style="text-decoration: none; padding: 1rem 2rem;">원문 기사 보기</a>
-                    <button class="btn btn-outline" onclick="closeNewsModal()" style="padding: 1rem 2rem;">닫기</button>
-                </div>
-            `;
-            document.getElementById('news-modal').classList.add('active');
-        }
-
-        function closeNewsModal() { document.getElementById('news-modal').classList.remove('active'); }
-        function deleteTask(id) { if(confirm("정말 삭제할까요?")) { tasks = tasks.filter(t => t.id !== id); localStorage.setItem('tasks', JSON.stringify(tasks)); closeDetail(); render(); if(currentView === 'view-dashboard') renderCalendar(); } }
-        function confirmSearch() { currentSearchQuery = document.getElementById('search-input').value; visibleCount = 3; render(); }
-        function loadMore() { visibleCount += 3; render(); }
-        function resetToStart() { visibleCount = 3; render(); document.querySelector('.main-content').scrollTo({top:0, behavior:'smooth'}); }
-        function formatDate(d) { return d ? d.replace(/-/g, '.') : '-'; }
-        
-        function closeModal() { document.getElementById('modal').classList.remove('active'); }
-        function closeDetail() { document.getElementById('detail-modal').classList.remove('active'); }
-        function openDataModal() { document.getElementById('data-modal').classList.add('active'); }
-        function closeDataModal() { document.getElementById('data-modal').classList.remove('active'); }
-        function openManualModal() { document.getElementById('manual-modal').classList.add('active'); }
-        function closeManualModal() { document.getElementById('manual-modal').classList.remove('active'); }
 
         window.onload = init;
     </script>
