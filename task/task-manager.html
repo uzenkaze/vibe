@@ -1554,16 +1554,47 @@
         let currentCalendarDate = new Date();
 
         // 초기 로드
-        function init() {
+        async function init() {
+            // 1. LocalStorage 데이터 먼저 로드 (오프라인/캐시 대응)
             const savedData = localStorage.getItem('tasks');
             if (savedData) {
                 try {
                     tasks = JSON.parse(savedData);
                 } catch (e) {
-                    console.error("데이터 로드 실패", e);
+                    console.error("LocalStorage 데이터 로드 실패", e);
                     tasks = [];
                 }
             }
+
+            // 2. task-manager.json 파일 데이터 로드 및 병합 (GitHub 동기화 대응)
+            try {
+                // cache: 'no-store'를 사용하여 최신 데이터를 가져옴
+                const response = await fetch('task-manager.json', { cache: 'no-store' });
+                if (response.ok) {
+                    const jsonTasks = await response.json();
+                    if (Array.isArray(jsonTasks)) {
+                        // ID 기준으로 병합 (JSON 데이터를 우선순위로 둠)
+                        const taskMap = new Map();
+                        // 기존 로컬 데이터 먼저 담기
+                        tasks.forEach(t => { if(t.id) taskMap.set(t.id, t); });
+                        // JSON 데이터로 덮어쓰거나 추가
+                        jsonTasks.forEach(t => { if(t.id) taskMap.set(t.id, t); });
+                        
+                        // 다시 배열로 변환 및 정렬 (ID 또는 일시 기준 내림차순)
+                        tasks = Array.from(taskMap.values()).sort((a, b) => {
+                            const dateA = new Date(a.updated_at || a.id);
+                            const dateB = new Date(b.updated_at || b.id);
+                            return dateB - dateA;
+                        });
+
+                        // 병합된 데이터를 다시 LocalStorage에 저장
+                        localStorage.setItem('tasks', JSON.stringify(tasks));
+                    }
+                }
+            } catch (e) {
+                console.warn("JSON 파일 로드 실패 (파일이 없거나 권한 문제일 수 있음):", e);
+            }
+
             render();
             updateStats();
             renderCalendar();
