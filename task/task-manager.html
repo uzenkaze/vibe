@@ -838,129 +838,103 @@
     </style>
 </head>
 
-    <div class="store-header">
-        <h1>Task Store</h1>
-        <p style="font-size: 1.25rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 500;">
-            The best way to manage your project tasks, right here.
-        </p>
-    </div>
-
-    <div class="category-nav-wrapper">
-        <div class="category-nav">
-            <div class="category-item active" onclick="setCategory('all')">
-                <div class="category-icon">📂</div>
-                <div class="category-label">모든 일감</div>
-            </div>
-            <div class="category-item" onclick="setCategory('todo')">
-                <div class="category-icon">📝</div>
-                <div class="category-label">진행전</div>
-            </div>
-            <div class="category-item" onclick="setCategory('progress')">
-                <div class="category-icon">⚙️</div>
-                <div class="category-label">진행중</div>
-            </div>
-            <div class="category-item" onclick="setCategory('done')">
-                <div class="category-icon">✅</div>
-                <div class="category-label">작업완료</div>
-            </div>
-            <div class="category-item" onclick="openDataModal()">
-                <div class="category-icon">⚙️</div>
-                <div class="category-label">데이터 관리</div>
-            </div>
-            <div class="category-item" onclick="openManualModal()">
-                <div class="category-icon">📖</div>
-                <div class="category-label">사용방법</div>
-            </div>
-        </div>
-    </div>
-
+<body>
     <div class="container">
-        <h2 class="hero-section-title">The latest. <span style="color: var(--text-muted);">Take a look at what's new.</span></h2>
-        
-        <div class="hero-grid">
-            <!-- All Tasks Card -->
-            <div class="hero-card light" onclick="setCategory('all')">
-                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_all_tasks_1774223743183.png" class="hero-card-img" alt="All Tasks">
-                <div class="hero-card-content">
-                    <div class="hero-card-tag">OVERALL</div>
-                    <div class="hero-card-title">All Tasks.</div>
-                    <div class="hero-card-desc">Manage everything in one place.</div>
-                </div>
-                <div class="hero-card-footer">
-                    <div class="hero-card-val" id="stat-total">0</div>
-                </div>
+        <!-- Header -->
+        <div class="header-content">
+            <h1>Personal Work Store</h1>
+            <p>The best way to manage your project tasks, right here.</p>
+        </div>
+
+        <!-- Filter Navigation -->
+        <div class="filter-nav">
+            <button class="filter-btn active" onclick="setCategory('all')">📂 모든 일감</button>
+            <button class="filter-btn" onclick="setCategory('todo')">📝 진행전</button>
+            <button class="filter-btn" onclick="setCategory('progress')">⚙️ 진행중</button>
+            <button class="filter-btn" onclick="setCategory('done')">✅ 완료됨</button>
+            <button class="filter-btn" onclick="openDataModal()">⚙️ 데이터 관리</button>
+            <button class="filter-btn" onclick="openManualModal()">📖 사용방법</button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stat-grid">
+            <div class="stat-card-refined" onclick="setCategory('all')">
+                <div class="tag">Overall</div>
+                <div class="title">All Task Items.</div>
+                <div class="val" id="stat-total" style="color: var(--primary);">0</div>
             </div>
-            
-            <!-- Todo Card -->
-            <div class="hero-card light" onclick="setCategory('todo')">
-                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_todo_tasks_1774223759710.png" class="hero-card-img" alt="Todo">
-                <div class="hero-card-content">
-                    <div class="hero-card-tag">NEW</div>
-                    <div class="hero-card-title">To-Do List.</div>
-                    <div class="hero-card-desc">Prepare for your next big thing.</div>
-                </div>
-                <div class="hero-card-footer">
-                    <div class="hero-card-val" id="stat-todo">0</div>
-                </div>
+            <div class="stat-card-refined" onclick="setCategory('todo')">
+                <div class="tag">Ready</div>
+                <div class="title">To-Do List.</div>
+                <div class="val" id="stat-todo" style="color: var(--text-muted);">0</div>
             </div>
-            
-            <!-- Progress Card -->
-            <div class="hero-card dark" onclick="setCategory('progress')">
-                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_progress_tasks_1774223774596.png" class="hero-card-img" alt="Progress">
-                <div class="hero-card-content">
-                    <div class="hero-card-title">In Progress.</div>
-                    <div class="hero-card-desc">Power through your development.</div>
-                </div>
-                <div class="hero-card-footer">
-                    <div class="hero-card-val" id="stat-progress">0</div>
-                </div>
+            <div class="stat-card-refined" onclick="setCategory('progress')">
+                <div class="tag">Active</div>
+                <div class="title">In Progress.</div>
+                <div class="val" id="stat-progress" style="color: var(--warning);">0</div>
             </div>
-            
-            <!-- Done Card -->
-            <div class="hero-card light" onclick="setCategory('done')">
-                <img src="C:\Users\1328493\.gemini\antigravity\brain\c9540ee1-54bd-479b-9673-fce42656b9ba\hero_done_tasks_1774223794322.png" class="hero-card-img" alt="Done">
-                <div class="hero-card-content">
-                    <div class="hero-card-tag">COMPLETED</div>
-                    <div class="hero-card-title">Done Tasks.</div>
-                    <div class="hero-card-desc">Celebrate your achievements.</div>
-                </div>
-                <div class="hero-card-footer">
-                    <div class="hero-card-val" id="stat-done">0</div>
-                </div>
+            <div class="stat-card-refined" onclick="setCategory('done')">
+                <div class="tag">Achievement</div>
+                <div class="title">Done Tasks.</div>
+                <div class="val" id="stat-done" style="color: var(--success);">0</div>
             </div>
         </div>
 
-        <!-- Secondary Section -->
-        <div class="dashboard-grid">
-            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Dashboard Main Content -->
+        <div class="dashboard-layout-refined">
+            <!-- Left Side: News & Tables -->
+            <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+                <div class="actions-bar" style="margin-bottom: 0;">
+                    <div style="display: flex; gap: 0.75rem; flex: 1;">
+                        <input type="text" id="search-input" class="form-control" placeholder="제목, 번호로 검색..." onkeypress="if(event.key === 'Enter') confirmSearch()">
+                        <button class="btn btn-outline" onclick="confirmSearch()">검색</button>
+                    </div>
+                    <button class="btn" onclick="openModal()" style="background: var(--primary); border: none;">✨ 새 일감 등록</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">No.</th>
+                                    <th style="width: 80px;">상태</th>
+                                    <th style="width: 80px;">배포</th>
+                                    <th style="width: 100px;">접수일</th>
+                                    <th style="width: 100px;">업무번호</th>
+                                    <th>업무명</th>
+                                    <th style="width: 120px; text-align: center;">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="task-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="pagination-container" style="display: none; justify-content: center; gap: 0.75rem;">
+                    <button id="btn-load-more" class="btn btn-outline" onclick="loadMore()">더보기 (+5)</button>
+                    <button id="btn-reset-start" class="btn btn-outline" onclick="resetToStart()">처음으로</button>
+                </div>
+            </div>
+
+            <!-- Right Side: Weather, Calendar, Recent Task -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
                 <div class="weather-widget-wrap" id="weather-widget" onclick="openMapModal()">
                     <div class="weather-widget-header">
-                        <h3>🌤 오늘의 날씨 (서울)</h3>
-                        <div class="weather-curr-temp" id="weather-curr-display">
-                            <span id="weather-icon-sm"></span>
+                        <h3 style="font-size: 0.9rem; font-weight: 700;">🌤 오늘의 날씨</h3>
+                        <div class="weather-curr-temp" id="weather-curr-display" style="font-size: 0.9rem; font-weight: 700;">
                             <span id="weather-temp">--</span>°C
                         </div>
                     </div>
-                    <div class="forecast-grid" id="forecast-grid">
-                        <div class="forecast-day"
-                            style="grid-column: span 3; justify-content: center; padding: 0.75rem;">
-                            <span style="font-size:0.75rem; color:var(--text-muted);">날씨 정보 불러오는 중...</span>
-                        </div>
+                    <div class="forecast-grid" id="forecast-grid" style="padding: 1rem;">
+                        <span style="font-size:0.75rem; color:var(--text-muted);">날씨 불러오는 중...</span>
                     </div>
                 </div>
 
-                <div class="recent-task-card">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🕐 최근 작업사항</div>
-                    <div id="recent-task-text" style="flex: 1; font-size: 1rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0.5rem 0;">등록된 일감이 없습니다.</div>
-                    <button class="btn-outline" onclick="copyRecentTask()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">복사</button>
-                </div>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                 <div class="dashboard-calendar">
-                    <div class="calendar-header">
+                    <div class="calendar-header" style="padding: 0.5rem 0;">
                         <button class="btn-icon" onclick="changeMonth(-1)">&#60;</button>
-                        <h3 id="calendar-month-title"></h3>
+                        <h3 id="calendar-month-title" style="font-size: 1rem;"></h3>
                         <button class="btn-icon" onclick="changeMonth(1)">&#62;</button>
                     </div>
                     <div id="calendar-body">
@@ -977,10 +951,16 @@
                     </div>
                 </div>
 
-                <div class="news-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">📰 뉴스 검색</div>
-                        <button class="btn-icon" onclick="fetchNews()">🔄</button>
+                <div class="recent-task-card" style="padding: 1.5rem;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">🕐 최근 작업</div>
+                    <div id="recent-task-text" style="font-size: 0.95rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem;">일감이 없습니다.</div>
+                    <button class="btn btn-outline" style="width: 100%; font-size: 0.8rem;" onclick="copyRecentTask()">업무번호 복사</button>
+                </div>
+
+                <div class="news-card" style="padding: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">📰 최신 뉴스</div>
+                        <button class="btn-icon" onclick="fetchNews()" style="font-size: 1rem;">🔄</button>
                     </div>
                     <div id="news-list-container" class="news-list-mini">
                         <div class="loading-news">뉴스를 불러오는 중...</div>
@@ -1769,8 +1749,8 @@
             currentCategory = type;
             visibleCount = 5; // 필터 변경 시 더보기 초기화
 
-            // 네비게이션 UI 활성화 상태 변경
-            document.querySelectorAll('.category-item').forEach(item => {
+            // 네비게이션 UI 활성화 상태 변경 (filter-btn 대응)
+            document.querySelectorAll('.filter-btn').forEach(item => {
                 item.classList.remove('active');
                 if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${type}'`)) {
                     item.classList.add('active');
