@@ -183,55 +183,55 @@
             background: var(--bg-surface);
             border-radius: 2rem;
             padding: 2rem;
-            cursor: pointer;
+            cursor: default;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
             border: 1px solid transparent;
-            min-height: 220px;
+            height: 320px !important;
+            overflow: hidden !important;
         }
-
         .task-card-apple:hover {
             background: var(--bg-card);
             box-shadow: var(--shadow-lg);
             transform: translateY(-5px);
             border-color: #f0f0f2;
         }
-
         .card-header-info {
             font-size: 0.8rem;
             font-weight: 700;
             color: var(--primary);
             margin-bottom: 0.75rem;
         }
-
         .card-title {
             font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             line-height: 1.2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            display: block !important;
+            width: 100% !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            cursor: help;
         }
-
         .card-meta-row {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
             font-size: 0.82rem;
             color: var(--text-muted);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         .meta-item b { color: var(--text-main); font-weight: 600; }
-
         .card-footer {
             margin-top: auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-top: 1px solid #f0f0f2;
+            padding-top: 1.25rem;
         }
-
         .card-badge {
             font-size: 0.75rem;
             font-weight: 700;
@@ -243,19 +243,30 @@
         .card-badge.todo { color: var(--danger); background: #fff4f4; }
         .card-badge.progress { color: var(--warning); background: #fff9f0; }
         .card-badge.done { color: var(--success); background: #f2faf4; }
-
-        .btn-plus-mini {
-            width: 2.2rem;
-            height: 2.2rem;
-            border-radius: 50%;
-            background: #ffffff;
+        .card-actions {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
+            gap: 0.4rem;
         }
-        .task-card-apple:hover .btn-plus-mini { transform: rotate(90deg); background: var(--bg-surface); }
+        .btn-mini {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.7rem;
+            border-radius: 1rem;
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn-mini:hover {
+            background: var(--bg-hover);
+            border-color: var(--text-main);
+        }
+        .btn-mini.delete:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
 
         /* [8. Buttons] */
         .btn {
@@ -615,11 +626,11 @@
             toShow.forEach(t => {
                 const card = document.createElement('div');
                 card.className = 'task-card-apple';
-                card.onclick = () => showDetail(t.id);
+                // card.onclick = () => showDetail(t.id); // Removed for clearer button separation
                 
                 card.innerHTML = `
                     <div class="card-header-info">#${t.work_no || '미정'}</div>
-                    <div class="card-title">${t.title}</div>
+                    <div class="card-title" title="${t.title}">${t.title}</div>
                     <div class="card-meta-row">
                         <span class="meta-item">접수: <b>${formatDate(t.receive_date)}</b></span>
                         <span class="meta-item">개발: <b>${formatDate(t.dev_date)}</b></span>
@@ -627,7 +638,11 @@
                     </div>
                     <div class="card-footer">
                         <span class="card-badge ${t.status}">${t.status === 'todo' ? '대기' : t.status === 'progress' ? '진행' : '완료'}</span>
-                        <div class="btn-plus-mini"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+                        <div class="card-actions">
+                            <button class="btn-mini" onclick="event.stopPropagation(); showDetail('${t.id}')">조회</button>
+                            <button class="btn-mini" onclick="event.stopPropagation(); openModal('${t.id}')">수정</button>
+                            <button class="btn-mini delete" onclick="event.stopPropagation(); deleteTask('${t.id}')">삭제</button>
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
