@@ -114,7 +114,7 @@
             background: var(--bg-surface);
             border-radius: 2rem;
             padding: 2rem;
-            height: 280px;
+            height: 420px; /* Increased height for calendar visibility */
             overflow: hidden;
             border: 1px solid transparent;
             transition: border-color 0.3s;
@@ -148,7 +148,7 @@
         /* [6. Interaction Area] */
         .search-bar-container {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start; /* Moved to left */
             margin-bottom: 4rem;
         }
 
@@ -188,7 +188,7 @@
             display: flex;
             flex-direction: column;
             border: 1px solid transparent;
-            height: 320px !important;
+            height: 260px !important; /* Reduced height as requested */
             overflow: hidden !important;
         }
         .task-card-apple:hover {
@@ -549,12 +549,19 @@
         </div>
     </div>
 
-    <!-- Weather Map Modal -->
+    <!-- Restored Weather Info Modal (Regional) -->
     <div class="modal-overlay" id="weathermap-modal">
-        <div class="modal-content" style="max-width: 1000px; height: 80vh; padding: 1rem;">
+        <div class="modal-content" style="max-width: 800px; padding: 3rem;">
             <button class="modal-close" onclick="closeWeatherMap()">&times;</button>
-            <div id="weather-map" style="width: 100%; height: 100%; border-radius: 2rem; overflow: hidden;"></div>
-            <div id="map-loading" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; align-items: center; justify-content: center; z-index: 10;">데이터 로드 중...</div>
+            <div class="modal-header">
+                <h2>전국 주요 지역 날씨 (실시간)</h2>
+            </div>
+            <div id="regional-weather-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 1rem;">
+                <!-- JS Regional Content -->
+            </div>
+            <div style="margin-top: 2.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                Open-Meteo API를 통한 실시간 기상 데이터 안내
+            </div>
         </div>
     </div>
 
@@ -633,8 +640,7 @@
                     <div class="card-title" title="${t.title}">${t.title}</div>
                     <div class="card-meta-row">
                         <span class="meta-item">접수: <b>${formatDate(t.receive_date)}</b></span>
-                        <span class="meta-item">개발: <b>${formatDate(t.dev_date)}</b></span>
-                        <span class="meta-item">운영: <b>${formatDate(t.prod_date)}</b></span>
+                        <span class="meta-item" title="${t.title}">운영: <b>${formatDate(t.prod_date)}</b></span>
                     </div>
                     <div class="card-footer">
                         <span class="card-badge ${t.status}">${t.status === 'todo' ? '대기' : t.status === 'progress' ? '진행' : '완료'}</span>
@@ -849,7 +855,43 @@
         function closeDataModal() { document.getElementById('data-modal').classList.remove('active'); }
         function openManualModal() { document.getElementById('manual-modal').classList.add('active'); }
         function closeManualModal() { document.getElementById('manual-modal').classList.remove('active'); }
-        function openMapModal() { document.getElementById('weathermap-modal').classList.add('active'); renderMap(); }
+        // --- Regional Weather (Restored) ---
+        const cities = [
+            { name: '서울', lat: 37.56, lon: 126.97 },
+            { name: '인천', lat: 37.45, lon: 126.70 },
+            { name: '수원', lat: 37.26, lon: 127.02 },
+            { name: '대전', lat: 36.35, lon: 127.38 },
+            { name: '광주', lat: 35.15, lon: 126.85 },
+            { name: '대구', lat: 35.87, lon: 128.60 },
+            { name: '부산', lat: 35.17, lon: 129.07 },
+            { name: '제주', lat: 33.48, lon: 126.49 }
+        ];
+
+        async function renderRegionalWeather() {
+            const grid = document.getElementById('regional-weather-grid');
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center;">데이터 로딩 중...</div>';
+            
+            try {
+                let html = '';
+                for (const city of cities) {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current=temperature_2m,weather_code&timezone=Asia%2FSeoul`);
+                    const data = await res.json();
+                    const temp = Math.round(data.current.temperature_2m);
+                    const icon = weatherIcons[data.current.weather_code] || '⛅';
+                    
+                    html += `
+                        <div style="background: var(--bg-surface); padding: 1.5rem; border-radius: 1.5rem; text-align: center;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">${city.name}</div>
+                            <div style="font-size: 2rem; margin: 0.5rem 0;">${icon}</div>
+                            <div style="font-size: 1.2rem; font-weight: 700;">${temp}°</div>
+                        </div>
+                    `;
+                }
+                grid.innerHTML = html;
+            } catch(e) { grid.innerHTML = '데이터 로드 실패'; }
+        }
+
+        function openMapModal() { document.getElementById('weathermap-modal').classList.add('active'); renderRegionalWeather(); }
         function closeWeatherMap() { document.getElementById('weathermap-modal').classList.remove('active'); }
         function deleteTask(id) { if(confirm("정말 삭제할까요?")) { tasks = tasks.filter(t => t.id !== id); localStorage.setItem('tasks', JSON.stringify(tasks)); closeDetail(); render(); } }
         function confirmSearch() { currentSearchQuery = document.getElementById('search-input').value; visibleCount = 3; render(); }
