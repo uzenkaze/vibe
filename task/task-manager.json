@@ -1,5 +1,23 @@
 [
   {
+    "id": "1774313664088",
+    "title": "AI agent 서비스 도입 개발 진행의 건",
+    "receive_date": "2026-03-20",
+    "status": "done",
+    "work_no": "43731",
+    "task_no": "59716",
+    "product_no": "",
+    "task_content": "안녕하세요.\nPD팀 김진홍입니다.\n\n수석님 GA 태깅이 어김 없이 왔네요..\nGA도 같이 반영 부탁드립니다!\n\n2-A, 2-B 차이는 event_name 셋팅차이네요 [ view_event / click_event ]\n\nview_event 예시) 상품쪽에선 원래 썻던게 없는 것 같아 공유드립니다.\nga4('MC_주문완료_팝업', '구독서비스', '노출', 'N', 'Y', null, null, 'view_event');\n-> 맨 마지막 부분 셋팅을 안하면 click_event 로 넘어감",
+    "dev_deploy_date": "2026-03-23",
+    "deploy_date": "2026-04-01",
+    "pub_content": "",
+    "remarks": "",
+    "start_date": "2026-03-20",
+    "end_date": "2026-03-23",
+    "reference": "",
+    "updated_at": "2026-03-24T00:54:24.088Z"
+  },
+  {
     "id": "1773384471976",
     "title": "AI agent 서비스 도입 개발 진행의 건",
     "receive_date": "2026-03-10",
