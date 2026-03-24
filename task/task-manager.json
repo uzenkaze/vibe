@@ -1,23 +1,5 @@
 [
   {
-    "id": "1774313887816",
-    "title": "ㅁ",
-    "receive_date": "",
-    "status": "todo",
-    "work_no": "",
-    "task_no": "",
-    "product_no": "",
-    "task_content": "",
-    "dev_deploy_date": "",
-    "deploy_date": "",
-    "pub_content": "",
-    "remarks": "",
-    "start_date": "",
-    "end_date": "",
-    "reference": "",
-    "updated_at": "2026-03-24T00:58:07.816Z"
-  },
-  {
     "id": "1774313769848",
     "title": "AI agent 서비스 도입 개발 진행의 건 - 에어컨행사",
     "receive_date": "2026-03-23",
