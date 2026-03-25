@@ -393,14 +393,16 @@
 
         .cal-cell {
             background: #ffffff;
-            height: 120px; /* 고정 높이 */
+            height: 120px;
+            /* 고정 높이 */
             max-height: 120px;
             padding: 0.75rem;
             display: flex;
             flex-direction: column;
             transition: all 0.2s;
             position: relative;
-            overflow: hidden; /* 영역 밖으로 나가는 내용 숨김 */
+            overflow: hidden;
+            /* 영역 밖으로 나가는 내용 숨김 */
         }
 
         .cal-cell:hover {
@@ -465,7 +467,8 @@
             color: #1d1d1f;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* 말줄임표 처리 */
+            text-overflow: ellipsis;
+            /* 말줄임표 처리 */
             width: 100%;
             display: flex;
             align-items: center;
@@ -487,9 +490,17 @@
             background: rgba(0, 113, 227, 0.1);
         }
 
-        .cal-event-dot.todo { background: var(--danger); }
-        .cal-event-dot.progress { background: var(--warning); }
-        .cal-event-dot.done { background: var(--success); }
+        .cal-event-dot.todo {
+            background: var(--danger);
+        }
+
+        .cal-event-dot.progress {
+            background: var(--warning);
+        }
+
+        .cal-event-dot.done {
+            background: var(--success);
+        }
 
         .cal-nav-btn {
             background: none;
@@ -615,16 +626,28 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            height: 240px; /* Fixed height for uniformity */
+            height: 240px;
+            /* Fixed height for uniformity */
             display: flex;
             flex-direction: column;
             border: 1px solid rgba(0, 0, 0, 0.03);
             overflow: hidden;
         }
 
-        .task-card-apple.todo { background-color: #f5f5f7; }
-        .task-card-apple.progress { background-color: #fffbeb; } /* Very light orange/amber */
-        .task-card-apple.done { background-color: #f0fdf4; } /* Very light green */
+        .task-card-apple.todo {
+            background-color: #f5f5f7;
+        }
+
+        .task-card-apple.progress {
+            background-color: #fffbeb;
+        }
+
+        /* Very light orange/amber */
+        .task-card-apple.done {
+            background-color: #f0fdf4;
+        }
+
+        /* Very light green */
 
         .task-card-apple:hover {
             background: var(--bg-card);
@@ -702,7 +725,8 @@
             font-size: 1rem;
             font-weight: 700;
             color: #1d1d1f;
-            background: rgba(0, 0, 0, 0.05); /* Subtle Apple-style background */
+            background: rgba(0, 0, 0, 0.05);
+            /* Subtle Apple-style background */
             border: none;
             border-radius: 2rem;
             cursor: pointer;
@@ -1038,26 +1062,7 @@
             margin-bottom: 2rem;
         }
 
-        /* Forecast Area */
-        .forecast-grid {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
 
-        .forecast-day {
-            text-align: center;
-            flex: 1;
-            padding: 1.5rem;
-            background: var(--bg-surface);
-            border-radius: 1.5rem;
-        }
-
-        .forecast-icon {
-            font-size: 2.5rem;
-            margin: 0.5rem 0;
-        }
     </style>
 </head>
 
@@ -1115,11 +1120,17 @@
                             <div class="calendar-header">
                                 <div class="month-selector">
                                     <button class="cal-nav-btn" onclick="prevMonth()" title="이전 달">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
                                     </button>
                                     <span id="cal-month-year"></span>
                                     <button class="cal-nav-btn" onclick="nextMonth()" title="다음 달">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -1174,16 +1185,17 @@
 
                 <div id="view-news" class="view-section">
                     <h1 style="margin-bottom:2rem">실시간 뉴스</h1>
-                    
+
                     <div class="news-container">
                         <!-- Left Column: Search & Hot Issues -->
                         <div class="news-column">
                             <div class="news-column-header">
-                                <span class="news-column-title">🔥 주요 뉴스 검색</span>
-                                <button class="btn-more-news-mini" onclick="loadMoreGoogle()">더보기 +10</button>
+                                <span class="news-column-title">🔥 주요 뉴스 검색 <small id="google-news-count" style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
                             <div class="news-search-bar">
-                                <input type="text" id="news-keyword" class="news-search-input" placeholder="관심 키워드 (기본: 주요 언론사 헤드라인)" onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
+                                <input type="text" id="news-keyword" class="news-search-input"
+                                    placeholder="핫이슈, 헤드라인 뉴스"
+                                    onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
                                 <button class="news-search-btn" onclick="searchGoogleNews(true)">검색</button>
                             </div>
                             <div id="news-left-content" style="min-height: 300px;">
@@ -1194,11 +1206,12 @@
                         <!-- Middle Column: StockPlus / Realtime -->
                         <div class="news-column">
                             <div class="news-column-header">
-                                <span class="news-column-title">📈 증권플러스 실시간</span>
-                                <button class="btn-more-news-mini" onclick="loadMoreStockPlus()">더보기 +10</button>
+                                <span class="news-column-title">📈 증권플러스 실시간 <small id="stock-news-count" style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
                             <div class="news-search-bar">
-                                <input type="text" id="stockplus-keyword" class="news-search-input" placeholder="증권, 경제 뉴스 검색 (기본: 증권)" onkeyup="if(event.key==='Enter') fetchStockPlusNews(true)">
+                                <input type="text" id="stockplus-keyword" class="news-search-input"
+                                    placeholder="증권, 경제 뉴스 검색 (기본: 증권)"
+                                    onkeyup="if(event.key==='Enter') fetchStockPlusNews(true)">
                                 <button class="news-search-btn" onclick="fetchStockPlusNews(true)">검색</button>
                             </div>
                             <div id="news-right-content" style="min-height: 300px;">
@@ -1209,11 +1222,12 @@
                         <!-- Right Column: IT / Tech -->
                         <div class="news-column">
                             <div class="news-column-header">
-                                <span class="news-column-title">💻 IT / 테크 최신 뉴스</span>
-                                <button class="btn-more-news-mini" onclick="loadMoreIT()">더보기 +10</button>
+                                <span class="news-column-title">💻 IT / 테크 최신 뉴스 <small id="it-news-count" style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
                             <div class="news-search-bar">
-                                <input type="text" id="it-news-keyword" class="news-search-input" placeholder="IT, 테크 뉴스 검색 (기본: IT)" onkeyup="if(event.key==='Enter') fetchITNews(true)">
+                                <input type="text" id="it-news-keyword" class="news-search-input"
+                                    placeholder="IT, 테크 뉴스 검색 (기본: IT)"
+                                    onkeyup="if(event.key==='Enter') fetchITNews(true)">
                                 <button class="news-search-btn" onclick="fetchITNews(true)">검색</button>
                             </div>
                             <div id="news-it-content" style="min-height: 300px;">
@@ -1227,22 +1241,21 @@
                 <div class="modal-overlay" id="article-modal">
                     <div class="modal-content" style="max-width: 600px; padding: 2.5rem;">
                         <button class="modal-close" onclick="closeArticleModal()">&times;</button>
-                        <h2 id="article-title" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1d1d1f; line-height: 1.4;">기사 제목</h2>
-                        <div id="article-summary" style="font-size: 1.05rem; line-height: 1.6; color: #4b4b4b; background: #f5f5f7; padding: 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem;">기사 요약 내용이 여기에 표시됩니다.</div>
+                        <h2 id="article-title"
+                            style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1d1d1f; line-height: 1.4;">
+                            기사 제목</h2>
+                        <div id="article-summary"
+                            style="font-size: 1.05rem; line-height: 1.6; color: #4b4b4b; background: #f5f5f7; padding: 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem;">
+                            기사 요약 내용이 여기에 표시됩니다.</div>
                         <div style="text-align: right;">
-                            <a id="article-link" href="#" target="_blank" class="btn-purple" style="display: inline-block; text-decoration: none; padding: 0.8rem 2rem; border-radius: 1rem; font-weight: 700; background: #0071e3; color: white;">📝 원문 사이트로 이동</a>
+                            <a id="article-link" href="#" target="_blank" class="btn-purple"
+                                style="display: inline-block; text-decoration: none; padding: 0.8rem 2rem; border-radius: 1rem; font-weight: 700; background: #0071e3; color: white;">📝
+                                원문 사이트로 이동</a>
                         </div>
                     </div>
                 </div>
 
-                <div id="view-weather" class="view-section">
-                    <h1 style="margin-bottom:2rem">지역별 날씨</h1>
-                    <div class="start-section" style="text-align:center">
-                        <div style="font-size:5rem" id="weather-icon-lg">☀️</div>
-                        <div style="font-size:3rem; font-weight:700" id="weather-temp-lg">--°</div>
-                        <div id="forecast-grid" class="forecast-grid"></div>
-                    </div>
-                </div>
+
 
             </div>
         </main>
@@ -1322,7 +1335,7 @@
             { id: 'dashboard', name: '대시보드', icon: '📊', viewId: 'view-dashboard' },
             { id: 'task', name: '일감관리', icon: '📁', viewId: 'view-task' },
             { id: 'news', name: '실시간 뉴스', icon: '📰', viewId: 'view-news' },
-            { id: 'weather', name: '지역별 날씨', icon: '⛅', viewId: 'view-weather' },
+
             { id: 'settings', name: '설정', icon: '⚙️', viewId: 'view-settings' }
         ];
 
@@ -1348,10 +1361,8 @@
             } else {
                 tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
             }
-            searchGoogleNews();
-            fetchStockPlusNews();
-            fetchITNews();
-            fetchWeather();
+            await staggerNewsFetch();
+
             render();
             switchView(currentView);
             setInterval(() => {
@@ -1375,19 +1386,32 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
         function handleMenuClick(id) {
+            console.log('handleMenuClick triggered for:', id);
+            if (id === 'settings') {
+                openGitHubSettings();
+                return;
+            }
             const menu = menus.find(m => m.id === id);
             if (!menu) return;
             currentView = menu.viewId || 'view-task';
             switchView(currentView);
+
+            if (id === 'news') {
+                staggerNewsFetch(true);
+            }
 
             // Sync Title
             setTimeout(() => {
                 const activeViewEl = document.getElementById(currentView);
                 if (activeViewEl) {
                     const titleH1 = activeViewEl.querySelector('h1');
-                    if (titleH1) titleH1.innerText = menu.name;
+                    if (titleH1) {
+                        titleH1.innerText = menu.name;
+                        document.title = menu.name + ' | Task Manager';
+                    }
                 }
             }, 50);
+            renderSidebar();
         }
 
         function switchView(viewId) {
@@ -1432,7 +1456,7 @@
                          </div>
                      </div>
                  `;
-             }).join('');
+            }).join('');
 
             const btnContainer = document.getElementById('btn-load-more-container');
             if (btnContainer) {
@@ -1502,7 +1526,7 @@
             else tasks.unshift(task);
             localStorage.setItem('tasks', JSON.stringify(tasks));
             closeModal(); render();
-            
+
             if (ghConfig.token && ghConfig.autoSync) {
                 const saveBtn = document.querySelector('.btn-save-main');
                 if (saveBtn) {
@@ -1600,26 +1624,6 @@
             document.getElementById('detail-modal').classList.add('active');
         }
 
-        function handleMenuClick(id) {
-            if (id === 'settings') {
-                openGitHubSettings();
-                return;
-            }
-            const menu = menus.find(m => m.id === id);
-            if (!menu) return;
-            currentView = menu.viewId || 'view-task';
-            switchView(currentView);
-            
-            // Sync Title
-            setTimeout(() => {
-                const activeViewEl = document.getElementById(currentView);
-                if (activeViewEl) {
-                    const h1 = activeViewEl.querySelector('h1');
-                    if (h1) document.title = h1.innerText + ' | Task Manager';
-                }
-            }, 100);
-            renderSidebar();
-        }
 
         function renderCalendar() {
             const year = calDate.getFullYear();
@@ -1631,17 +1635,17 @@
             for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell other-month"></div>';
             for (let i = 1; i <= daysInMonth; i++) {
                 const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                
+
                 // 해당 날짜가 운영배포(deploy_date)인 일감 필터링
                 const dayTasks = tasks.filter(t => t.deploy_date === dStr);
-                
+
                 const eventsHtml = dayTasks.map(t => `
                     <div class="cal-task-item" title="${t.title} [${t.work_no || '-'}]" onclick="event.stopPropagation(); showDetail('${t.id}')">
                         <div class="cal-event-dot ${t.status}"></div>
                         <span>${t.title}</span>
                     </div>
                 `).join('');
-                
+
                 html += `<div class="cal-cell"><div class="cal-date-num">${i}</div><div class="cal-events">${eventsHtml}</div></div>`;
             }
             document.getElementById('calendar-grid').innerHTML = html;
@@ -1670,33 +1674,73 @@
         let itNewsItemsList = [];
         let itVisibleCount = 10;
 
+        async function fetchGoogleNewsRSS(rssUrl) {
+            const finalRssUrl = rssUrl + (rssUrl.includes('?') ? '&' : '?') + 'v=' + Math.floor(Date.now() / 1800000); // 30분 단위 캐시우회
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(finalRssUrl)}`);
+            if (res.status === 429) throw new Error('요청이 너무 많습니다 (HTTP 429). 약 30분 후 다시 시도해 주세요.');
+            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+            const data = await res.json();
+            if (data.status !== 'ok') throw new Error('RSS 데이터 로드 실패');
+            return data.items;
+        }
+
         async function searchGoogleNews(reset = false) {
-            const keyword = document.getElementById('news-keyword').value.trim() || '(조선일보 OR 중앙일보 OR 동아일보 OR 매일경제 OR 한국경제)';
+            console.log('searchGoogleNews triggered, reset:', reset);
+            const defaultKeyword = "핫이슈 OR 헤드라인";
+            const keyword = document.getElementById('news-keyword').value.trim() || defaultKeyword;
             const contentEl = document.getElementById('news-left-content');
-            
+            const cacheKey = `news_cache_google_${keyword}`;
+
             if (reset) {
                 googleNewsItems = [];
                 googleVisibleCount = 10;
+                localStorage.removeItem(cacheKey);
+            }
+
+            // 캐시 확인 (1시간 유효)
+            if (!reset && googleNewsItems.length === 0) {
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    const { items, timestamp } = JSON.parse(cached);
+                    if (Date.now() - timestamp < 60 * 60 * 1000) {
+                        googleNewsItems = items;
+                        renderGoogleNews();
+                        return;
+                    }
+                }
             }
 
             if (googleNewsItems.length === 0) {
                 contentEl.innerHTML = '뉴스를 검색하는 중...';
                 try {
                     const url = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`;
-                    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
-                    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-                    const data = await res.json();
-                    if (data.status !== 'ok') throw new Error('RSS 데이터 로드 실패');
-                    
+                    const items = await fetchGoogleNewsRSS(url);
+
                     const now = new Date();
-                    googleNewsItems = data.items.filter(item => {
+                    const todayStr = now.toDateString();
+                    googleNewsItems = items.filter(item => {
                         if (!item.pubDate) return false;
-                        const pb = new Date(item.pubDate.replace(/-/g, '/'));
-                        const diffHours = (now - pb) / (1000 * 60 * 60);
-                        return diffHours <= 72;
+                        const pb = new Date(item.pubDate.replace(/-/g, '/').replace(/\. /g, '/').replace(/\./g, '/'));
+                        const isToday = pb.toDateString() === todayStr;
+                        if (!isToday) return false;
+
+                        const title = (item.title || "").toLowerCase();
+                        const desc = (item.description || "").toLowerCase();
+                        if (title.includes("조선일보") || desc.includes("조선일보")) return false;
+                        return true;
                     });
+
+                    // 캐시 저장
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        items: googleNewsItems,
+                        timestamp: Date.now()
+                    }));
                 } catch (e) {
-                    contentEl.innerHTML = `<div style="color:var(--danger); padding:1rem; text-align:center;">오류: ${e.message} <button class="btn-purple" style="margin-top:1rem" onclick="searchGoogleNews(true)">재시도</button></div>`;
+                    contentEl.innerHTML = `<div style="color:var(--danger); padding:1.5rem; text-align:center; background:#fff1f0; border-radius:1rem;">
+                        <p style="font-weight:700; margin-bottom:0.5rem;">⚠️ 조회 오류</p>
+                        <p style="font-size:0.9rem; margin-bottom:1rem;">${e.message}</p>
+                        <button class="btn-purple" style="font-size:0.85rem; padding:0.5rem 1.5rem;" onclick="searchGoogleNews(true)">다시 시도</button>
+                    </div>`;
                     return;
                 }
             }
@@ -1705,6 +1749,9 @@
 
         function renderGoogleNews() {
             const contentEl = document.getElementById('news-left-content');
+            const countEl = document.getElementById('google-news-count');
+            if (countEl) countEl.innerText = `(오늘: ${googleNewsItems.length}건)`;
+            
             if (googleNewsItems.length === 0) {
                 contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">최근 등록된 관련 뉴스가 없습니다.</div>';
                 return;
@@ -1715,7 +1762,7 @@
                 const link = item.link || '#';
                 const pubDateStr = item.pubDate;
                 let pubDateText = '';
-                if(pubDateStr) {
+                if (pubDateStr) {
                     const d = new Date(pubDateStr.replace(/-/g, '/'));
                     pubDateText = `${d.toLocaleDateString()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
                 }
@@ -1729,45 +1776,62 @@
             }).join('');
         }
 
-        function loadMoreGoogle() {
-            if (googleNewsItems.length > 0 && googleVisibleCount >= googleNewsItems.length) {
-                searchGoogleNews(true); // 더 보여줄 게 없으면 새로고침
-                return;
-            }
-            googleVisibleCount += 10;
-            renderGoogleNews();
+        async function staggerNewsFetch(reset = false) {
+            await searchGoogleNews(reset);
+            await new Promise(r => setTimeout(r, 10000));
+            await fetchStockPlusNews(reset);
+            await new Promise(r => setTimeout(r, 10000));
+            await fetchITNews(reset);
         }
+
+
 
         async function fetchStockPlusNews(reset = false) {
             const contentEl = document.getElementById('news-right-content');
             const keyword = document.getElementById('stockplus-keyword').value.trim() || '증권 OR 경제';
-            
+            const cacheKey = `news_cache_stock_${keyword}`;
+
             if (reset) {
                 stockPlusNewsItems = [];
                 stockPlusVisibleCount = 10;
+                localStorage.removeItem(cacheKey);
+            }
+
+            if (!reset && stockPlusNewsItems.length === 0) {
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    const { items, timestamp } = JSON.parse(cached);
+                    if (Date.now() - timestamp < 60 * 60 * 1000) {
+                        stockPlusNewsItems = items;
+                        renderStockPlusNews();
+                        return;
+                    }
+                }
             }
 
             if (stockPlusNewsItems.length === 0) {
                 contentEl.innerHTML = '실시간 기사를 불러오는 중...';
                 try {
                     const url = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`;
-                    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
-                    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-                    const data = await res.json();
-                    if (data.status !== 'ok') throw new Error('RSS 데이터 로드 실패');
+                    const items = await fetchGoogleNewsRSS(url);
 
                     const now = new Date();
-                    stockPlusNewsItems = data.items.filter(item => {
+                    const todayStr = now.toDateString();
+                    stockPlusNewsItems = items.filter(item => {
                         if (!item.pubDate) return false;
-                        const pb = new Date(item.pubDate.replace(/-/g, '/'));
-                        const diffHours = (now - pb) / (1000 * 60 * 60);
-                        return diffHours <= 72;
+                        const pb = new Date(item.pubDate.replace(/-/g, '/').replace(/\. /g, '/').replace(/\./g, '/'));
+                        return pb.toDateString() === todayStr;
                     });
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        items: stockPlusNewsItems,
+                        timestamp: Date.now()
+                    }));
                 } catch (e) {
                     contentEl.innerHTML = `
-                        <div style="color:var(--danger); padding:1rem; text-align:center;">
-                            <p style="margin-bottom:1rem">실시간 기사 수집 중 오류가 발생했습니다.<br><small style="color:#86868b">[${e.message}]</small></p>
-                            <button class="btn-purple" onclick="fetchStockPlusNews(true)">다시 시도</button>
+                        <div style="color:var(--danger); padding:1.5rem; text-align:center; background:#fff1f0; border-radius:1rem;">
+                            <p style="font-weight:700; margin-bottom:0.5rem;">⚠️ 조회 오류</p>
+                            <p style="font-size:0.9rem; margin-bottom:1rem;">${e.message}</p>
+                            <button class="btn-purple" style="font-size:0.85rem; padding:0.5rem 1.5rem;" onclick="fetchStockPlusNews(true)">다시 시도</button>
                         </div>`;
                     return;
                 }
@@ -1778,33 +1842,49 @@
         async function fetchITNews(reset = false) {
             const contentEl = document.getElementById('news-it-content');
             const keyword = document.getElementById('it-news-keyword').value.trim() || 'IT OR 테크 OR 반도체 OR AI';
-            
+            const cacheKey = `news_cache_it_${keyword}`;
+
             if (reset) {
                 itNewsItemsList = [];
                 itVisibleCount = 10;
+                localStorage.removeItem(cacheKey);
+            }
+
+            if (!reset && itNewsItemsList.length === 0) {
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    const { items, timestamp } = JSON.parse(cached);
+                    if (Date.now() - timestamp < 60 * 60 * 1000) {
+                        itNewsItemsList = items;
+                        renderITNews();
+                        return;
+                    }
+                }
             }
 
             if (itNewsItemsList.length === 0) {
                 contentEl.innerHTML = 'IT 기사를 불러오는 중...';
                 try {
                     const url = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`;
-                    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
-                    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-                    const data = await res.json();
-                    if (data.status !== 'ok') throw new Error('RSS 데이터 로드 실패');
+                    const items = await fetchGoogleNewsRSS(url);
 
                     const now = new Date();
-                    itNewsItemsList = data.items.filter(item => {
+                    const todayStr = now.toDateString();
+                    itNewsItemsList = items.filter(item => {
                         if (!item.pubDate) return false;
-                        const pb = new Date(item.pubDate.replace(/-/g, '/'));
-                        const diffHours = (now - pb) / (1000 * 60 * 60);
-                        return diffHours <= 72;
+                        const pb = new Date(item.pubDate.replace(/-/g, '/').replace(/\. /g, '/').replace(/\./g, '/'));
+                        return pb.toDateString() === todayStr;
                     });
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        items: itNewsItemsList,
+                        timestamp: Date.now()
+                    }));
                 } catch (e) {
                     contentEl.innerHTML = `
-                        <div style="color:var(--danger); padding:1rem; text-align:center;">
-                            <p style="margin-bottom:1rem">IT 기사 수집 중 오류가 발생했습니다.<br><small style="color:#86868b">[${e.message}]</small></p>
-                            <button class="btn-purple" onclick="fetchITNews(true)">다시 시도</button>
+                        <div style="color:var(--danger); padding:1.5rem; text-align:center; background:#fff1f0; border-radius:1rem;">
+                            <p style="font-weight:700; margin-bottom:0.5rem;">⚠️ 조회 오류</p>
+                            <p style="font-size:0.9rem; margin-bottom:1rem;">${e.message}</p>
+                            <button class="btn-purple" style="font-size:0.85rem; padding:0.5rem 1.5rem;" onclick="fetchITNews(true)">다시 시도</button>
                         </div>`;
                     return;
                 }
@@ -1814,20 +1894,20 @@
 
         function renderITNews() {
             const contentEl = document.getElementById('news-it-content');
-            
+            const countEl = document.getElementById('it-news-count');
+            if (countEl) countEl.innerText = `(오늘: ${itNewsItemsList.length}건)`;
+
             if (itNewsItemsList.length === 0) {
                 contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">최근 등록된 관련 뉴스가 없습니다.</div>';
                 return;
             }
-
             const itemsToShow = itNewsItemsList.slice(0, itVisibleCount);
-            
             contentEl.innerHTML = itemsToShow.map(item => {
                 const title = item.title || '제목 없음';
                 const link = item.link || '#';
                 const pubDateStr = item.pubDate;
                 let pubDate = '';
-                if(pubDateStr) {
+                if (pubDateStr) {
                     const d = new Date(pubDateStr.replace(/-/g, '/'));
                     pubDate = `${d.toLocaleDateString()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
                 }
@@ -1843,31 +1923,24 @@
             }).join('');
         }
 
-        function loadMoreIT() {
-            if (itNewsItemsList.length > 0 && itVisibleCount >= itNewsItemsList.length) {
-                fetchITNews(true);
-                return;
-            }
-            itVisibleCount += 10;
-            renderITNews();
-        }
+
 
         function renderStockPlusNews() {
             const contentEl = document.getElementById('news-right-content');
-            
+            const countEl = document.getElementById('stock-news-count');
+            if (countEl) countEl.innerText = `(오늘: ${stockPlusNewsItems.length}건)`;
+
             if (stockPlusNewsItems.length === 0) {
                 contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">당일 등록된 관련 뉴스가 없습니다.</div>';
                 return;
             }
-
             const itemsToShow = stockPlusNewsItems.slice(0, stockPlusVisibleCount);
-            
             contentEl.innerHTML = itemsToShow.map(item => {
                 const title = item.title || '제목 없음';
                 const link = item.link || '#';
                 const pubDateStr = item.pubDate;
                 let pubDate = '';
-                if(pubDateStr) {
+                if (pubDateStr) {
                     const d = new Date(pubDateStr.replace(/-/g, '/'));
                     pubDate = `${d.toLocaleDateString()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
                 }
@@ -1883,24 +1956,17 @@
             }).join('');
         }
 
-        function loadMoreStockPlus() {
-            if (stockPlusNewsItems.length > 0 && stockPlusVisibleCount >= stockPlusNewsItems.length) {
-                fetchStockPlusNews(true);
-                return;
-            }
-            stockPlusVisibleCount += 10;
-            renderStockPlusNews();
-        }
+
 
         async function showArticleModal(el) {
             const title = el.getAttribute('data-title');
             const link = el.getAttribute('data-link');
             const desc = el.getAttribute('data-desc');
-            
+
             document.getElementById('article-title').innerHTML = title;
             document.getElementById('article-summary').innerHTML = desc || '뉴스 요약 정보를 제공하지 않는 기사입니다.';
             document.getElementById('article-link').href = link;
-            
+
             document.getElementById('article-modal').classList.add('active');
         }
 
@@ -1909,18 +1975,7 @@
         }
 
 
-        const weatherIcons = { 0: '☀️', 1: '🌤', 2: '⛅', 3: '☁️', 61: '🌧', 63: '🌧', 65: '🌧', 80: '🌧', 95: '⛈', 97: '⛈', 71: '❄️', 73: '❄️' };
-        async function fetchWeather() {
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=3`);
-                const data = await res.json();
-                document.getElementById('weather-icon-lg').innerText = weatherIcons[data.current.weather_code] || '⛅';
-                document.getElementById('weather-temp-lg').innerText = `${Math.round(data.current.temperature_2m)}°`;
-                let html = '';
-                for (let i = 0; i < 3; i++) html += `<div class="forecast-day"><div>${i === 0 ? '오늘' : i === 1 ? '내일' : '모레'}</div><div class="forecast-icon">${weatherIcons[data.daily.weather_code[i]] || '⛅'}</div><div>${Math.round(data.daily.temperature_2m_min[i])}° / ${Math.round(data.daily.temperature_2m_max[i])}°</div></div>`;
-                document.getElementById('forecast-grid').innerHTML = html;
-            } catch (e) { }
-        }
+
 
         async function syncWithGitHub(action = 'upload') {
             if (!ghConfig.token || !ghConfig.repo) return null;
@@ -1984,7 +2039,7 @@
 
         async function backupTasksToGitHub() {
             if (!ghConfig.token || !ghConfig.repo) { alert('GitHub 설정을 먼저 확인해주세요.'); return; }
-            
+
             const now = new Date();
             const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             const backupPath = `task/backup/task-manager-${dateStr}.json`;
@@ -2015,7 +2070,7 @@
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             };
-            
+
             try {
                 let sha = null;
                 const checkRes = await fetch(url, { headers });
@@ -2023,7 +2078,7 @@
                     const checkJson = await checkRes.json();
                     sha = checkJson.sha;
                 }
-                
+
                 const body = {
                     message: message,
                     content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
@@ -2031,12 +2086,12 @@
                 };
                 if (sha) body.sha = sha;
 
-                const putRes = await fetch(url, { 
-                    method: 'PUT', 
-                    headers, 
-                    body: JSON.stringify(body) 
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(body)
                 });
-                
+
                 return putRes.ok;
             } catch (e) {
                 console.error("Upload Error:", e);
@@ -2048,8 +2103,11 @@
     </script>
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close" onclick="document.getElementById('settings-modal').classList.remove('active')">&times;</button>
-            <div class="modal-header"><h2>⚙️ GitHub 동기화 설정</h2></div>
+            <button class="modal-close"
+                onclick="document.getElementById('settings-modal').classList.remove('active')">&times;</button>
+            <div class="modal-header">
+                <h2>⚙️ GitHub 동기화 설정</h2>
+            </div>
             <div class="form-grid" style="margin-top: 1.5rem;">
                 <div class="form-group col-span-12">
                     <label class="form-label">GitHub Token (PAT)</label>
@@ -2069,8 +2127,12 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-mini" style="background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 0.8rem 1.5rem; margin-right: 0.5rem;" onclick="backupTasksToGitHub()">💾 백업</button>
-                <button class="btn-mini" style="background: #f5f5f7; border: 1px solid #dcdce0; color: #1d1d1f; padding: 0.8rem 1.5rem; margin-right: auto;" onclick="manualSyncTasks()">☁️ 동기화</button>
+                <button class="btn-mini"
+                    style="background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 0.8rem 1.5rem; margin-right: 0.5rem;"
+                    onclick="backupTasksToGitHub()">💾 백업</button>
+                <button class="btn-mini"
+                    style="background: #f5f5f7; border: 1px solid #dcdce0; color: #1d1d1f; padding: 0.8rem 1.5rem; margin-right: auto;"
+                    onclick="manualSyncTasks()">☁️ 동기화</button>
                 <button class="btn-save-main" onclick="saveGitHubSettings()">저장</button>
             </div>
         </div>
