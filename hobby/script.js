@@ -60,6 +60,7 @@ let activeSongId = null;
 let currentTab = 'search'; // 'search' or 'playlist'
 let myPlaylistIds = JSON.parse(localStorage.getItem('vibe_playlist')) || [];
 let globalSavedSongs = JSON.parse(localStorage.getItem('vibe_global_songs')) || [];
+let ghConfig = JSON.parse(localStorage.getItem('vibeGitHubConfig') || '{"repo":"uzenkaze/vibe","branch":"main","autoSync":true}');
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
@@ -97,32 +98,38 @@ async function init() {
     updateTime();
     setInterval(updateTime, 1000);
 
-    // 1. Load from playlist.json first (Server-side storage)
-    try {
-        const response = await fetch('playlist.json');
-        if (response.ok) {
-            const data = await response.json();
-            if (data.myPlaylistIds) {
-                // Merge with localStorage
-                const localIds = JSON.parse(localStorage.getItem('vibe_playlist') || '[]');
-                const combinedIds = [...new Set([...data.myPlaylistIds, ...localIds])];
-                localStorage.setItem('vibe_playlist', JSON.stringify(combinedIds));
-                myPlaylistIds = combinedIds; // Update in-memory variable
-            }
-            if (data.globalSavedSongs) {
-                const localSongs = JSON.parse(localStorage.getItem('vibe_global_songs') || '[]');
-                // Simple merge by id
-                const songMap = new Map();
-                data.globalSavedSongs.forEach(s => songMap.set(s.id, s));
-                localSongs.forEach(s => songMap.set(s.id, s));
-                const combinedSongs = Array.from(songMap.values());
-                localStorage.setItem('vibe_global_songs', JSON.stringify(combinedSongs));
-                globalSavedSongs = combinedSongs; // Update in-memory variable
-            }
-            console.log('Playlist data sync from file completed.');
+    // 1. Try to load from GitHub first, else fallback to playlist.json
+    let data = null;
+    if (ghConfig.token && ghConfig.repo) {
+        try {
+            data = await syncWithGitHub('download');
+            if (data) console.log('✅ GitHub 데이터 동기화 완료');
+        } catch (e) { console.warn('GitHub 동기화 로드 실패. 로컬 데이터 사용.'); }
+    }
+
+    if (!data) {
+        try {
+            const response = await fetch('playlist.json');
+            if (response.ok) data = await response.json();
+        } catch (e) { console.log('No playlist.json found. Reading localStorage...'); }
+    }
+
+    if (data) {
+        if (data.myPlaylistIds) {
+            const localIds = JSON.parse(localStorage.getItem('vibe_playlist') || '[]');
+            const combinedIds = [...new Set([...data.myPlaylistIds, ...localIds])];
+            localStorage.setItem('vibe_playlist', JSON.stringify(combinedIds));
+            myPlaylistIds = combinedIds;
         }
-    } catch (error) {
-        console.log('No playlist.json found or fetch failed. Using local storage only.');
+        if (data.globalSavedSongs) {
+            const localSongs = JSON.parse(localStorage.getItem('vibe_global_songs') || '[]');
+            const songMap = new Map();
+            data.globalSavedSongs.forEach(s => songMap.set(s.id, s));
+            localSongs.forEach(s => songMap.set(s.id, s));
+            const combinedSongs = Array.from(songMap.values());
+            localStorage.setItem('vibe_global_songs', JSON.stringify(combinedSongs));
+            globalSavedSongs = combinedSongs;
+        }
     }
 
     // 2. Load hot music 100
@@ -136,20 +143,74 @@ async function init() {
     setupEventListeners();
 }
 
-function exportPlaylistToJson() {
-    const data = {
-        myPlaylistIds: JSON.parse(localStorage.getItem('vibe_playlist') || '[]'),
-        globalSavedSongs: JSON.parse(localStorage.getItem('vibe_global_songs') || '[]')
+async function syncWithGitHub(action = 'upload') {
+    if (!ghConfig.token || !ghConfig.repo) return null;
+    const filePath = `hobby/playlist.json`;
+    const url = `https://api.github.com/repos/${ghConfig.repo}/contents/${filePath}?ref=${ghConfig.branch}`;
+    const headers = {
+        'Authorization': `token ${ghConfig.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
     };
 
-    const blob = new Blob([JSON.stringify(data, null, 4)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'playlist.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    alert('현재 보관함이 playlist.json 파일로 내보내졌습니다.\n다운로드된 파일을 프로젝트 폴더에 덮어쓰시면 다음 접속 시에도 유지됩니다.');
+    try {
+        if (action === 'download') {
+            const res = await fetch(url, { headers });
+            if (res.status === 404) return null;
+            const json = await res.json();
+            const content = decodeURIComponent(escape(atob(json.content)));
+            return JSON.parse(content);
+        } else {
+            const currentData = {
+                myPlaylistIds: myPlaylistIds,
+                globalSavedSongs: globalSavedSongs
+            };
+            const success = await uploadToGitHub(filePath, currentData, `Update vibe playlist: playlist.json`);
+            if (success) showSyncToast();
+        }
+    } catch (e) { console.error("GitHub Sync Error:", e); }
+}
+
+async function uploadToGitHub(filePath, data, message) {
+    const url = `https://api.github.com/repos/${ghConfig.repo}/contents/${filePath}?ref=${ghConfig.branch}`;
+    const headers = {
+        'Authorization': `token ${ghConfig.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+    };
+
+    try {
+        let sha = null;
+        const checkRes = await fetch(url, { headers });
+        if (checkRes.ok) {
+            const checkJson = await checkRes.json();
+            sha = checkJson.sha;
+        }
+
+        const body = {
+            message: message,
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+            branch: ghConfig.branch
+        };
+        if (sha) body.sha = sha;
+
+        const putRes = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(body) });
+        return putRes.ok;
+    } catch (e) {
+        console.error("Upload Error:", e);
+        return false;
+    }
+}
+
+function showSyncToast() {
+    const toast = document.createElement('div');
+    toast.className = 'glass-panel sync-toast';
+    toast.innerHTML = `<i class="fas fa-cloud"></i> GitHub 동기화 완료`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 500);
+    }, 2000);
 }
 
 function updatePlaylistBadge() {
@@ -379,6 +440,11 @@ function togglePlaylist(id, isSave, songObj = null) {
     localStorage.setItem('vibe_playlist', JSON.stringify(myPlaylistIds));
     updatePlaylistBadge();
     performSearch();
+
+    // GitHub AutoSync
+    if (ghConfig.token && ghConfig.autoSync) {
+        syncWithGitHub('upload').catch(console.error);
+    }
 }
 
 
@@ -405,6 +471,37 @@ function setupEventListeners() {
 
     if (globalSearchBtn) {
         globalSearchBtn.addEventListener('click', () => handleGlobalSearch());
+    }
+
+    // Settings listeners
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            document.getElementById('ghToken').value = ghConfig.token || '';
+            document.getElementById('ghRepo').value = ghConfig.repo || 'uzenkaze/vibe';
+            document.getElementById('ghBranch').value = ghConfig.branch || 'main';
+            settingsModal.classList.add('active');
+        });
+    }
+
+    if (closeSettingsBtn) {
+        closeSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('active'));
+    }
+
+    if (saveSettingsBtn) {
+        saveSettingsBtn.addEventListener('click', () => {
+            ghConfig.token = document.getElementById('ghToken').value.trim();
+            ghConfig.repo = document.getElementById('ghRepo').value.trim();
+            ghConfig.branch = document.getElementById('ghBranch').value.trim();
+            localStorage.setItem('vibeGitHubConfig', JSON.stringify(ghConfig));
+            settingsModal.classList.remove('active');
+            alert('GitHub 설정이 저장되었습니다.');
+            init(); // Re-initialize to load from new config
+        });
     }
 
     if (tabSearch) {

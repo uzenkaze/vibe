@@ -13,7 +13,7 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header glass-panel">
-            <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 뒤로가기</a>
+            <button id="settingsBtn" class="settings-btn" title="GitHub 설정"><i class="fas fa-cog"></i></button>
             <h1><i class="fas fa-compact-disc spin-icon"></i> Vibe Music Box</h1>
             <div class="time-display" id="currentTime">00:00</div>
         </header>
@@ -101,5 +101,32 @@
         </main>
     </div>
     <script src="script.js"></script>
+    <!-- GitHub Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2><i class="fab fa-github"></i> GitHub 동기화 설정</h2>
+                <button class="modal-close" id="closeSettingsBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-key"></i> GitHub Token</label>
+                    <input type="password" id="ghToken" placeholder="Personal Access Token을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-database"></i> Repository</label>
+                    <input type="text" id="ghRepo" value="uzenkaze/vibe">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-code-branch"></i> Branch</label>
+                    <input type="text" id="ghBranch" value="main">
+                </div>
+                <p class="settings-hint">설명: 저장된 보관함은 `hobby/playlist.json` 경로에 자동 저장됩니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="glass-btn save-btn" id="saveSettingsBtn">저장하기</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
