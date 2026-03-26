@@ -1,6 +1,7 @@
 {
   "myPlaylistIds": [
-    "global_Amq-qlqbjYA"
+    "global_Amq-qlqbjYA",
+    "global_dyRsYk0LyA8"
   ],
   "globalSavedSongs": [
     {
@@ -8,6 +9,14 @@
       "title": "BLACKPINK - '마지막처럼 (AS IF IT'S YOUR LAST)' M/V",
       "artist": "BLACKPINK",
       "youtubeId": "Amq-qlqbjYA",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK"
+    },
+    {
+      "id": "global_dyRsYk0LyA8",
+      "title": "BLACKPINK - 'Lovesick Girls' M/V",
+      "artist": "BLACKPINK",
+      "youtubeId": "dyRsYk0LyA8",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK"
     }
