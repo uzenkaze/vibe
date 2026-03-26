@@ -132,8 +132,8 @@ async function init() {
         }
     }
 
-    // 2. Load hot music 100
-    await handleGlobalSearch("실시간 인기 급상승 음악");
+    // 2. Load latest trend music (Only first 10 for performance)
+    await handleGlobalSearch("최신 인기 트렌드 음악", 10);
 
     // 3. Render initial state
     updatePlaylistBadge();
@@ -219,9 +219,17 @@ function updatePlaylistBadge() {
 
 async function performSearch(queryOverride = null) {
     const query = (queryOverride || searchInput.value).toLowerCase().trim();
-    loading.style.display = 'none';
+    
+    // Show loading only if a non-empty query is being processed
+    if (query !== '') {
+        loading.style.display = 'flex';
+        songList.style.display = 'none';
+        noResults.style.display = 'none';
+    } else {
+        loading.style.display = 'none';
+    }
 
-        // Handle different tab logic
+    // Handle different tab logic
     if (currentTab === 'search') {
         const localSource = [...songs, ...globalSavedSongs.map(s => ({...s, isGlobal: true}))];
         const filteredSongs = localSource.filter(song =>
@@ -266,9 +274,10 @@ async function performSearch(queryOverride = null) {
         
         if (document.getElementById('exportPlaylistBtn')) document.getElementById('exportPlaylistBtn').style.display = 'inline-block';
     }
+    loading.style.display = 'none'; // Hide loading after search is complete
 }
 
-async function handleGlobalSearch(customQuery = null) {
+async function handleGlobalSearch(customQuery = null, limit = 100) {
     // Ensure customQuery is a string and not an event object
     const query = (typeof customQuery === 'string') ? customQuery : searchInput.value.trim();
     if (!query) return;
@@ -331,7 +340,7 @@ async function handleGlobalSearch(customQuery = null) {
                 });
 
                 if (results.length > 0) {
-                    currentResults = results.slice(0, 100); 
+                    currentResults = results.slice(0, limit); 
                     
                     if (listTitleLabel && listIcon) {
                         if (customQuery && query === "실시간 인기 급상승 음악") {

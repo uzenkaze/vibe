@@ -138,6 +138,32 @@ body {
     color: var(--text-primary);
     font-size: 1rem;
     font-family: inherit;
+    min-width: 0;
+}
+
+.search-btn {
+    background: var(--accent-color);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.search-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.search-btn i {
+    font-size: 1.1rem;
 }
 
 .search-box input::placeholder {
@@ -633,6 +659,7 @@ body {
     font-weight: 600;
 }
 
+/* Responsive Design */
 /* Sync Toast */
 .sync-toast {
     position: fixed;
@@ -660,4 +687,83 @@ body {
 @keyframes sideSlideIn {
     from { transform: translateX(50px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    body {
+        align-items: flex-start;
+        overflow-y: auto;
+        padding-top: 20px;
+    }
+
+    .app-container {
+        height: auto;
+        width: 100vw;
+        gap: 15px;
+        padding: 0 10px 40px;
+    }
+
+    .app-header {
+        padding: 10px 15px;
+    }
+
+    .app-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .main-content {
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 15px;
+    }
+
+    .left-panel {
+        height: auto;
+        gap: 15px;
+    }
+
+    .search-box {
+        padding: 10px 15px;
+    }
+
+    .song-list-container {
+        max-height: 400px;
+    }
+
+    .lyrics-container {
+        max-height: 250px;
+    }
+
+    .youtube-player-container {
+        min-height: 220px;
+    }
+
+    .player-title {
+        font-size: 1.1rem;
+    }
+
+    .settings-btn {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-header h1 span {
+        display: none; /* Hide 'Vibe Music Box' text if very narrow */
+    }
+    
+    .list-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        font-size: 0.85rem;
+        padding: 6px;
+    }
+    
+    .song-info h4 {
+        font-size: 0.9rem;
+    }
 }
