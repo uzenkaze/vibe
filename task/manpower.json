@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1774507778082",
+    "project": "롯데 하이마트 쇼핑몰 운영",
+    "name": "",
+    "nickname": "",
+    "position": "",
+    "jobGroup": "",
+    "updated_at": "2026-03-26T06:49:38.082Z"
+  },
+  {
+    "id": "1774507499921",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "",
+    "nickname": "Rhyme",
+    "position": "이사",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-26T06:44:59.921Z"
+  },
+  {
+    "id": "1774507467637",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "김광석",
+    "nickname": "Evelyn",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T06:44:27.637Z"
+  }
+]
