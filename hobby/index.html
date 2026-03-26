@@ -14,7 +14,7 @@
         <!-- Header -->
         <header class="app-header glass-panel">
             <button id="settingsBtn" class="settings-btn" title="GitHub 설정"><i class="fas fa-cog"></i></button>
-            <h1><i class="fas fa-compact-disc spin-icon"></i> Vibe Music Box</h1>
+            <h1 id="appTitle" style="cursor: pointer;"><i class="fas fa-compact-disc spin-icon"></i> Vibe Music Box</h1>
             <div class="time-display" id="currentTime">00:00</div>
         </header>
 
@@ -52,16 +52,6 @@
                         </div>
                     </div>
 
-                    <!-- Lyrics Area -->
-                    <div class="lyrics-container glass-panel" id="lyricsContainer" style="display: none;">
-                        <div class="section-title lyrics-header">
-                            <div><i class="fas fa-align-left"></i> <span id="lyricsTitle">가사</span></div>
-                            <button id="closeLyricsBtn" class="icon-btn"><i class="fas fa-times"></i></button>
-                        </div>
-                        <div class="lyrics-content" id="lyricsContent">
-                            <!-- Lyrics here -->
-                        </div>
-                    </div>
                 </div>
             </section>
 
@@ -70,12 +60,17 @@
                 <div class="player-wrapper">
                     <div class="player-header">
                         <h2><i class="fab fa-youtube" style="color:#ff0000;"></i> Now Playing</h2>
-                        <div class="equalizer" id="equalizer" style="display: none;">
-                            <span class="bar"></span>
-                            <span class="bar"></span>
-                            <span class="bar"></span>
-                            <span class="bar"></span>
-                            <span class="bar"></span>
+                        <div class="player-actions">
+                            <button id="toggleLyricsBtn" class="glass-btn small-btn" title="가사 보기/숨기기" style="display: none;">
+                                <i class="fas fa-quote-right"></i> 가사
+                            </button>
+                            <div class="equalizer" id="equalizer" style="display: none;">
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                            </div>
                         </div>
                     </div>
                     
@@ -99,6 +94,17 @@
                     <!-- YouTube Iframe -->
                     <div id="youtubePlayerContainer" class="youtube-player-container" style="display: none;">
                         <iframe id="youtubeIframe" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+
+                    <!-- Lyrics Area (Moved here) -->
+                    <div class="lyrics-container glass-panel" id="lyricsContainer" style="display: none;">
+                        <div class="section-title lyrics-header">
+                            <div><i class="fas fa-align-left"></i> <span id="lyricsTitle">가사</span></div>
+                            <button id="closeLyricsBtn" class="icon-btn"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="lyrics-content" id="lyricsContent">
+                            <!-- Lyrics here -->
+                        </div>
                     </div>
                 </div>
             </section>

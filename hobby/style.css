@@ -395,13 +395,15 @@ body {
 
 /* Lyrics Container */
 .lyrics-container {
-    flex: 1; /* Match list height roughly or grow */
-    min-height: 30%; /* Ensure it's never too small */
+    flex: 1; /* Grow to fill space */
+    margin-top: 15px;
     display: flex;
     flex-direction: column;
-    padding: 15px 20px;
+    padding: 20px;
     animation: slideUp 0.3s ease;
-    overflow: hidden; /* Content inside will scroll */
+    min-height: 200px;
+    overflow: hidden; /* Prevent container growth beyond panel */
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @keyframes slideUp {
@@ -432,16 +434,17 @@ body {
 
 .lyrics-content {
     flex: 1;
-    overflow-y: auto;
-    font-size: 0.95rem;
-    line-height: 1.8;
-    color: rgba(248, 250, 252, 0.85); /* Slightly dimmed primary */
+    font-size: 1.05rem;
+    line-height: 2.2;
+    color: rgba(248, 250, 252, 1);
     white-space: pre-wrap;
     text-align: left;
+    padding: 10px 0;
+    overflow-y: auto; /* Internal Scrolling! */
     padding-right: 10px;
 }
 .lyrics-content p {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 /* Right Panel (Player) */
@@ -450,7 +453,8 @@ body {
     flex-direction: column;
     padding: 20px;
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* Lock the panel height to app container */
+    max-height: 100%;
 }
 
 .player-wrapper {
@@ -473,6 +477,24 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.player-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.small-btn {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    margin-top: 0; /* Reset global margin-top */
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.small-btn i {
+    font-size: 0.9rem;
 }
 
 /* Equalizer Animation */
@@ -768,7 +790,9 @@ body {
     }
 
     .lyrics-container {
-        max-height: 300px;
+        max-height: none;
+        min-height: unset;
+        border-radius: 12px;
     }
 
     .youtube-player-container {
@@ -832,6 +856,16 @@ body {
     }
     .app-header h1 span, .time-display, .spin-icon {
         display: none;
+    }
+    .player-actions {
+        gap: 6px;
+    }
+    .small-btn {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+    .small-btn i {
+        font-size: 0.75rem;
     }
     .main-content {
         padding: 5px;
