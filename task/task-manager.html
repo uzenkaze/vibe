@@ -1062,7 +1062,20 @@
             margin-bottom: 2rem;
         }
 
+        /* Drag over indicator */
+        .task-card-apple.drag-over {
+            border: 2px dashed var(--primary) !important;
+            transform: scale(1.02);
+            background: rgba(235, 235, 245, 0.6) !important;
+        }
 
+        .project-org-section.drag-over {
+            background: rgba(94, 92, 230, 0.05);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-left: -1rem;
+            margin-right: -1rem;
+        }
     </style>
 </head>
 
@@ -1109,7 +1122,7 @@
                         </div>
                         <div class="stat-card-apple">
                             <div class="stat-card-label">팀 멤버</div>
-                            <div class="stat-card-value">1</div>
+                            <div class="stat-card-value" id="dash-stat-manpower">0</div>
                             <div class="stat-card-subtext">활성 멤버</div>
                         </div>
                     </div>
@@ -1137,6 +1150,31 @@
                             <div class="calendar-grid" id="calendar-grid"></div>
                         </div>
                     </div>
+                </div>
+
+                <div id="view-manpower" class="view-section">
+                    <header class="header">
+                        <div class="header-left">
+                            <h1>Manpower</h1>
+                        </div>
+                        <div class="header-right">
+                            <div class="stat-grid-header">
+                                <div class="stat-card-mini">
+                                    <h3>전체 인원</h3>
+                                    <div id="stat-manpower-total" class="stat-value">0</div>
+                                </div>
+                            </div>
+                            <button class="btn-purple" style="margin-top:1rem" onclick="openManpowerModal()">+ 신규 인력
+                                등록</button>
+                        </div>
+                    </header>
+                    <div class="search-bar-container">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="manpower-search-input" class="search-input"
+                                placeholder="이름, 닉네임으로 검색..." onkeyup="confirmManpowerSearch()">
+                        </div>
+                    </div>
+                    <div id="manpower-card-container" class="task-card-grid"></div>
                 </div>
 
                 <div id="view-task" class="view-section">
@@ -1190,12 +1228,12 @@
                         <!-- Left Column: Search & Hot Issues -->
                         <div class="news-column">
                             <div class="news-column-header">
-                                <span class="news-column-title">🔥 주요 뉴스 검색 <small id="google-news-count" style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
+                                <span class="news-column-title">🔥 주요 뉴스 검색 <small id="google-news-count"
+                                        style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
                             <div class="news-search-bar">
                                 <input type="text" id="news-keyword" class="news-search-input"
-                                    placeholder="핫이슈, 헤드라인 뉴스"
-                                    onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
+                                    placeholder="핫이슈, 헤드라인 뉴스" onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
                                 <button class="news-search-btn" onclick="searchGoogleNews(true)">검색</button>
                             </div>
                             <div id="news-left-content" style="min-height: 300px;">
@@ -1206,7 +1244,8 @@
                         <!-- Middle Column: StockPlus / Realtime -->
                         <div class="news-column">
                             <div class="news-column-header">
-                                <span class="news-column-title">📈 증권플러스 실시간 <small id="stock-news-count" style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
+                                <span class="news-column-title">📈 증권플러스 실시간 <small id="stock-news-count"
+                                        style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
                             <div class="news-search-bar">
                                 <input type="text" id="stockplus-keyword" class="news-search-input"
@@ -1222,7 +1261,8 @@
                         <!-- Right Column: IT / Tech -->
                         <div class="news-column">
                             <div class="news-column-header">
-                                <span class="news-column-title">💻 IT / 테크 최신 뉴스 <small id="it-news-count" style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
+                                <span class="news-column-title">💻 IT / 테크 최신 뉴스 <small id="it-news-count"
+                                        style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
                             <div class="news-search-bar">
                                 <input type="text" id="it-news-keyword" class="news-search-input"
@@ -1325,8 +1365,10 @@
 
     <script>
         let tasks = [];
+        let manpowers = [];
         let visibleCount = 6;
         let currentSearchQuery = '';
+        let currentManpowerSearch = '';
         let currentView = 'view-dashboard';
         let calDate = new Date();
         let ghConfig = JSON.parse(localStorage.getItem('taskGitHubConfig') || '{"repo":"uzenkaze/vibe","branch":"main","autoSync":true}');
@@ -1334,36 +1376,47 @@
         let menus = [
             { id: 'dashboard', name: '대시보드', icon: '📊', viewId: 'view-dashboard' },
             { id: 'task', name: '일감관리', icon: '📁', viewId: 'view-task' },
+            { id: 'manpower', name: 'Manpower', icon: '👥', viewId: 'view-manpower' },
             { id: 'news', name: '실시간 뉴스', icon: '📰', viewId: 'view-news' },
-
             { id: 'settings', name: '설정', icon: '⚙️', viewId: 'view-settings' }
         ];
 
         async function init() {
             renderSidebar();
-            // await loadTasks(); // Replaced by GitHub sync logic
             if (ghConfig.token) {
                 try {
-                    const remoteTasks = await syncWithGitHub('download');
+                    // Sync Tasks
+                    const remoteTasks = await syncWithGitHub('download', 'task/task-manager.json');
                     if (remoteTasks) {
                         tasks = remoteTasks;
                         localStorage.setItem('tasks', JSON.stringify(tasks));
-                        console.log('GitHub 데이터 동기화 완료');
                     } else {
-                        // If remoteTasks is null (e.g., file not found), load from local storage
                         tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
                     }
+
+                    // Sync Manpower
+                    const remoteManpower = await syncWithGitHub('download', 'task/manpower.json');
+                    if (remoteManpower) {
+                        manpowers = remoteManpower;
+                        localStorage.setItem('manpowers', JSON.stringify(manpowers));
+                    } else {
+                        manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
+                    }
+
+                    console.log('GitHub 데이터 동기화 완료');
                 } catch (e) {
                     console.error('GitHub 초기 로드 실패', e);
-                    // Fallback to local storage if GitHub sync fails
                     tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+                    manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
                 }
             } else {
                 tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+                manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
             }
             await staggerNewsFetch();
 
             render();
+            renderManpower();
             switchView(currentView);
             setInterval(() => {
                 searchGoogleNews();
@@ -1481,6 +1534,13 @@
                     if (el) el.innerText = stats[key];
                 });
             });
+
+            // Update Manpower Dash Stat
+            const dashManpower = document.getElementById('dash-stat-manpower');
+            if (dashManpower) dashManpower.innerText = manpowers.length;
+
+            const mainManpowerTotal = document.getElementById('stat-manpower-total');
+            if (mainManpowerTotal) mainManpowerTotal.innerText = manpowers.length;
         }
 
         function updateRecentTaskBanner() {
@@ -1666,6 +1726,211 @@
             render();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // --- Manpower Logic ---
+        function renderManpower() {
+            const container = document.getElementById('manpower-card-container');
+            if (!container) return;
+
+            const filtered = manpowers.filter(m =>
+                m.name.toLowerCase().includes(currentManpowerSearch.toLowerCase()) ||
+                m.nickname.toLowerCase().includes(currentManpowerSearch.toLowerCase()) ||
+                (m.project && m.project.toLowerCase().includes(currentManpowerSearch.toLowerCase()))
+            );
+
+            updateStats();
+
+            // Grouping by project for "Org Chart" style
+            const grouped = {};
+            filtered.forEach(m => {
+                const p = m.project || '미배정 / 기타';
+                if (!grouped[p]) grouped[p] = [];
+                grouped[p].push(m);
+            });
+
+            const projectNames = Object.keys(grouped).sort();
+
+            if (projectNames.length === 0) {
+                container.innerHTML = '<div style="grid-column: span 3; text-align: center; padding: 4rem; color: var(--text-muted);">등록된 인력이 없거나 검색 결과가 없습니다.</div>';
+                return;
+            }
+
+            container.style.display = 'block'; // Change grid to block for project sections
+            container.innerHTML = projectNames.map(pName => `
+                <div class="project-org-section" style="margin-bottom: 3rem; transition: background 0.2s;" 
+                     ondragover="handleDragOver(event)" 
+                     ondragenter="this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="handleDropOnProject(event, '${pName.replace(/'/g, "\\'")}')">
+                    <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.8rem; background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px;">PROJECT</span> ${pName}
+                        <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">(${grouped[pName].length}명)</span>
+                    </h2>
+                    <div class="manpower-member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                        ${grouped[pName].map(m => `
+                            <div class="task-card-apple" 
+                                 draggable="true"
+                                 ondragstart="handleDragStart(event, '${m.id}')"
+                                 ondragover="handleDragOver(event)"
+                                 ondragenter="this.classList.add('drag-over')"
+                                 ondragleave="this.classList.remove('drag-over')"
+                                 ondragend="handleDragEnd(event)"
+                                 ondrop="handleDropOnCard(event, '${m.id}')"
+                                 style="height: auto; min-height: 150px; padding: 1.25rem; transition: all 0.2s; cursor: grab;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                    <div>
+                                        <div style="font-size: 0.75rem; font-weight: 800; color: #5e5ce6; margin-bottom: 2px;">${m.jobGroup || '직군미정'}</div>
+                                        <div style="font-size: 1.3rem; font-weight: 800;">${m.name} <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">${m.position || ''}</span></div>
+                                    </div>
+                                    <div class="card-badge done" style="background: #f0fdf4; color: #15803d; font-size: 0.65rem;">ACTIVE</div>
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                                    <i class="far fa-user-circle"></i> @${m.nickname}
+                                </div>
+                                <div class="card-footer" style="padding-top: 1rem; border-top: 1px solid #f2f2f7; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                                    <div class="card-actions" style="display: flex; gap: 6px;">
+                                        <button class="btn-mini" style="margin:0; padding: 4px 12px;" onclick="openManpowerModal('${m.id}')">수정</button>
+                                        <button class="btn-mini delete" style="margin:0; padding: 4px 12px;" onclick="deleteManpower('${m.id}')">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function confirmManpowerSearch() {
+            currentManpowerSearch = document.getElementById('manpower-search-input').value;
+            renderManpower();
+        }
+
+        function openManpowerModal(id) {
+            document.getElementById('manpower-modal').classList.add('active');
+            if (id) {
+                const m = manpowers.find(x => x.id === id);
+                document.getElementById('manpower-id').value = m.id;
+                document.getElementById('m-project').value = m.project || '';
+                document.getElementById('m-name').value = m.name;
+                document.getElementById('m-nickname').value = m.nickname;
+                document.getElementById('m-position').value = m.position || '';
+                document.getElementById('m-jobgroup').value = m.jobGroup || '';
+                document.getElementById('manpower-modal-title').innerText = '인력 정보 수정';
+            } else {
+                document.getElementById('manpower-form').reset();
+                document.getElementById('manpower-id').value = '';
+                document.getElementById('manpower-modal-title').innerText = '인력 등록';
+            }
+        }
+
+        function closeManpowerModal() { document.getElementById('manpower-modal').classList.remove('active'); }
+
+        async function saveManpower() {
+            const id = document.getElementById('manpower-id').value;
+            const manpower = {
+                id: id || Date.now().toString(),
+                project: document.getElementById('m-project').value,
+                name: document.getElementById('m-name').value,
+                nickname: document.getElementById('m-nickname').value,
+                position: document.getElementById('m-position').value,
+                jobGroup: document.getElementById('m-jobgroup').value,
+                updated_at: new Date().toISOString()
+            };
+
+            if (id) manpowers = manpowers.map(m => m.id === id ? manpower : m);
+            else manpowers.push(manpower);
+
+            localStorage.setItem('manpowers', JSON.stringify(manpowers));
+            closeManpowerModal();
+            renderManpower();
+
+            if (ghConfig.token && ghConfig.autoSync) {
+                await syncWithGitHub('upload', 'task/manpower.json', manpowers);
+            }
+        }
+
+        async function deleteManpower(id) {
+            if (!confirm('해당 인력을 삭제하시겠습니까?')) return;
+            manpowers = manpowers.filter(m => m.id !== id);
+            localStorage.setItem('manpowers', JSON.stringify(manpowers));
+            renderManpower();
+            if (ghConfig.token && ghConfig.autoSync) {
+                await syncWithGitHub('upload', 'task/manpower.json', manpowers);
+            }
+        }
+
+        // --- Drag and Drop Sorting ---
+        let draggedId = null;
+
+        function handleDragStart(e, id) {
+            draggedId = id;
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.style.opacity = '0.5';
+            e.target.style.transform = 'scale(0.95)';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'none';
+            draggedId = null;
+            // Ensure all indicators are removed
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function handleDropOnCard(e, targetId) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            if (draggedId === targetId) return;
+
+            const draggedIdx = manpowers.findIndex(m => m.id === draggedId);
+            if (draggedIdx === -1) return;
+
+            const [draggedItem] = manpowers.splice(draggedIdx, 1);
+
+            const targetIdxAfterSplice = manpowers.findIndex(m => m.id === targetId);
+            if (targetIdxAfterSplice === -1) {
+                // Should not happen, but fallback
+                manpowers.push(draggedItem);
+            } else {
+                draggedItem.project = manpowers[targetIdxAfterSplice].project;
+                manpowers.splice(targetIdxAfterSplice, 0, draggedItem);
+            }
+
+            saveManpowerToPersistence();
+        }
+
+        function handleDropOnProject(e, projectName) {
+            e.preventDefault();
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            if (draggedId === null) return;
+
+            const draggedIdx = manpowers.findIndex(m => m.id === draggedId);
+            if (draggedIdx === -1) return;
+
+            // Update project and move to the end of that project
+            const [draggedItem] = manpowers.splice(draggedIdx, 1);
+            draggedItem.project = projectName;
+
+            // To make it appear at the end of the project, we can just push it to the end of array
+            // Since renderManpower groups by project, it stays in the project but the flat order changes.
+            manpowers.push(draggedItem);
+
+            saveManpowerToPersistence();
+        }
+
+        async function saveManpowerToPersistence() {
+            localStorage.setItem('manpowers', JSON.stringify(manpowers));
+            renderManpower();
+            if (ghConfig.token && ghConfig.autoSync) {
+                await syncWithGitHub('upload', 'task/manpower.json', manpowers);
+            }
+        }
         // --- News Logic ---
         let googleNewsItems = [];
         let googleVisibleCount = 10;
@@ -1751,7 +2016,7 @@
             const contentEl = document.getElementById('news-left-content');
             const countEl = document.getElementById('google-news-count');
             if (countEl) countEl.innerText = `(오늘: ${googleNewsItems.length}건)`;
-            
+
             if (googleNewsItems.length === 0) {
                 contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">최근 등록된 관련 뉴스가 없습니다.</div>';
                 return;
@@ -1977,9 +2242,11 @@
 
 
 
-        async function syncWithGitHub(action = 'upload') {
+        async function syncWithGitHub(action = 'upload', specificPath = null, specificData = null) {
             if (!ghConfig.token || !ghConfig.repo) return null;
-            const filePath = `task/task-manager.json`;
+            const filePath = specificPath || `task/task-manager.json`;
+            const dataToUpload = specificData || (filePath.includes('manpower') ? manpowers : tasks);
+
             const url = `https://api.github.com/repos/${ghConfig.repo}/contents/${filePath}?ref=${ghConfig.branch}`;
             const headers = {
                 'Authorization': `token ${ghConfig.token}`,
@@ -1994,7 +2261,7 @@
                     const content = decodeURIComponent(escape(atob(json.content)));
                     return JSON.parse(content);
                 } else {
-                    const success = await uploadToGitHub(filePath, tasks, `Update task data: task-manager.json`);
+                    const success = await uploadToGitHub(filePath, dataToUpload, `Update data: ${filePath}`);
                     if (success) showSyncToast();
                 }
             } catch (e) { console.error("GitHub Sync Error:", e); }
@@ -2135,6 +2402,65 @@
                     onclick="manualSyncTasks()">☁️ 동기화</button>
                 <button class="btn-save-main" onclick="saveGitHubSettings()">저장</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Manpower Modal -->
+    <div class="modal-overlay" id="manpower-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" onclick="closeManpowerModal()">&times;</button>
+            <div class="modal-header">
+                <h2 id="manpower-modal-title">인력 등록</h2>
+            </div>
+            <form id="manpower-form">
+                <input type="hidden" id="manpower-id">
+                <div class="form-grid" style="margin-top: 1.5rem;">
+                    <div class="form-group col-span-12">
+                        <label class="form-label">프로젝트</label>
+                        <select id="m-project" class="form-control">
+                            <option value="">(선택)</option>
+                            <option value="롯데 하이마트 쇼핑몰 운영 및 추가과제">롯데 하이마트 쇼핑몰 운영 및 추가과제</option>
+                            <option value="신세계백화점 운영">신세계백화점 운영</option>
+                            <option value="SSF SHOP 운영">SSF SHOP 운영</option>
+                            <option value="한진관광 차세대 시스템 구축">한진관광 차세대 시스템 구축</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-span-6">
+                        <label class="form-label">이름</label>
+                        <input type="text" id="m-name" class="form-control" required placeholder="실명">
+                    </div>
+                    <div class="form-group col-span-6">
+                        <label class="form-label">닉네임</label>
+                        <input type="text" id="m-nickname" class="form-control" required placeholder="별칭">
+                    </div>
+                    <div class="form-group col-span-6">
+                        <label class="form-label">직위</label>
+                        <select id="m-position" class="form-control">
+                            <option value="">(선택)</option>
+                            <option value="이사">이사</option>
+                            <option value="수석">수석</option>
+                            <option value="책임">책임</option>
+                            <option value="선임">선임</option>
+                            <option value="전임">전임</option>
+                            <option value="사원">사원</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-span-6">
+                        <label class="form-label">직군</label>
+                        <select id="m-jobgroup" class="form-control">
+                            <option value="">(선택)</option>
+                            <option value="PM">PM</option>
+                            <option value="개발">개발</option>
+                            <option value="기획">기획</option>
+                            <option value="퍼블">퍼블</option>
+                            <option value="디자인">디자인</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-save-main" onclick="saveManpower()">저장</button>
+                </div>
+            </form>
         </div>
     </div>
 </body>
