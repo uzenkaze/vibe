@@ -1,7 +1,8 @@
 {
   "myPlaylistIds": [
     "global_Amq-qlqbjYA",
-    "global_dyRsYk0LyA8"
+    "global_dyRsYk0LyA8",
+    "global_jWQx2f-CErU"
   ],
   "globalSavedSongs": [
     {
@@ -19,6 +20,14 @@
       "youtubeId": "dyRsYk0LyA8",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK"
+    },
+    {
+      "id": "global_jWQx2f-CErU",
+      "title": "aespa 에스파 'Whiplash' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "jWQx2f-CErU",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
     }
   ]
 }
