@@ -41,6 +41,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_dYRITmpFbJ4",
+      "title": "aespa 에스파 'Girls' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "dYRITmpFbJ4",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - SMTOWN"
+    },
+    {
       "id": "global_4TWR90KJl84",
       "title": "aespa 에스파 'Next Level' MV",
       "artist": "SMTOWN",
@@ -158,15 +166,7 @@
       "youtubeId": "x4DB67xVado",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 코요태두리"
-    },
-    {
-      "id": "related_7IPaQoQyvRc",
-      "title": "Musique de sommeil pour la tranquillité d'esprit | Anxiété et inquiétude,musique de méditation.",
-      "artist": "뮤직 메이트 Music Mate",
-      "youtubeId": "7IPaQoQyvRc",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     }
   ],
-  "lastSync": "2026-03-27T07:18:46.355Z"
+  "lastSync": "2026-03-27T07:18:54.005Z"
 }
