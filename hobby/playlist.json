@@ -41,6 +41,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_iHSg2EdKVPY",
+      "title": "🔥『Playlist』 코요태 리믹스🔥",
+      "artist": "KOQ SOUND",
+      "youtubeId": "iHSg2EdKVPY",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: KOQ SOUND"
+    },
+    {
       "id": "global_x4DB67xVado",
       "title": "[1080p60] 코요태 (Koyote) - 파란 (Disturbance) 뮤직비디오 (MV)",
       "artist": "코요태두리",
@@ -81,5 +89,5 @@
       "lyrics": "(연관 추천곡) - Yeo Doll"
     }
   ],
-  "lastSync": "2026-03-27T01:07:47.419Z"
+  "lastSync": "2026-03-27T01:08:10.235Z"
 }
