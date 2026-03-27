@@ -41,6 +41,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_jWQx2f-CErU",
+      "title": "aespa 에스파 'Whiplash' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "jWQx2f-CErU",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
+    },
+    {
       "id": "global_OZytLLasceA",
       "title": "[단독샷캠4K] 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027",
       "artist": "SBSKPOP X INKIGAYO",
@@ -155,16 +163,7 @@
       "youtubeId": "m21yJMRu5Ug",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SBS 옛날 예능 - 빽능"
-    },
-    {
-      "id": "global_bwmSjveL3Lc",
-      "title": "BLACKPINK - '붐바야 (BOOMBAYAH)' M/V",
-      "artist": "BLACKPINK",
-      "youtubeId": "bwmSjveL3Lc",
-      "duration": "4:04",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK\n길이: 4:04"
     }
   ],
-  "lastSync": "2026-03-27T05:41:07.164Z"
+  "lastSync": "2026-03-27T06:28:16.794Z"
 }
