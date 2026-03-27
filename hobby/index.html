@@ -304,13 +304,25 @@
                         style="width: 110px; margin: 0; padding: 10px 0; font-size: 0.9rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border-color: rgba(255,255,255,0.1); justify-content: center;"
                         onclick="document.getElementById('loginInfoModal').classList.remove('active')">나중에</button>
                 </div>
-
-
-
-
             </div>
         </div>
-    </div>
-</body>
+    </div> <!-- Close modal-overlay -->
 
+    <!-- Sticky Mini Player for Mobile -->
+    <div id="miniPlayer" class="mini-player">
+        <div class="mini-player-thumb">
+            <img id="miniPlayerImg" src="music_placeholder.png" alt="thumb">
+        </div>
+        <div class="mini-player-info">
+            <div id="miniPlayerTitle" class="mini-title">재생 중인 곡 없음</div>
+            <div id="miniPlayerArtist" class="mini-artist">Vibe Music</div>
+        </div>
+        <div class="mini-player-controls">
+            <button id="prevBtnMini" class="mini-btn"><i class="fas fa-step-backward"></i></button>
+            <button id="togglePlayBtnMini" class="mini-btn"><i class="fas fa-play"></i></button>
+            <button id="nextBtnMini" class="mini-btn"><i class="fas fa-step-forward"></i></button>
+        </div>
+    </div>
+
+</body>
 </html>

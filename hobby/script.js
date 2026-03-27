@@ -1132,7 +1132,12 @@ async function handleSongClick(songOrId, mode = null) {
 
 
 
-    // Update UI state for active item (Non-blocking)
+    // Update UI    // Mini Player Sync
+    syncMiniPlayer(song);
+
+
+    // Update active UI (Non-blocking)
+
     document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
     const activeItem = document.querySelector(`.song-item[data-id="${song.id}"]`);
     if(activeItem) activeItem.classList.add('active');
@@ -1639,21 +1644,59 @@ function onPlayerStateChange(event) {
     
     // Update Play/Pause button UI
     if (togglePlayBtn) {
+        const audioModeIcon = document.getElementById('audioModeIcon');
         if (event.data === YT.PlayerState.PLAYING) {
             togglePlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            updateMiniIcons(true);
             if (currentMode === 'audio') equalizer.style.display = 'flex';
+            if (audioModeIcon) audioModeIcon.classList.remove('paused');
             startProgressUpdate();
         } else {
             togglePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
+            updateMiniIcons(false);
             equalizer.style.display = 'none';
-            if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.BUFFERING) {
-                // Keep updating or not? usually pause update
-            } else {
-                stopProgressUpdate();
-            }
+            if (audioModeIcon) audioModeIcon.classList.add('paused');
         }
     }
 }
+
+// Global Manual Controls for Mini Player & Fallbacks
+window.togglePlay = function() {
+    if (!player || !player.getPlayerState) return;
+    const state = player.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+    } else {
+        player.playVideo();
+    }
+};
+
+window.playPrevious = function() {
+    if (!currentPlayingSong) {
+        showToast("이전 곡이 없습니다.");
+        return;
+    }
+    if (typeof playHistory !== 'undefined' && playHistory.length > 1) {
+        playHistory.pop();
+        const lastSong = playHistory.pop();
+        handleSongClick(lastSong, currentMode || 'video');
+        return;
+    }
+    showToast("이전 곡이 없습니다.");
+};
+
+window.showToast = function(msg) {
+    let toast = document.getElementById('toastMsg');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastMsg';
+        toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:#fff;padding:10px 20px;border-radius:20px;z-index:9999;transition:opacity 0.3s;';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = 1;
+    setTimeout(() => { toast.style.opacity = 0; }, 2000);
+};
 
 // SEEKBAR LOGIC
 function startProgressUpdate() {
@@ -1837,5 +1880,100 @@ function updateYTStatusUI() {
 }
 
 
+// --- 🎵 MINI PLAYER LOGIC (Scroll Integration) ---
+function syncMiniPlayer(song) {
+    if (!song) return;
+    const miniPlayerImg = document.getElementById('miniPlayerImg');
+    const miniPlayerTitle = document.getElementById('miniPlayerTitle');
+    const miniPlayerArtist = document.getElementById('miniPlayerArtist');
+    if (miniPlayerImg) {
+        if (song.youtubeId || song.thumbnail) {
+            miniPlayerImg.src = song.youtubeId ? 'https://i.ytimg.com/vi/' + song.youtubeId + '/mqdefault.jpg' : (song.thumbnail || 'music_placeholder.png');
+        } else {
+            miniPlayerImg.src = 'music_placeholder.png';
+        }
+    }
+    if (miniPlayerTitle) miniPlayerTitle.textContent = song.title;
+    if (miniPlayerArtist) miniPlayerArtist.textContent = song.artist;
+    
+    // Initial sync of icons
+    if (player && player.getPlayerState) {
+        updateMiniIcons(player.getPlayerState() === YT.PlayerState.PLAYING);
+    }
+}
+
+function updateMiniIcons(isPlaying) {
+    const togglePlayBtnMini = document.getElementById('togglePlayBtnMini');
+    if (togglePlayBtnMini) {
+        togglePlayBtnMini.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+    }
+}
+
+// 📱 SCROLL EVENT: Show/Hide Mini Player on Mobile
+function initMiniPlayer() {
+    const mainContent = document.querySelector('.main-content');
+    const miniPlayer = document.getElementById('miniPlayer');
+    const togglePlayBtnMini = document.getElementById('togglePlayBtnMini');
+    const nextBtnMini = document.getElementById('nextBtnMini');
+    const prevBtnMini = document.getElementById('prevBtnMini');
+
+    if (!miniPlayer) return;
+    
+    // Always keep it flex so transitions work, hide via opacity/transform in CSS
+    miniPlayer.style.display = 'flex';
+
+    const checkScroll = (e) => {
+        let scrollTop = 0;
+        if (mainContent) scrollTop = mainContent.scrollTop;
+        if (scrollTop === 0) scrollTop = window.scrollY; // fallback
+        
+        // Show if scrolled down more than 50px
+        if (window.innerWidth <= 850) {
+            if (scrollTop > 50) {
+                miniPlayer.classList.add('visible');
+            } else {
+                miniPlayer.classList.remove('visible');
+            }
+        } else {
+            miniPlayer.classList.remove('visible');
+        }
+    };
+
+    if (mainContent) {
+        mainContent.addEventListener('scroll', checkScroll, { passive: true });
+    }
+    window.addEventListener('scroll', checkScroll, { passive: true });
+
+    if (togglePlayBtnMini) {
+        togglePlayBtnMini.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePlay();
+        });
+    }
+
+    if (nextBtnMini) {
+        nextBtnMini.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playNext(); /* assuming you have playNext() globally */
+        });
+    }
+
+    if (prevBtnMini) {
+        prevBtnMini.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playPrevious(); 
+        });
+    }
+
+    // Check initially just in case page is already scrolled
+    setTimeout(checkScroll, 500);
+}
+
+// DOM 생성이 완료된 후 미니 플레이어 이벤트 활성화
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMiniPlayer);
+} else {
+    initMiniPlayer();
+}
 
 
