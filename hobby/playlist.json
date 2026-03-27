@@ -38,5 +38,48 @@
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
     }
-  ]
+  ],
+  "recentlyPlayed": [
+    {
+      "id": "global_x4DB67xVado",
+      "title": "[1080p60] 코요태 (Koyote) - 파란 (Disturbance) 뮤직비디오 (MV)",
+      "artist": "코요태두리",
+      "youtubeId": "x4DB67xVado",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: 코요태두리"
+    },
+    {
+      "id": "related_7IPaQoQyvRc",
+      "title": "Musique de sommeil pour la tranquillité d'esprit | Anxiété et inquiétude,musique de méditation.",
+      "artist": "뮤직 메이트 Music Mate",
+      "youtubeId": "7IPaQoQyvRc",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
+    },
+    {
+      "id": "related_N4Kgp57fg2Y",
+      "title": "실시간차트 가요 TOP 20 (2022년 2월) 실시간 인기차트 new 2023 (음악차트) 노래모음   발라드 플레이리스트 | KPOP (CHART   BALLAD) | PL",
+      "artist": "Cheatra Im",
+      "youtubeId": "N4Kgp57fg2Y",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Cheatra Im"
+    },
+    {
+      "id": "related_chYdJt2Rq_k",
+      "title": "실시간차트 가요 TOP 20 (2022년 1월) 실시간 인기차트 new 2023 (음악차트) 노래모음   발라드 플레이리스트 | KPOP (CHART   BALLAD) | PL",
+      "artist": "Mnus Smos",
+      "youtubeId": "chYdJt2Rq_k",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Mnus Smos"
+    },
+    {
+      "id": "related_3K0MRXjiGho",
+      "title": "[최신가요 실시간 인기차트] 🤍❄️ 2026년 1월 12일 3주차, 멜론차트 X, 종합차트, 노래모음 KPOP 플레이리스트",
+      "artist": "Yeo Doll",
+      "youtubeId": "3K0MRXjiGho",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Yeo Doll"
+    }
+  ],
+  "lastSync": "2026-03-27T01:07:47.419Z"
 }
