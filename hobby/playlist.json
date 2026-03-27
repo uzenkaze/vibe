@@ -41,6 +41,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_R67ailBFBp0",
+      "title": "코요태 - 순정(純情) [가사/Lyrics]",
+      "artist": "웅키",
+      "youtubeId": "R67ailBFBp0",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: 웅키"
+    },
+    {
       "id": "global_MHCBoNhQmCk",
       "title": "[MV]순정 - 코요태(Koyote)",
       "artist": "RIAK OFFICIAL",
@@ -105,5 +113,5 @@
       "lyrics": "(연관 추천곡) - Yeo Doll"
     }
   ],
-  "lastSync": "2026-03-27T01:09:05.522Z"
+  "lastSync": "2026-03-27T01:09:28.525Z"
 }
