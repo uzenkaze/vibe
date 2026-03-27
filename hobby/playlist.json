@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_4TWR90KJl84",
+      "title": "aespa 에스파 'Next Level' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "4TWR90KJl84",
+      "duration": "3:56",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:56"
+    },
+    {
       "id": "global_OZytLLasceA",
       "title": "[단독샷캠4K] 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027",
       "artist": "SBSKPOP X INKIGAYO",
@@ -155,15 +164,7 @@
       "youtubeId": "chYdJt2Rq_k",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - Mnus Smos"
-    },
-    {
-      "id": "related_3K0MRXjiGho",
-      "title": "[최신가요 실시간 인기차트] 🤍❄️ 2026년 1월 12일 3주차, 멜론차트 X, 종합차트, 노래모음 KPOP 플레이리스트",
-      "artist": "Yeo Doll",
-      "youtubeId": "3K0MRXjiGho",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - Yeo Doll"
     }
   ],
-  "lastSync": "2026-03-27T06:36:25.920Z"
+  "lastSync": "2026-03-27T06:38:34.588Z"
 }
