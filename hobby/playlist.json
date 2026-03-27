@@ -41,6 +41,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_MHCBoNhQmCk",
+      "title": "[MV]순정 - 코요태(Koyote)",
+      "artist": "RIAK OFFICIAL",
+      "youtubeId": "MHCBoNhQmCk",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: RIAK OFFICIAL"
+    },
+    {
       "id": "global_MBfCCCPRHg4",
       "title": "[4K 60FPS] 코요태 - 파란 2001 4K AI Upscaling",
       "artist": "하늘지기 OLD KPOP",
@@ -97,5 +105,5 @@
       "lyrics": "(연관 추천곡) - Yeo Doll"
     }
   ],
-  "lastSync": "2026-03-27T01:08:16.738Z"
+  "lastSync": "2026-03-27T01:09:05.522Z"
 }
