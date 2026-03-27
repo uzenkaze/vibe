@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_nFYwcndNuOY",
+      "title": "aespa 에스파 'Armageddon' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "nFYwcndNuOY",
+      "duration": "3:33",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:33"
+    },
+    {
       "id": "global_0xdB_vo4r2c",
       "title": "aespa 에스파 'Welcome To MY World (Feat. nævis)' MV",
       "artist": "SMTOWN",
@@ -157,15 +166,7 @@
       "youtubeId": "7IPaQoQyvRc",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
-    },
-    {
-      "id": "related_N4Kgp57fg2Y",
-      "title": "실시간차트 가요 TOP 20 (2022년 2월) 실시간 인기차트 new 2023 (음악차트) 노래모음   발라드 플레이리스트 | KPOP (CHART   BALLAD) | PL",
-      "artist": "Cheatra Im",
-      "youtubeId": "N4Kgp57fg2Y",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - Cheatra Im"
     }
   ],
-  "lastSync": "2026-03-27T06:44:40.057Z"
+  "lastSync": "2026-03-27T06:51:26.870Z"
 }
