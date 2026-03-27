@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_YEA1ROHi0Eg",
+      "title": "aespa 에스파 'Live My Life' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "YEA1ROHi0Eg",
+      "duration": "3:35",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:35"
+    },
+    {
       "id": "global_0xdB_vo4r2c",
       "title": "aespa 에스파 'Welcome To MY World (Feat. nævis)' MV",
       "artist": "SMTOWN",
@@ -91,15 +100,6 @@
       "youtubeId": "jWQx2f-CErU",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
-    },
-    {
-      "id": "global_YEA1ROHi0Eg",
-      "title": "aespa 에스파 'Live My Life' MV",
-      "artist": "SMTOWN",
-      "youtubeId": "YEA1ROHi0Eg",
-      "duration": "3:35",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:35"
     },
     {
       "id": "global_32si5cfrCNc",
@@ -168,5 +168,5 @@
       "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     }
   ],
-  "lastSync": "2026-03-27T07:12:18.130Z"
+  "lastSync": "2026-03-27T07:12:24.221Z"
 }
