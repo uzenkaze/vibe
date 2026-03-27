@@ -38,11 +38,11 @@
   {
     "id": "1774508896990",
     "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
-    "name": "",
+    "name": "임정현",
     "nickname": "Peco",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T07:08:16.990Z"
+    "updated_at": "2026-03-27T06:56:40.575Z"
   },
   {
     "id": "1774511032231",
@@ -56,38 +56,38 @@
   {
     "id": "1774511051208",
     "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
-    "name": "",
+    "name": "이운우",
     "nickname": "Rain",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T07:44:11.208Z"
+    "updated_at": "2026-03-27T06:48:54.685Z"
   },
   {
     "id": "1774511069026",
     "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
-    "name": "",
+    "name": "강석구",
     "nickname": "mason",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T07:44:29.026Z"
+    "updated_at": "2026-03-27T06:49:14.595Z"
   },
   {
     "id": "1774511087217",
     "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
-    "name": "",
+    "name": "나연이",
     "nickname": "maisie",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T07:44:47.217Z"
+    "updated_at": "2026-03-27T06:56:18.577Z"
   },
   {
     "id": "1774511099292",
     "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
-    "name": "",
+    "name": "박흥열",
     "nickname": "Cielo",
-    "position": "전임",
+    "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T07:44:59.292Z"
+    "updated_at": "2026-03-27T06:56:03.105Z"
   },
   {
     "id": "1774511146415",
@@ -376,5 +376,194 @@
     "position": "",
     "jobGroup": "개발",
     "updated_at": "2026-03-26T23:09:54.807Z"
+  },
+  {
+    "id": "1774593675890",
+    "project": "신세계백화점 운영",
+    "name": "이숙영",
+    "nickname": "Liz",
+    "position": "수석",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-27T06:57:00.585Z"
+  },
+  {
+    "id": "1774593763396",
+    "project": "신세계백화점 운영",
+    "name": "김장현",
+    "nickname": "Luke",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:57:21.691Z"
+  },
+  {
+    "id": "1774593772694",
+    "project": "신세계백화점 운영",
+    "name": "김희정",
+    "nickname": "Jane",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:57:41.687Z"
+  },
+  {
+    "id": "1774593785970",
+    "project": "신세계백화점 운영",
+    "name": "이경호",
+    "nickname": "Bon",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:57:59.917Z"
+  },
+  {
+    "id": "1774593798782",
+    "project": "신세계백화점 운영",
+    "name": "우혜정",
+    "nickname": "Terra",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:58:17.788Z"
+  },
+  {
+    "id": "1774593808485",
+    "project": "신세계백화점 운영",
+    "name": "권대영",
+    "nickname": "Karl",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:58:34.510Z"
+  },
+  {
+    "id": "1774593816926",
+    "project": "신세계백화점 운영",
+    "name": "김효중",
+    "nickname": "Red",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:58:55.286Z"
+  },
+  {
+    "id": "1774593825912",
+    "project": "신세계백화점 운영",
+    "name": "강현우",
+    "nickname": "Kyle",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:59:13.883Z"
+  },
+  {
+    "id": "1774593840415",
+    "project": "신세계백화점 운영",
+    "name": "이현승",
+    "nickname": "Sirius",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:59:30.145Z"
+  },
+  {
+    "id": "1774593850661",
+    "project": "신세계백화점 운영",
+    "name": "김성훈",
+    "nickname": "Denny",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:59:47.870Z"
+  },
+  {
+    "id": "1774593958139",
+    "project": "신세계백화점 운영",
+    "name": "오창환",
+    "nickname": "Owen",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T07:00:07.306Z"
+  },
+  {
+    "id": "1774593972520",
+    "project": "신세계백화점 운영",
+    "name": "백대현",
+    "nickname": "kollet",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T07:00:24.552Z"
+  },
+  {
+    "id": "1774593988483",
+    "project": "신세계백화점 운영",
+    "name": "민경돈",
+    "nickname": "Blue",
+    "position": "이사",
+    "jobGroup": "Architecture",
+    "updated_at": "2026-03-27T07:00:42.214Z"
+  },
+  {
+    "id": "1774593995661",
+    "project": "신세계백화점 운영",
+    "name": "박인호",
+    "nickname": "John",
+    "position": "수석",
+    "jobGroup": "",
+    "updated_at": "2026-03-27T07:01:01.192Z"
+  },
+  {
+    "id": "1774594002401",
+    "project": "신세계백화점 운영",
+    "name": "김욱진",
+    "nickname": "Jacob",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T07:01:25.988Z"
+  },
+  {
+    "id": "1774594044708",
+    "project": "SSF SHOP 운영",
+    "name": "배영희",
+    "nickname": "Joshua",
+    "position": "수석",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-27T07:01:49.292Z"
+  },
+  {
+    "id": "1774594053501",
+    "project": "SSF SHOP 운영",
+    "name": "나하나",
+    "nickname": "Summer",
+    "position": "수석",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-27T07:02:06.332Z"
+  },
+  {
+    "id": "1774594061756",
+    "project": "SSF SHOP 운영",
+    "name": "윤숙영",
+    "nickname": "Laila",
+    "position": "책임",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-27T07:02:22.510Z"
+  },
+  {
+    "id": "1774594189885",
+    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "name": "윤경수",
+    "nickname": "Luizi",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:49:49.885Z"
+  },
+  {
+    "id": "1774594219675",
+    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "name": "백명선",
+    "nickname": "Lillian",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:50:19.675Z"
+  },
+  {
+    "id": "1774594256105",
+    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "name": "강재윤",
+    "nickname": "Rogue",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-27T06:50:56.105Z"
   }
 ]
