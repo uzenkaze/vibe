@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_9qkpcLK422o",
+      "title": "IVE 아이브 'BANG BANG' MV",
+      "artist": "STARSHIP et IVE",
+      "youtubeId": "9qkpcLK422o",
+      "duration": "3:05",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: STARSHIP et IVE\n길이: 3:05"
+    },
+    {
       "id": "global_R67ailBFBp0",
       "title": "코요태 - 순정(純情) [가사/Lyrics]",
       "artist": "웅키",
@@ -111,7 +120,15 @@
       "youtubeId": "3K0MRXjiGho",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - Yeo Doll"
+    },
+    {
+      "id": "global_m21yJMRu5Ug",
+      "title": "코요태 - 순정 【인기가요 Rewind】",
+      "artist": "SBS 옛날 예능 - 빽능",
+      "youtubeId": "m21yJMRu5Ug",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SBS 옛날 예능 - 빽능"
     }
   ],
-  "lastSync": "2026-03-27T01:09:28.525Z"
+  "lastSync": "2026-03-27T01:41:27.519Z"
 }
