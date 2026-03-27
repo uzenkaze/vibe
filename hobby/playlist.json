@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_4TWR90KJl84",
+      "title": "aespa 에스파 'Next Level' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "4TWR90KJl84",
+      "duration": "3:56",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:56"
+    },
+    {
       "id": "global_YEA1ROHi0Eg",
       "title": "aespa 에스파 'Live My Life' MV",
       "artist": "SMTOWN",
@@ -75,15 +84,6 @@
       "duration": "3:33",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:33"
-    },
-    {
-      "id": "global_4TWR90KJl84",
-      "title": "aespa 에스파 'Next Level' MV",
-      "artist": "SMTOWN",
-      "youtubeId": "4TWR90KJl84",
-      "duration": "3:56",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:56"
     },
     {
       "id": "global_ru4DicGUCY0",
@@ -168,5 +168,5 @@
       "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     }
   ],
-  "lastSync": "2026-03-27T07:12:24.221Z"
+  "lastSync": "2026-03-27T07:12:35.266Z"
 }
