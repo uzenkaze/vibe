@@ -9,15 +9,6 @@
     "updated_at": "2026-03-26T06:56:15.423Z"
   },
   {
-    "id": "1774507499921",
-    "project": "한진관광 차세대 시스템 구축",
-    "name": "",
-    "nickname": "Rhyme",
-    "position": "이사",
-    "jobGroup": "기획",
-    "updated_at": "2026-03-26T06:44:59.921Z"
-  },
-  {
     "id": "1774507467637",
     "project": "한진관광 차세대 시스템 구축",
     "name": "김광석",
@@ -25,6 +16,15 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-26T06:44:27.637Z"
+  },
+  {
+    "id": "1774507499921",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "김현준",
+    "nickname": "Rhyme",
+    "position": "이사",
+    "jobGroup": "Architecture",
+    "updated_at": "2026-03-26T23:21:48.005Z"
   },
   {
     "id": "1774508027476",
@@ -106,5 +106,275 @@
     "position": "이사",
     "jobGroup": "기획",
     "updated_at": "2026-03-26T07:46:40.532Z"
+  },
+  {
+    "id": "1774511428029",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "진덕언",
+    "nickname": "Rapha",
+    "position": "수석",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-26T23:20:38.746Z"
+  },
+  {
+    "id": "1774511461063",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "전한비",
+    "nickname": "Nana",
+    "position": "전임",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-26T23:20:26.118Z"
+  },
+  {
+    "id": "1774511472683",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "길인수",
+    "nickname": "Eden",
+    "position": "책임",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-26T23:20:09.312Z"
+  },
+  {
+    "id": "1774511493031",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "전예림",
+    "nickname": "Ras",
+    "position": "수석",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-26T23:19:56.694Z"
+  },
+  {
+    "id": "1774511506741",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "김상배",
+    "nickname": "Timo",
+    "position": "책임",
+    "jobGroup": "퍼블",
+    "updated_at": "2026-03-26T23:19:35.485Z"
+  },
+  {
+    "id": "1774511535770",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "안민식",
+    "nickname": "Buzz",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:18:43.073Z"
+  },
+  {
+    "id": "1774511555110",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "방승현",
+    "nickname": "Aden",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:18:29.295Z"
+  },
+  {
+    "id": "1774511569203",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "조성현",
+    "nickname": "Simon",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:18:14.355Z"
+  },
+  {
+    "id": "1774511585786",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "곽준영",
+    "nickname": "Matthew",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:17:58.265Z"
+  },
+  {
+    "id": "1774511596006",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "박성범",
+    "nickname": "Jeno",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:17:45.359Z"
+  },
+  {
+    "id": "1774511607812",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "박주한",
+    "nickname": "Louis",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:17:18.140Z"
+  },
+  {
+    "id": "1774511621102",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "문동윤",
+    "nickname": "Wood",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:17:02.303Z"
+  },
+  {
+    "id": "1774511635428",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "하윤철",
+    "nickname": "Harry",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:16:45.637Z"
+  },
+  {
+    "id": "1774511649711",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "곽재훈",
+    "nickname": "Demian",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:16:33.405Z"
+  },
+  {
+    "id": "1774511663007",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이덕균",
+    "nickname": "Leeroy",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:16:20.060Z"
+  },
+  {
+    "id": "1774511672653",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이진우",
+    "nickname": "Paul",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:16:02.041Z"
+  },
+  {
+    "id": "1774511683551",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "윤예원",
+    "nickname": "Elsa",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:15:46.313Z"
+  },
+  {
+    "id": "1774511723788",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "김승열",
+    "nickname": "Andrew",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:15:06.838Z"
+  },
+  {
+    "id": "1774511735093",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이규진",
+    "nickname": "Bart",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:14:48.946Z"
+  },
+  {
+    "id": "1774511746783",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "편석호",
+    "nickname": "Travis",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:14:34.754Z"
+  },
+  {
+    "id": "1774511757717",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이준오",
+    "nickname": "Nemo",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:14:20.408Z"
+  },
+  {
+    "id": "1774511771114",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "함연주",
+    "nickname": "Winni",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:14:02.283Z"
+  },
+  {
+    "id": "1774511781920",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이주호",
+    "nickname": "Wade",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:13:34.096Z"
+  },
+  {
+    "id": "1774511792290",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "주소연",
+    "nickname": "Roa",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:13:14.746Z"
+  },
+  {
+    "id": "1774511803583",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "박소라",
+    "nickname": "Michelle",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:12:55.058Z"
+  },
+  {
+    "id": "1774511817096",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "조수현",
+    "nickname": "Asher",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:12:39.456Z"
+  },
+  {
+    "id": "1774511826626",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "김효욱",
+    "nickname": "Fran",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:12:15.262Z"
+  },
+  {
+    "id": "1774511837663",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이선용",
+    "nickname": "Patric",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:11:34.706Z"
+  },
+  {
+    "id": "1774511849698",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "김도은",
+    "nickname": "Daya",
+    "position": "선임",
+    "jobGroup": "FE개발",
+    "updated_at": "2026-03-26T23:11:52.584Z"
+  },
+  {
+    "id": "1774511861893",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "문성만",
+    "nickname": "Abel",
+    "position": "",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-26T23:09:54.807Z"
   }
 ]
