@@ -1097,7 +1097,31 @@ function handleMoreClick(title) {
 }
 
 
+function setupMediaSession(song) {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: song.title,
+            artist: song.artist,
+            album: 'Vibe Music Player',
+            artwork: [
+                { src: song.thumbnail || 'music_placeholder.png', sizes: '512x512', type: 'image/jpeg' }
+            ]
+        });
 
+        navigator.mediaSession.setActionHandler('play', function() {
+            if (player && typeof player.playVideo === 'function') player.playVideo();
+        });
+        navigator.mediaSession.setActionHandler('pause', function() {
+            if (player && typeof player.pauseVideo === 'function') player.pauseVideo();
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', function() {
+            if (typeof playPrevious === 'function') playPrevious();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', function() {
+            if (typeof playNext === 'function') playNext();
+        });
+    }
+}
 
 // Handle Song Selection
 async function handleSongClick(songOrId, mode = null) {
@@ -1133,10 +1157,8 @@ async function handleSongClick(songOrId, mode = null) {
 
 
     // Update UI    // Mini Player Sync
-    syncMiniPlayer(song);
-
-
-    // Update active UI (Non-blocking)
+    setupMediaSession(song);
+    syncMiniPlayer(song);    // Update active UI (Non-blocking)
 
     document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
     const activeItem = document.querySelector(`.song-item[data-id="${song.id}"]`);
@@ -1645,17 +1667,26 @@ function onPlayerStateChange(event) {
     // Update Play/Pause button UI
     if (togglePlayBtn) {
         const audioModeIcon = document.getElementById('audioModeIcon');
+        const audioModeArt = document.getElementById('audioModeArt');
+        const bgAudio = document.getElementById('bgAudio');
+
         if (event.data === YT.PlayerState.PLAYING) {
             togglePlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
             updateMiniIcons(true);
             if (currentMode === 'audio') equalizer.style.display = 'flex';
             if (audioModeIcon) audioModeIcon.classList.remove('paused');
+            if (audioModeArt) audioModeArt.classList.remove('paused');
+            if (bgAudio) bgAudio.play().catch(e => console.log('Silent audio blocked', e));
+            if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
             startProgressUpdate();
         } else {
             togglePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
             updateMiniIcons(false);
             equalizer.style.display = 'none';
             if (audioModeIcon) audioModeIcon.classList.add('paused');
+            if (audioModeArt) audioModeArt.classList.add('paused');
+            if (bgAudio) bgAudio.pause();
+            if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
         }
     }
 }

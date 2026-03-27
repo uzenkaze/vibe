@@ -115,8 +115,8 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-.spin-icon.paused {
-    animation-play-state: paused;
+.paused {
+    animation-play-state: paused !important;
 }
 
 .back-btn {
