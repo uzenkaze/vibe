@@ -41,6 +41,33 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_OZytLLasceA",
+      "title": "[단독샷캠4K] 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027",
+      "artist": "SBSKPOP X INKIGAYO",
+      "youtubeId": "OZytLLasceA",
+      "duration": "3:23",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SBSKPOP X INKIGAYO\n길이: 3:23"
+    },
+    {
+      "id": "global_YEA1ROHi0Eg",
+      "title": "aespa 에스파 'Live My Life' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "YEA1ROHi0Eg",
+      "duration": "3:35",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:35"
+    },
+    {
+      "id": "global_32si5cfrCNc",
+      "title": "BLACKPINK - 'How You Like That' DANCE PERFORMANCE VIDEO",
+      "artist": "BLACKPINK",
+      "youtubeId": "32si5cfrCNc",
+      "duration": "3:01",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK\n길이: 3:01"
+    },
+    {
       "id": "global_9qkpcLK422o",
       "title": "IVE 아이브 'BANG BANG' MV",
       "artist": "STARSHIP et IVE",
@@ -128,7 +155,16 @@
       "youtubeId": "m21yJMRu5Ug",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SBS 옛날 예능 - 빽능"
+    },
+    {
+      "id": "global_bwmSjveL3Lc",
+      "title": "BLACKPINK - '붐바야 (BOOMBAYAH)' M/V",
+      "artist": "BLACKPINK",
+      "youtubeId": "bwmSjveL3Lc",
+      "duration": "4:04",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK\n길이: 4:04"
     }
   ],
-  "lastSync": "2026-03-27T01:41:27.519Z"
+  "lastSync": "2026-03-27T05:41:07.164Z"
 }
