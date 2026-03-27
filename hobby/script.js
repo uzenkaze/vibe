@@ -133,8 +133,11 @@ const playlistCount = document.getElementById('playlistCount');
 
 const songListContainer = document.querySelector('.song-list-container');
 const discoveryDashboard = document.getElementById('discoveryDashboard');
+const loadMoreContainer = document.getElementById('loadMoreContainer');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
 
 const lyricsContainer = document.getElementById('lyricsContainer');
+
 
 const lyricsTitle = document.getElementById('lyricsTitle');
 const lyricsContent = document.getElementById('lyricsContent');
@@ -442,47 +445,52 @@ async function handleGlobalSearch(customQuery = null, limit = 100) {
         if (!jsonMatch) throw new Error('No ytInitialData');
         
         const ytData = JSON.parse(jsonMatch[1]);
-        let contents = [];
+        let sections = [];
         try {
-            contents = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+            sections = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents;
         } catch (e) {
-            contents = ytData.contents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+            sections = ytData.contents.sectionListRenderer.contents;
         }
 
         const results = [];
-        contents.forEach(item => {
-            if (item.videoRenderer) {
-                const v = item.videoRenderer;
-                const videoId = v.videoId;
-                if (!videoId) return;
+        if (sections && Array.isArray(sections)) {
+            sections.forEach(section => {
+                const items = section.itemSectionRenderer ? section.itemSectionRenderer.contents : [];
+                if (!Array.isArray(items)) return;
 
-                // --- 🚀 PLAYABILITY FILTER: Skip items that are historically unplayable in iframe ---
-                const durationText = v.lengthText ? v.lengthText.simpleText : null;
-                const viewCountText = (v.viewCountText && v.viewCountText.simpleText) ? v.viewCountText.simpleText : "";
-                
-                // 1. Skip Live Streams (Often unplayable in local iframe)
-                const isLive = (v.badges && v.badges.some(b => 
-                    b.metadataBadgeRenderer && 
-                    (b.metadataBadgeRenderer.label === "LIVE" || b.metadataBadgeRenderer.style === "BADGE_STYLE_TYPE_LIVE_NOW")
-                )) || viewCountText.toLowerCase().includes("live");
+                items.forEach(item => {
+                    if (item.videoRenderer) {
+                        const v = item.videoRenderer;
+                        const videoId = v.videoId;
+                        if (!videoId) return;
 
-                // 2. Skip Shorts or Very Short clips (Usually not songs, often no duration text)
-                if (!durationText || isLive) return;
+                        // --- 🚀 PLAYABILITY FILTER: Skip items that are historically unplayable in iframe ---
+                        const durationText = v.lengthText ? v.lengthText.simpleText : null;
+                        const viewCountText = (v.viewCountText && v.viewCountText.simpleText) ? v.viewCountText.simpleText : "";
+                        
+                        // 1. Skip Live Streams (Often unplayable in local iframe)
+                        const isLive = (v.badges && v.badges.some(b => 
+                            b.metadataBadgeRenderer && 
+                            (b.metadataBadgeRenderer.label === "LIVE" || b.metadataBadgeRenderer.style === "BADGE_STYLE_TYPE_LIVE_NOW")
+                        )) || viewCountText.toLowerCase().includes("live");
 
-                // 3. Skip overly long mixes (optional, but good for 'songs') - Skip if > 1 hour maybe?
-                // For now, just ensuring it has a duration is enough to filter bad results.
+                        // 2. Skip Shorts or Very Short clips (Usually not songs, often no duration text)
+                        if (!durationText || isLive) return;
 
-                results.push({
-                    id: 'global_' + videoId,
-                    title: v.title.runs[0].text,
-                    artist: v.ownerText.runs[0].text,
-                    youtubeId: videoId,
-                    duration: durationText, // Save duration for info
-                    isGlobal: true,
-                    lyrics: `(유튜브 검색 결과)\n업로더: ${v.ownerText.runs[0].text}\n길이: ${durationText}`
+                        results.push({
+                            id: 'global_' + videoId,
+                            title: v.title.runs[0].text,
+                            artist: v.ownerText.runs[0].text,
+                            youtubeId: videoId,
+                            duration: durationText, // Save duration for info
+                            isGlobal: true,
+                            lyrics: `(유튜브 검색 결과)\n업로더: ${v.ownerText.runs[0].text}\n길이: ${durationText}`
+                        });
+                    }
                 });
-            }
-        });
+            });
+        }
+
 
 
         if (results.length === 0) throw new Error('No videos found');
@@ -559,8 +567,12 @@ function renderSongsFromCache(query, limit) {
     songList.style.display = 'flex';
 }
 
+let visibleCount = 15;
+
 // Render the song list
-function renderSongs(songsToRender) {
+function renderSongs(songsToRender, resetPaging = true) {
+    if (resetPaging) visibleCount = 15;
+    
     songList.innerHTML = '';
     
     if (currentTab === 'search') {
@@ -569,12 +581,16 @@ function renderSongs(songsToRender) {
     
     if (songsToRender.length === 0) {
         songList.style.display = 'none';
+        if (loadMoreContainer) loadMoreContainer.style.display = 'none';
         return;
     }
     
     songList.style.display = 'flex';
+    
+    // Slice only the amount we want to show
+    const songsToShow = songsToRender.slice(0, visibleCount);
 
-    songsToRender.forEach((song, index) => {
+    songsToShow.forEach((song, index) => {
         const li = document.createElement('li');
         li.className = 'song-item';
         if (String(song.id) === String(activeSongId)) li.classList.add('active');
@@ -591,14 +607,14 @@ function renderSongs(songsToRender) {
             ? `<button class="icon-action-btn play-video" data-action="play-video" data-id="${song.id}" title="동영상 모드로 재생"><i class="fas fa-video"></i></button>`
             : '';
 
-        const thumbUrl = song.youtubeId ? `https://img.youtube.com/vi/${song.youtubeId}/default.jpg` : '';
-        const thumbHtml = thumbUrl 
-            ? `<div class="song-thumbnail"><img src="${thumbUrl}" alt="thumb"></div>`
+        const thumbUrlBig = song.youtubeId ? `https://img.youtube.com/vi/${song.youtubeId}/default.jpg` : '';
+        const thumbHtmlBig = thumbUrlBig 
+            ? `<div class="song-thumbnail"><img src="${thumbUrlBig}" alt="thumb"></div>`
             : `<div class="song-thumbnail"><i class="fas fa-music"></i></div>`;
 
         li.innerHTML = `
             <div class="song-number">${(index + 1).toString().padStart(2, '0')}</div>
-            ${thumbHtml}
+            ${thumbHtmlBig}
             <div class="song-info">
                 <span class="song-title">${highlightText(song.title, searchInput.value)} ${badge}</span>
                 <span class="song-artist">${highlightText(song.artist, searchInput.value)}</span>
@@ -609,7 +625,6 @@ function renderSongs(songsToRender) {
                 ${videoBtn}
             </div>
         `;
-
 
         
         li.addEventListener('click', (e) => {
@@ -633,7 +648,18 @@ function renderSongs(songsToRender) {
         });
         songList.appendChild(li);
     });
+
+    // 🔄 Show/Hide the 'Load More' button correctly
+    if (loadMoreContainer && loadMoreBtn) {
+        if (songsToRender.length > visibleCount) {
+            loadMoreContainer.style.display = 'block';
+            loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down"></i> 결과 15개 더보기 (${visibleCount}/${songsToRender.length})`;
+        } else {
+            loadMoreContainer.style.display = 'none';
+        }
+    }
 }
+
 
 
 function togglePlaylist(id, isSave, songObj = null) {
@@ -805,7 +831,15 @@ function setupEventListeners() {
 
 
     const toggleTokenBtn = document.getElementById('toggleTokenBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            visibleCount += 15;
+            renderSongs(currentResults, false);
+        });
+    }
+
     const ghTokenInput = document.getElementById('ghToken');
+
     if (toggleTokenBtn && ghTokenInput) {
         toggleTokenBtn.addEventListener('click', () => {
             const type = ghTokenInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -879,10 +913,11 @@ function setupEventListeners() {
 
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-            // Priority: Always try to find related discovery if requested
-            playNextRelated();
+            // Use the smart navigation function that prioritizes current list
+            playNext();
         });
     }
+
 
 
     if (prevBtn) {
@@ -1084,6 +1119,18 @@ async function handleSongClick(songOrId, mode = null) {
     } else if (song.youtubeId) {
         setTimeout(() => handleSongClick(song, mode), 500);
     }
+
+    // 📱 UX: Robust Scroll to top for all layout types
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        // Explicitly scroll the internal container (Crucial for mobile view)
+        mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Also scroll window as a universal fallback
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+
+
 
     // Update UI state for active item (Non-blocking)
     document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
@@ -1351,34 +1398,46 @@ async function fetchCategorySongs(query, scrollerId, limit = 12) {
 
 
 async function fetchRealLyrics(title, artist) {
-    // Advanced cleaning (Remove Year, Special chars, Mix, Playlist, etc.)
-    const cleanTitle = title.replace(/\d{4}|\(.*\)|\[.*\]|M\/V|MV|Official|Lyrics|Official|Audio|Live|모음|Playlist|영상|가사|자막/gi, '').trim();
-    const cleanArtist = artist.replace(/\(.*\)|\[.*\]|Ch\.|채널|Official/gi, '').trim();
+    // 🧹 AGGRESSIVE CLEANING: Take only the core title part before separators
+    let cleanTitle = title.split(/[|│/]/)[0].trim();
+    // Remove (Official), [Lyrics], etc.
+    cleanTitle = cleanTitle.replace(/\(.*?\)|\{.*?\}|\[.*?\]/g, '').replace(/M\/V|MV|Official|Lyrics|Audio|Live|모음|Playlist|영상|가사|자막/gi, '').trim();
+    
+    let cleanArtist = artist.split(/[|│/]/)[0].trim();
+    cleanArtist = cleanArtist.replace(/\(.*?\)|\[.*?\]/g, '').trim();
 
     if (!cleanTitle || cleanTitle.length < 2) return null;
 
-    console.log(`Searching lyrics for: ${cleanTitle} / ${cleanArtist}`);
-
+    console.log(`Lyrics searching for: ${cleanTitle} / ${cleanArtist}`);
 
     try {
-        // Try multiple sources or a more robust endpoint
-        const response = await fetch(`https://lyrist.vercel.app/api/${encodeURIComponent(cleanTitle)}/${encodeURIComponent(cleanArtist)}`);
+        // Use CORS PROXY to bypass security restrictions on lyrist API
+        const apiBase = "https://lyrist.vercel.app/api";
+        const targetUrl = `${apiBase}/${encodeURIComponent(cleanTitle)}/${encodeURIComponent(cleanArtist)}`;
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
+        const response = await fetch(proxyUrl);
         if (response.ok) {
             const data = await response.json();
             if (data && data.lyrics && data.lyrics.length > 50) return data.lyrics;
         }
         
-        // Fallback: search only by title if artist fails
+        // Fallback: search only by title via proxy if initial attempt fails
         if (cleanTitle.length > 3) {
-            const fallbackRes = await fetch(`https://lyrist.vercel.app/api/${encodeURIComponent(cleanTitle)}`);
+            const fallbackTarget = `${apiBase}/${encodeURIComponent(cleanTitle)}`;
+            const fallbackProxy = `https://corsproxy.io/?${encodeURIComponent(fallbackTarget)}`;
+            const fallbackRes = await fetch(fallbackProxy);
             if (fallbackRes.ok) {
                 const fData = await fallbackRes.json();
                 if (fData && fData.lyrics && fData.lyrics.length > 50) return fData.lyrics;
             }
         }
-    } catch (e) { console.warn("Lyrics fetch failed:", e); }
+    } catch (e) {
+        console.warn("Lyrics proxy fetch failed:", e);
+    }
     return null;
 }
+
 
 
 // RELATED SONG AUTO-PLAY LOGIC (Continuous Play / Discovery)
@@ -1559,9 +1618,11 @@ function onYouTubeIframeAPIReady() {
             'rel': 0,
             'showinfo': 0,
             'iv_load_policy': 3,
+            'cc_load_policy': 0, // ❌ Disable auto subtitles/captions
             'hl': 'ko',
             'origin': window.location.origin
         },
+
         events: {
             'onReady': (event) => { isPlayerReady = true; },
             'onStateChange': onPlayerStateChange
