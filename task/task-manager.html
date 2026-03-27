@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work management - 개발 일감 관리 현황판</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
     <style>
         :root {
             --bg-base: #ffffff;
@@ -1076,6 +1075,36 @@
             margin-left: -1rem;
             margin-right: -1rem;
         }
+
+        /* FAB 스타일 */
+        .fab-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 20px rgba(94, 92, 230, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fab-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(94, 92, 230, 0.4);
+        }
+
+        .fab-btn:active {
+            transform: translateY(0) scale(0.95);
+        }
     </style>
 </head>
 
@@ -1175,6 +1204,9 @@
                         </div>
                     </div>
                     <div id="manpower-card-container" class="task-card-grid"></div>
+
+                    <!-- Floating Action Button -->
+                    <button class="fab-btn" onclick="openManpowerModal()" title="신규 인력 등록">+</button>
                 </div>
 
                 <div id="view-task" class="view-section">
@@ -1382,48 +1414,71 @@
         ];
 
         async function init() {
+            // 1. 초기 UI 및 로컬 데이터 즉시 렌더링
+            tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
+
             renderSidebar();
-            if (ghConfig.token) {
-                try {
-                    // Sync Tasks
-                    const remoteTasks = await syncWithGitHub('download', 'task/task-manager.json');
-                    if (remoteTasks) {
-                        tasks = remoteTasks;
-                        localStorage.setItem('tasks', JSON.stringify(tasks));
-                    } else {
-                        tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-                    }
-
-                    // Sync Manpower
-                    const remoteManpower = await syncWithGitHub('download', 'task/manpower.json');
-                    if (remoteManpower) {
-                        manpowers = remoteManpower;
-                        localStorage.setItem('manpowers', JSON.stringify(manpowers));
-                    } else {
-                        manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
-                    }
-
-                    console.log('GitHub 데이터 동기화 완료');
-                } catch (e) {
-                    console.error('GitHub 초기 로드 실패', e);
-                    tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-                    manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
-                }
-            } else {
-                tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-                manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
-            }
-            await staggerNewsFetch();
-
             render();
             renderManpower();
             switchView(currentView);
+
+            // 2. 비동기 데이터 동기화 (백그라운드)
+            if (ghConfig.token) {
+                backgroundSync();
+            }
+
+            // 3. 뉴스 데이터 비동기 로드 (백그라운드 처리, 초기 부하 방지)
+            setTimeout(() => {
+                if (currentView === 'view-news') {
+                    staggerNewsFetch(true);
+                } else {
+                    // 메인 화면에서는 조용히 캐시된 데이터만 확인하거나 늦게 로드
+                    staggerNewsFetch(false);
+                }
+            }, 3000);
+
+            // 4. 주기적 업데이트 설정
             setInterval(() => {
                 searchGoogleNews();
                 fetchStockPlusNews();
                 fetchITNews();
             }, 15 * 60 * 1000);
         }
+
+        async function backgroundSync() {
+            console.log('Background sync started...');
+            try {
+                // 다운로드 태스크 병렬 처리로 속도 향상
+                const results = await Promise.allSettled([
+                    syncWithGitHub('download', 'task/task-manager.json'),
+                    syncWithGitHub('download', 'task/manpower.json')
+                ]);
+
+                let changed = false;
+                if (results[0].status === 'fulfilled' && results[0].value) {
+                    tasks = results[0].value;
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                    changed = true;
+                }
+                if (results[1].status === 'fulfilled' && results[1].value) {
+                    manpowers = results[1].value;
+                    localStorage.setItem('manpowers', JSON.stringify(manpowers));
+                    changed = true;
+                }
+
+                if (changed) {
+                    console.log('Background sync completed and data updated');
+                    render();
+                    renderManpower();
+                    if (currentView === 'view-dashboard') renderCalendar();
+                    showSyncToast();
+                }
+            } catch (e) {
+                console.error('Background sync failed', e);
+            }
+        }
+
 
         function renderSidebar() {
             const nav = document.getElementById('sidebar-nav');
@@ -2042,11 +2097,20 @@
         }
 
         async function staggerNewsFetch(reset = false) {
-            await searchGoogleNews(reset);
-            await new Promise(r => setTimeout(r, 10000));
-            await fetchStockPlusNews(reset);
-            await new Promise(r => setTimeout(r, 10000));
-            await fetchITNews(reset);
+            // 캐시 데이터가 있고 리셋이 아니면 스킵하여 속도 개선
+            if (!reset && googleNewsItems.length > 0 && stockPlusNewsItems.length > 0 && itNewsItemsList.length > 0) return;
+
+            console.log('Staggered news fetch started...');
+            try {
+                await searchGoogleNews(reset);
+                // 429 에러 방지를 위한 최소한의 지연 (사용자 경험을 위해 2초로 단축)
+                await new Promise(r => setTimeout(r, 2000));
+                await fetchStockPlusNews(reset);
+                await new Promise(r => setTimeout(r, 2000));
+                await fetchITNews(reset);
+            } catch (e) {
+                console.warn('News fetch staggered error:', e);
+            }
         }
 
 
@@ -2453,7 +2517,9 @@
                             <option value="개발">개발</option>
                             <option value="기획">기획</option>
                             <option value="퍼블">퍼블</option>
+                            <option value="FE개발">FE개발</option>
                             <option value="디자인">디자인</option>
+                            <option value="Architecture">Architecture</option>
                         </select>
                     </div>
                 </div>

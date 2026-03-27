@@ -1,52 +1,135 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>취미생활 - 음악감상</title>
-    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Han's Vibe Music</title>
+
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="app-container">
+        <!-- Menu Dimmmer Overlay -->
+        <div id="menuOverlay" class="menu-overlay"></div>
+
+        <!-- Floating Side Menu (Triggered by Hamburger) -->
+        <div id="sideMenu" class="side-menu">
+            <div class="side-menu-header">
+                <div class="brand-area">
+                    <i class="fas fa-compact-disc spin-icon"></i>
+                    <h3>Vibe Music Box</h3>
+                </div>
+                <button id="closeMenuBtn" class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="side-menu-body">
+                <div class="menu-group">
+                    <div class="menu-section-label">Connect & Sync</div>
+                    <div id="ghStatus" class="gh-status disconnected menu-item" title="GitHub 연동 상태">
+                        <div class="menu-item-icon"><i class="fab fa-github"></i></div>
+                        <div class="menu-item-flex">
+                            <span class="main-text">GitHub</span>
+                            <span id="ghStatusText" class="status-indicator">미 연결</span>
+                        </div>
+                    </div>
+
+                    <button id="ytLoginBtn" class="menu-btn-item yt-btn">
+                        <div class="menu-item-icon"><i class="fab fa-youtube"></i></div>
+                        <div class="menu-item-flex">
+                            <span class="main-text">YouTube</span>
+                            <span id="ytStatusText" class="status-indicator">로그인 안됨</span>
+                        </div>
+                    </button>
+                </div>
+
+
+                <div class="menu-group">
+                    <div class="menu-section-label">Settings</div>
+                    <button id="settingsBtn" class="menu-btn-item" title="GitHub 설정">
+                        <div class="menu-item-icon"><i class="fas fa-cog"></i></div>
+                        <div class="menu-item-text">
+                            <span class="main-text">환경 설정</span>
+                            <span class="sub-text">GitHub 저장소 및 보안</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="side-menu-footer">
+                <p>© 2026 Vibe Music Player</p>
+                <span>v2.5.0 Premium</span>
+            </div>
+        </div>
+
+
         <!-- Header -->
+
         <header class="app-header glass-panel">
-            <button id="settingsBtn" class="settings-btn" title="GitHub 설정"><i class="fas fa-cog"></i></button>
-            <h1 id="appTitle" style="cursor: pointer;"><i class="fas fa-compact-disc spin-icon"></i> Vibe Music Box</h1>
+            <div class="header-left">
+                <button id="menuBtn" class="menu-btn" title="메뉴 열기">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="appTitle" style="cursor: pointer;"><i class="fas fa-compact-disc spin-icon"></i> Vibe Music Box
+                </h1>
+            </div>
+
             <div class="time-display" id="currentTime">00:00</div>
         </header>
+
 
         <main class="main-content">
             <!-- Left panel: Search, result list, lyrics -->
             <section class="left-panel">
                 <div class="search-box glass-panel">
+                    <button id="backBtn" class="back-btn" title="뒤로 가기" style="display: none;">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="노래 제목, 아티스트, 가사로 검색해보세요" autocomplete="off">
+                    <input type="text" id="searchInput" placeholder="노래나 가수를 찾아보세요 (Enter)" autocomplete="off">
                     <button id="globalSearchBtn" class="search-btn" title="유튜브에서 직접 검색">
                         <i class="fab fa-youtube"></i> 검색
                     </button>
                 </div>
-                
+
+
                 <div class="list-lyrics-wrapper">
                     <!-- Song List -->
                     <div class="song-list-container glass-panel">
                         <div class="list-tabs">
                             <button id="tabSearch" class="tab-btn active">
-                            <i id="listIcon" class="fas fa-play-circle" style="color:var(--accent-color)"></i> 
-                            <span id="listTitleLabel">플레이</span> <span class="badge" id="songCount">0</span></button>
-                            <button id="tabPlaylist" class="tab-btn"><i class="fas fa-bookmark"></i> 내 보관함 <span class="badge" id="playlistCount">0</span></button>
+                                <i id="listIcon" class="fas fa-play-circle" style="color:var(--accent-color)"></i>
+                                <span id="listTitleLabel">플레이</span> <span class="badge"
+                                    id="songCount">0</span></button>
+                            <button id="tabPlaylist" class="tab-btn"><i class="fas fa-bookmark"></i> 내 보관함 <span
+                                    class="badge" id="playlistCount">0</span></button>
                         </div>
                         <ul id="songList" class="song-list">
-                            <!-- JS injected -->
+                            <!-- JS injected for Search/Playlist -->
                         </ul>
-                        <div id="noResults" class="no-results" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <p>내 데이터베이스에 노래가 없습니다.</p>
-                            <button id="globalSearchBtn" class="glass-btn"><i class="fas fa-globe"></i> 전체 유튜브 검색</button>
+
+                        <!-- Discovery Dashboard (Home State) -->
+                        <div id="discoveryDashboard" class="discovery-dashboard" style="display: none;">
+                            <!-- Sections will be injected here -->
                         </div>
+
+                        <div id="noResults" class="no-results" style="display: none;">
+
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>검색 결과가 없습니다.</p>
+                            <button id="globalSearchBtnFallback" class="glass-btn"><i class="fas fa-globe"></i> 전체 유튜브
+                                검색</button>
+                        </div>
+
+
                         <div id="loading" class="loading-state" style="display: none;">
+
                             <div class="spinner"></div>
                             <p>유튜브에서 노래를 찾는 중...</p>
                         </div>
@@ -61,8 +144,13 @@
                     <div class="player-header">
                         <h2><i class="fab fa-youtube" style="color:#ff0000;"></i> Now Playing</h2>
                         <div class="player-actions">
-                            <button id="toggleLyricsBtn" class="glass-btn small-btn" title="가사 보기/숨기기" style="display: none;">
+                            <button id="toggleLyricsBtn" class="glass-btn small-btn" title="가사 보기/숨기기"
+                                style="display: none;">
                                 <i class="fas fa-quote-right"></i> 가사
+                            </button>
+                            <button id="toggleFullscreenBtn" class="glass-btn small-btn" title="전체화면"
+                                style="display: none;">
+                                <i class="fas fa-expand"></i> 전체화면
                             </button>
                             <div class="equalizer" id="equalizer" style="display: none;">
                                 <span class="bar"></span>
@@ -73,7 +161,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="current-song-info" id="currentSongInfo" style="display: none;">
                         <div class="album-art-placeholder">
                             <i class="fas fa-music"></i>
@@ -82,7 +170,9 @@
                             <h3 id="currentTitle">Song Title</h3>
                             <p id="currentArtist">Artist Name</p>
                         </div>
+                        <button id="likeBtn" class="like-btn" title="좋아요"><i class="far fa-heart"></i></button>
                     </div>
+
 
                     <!-- Empty state -->
                     <div id="playerEmptyState" class="empty-state">
@@ -91,12 +181,28 @@
                         <p>목록에서 듣고 싶은 노래를 선택하세요</p>
                     </div>
 
-                    <!-- YouTube Iframe -->
+                    <!-- YouTube Iframe placeholder for API -->
                     <div id="youtubePlayerContainer" class="youtube-player-container" style="display: none;">
-                        <iframe id="youtubeIframe" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <div id="ytPlayer"></div>
                     </div>
 
-                    <!-- Lyrics Area (Moved here) -->
+                    <!-- Audio Only Overlay (Visible when playing music only) -->
+                    <div id="audioOnlyOverlay" class="audio-only-overlay" style="display: none;">
+                        <div class="visualizer-container">
+                            <div class="vid-placeholder-art" id="audioModeArt">
+                                <img id="audioModeThumb" src="" alt="Thumbnail"
+                                    style="display:none; width:100%; height:100%; object-fit:cover;    border-radius: 50%;">
+                                <i class="fas fa-compact-disc spin-icon" id="audioModeIcon"></i>
+                            </div>
+
+                            <div class="music-bars">
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <p class="audio-mode-text">음악 모드 재생 중...</p>
+                    </div>
+
+                    <!-- Lyrics Area -->
                     <div class="lyrics-container glass-panel" id="lyricsContainer" style="display: none;">
                         <div class="section-title lyrics-header">
                             <div><i class="fas fa-align-left"></i> <span id="lyricsTitle">가사</span></div>
@@ -106,8 +212,36 @@
                             <!-- Lyrics here -->
                         </div>
                     </div>
+
+                    <!-- YouTube Seekbar -->
+
+                    <div class="seekbar-container" id="seekbarContainer" style="display: none;">
+                        <span class="time-label" id="currentTrackTime">0:00</span>
+                        <div class="seekbar-track" id="seekbarTrack">
+                            <div class="seekbar-fill" id="seekbarFill"></div>
+                            <div class="seekbar-thumb" id="seekbarThumb"></div>
+                        </div>
+                        <span class="time-label" id="totalTrackTime">0:00</span>
+                    </div>
+
+                    <!-- Playback Controls -->
+
+                    <!-- Playback Controls (Optional but good for UI) -->
+                    <div class="player-controls" id="playerControls" style="display: none;">
+                        <button id="shuffleBtn" class="control-btn tiny-btn" title="믹스 재생 (Shuffle)"><i
+                                class="fas fa-random"></i></button>
+                        <button id="prevBtn" class="control-btn" title="이전"><i
+                                class="fas fa-step-backward"></i></button>
+                        <button id="togglePlayBtn" class="control-btn play-pause-btn" title="재생/일시정지"><i
+                                class="fas fa-play"></i></button>
+                        <button id="nextBtn" class="control-btn" title="다음"><i class="fas fa-step-forward"></i></button>
+                        <button id="repeatBtn" class="control-btn tiny-btn" title="한곡 반복 (Repeat)"><i
+                                class="fas fa-redo"></i></button>
+                    </div>
+
                 </div>
             </section>
+
         </main>
     </div>
     <script src="script.js"></script>
@@ -121,8 +255,14 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label><i class="fas fa-key"></i> GitHub Token</label>
-                    <input type="password" id="ghToken" placeholder="Personal Access Token을 입력하세요">
+                    <div class="password-wrapper">
+                        <input type="password" id="ghToken" placeholder="Personal Access Token을 입력하세요">
+                        <button type="button" id="toggleTokenBtn" class="toggle-btn" title="비밀번호 보기/숨기기">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label><i class="fas fa-database"></i> Repository</label>
                     <input type="text" id="ghRepo" value="uzenkaze/vibe">
@@ -138,5 +278,35 @@
             </div>
         </div>
     </div>
+    <!-- YouTube Login Info Modal -->
+    <div class="modal-overlay" id="loginInfoModal">
+        <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
+            <div class="modal-header">
+                <h2><i class="fab fa-youtube" style="color:#ff0000;"></i> 유튜브 로그인 안내</h2>
+                <button class="modal-close"
+                    onclick="document.getElementById('loginInfoModal').classList.remove('active')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px 0;">
+                <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 20px;">
+                    로그인을 성공적으로 완료하셨나요?<br>
+                    <strong>새로고침</strong>을 하시면 즉시<br>
+                    <span style="color:var(--accent-color); font-weight:700;">광고 없는 고품질 시청</span>이 적용됩니다!
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center; padding: 10px 0;">
+                    <button class="glass-btn save-btn"
+                        style="width: 115px; margin: 0; padding: 10px 0; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;"
+                        onclick="localStorage.setItem('vibe_yt_logged_in','true'); location.reload();">새로고침</button>
+                    <button class="glass-btn"
+                        style="width: 110px; margin: 0; padding: 10px 0; font-size: 0.9rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border-color: rgba(255,255,255,0.1); justify-content: center;"
+                        onclick="document.getElementById('loginInfoModal').classList.remove('active')">나중에</button>
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
