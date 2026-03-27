@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_gnQcIfUp8Ao",
+      "title": "Fin de la journée,dormez de la musique dansune chambre confortable☁musique de traitementdel'insomnie",
+      "artist": "뮤직 메이트 Music Mate",
+      "youtubeId": "gnQcIfUp8Ao",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
+    },
+    {
       "id": "global_wGBTD1QmCqY",
       "title": "어라… 눈물이⭐ 목소리만으로 눈물 고이게 만드는 '황가람' 노래 모아듣기🌙  #모아듣기 #오픈마이크",
       "artist": "Beginagain 비긴어게인",
@@ -170,16 +178,7 @@
       "youtubeId": "jWQx2f-CErU",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
-    },
-    {
-      "id": "global_32si5cfrCNc",
-      "title": "BLACKPINK - 'How You Like That' DANCE PERFORMANCE VIDEO",
-      "artist": "BLACKPINK",
-      "youtubeId": "32si5cfrCNc",
-      "duration": "3:01",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK\n길이: 3:01"
     }
   ],
-  "lastSync": "2026-03-27T11:46:10.520Z"
+  "lastSync": "2026-03-27T11:47:10.842Z"
 }
