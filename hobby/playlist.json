@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_0xdB_vo4r2c",
+      "title": "aespa 에스파 'Welcome To MY World (Feat. nævis)' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "0xdB_vo4r2c",
+      "duration": "3:32",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:32"
+    },
+    {
       "id": "global_4TWR90KJl84",
       "title": "aespa 에스파 'Next Level' MV",
       "artist": "SMTOWN",
@@ -156,15 +165,7 @@
       "youtubeId": "N4Kgp57fg2Y",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - Cheatra Im"
-    },
-    {
-      "id": "related_chYdJt2Rq_k",
-      "title": "실시간차트 가요 TOP 20 (2022년 1월) 실시간 인기차트 new 2023 (음악차트) 노래모음   발라드 플레이리스트 | KPOP (CHART   BALLAD) | PL",
-      "artist": "Mnus Smos",
-      "youtubeId": "chYdJt2Rq_k",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - Mnus Smos"
     }
   ],
-  "lastSync": "2026-03-27T06:38:34.588Z"
+  "lastSync": "2026-03-27T06:44:40.057Z"
 }
