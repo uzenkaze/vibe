@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_OZytLLasceA",
+      "title": "[단독샷캠4K] 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027",
+      "artist": "SBSKPOP X INKIGAYO",
+      "youtubeId": "OZytLLasceA",
+      "duration": "3:23",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SBSKPOP X INKIGAYO\n길이: 3:23"
+    },
+    {
       "id": "global_nFYwcndNuOY",
       "title": "aespa 에스파 'Armageddon' MV",
       "artist": "SMTOWN",
@@ -66,15 +75,6 @@
       "duration": "3:56",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:56"
-    },
-    {
-      "id": "global_OZytLLasceA",
-      "title": "[단독샷캠4K] 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027",
-      "artist": "SBSKPOP X INKIGAYO",
-      "youtubeId": "OZytLLasceA",
-      "duration": "3:23",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SBSKPOP X INKIGAYO\n길이: 3:23"
     },
     {
       "id": "global_ru4DicGUCY0",
@@ -168,5 +168,5 @@
       "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     }
   ],
-  "lastSync": "2026-03-27T06:51:26.870Z"
+  "lastSync": "2026-03-27T07:12:12.033Z"
 }
