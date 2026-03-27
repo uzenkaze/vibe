@@ -41,6 +41,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_OZytLLasceA",
+      "title": "[단독샷캠4K] 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027",
+      "artist": "SBSKPOP X INKIGAYO",
+      "youtubeId": "OZytLLasceA",
+      "duration": "3:23",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SBSKPOP X INKIGAYO\n길이: 3:23"
+    },
+    {
       "id": "global_ru4DicGUCY0",
       "title": "𝐏𝐥𝐚𝐲𝐥𝐢𝐬𝐭 지금 가장 핫하고 최신 노래들 🎶  감성힙합R&B인디 플레이리스트 바로 듣기! 🎧",
       "artist": "감정 음악",
@@ -55,15 +64,6 @@
       "youtubeId": "jWQx2f-CErU",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
-    },
-    {
-      "id": "global_OZytLLasceA",
-      "title": "[단독샷캠4K] 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027",
-      "artist": "SBSKPOP X INKIGAYO",
-      "youtubeId": "OZytLLasceA",
-      "duration": "3:23",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SBSKPOP X INKIGAYO\n길이: 3:23"
     },
     {
       "id": "global_YEA1ROHi0Eg",
@@ -165,5 +165,5 @@
       "lyrics": "(연관 추천곡) - Yeo Doll"
     }
   ],
-  "lastSync": "2026-03-27T06:36:06.036Z"
+  "lastSync": "2026-03-27T06:36:25.920Z"
 }
