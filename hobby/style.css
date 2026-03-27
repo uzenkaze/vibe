@@ -1059,7 +1059,15 @@ body {
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        /* Hide scrollbar visually while keeping scroll functionality */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
+
+    .main-content::-webkit-scrollbar {
+        display: none;
+    }
+
 
     .right-panel {
         order: -1; /* Keep player at the top */
