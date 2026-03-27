@@ -41,6 +41,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_iTgcp1oDk2M",
+      "title": "Red Velvet X aespa 'Beautiful Christmas' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "iTgcp1oDk2M",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - SMTOWN"
+    },
+    {
       "id": "related_dYRITmpFbJ4",
       "title": "aespa 에스파 'Girls' MV",
       "artist": "SMTOWN",
@@ -158,15 +166,7 @@
       "youtubeId": "iHSg2EdKVPY",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: KOQ SOUND"
-    },
-    {
-      "id": "global_x4DB67xVado",
-      "title": "[1080p60] 코요태 (Koyote) - 파란 (Disturbance) 뮤직비디오 (MV)",
-      "artist": "코요태두리",
-      "youtubeId": "x4DB67xVado",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: 코요태두리"
     }
   ],
-  "lastSync": "2026-03-27T07:18:54.005Z"
+  "lastSync": "2026-03-27T07:19:00.502Z"
 }
