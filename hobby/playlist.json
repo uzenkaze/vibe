@@ -50,14 +50,6 @@
   ],
   "recentlyPlayed": [
     {
-      "id": "related_gnQcIfUp8Ao",
-      "title": "Fin de la journée,dormez de la musique dansune chambre confortable☁musique de traitementdel'insomnie",
-      "artist": "뮤직 메이트 Music Mate",
-      "youtubeId": "gnQcIfUp8Ao",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
-    },
-    {
       "id": "global_wGBTD1QmCqY",
       "title": "어라… 눈물이⭐ 목소리만으로 눈물 고이게 만드는 '황가람' 노래 모아듣기🌙  #모아듣기 #오픈마이크",
       "artist": "Beginagain 비긴어게인",
@@ -65,6 +57,14 @@
       "duration": "22:43",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: Beginagain 비긴어게인\n길이: 22:43"
+    },
+    {
+      "id": "related_gnQcIfUp8Ao",
+      "title": "Fin de la journée,dormez de la musique dansune chambre confortable☁musique de traitementdel'insomnie",
+      "artist": "뮤직 메이트 Music Mate",
+      "youtubeId": "gnQcIfUp8Ao",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     },
     {
       "id": "global_sWAMlyK2TS8",
@@ -180,5 +180,5 @@
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
     }
   ],
-  "lastSync": "2026-03-27T11:47:10.842Z"
+  "lastSync": "2026-03-28T00:07:13.369Z"
 }
