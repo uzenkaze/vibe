@@ -50,20 +50,20 @@
   ],
   "recentlyPlayed": [
     {
-      "id": "related_SctYIZbKmf0",
-      "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 10일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 10.2026 | Playlist",
-      "artist": "가요앤팝쏭",
-      "youtubeId": "SctYIZbKmf0",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 가요앤팝쏭"
-    },
-    {
       "id": "related_IHt4kgF-Ytk",
       "title": "마음이 편안해지는 힐링음악 3시간 🎵 아침음악, 편안한음악, 스트레스해소음악 (Winter Love)",
       "artist": "힐링트리뮤직 Healing Tree Music & Sounds",
       "youtubeId": "IHt4kgF-Ytk",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 힐링트리뮤직 Healing Tree Music & Sounds"
+    },
+    {
+      "id": "related_SctYIZbKmf0",
+      "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 10일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 10.2026 | Playlist",
+      "artist": "가요앤팝쏭",
+      "youtubeId": "SctYIZbKmf0",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - 가요앤팝쏭"
     },
     {
       "id": "related_BJNUQwScgCI",
@@ -176,5 +176,5 @@
       "lyrics": "(유튜브 검색 결과)\n업로더: SBSKPOP X INKIGAYO\n길이: 3:23"
     }
   ],
-  "lastSync": "2026-03-30T23:48:38.848Z"
+  "lastSync": "2026-03-30T23:49:54.338Z"
 }
