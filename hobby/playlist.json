@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_k0zrkq4GlVQ",
+      "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 21일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 21.2026 | Playlist",
+      "artist": "가요앤팝쏭",
+      "youtubeId": "k0zrkq4GlVQ",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - 가요앤팝쏭"
+    },
+    {
       "id": "related_SctYIZbKmf0",
       "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 10일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 10.2026 | Playlist",
       "artist": "가요앤팝쏭",
@@ -166,16 +174,7 @@
       "youtubeId": "dYRITmpFbJ4",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - SMTOWN"
-    },
-    {
-      "id": "global_4TWR90KJl84",
-      "title": "aespa 에스파 'Next Level' MV",
-      "artist": "SMTOWN",
-      "youtubeId": "4TWR90KJl84",
-      "duration": "3:56",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:56"
     }
   ],
-  "lastSync": "2026-03-30T23:16:52.641Z"
+  "lastSync": "2026-03-30T23:17:00.592Z"
 }
