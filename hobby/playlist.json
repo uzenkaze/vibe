@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_HoJl5uv5g8U",
+      "title": "[최신가요연속듣기 2026] KPOP 노동요 🌎 2026년 1월 5일 2주차, 멜론차트 X, 노래모음 플레이리스트 멜론 종합차트",
+      "artist": "Yeo Doll",
+      "youtubeId": "HoJl5uv5g8U",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Yeo Doll"
+    },
+    {
       "id": "global_wGBTD1QmCqY",
       "title": "어라… 눈물이⭐ 목소리만으로 눈물 고이게 만드는 '황가람' 노래 모아듣기🌙  #모아듣기 #오픈마이크",
       "artist": "Beginagain 비긴어게인",
@@ -170,15 +178,7 @@
       "youtubeId": "ru4DicGUCY0",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
-    },
-    {
-      "id": "global_jWQx2f-CErU",
-      "title": "aespa 에스파 'Whiplash' MV",
-      "artist": "SMTOWN",
-      "youtubeId": "jWQx2f-CErU",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
     }
   ],
-  "lastSync": "2026-03-30T04:23:23.087Z"
+  "lastSync": "2026-03-30T04:45:55.916Z"
 }
