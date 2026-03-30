@@ -1040,6 +1040,29 @@ function setupEventListeners() {
             if (lyricsContainer.style.display === 'none') {
                 lyricsContainer.style.display = 'flex';
                 if (window.innerWidth < 900) lyricsContainer.scrollIntoView({ behavior: 'smooth' });
+
+                // 가사 패널을 열 때 가사가 없거나 placeholder이면 즉시 fetch 재시도
+                if (currentPlayingSong) {
+                    const curLyrics = lyricsContent.innerHTML;
+                    const isPlaceholder = !curLyrics
+                        || curLyrics.includes('⏳')
+                        || curLyrics.includes('😔')
+                        || curLyrics.includes('유튜브 검색')
+                        || curLyrics.includes('연관 추천곡')
+                        || curLyrics.trim().length < 50;
+
+                    if (isPlaceholder) {
+                        lyricsContent.innerHTML = '<span style="color:var(--text-secondary); font-size:0.9rem;">⏳ 가사를 불러오는 중...</span>';
+                        fetchRealLyrics(currentPlayingSong.title, currentPlayingSong.artist).then(lyrics => {
+                            if (lyrics) {
+                                currentPlayingSong.lyrics = lyrics;
+                                lyricsContent.innerHTML = lyrics.replace(/\n/g, '<br>');
+                            } else {
+                                lyricsContent.innerHTML = '<span style="color:var(--text-secondary); font-size:0.9rem;">😔 가사 정보를 찾을 수 없습니다.</span>';
+                            }
+                        });
+                    }
+                }
             } else {
                 lyricsContainer.style.display = 'none';
             }
@@ -1052,7 +1075,7 @@ function handleMoreClick(title) {
     const titleClean = title.trim();
     if (titleClean.includes('실시간 인기 차트')) query = "실시간 인기 음악 차트 TOP 50";
     else if (titleClean.includes('잔잔한 음악')) query = "잔잔하고 편안한 수면 명상 음악";
-    else if (titleClean.includes('최신 발매 음악')) query = "2024 최신 발매 신곡";
+    else if (titleClean.includes('최신 발매 음악')) query = new Date().getFullYear() + " 최신 발매 신곡";
     else if (titleClean.includes('다시 듣기')) {
         const history = JSON.parse(localStorage.getItem(RECENTLY_PLAYED_KEY) || '[]');
         if (history.length > 0) {
@@ -1098,29 +1121,47 @@ function handleMoreClick(title) {
 
 
 function setupMediaSession(song) {
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: song.title,
-            artist: song.artist,
-            album: 'Vibe Music Player',
-            artwork: [
-                { src: song.thumbnail || 'music_placeholder.png', sizes: '512x512', type: 'image/jpeg' }
-            ]
-        });
+    if (!('mediaSession' in navigator)) return;
 
-        navigator.mediaSession.setActionHandler('play', function() {
-            if (player && typeof player.playVideo === 'function') player.playVideo();
+    // 아트워크: YouTube 썸네일 우선 사용
+    const artSrc = song.youtubeId
+        ? `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`
+        : (song.thumbnail || 'music_placeholder.png');
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: song.title,
+        artist: song.artist,
+        album: 'Vibe Music Player',
+        artwork: [
+            { src: artSrc, sizes: '480x360', type: 'image/jpeg' }
+        ]
+    });
+
+    navigator.mediaSession.setActionHandler('play', () => {
+        if (player && typeof player.playVideo === 'function') player.playVideo();
+        resumeAudioKeepAlive();
+    });
+    navigator.mediaSession.setActionHandler('pause', () => {
+        if (player && typeof player.pauseVideo === 'function') player.pauseVideo();
+    });
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+        if (typeof playPrevious === 'function') playPrevious();
+    });
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+        if (typeof playNext === 'function') playNext();
+    });
+    // 잠금화면 시크 핸들러
+    try {
+        navigator.mediaSession.setActionHandler('seekforward', (d) => {
+            if (player) player.seekTo((player.getCurrentTime() || 0) + (d.seekOffset || 10), true);
         });
-        navigator.mediaSession.setActionHandler('pause', function() {
-            if (player && typeof player.pauseVideo === 'function') player.pauseVideo();
+        navigator.mediaSession.setActionHandler('seekbackward', (d) => {
+            if (player) player.seekTo(Math.max(0, (player.getCurrentTime() || 0) - (d.seekOffset || 10)), true);
         });
-        navigator.mediaSession.setActionHandler('previoustrack', function() {
-            if (typeof playPrevious === 'function') playPrevious();
+        navigator.mediaSession.setActionHandler('seekto', (d) => {
+            if (player && d.seekTime != null) player.seekTo(d.seekTime, true);
         });
-        navigator.mediaSession.setActionHandler('nexttrack', function() {
-            if (typeof playNext === 'function') playNext();
-        });
-    }
+    } catch(e) { /* 일부 구형 브라우저 미지원 */ }
 }
 
 // Handle Song Selection
@@ -1166,14 +1207,27 @@ async function handleSongClick(songOrId, mode = null) {
 
     // Update Lyrics Metadata (Don't force open the panel)
     lyricsTitle.textContent = `${song.title} - 가사`;
-    lyricsContent.innerHTML = (song.lyrics || "(가사 검색 중)").replace(/\n/g, '<br>');
 
-    if (song.isGlobal && (song.lyrics.includes("유튜브 검색") || song.lyrics.includes("가사 정보가 없습니다"))) {
+    // 가사 패널 초기 표시: 저장된 가사 우선, 없으면 로딩 표시
+    const hasRealLyrics = song.lyrics && song.lyrics.length > 80
+        && !song.lyrics.includes('유튜브 검색') && !song.lyrics.includes('연관 추천곡');
 
+    if (hasRealLyrics) {
+        lyricsContent.innerHTML = song.lyrics.replace(/\n/g, '<br>');
+    } else {
+        lyricsContent.innerHTML = '<span style="color:var(--text-secondary); font-size:0.9rem;">⏳ 가사를 불러오는 중...</span>';
+        // 실제 API로 전체 가사 fetch (검색 탭 관계없이 전모든 곡)
         fetchRealLyrics(song.title, song.artist).then(fullLyrics => {
             if (fullLyrics) {
                 song.lyrics = fullLyrics;
-                lyricsContent.innerHTML = fullLyrics.replace(/\n/g, '<br>');
+                // 현재 표시 중인 곡과 동일한 경우만 업데이트
+                if (currentPlayingSong && currentPlayingSong.youtubeId === song.youtubeId) {
+                    lyricsContent.innerHTML = fullLyrics.replace(/\n/g, '<br>');
+                }
+            } else {
+                if (currentPlayingSong && currentPlayingSong.youtubeId === song.youtubeId) {
+                    lyricsContent.innerHTML = '<span style="color:var(--text-secondary); font-size:0.9rem;">😔 가사 정보를 찾을 수 없습니다.</span>';
+                }
             }
         });
     }
@@ -1321,7 +1375,7 @@ async function renderHome() {
         const [trending, suggested, latest] = await Promise.all([
             fetchCategorySongs("실시간 인기 차트 TOP 20", "scrollerTrending", 12),
             fetchCategorySongs("잔잔하고 편안한 수면 명상 음악", "scrollerSuggested", 12),
-            fetchCategorySongs("2024 신곡 최신 발매", "scrollerLatest", 12)
+            fetchCategorySongs(new Date().getFullYear() + " 신곡 최신 발매", "scrollerLatest", 12)
         ]);
 
 
@@ -1425,45 +1479,88 @@ async function fetchCategorySongs(query, scrollerId, limit = 12) {
 
 
 async function fetchRealLyrics(title, artist) {
-    // 🧹 AGGRESSIVE CLEANING: Take only the core title part before separators
-    let cleanTitle = title.split(/[|│/]/)[0].trim();
-    // Remove (Official), [Lyrics], etc.
-    cleanTitle = cleanTitle.replace(/\(.*?\)|\{.*?\}|\[.*?\]/g, '').replace(/M\/V|MV|Official|Lyrics|Audio|Live|모음|Playlist|영상|가사|자막/gi, '').trim();
-    
-    let cleanArtist = artist.split(/[|│/]/)[0].trim();
+    // 제목/아티스트 정제: 불필요한 태그/키워드 제거
+    let cleanTitle = title.split(/[|│\/\[\(]/)[0].trim();
+    cleanTitle = cleanTitle
+        .replace(/\(.*?\)|\{.*?\}|\[.*?\]/g, '')
+        .replace(/M\/V|MV|Official|Lyrics|Audio|Live|모음|Playlist|영상|가사|자막|feat\..*/gi, '')
+        .replace(/[\u2018\u2019\u201C\u201D]/g, "'")
+        .trim();
+
+    let cleanArtist = (artist || '').split(/[|│\/]/)[0].trim();
     cleanArtist = cleanArtist.replace(/\(.*?\)|\[.*?\]/g, '').trim();
 
     if (!cleanTitle || cleanTitle.length < 2) return null;
 
-    console.log(`Lyrics searching for: ${cleanTitle} / ${cleanArtist}`);
+    console.log(`[Lyrics] 검색: "${cleanTitle}" / "${cleanArtist}"`);
 
+    // ─── API 1: lrclib.net (무료, CORS 보유, 프록시 불필요) ─────────────────
     try {
-        // Use CORS PROXY to bypass security restrictions on lyrist API
-        const apiBase = "https://lyrist.vercel.app/api";
-        const targetUrl = `${apiBase}/${encodeURIComponent(cleanTitle)}/${encodeURIComponent(cleanArtist)}`;
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
-
-        const response = await fetch(proxyUrl);
-        if (response.ok) {
-            const data = await response.json();
-            if (data && data.lyrics && data.lyrics.length > 50) return data.lyrics;
+        // 정확한 매칭 시도
+        const lrcUrl = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(cleanArtist)}&track_name=${encodeURIComponent(cleanTitle)}&album_name=`;
+        const lrcRes = await fetch(lrcUrl, { headers: { 'Lrclib-Client': 'VibeMusicPlayer/2.5' } });
+        if (lrcRes.ok) {
+            const lrcData = await lrcRes.json();
+            const lyric = lrcData.plainLyrics || lrcData.syncedLyrics?.replace(/\[.*?\]/g, '').trim();
+            if (lyric && lyric.length > 50) {
+                console.log('[Lyrics] lrclib.net 성공');
+                return lyric;
+            }
         }
-        
-        // Fallback: search only by title via proxy if initial attempt fails
-        if (cleanTitle.length > 3) {
-            const fallbackTarget = `${apiBase}/${encodeURIComponent(cleanTitle)}`;
-            const fallbackProxy = `https://corsproxy.io/?${encodeURIComponent(fallbackTarget)}`;
-            const fallbackRes = await fetch(fallbackProxy);
-            if (fallbackRes.ok) {
-                const fData = await fallbackRes.json();
-                if (fData && fData.lyrics && fData.lyrics.length > 50) return fData.lyrics;
+        // 검색 폴백: 제목만으로 검색
+        const lrcSearch = `https://lrclib.net/api/search?q=${encodeURIComponent(cleanTitle + ' ' + cleanArtist)}`;
+        const lrcSearchRes = await fetch(lrcSearch, { headers: { 'Lrclib-Client': 'VibeMusicPlayer/2.5' } });
+        if (lrcSearchRes.ok) {
+            const lrcList = await lrcSearchRes.json();
+            const match = Array.isArray(lrcList) && lrcList.find(r => r.plainLyrics && r.plainLyrics.length > 50);
+            if (match) {
+                console.log('[Lyrics] lrclib.net search 성공:', match.trackName);
+                return match.plainLyrics;
             }
         }
     } catch (e) {
-        console.warn("Lyrics proxy fetch failed:", e);
+        console.warn('[Lyrics] lrclib.net 실패:', e.message);
     }
+
+    // ─── API 2: lyrics.ovh (무료, REST, CORS 부분 지원) ────────────────────────────
+    if (cleanArtist && cleanTitle) {
+        try {
+            const ovhRes = await fetch(
+                `https://api.lyrics.ovh/v1/${encodeURIComponent(cleanArtist)}/${encodeURIComponent(cleanTitle)}`,
+                { signal: AbortSignal.timeout(4000) }
+            );
+            if (ovhRes.ok) {
+                const ovhData = await ovhRes.json();
+                if (ovhData.lyrics && ovhData.lyrics.length > 50) {
+                    console.log('[Lyrics] lyrics.ovh 성공');
+                    return ovhData.lyrics;
+                }
+            }
+        } catch (e) {
+            console.warn('[Lyrics] lyrics.ovh 실패:', e.message);
+        }
+    }
+
+    // ─── API 3: lyrist.vercel.app (corsproxy.io 통해) ──────────────────────────────
+    try {
+        const lyristUrl = `https://lyrist.vercel.app/api/${encodeURIComponent(cleanTitle)}/${encodeURIComponent(cleanArtist)}`;
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(lyristUrl)}`;
+        const lyristRes = await fetch(proxyUrl, { signal: AbortSignal.timeout(5000) });
+        if (lyristRes.ok) {
+            const lyristData = await lyristRes.json();
+            if (lyristData.lyrics && lyristData.lyrics.length > 50) {
+                console.log('[Lyrics] lyrist.vercel.app 성공');
+                return lyristData.lyrics;
+            }
+        }
+    } catch (e) {
+        console.warn('[Lyrics] lyrist.vercel.app 실패:', e.message);
+    }
+
+    console.log('[Lyrics] 모든 API 실패, 가사를 찾을 수 없습니다.');
     return null;
 }
+
 
 
 
@@ -1679,6 +1776,8 @@ function onPlayerStateChange(event) {
             if (bgAudio) bgAudio.play().catch(e => console.log('Silent audio blocked', e));
             if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
             startProgressUpdate();
+            // 백그라운드 재생 유지 keepalive 활성화
+            if (typeof startAudioKeepAlive === 'function') startAudioKeepAlive();
         } else {
             togglePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
             updateMiniIcons(false);
@@ -2007,4 +2106,88 @@ if (document.readyState === 'loading') {
     initMiniPlayer();
 }
 
+// ============================================================
+// 📱 모바일 백그라운드 재생 유지 모듈
+// Web Audio API 무음 스트림으로 브라우저 오디오 세션을 활성 상태로 유지
+// → 다른 앱 전환 / 화면 내림 시에도 유튜브 음악이 계속 재생됨
+// ============================================================
+let _audioCtx = null;
+let _keepAliveSource = null;
+let _userPaused = false; // 사용자가 의도적으로 일시정지했는지 추적
+
+function startAudioKeepAlive() {
+    try {
+        if (!_audioCtx) {
+            _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (_audioCtx.state === 'suspended') {
+            _audioCtx.resume();
+        }
+        if (_keepAliveSource) return; // 이미 실행 중
+
+        // Oscillator로 볼륨 0에 가까운 무음 신호 생성 → OS가 오디오 세션 종료 안 함
+        const oscillator = _audioCtx.createOscillator();
+        const gainNode = _audioCtx.createGain();
+        gainNode.gain.value = 0.0001; // 거의 0 (완전 무음은 세션 끊길 수 있어 미미하게 유지)
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 1; // 1Hz 극저주파 (들릴 수 없음)
+        oscillator.connect(gainNode);
+        gainNode.connect(_audioCtx.destination);
+        oscillator.start();
+        _keepAliveSource = oscillator;
+        console.log('[KeepAlive] 백그라운드 오디오 세션 시작');
+    } catch(e) {
+        console.warn('[KeepAlive] Web Audio API 사용 불가:', e);
+    }
+}
+
+function stopAudioKeepAlive() {
+    if (_keepAliveSource) {
+        try { _keepAliveSource.stop(); } catch(e) {}
+        _keepAliveSource = null;
+    }
+}
+
+function resumeAudioKeepAlive() {
+    if (_audioCtx && _audioCtx.state === 'suspended') {
+        _audioCtx.resume().then(() => console.log('[KeepAlive] AudioContext 재개'));
+    }
+}
+
+// 재생 상태 변화 시 keepalive 연동은 기존 onPlayerStateChange 내부에서 직접 처리됨
+// (위의 PLAYING 브랜치에 startAudioKeepAlive() 호출 추가됨)
+
+// 사용자 의도적 일시정지 감지 (재생 버튼, 미니 플레이어 버튼)
+function _markUserPause() {
+    if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+        _userPaused = true;
+    }
+}
+document.getElementById('togglePlayBtn')?.addEventListener('click', _markUserPause, true);
+document.getElementById('togglePlayBtnMini')?.addEventListener('click', _markUserPause, true);
+
+// 앱 전환 복귀 시 재생 자동 복원
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        console.log('[Visibility] 화면 복귀 감지');
+        resumeAudioKeepAlive();
+        // 사용자가 의도적으로 멈추지 않았는데 일시정지 상태라면 자동 재개
+        if (!_userPaused && player && typeof player.getPlayerState === 'function') {
+            const state = player.getPlayerState();
+            if (state === YT.PlayerState.PAUSED || state === YT.PlayerState.BUFFERING) {
+                setTimeout(() => {
+                    if (!_userPaused && player && player.playVideo) {
+                        player.playVideo();
+                        console.log('[Visibility] 음악 자동 재개');
+                    }
+                }, 800);
+            }
+        }
+    } else {
+        // 백그라운드 진입: keepalive 계속 유지
+        resumeAudioKeepAlive();
+    }
+});
+
+console.log('[Vibe] 백그라운드 재생 모듈 로드 완료');
 
