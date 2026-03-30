@@ -50,20 +50,20 @@
   ],
   "recentlyPlayed": [
     {
-      "id": "global_jWQx2f-CErU",
-      "title": "aespa 에스파 'Whiplash' MV",
-      "artist": "SMTOWN",
-      "youtubeId": "jWQx2f-CErU",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
-    },
-    {
       "id": "global_ru4DicGUCY0",
       "title": "𝐏𝐥𝐚𝐲𝐥𝐢𝐬𝐭 지금 가장 핫하고 최신 노래들 🎶  감성힙합R&B인디 플레이리스트 바로 듣기! 🎧",
       "artist": "감정 음악",
       "youtubeId": "ru4DicGUCY0",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
+    },
+    {
+      "id": "global_jWQx2f-CErU",
+      "title": "aespa 에스파 'Whiplash' MV",
+      "artist": "SMTOWN",
+      "youtubeId": "jWQx2f-CErU",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
     },
     {
       "id": "related_8bOss_kxZGk",
@@ -178,5 +178,5 @@
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN\n길이: 3:35"
     }
   ],
-  "lastSync": "2026-03-30T23:16:31.207Z"
+  "lastSync": "2026-03-30T23:16:36.641Z"
 }
