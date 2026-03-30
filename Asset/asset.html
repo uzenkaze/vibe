@@ -29,6 +29,11 @@
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
+        html {
+            font-size: clamp(13px, 0.9vw + 10px, 18px);
+            /* 화면 크기에 맞게 자동으로 폰트 스케일링 설정 */
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -311,6 +316,13 @@
             text-align: right !important;
             font-family: 'Inter', sans-serif;
             font-weight: 600;
+            font-size: clamp(11px, 1vw + 6px, 16px) !important;
+            /* 화면 너비에 반응하여 즉각적으로 글씨가 줄어/늘어납니다 */
+            padding-left: 0.3rem !important;
+            padding-right: 0.3rem !important;
+            letter-spacing: -0.4px;
+            /* 숫자 절삭 방지를 위한 자간 감소 */
+            width: 100%;
         }
 
         .text-left {
@@ -535,11 +547,45 @@
             display: none;
             pointer-events: none;
             border: 1px solid #e2e8f0;
-            min-width: 200px;
+            min-width: 160px;
+            max-width: 300px;
+            /* 레이어 최대 너비 고정으로 화면 가득 참 문제 해결 */
+        }
+
+        /* 헤더 아이콘 버튼 CSS 툴팁 */
+        .btn-header-tool[title] {
+            position: relative;
+        }
+
+        .btn-header-tool[title]::after {
+            content: attr(title);
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 5px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease;
+            z-index: 9999;
+        }
+
+        .btn-header-tool[title]:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
 
         .details-hover-layer table {
-            width: 100%;
+            width: auto;
+            min-width: 180px;
+            /* 내용에 맞게 자동 조정 */
             border-collapse: collapse;
             font-size: 0.85rem;
         }
@@ -549,11 +595,13 @@
             padding: 4px 8px;
             border-bottom: 1px solid #edf2f7;
             color: #64748b;
+            white-space: nowrap;
         }
 
         .details-hover-layer td {
             padding: 4px 8px;
             color: #1e293b;
+            white-space: nowrap;
         }
 
         .details-hover-layer.summary-tooltip {
@@ -564,6 +612,35 @@
             font-weight: 500;
             background: #f8fafc;
             border-color: var(--accent-blue);
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 10px 16px;
+            text-align: left;
+            white-space: nowrap;
+            /* 모든 데이터 한줄에 표시 (세로 찌그러짐 원천 차단) */
+            vertical-align: middle;
+        }
+
+        .summary-table th {
+            color: var(--text-secondary);
+            font-weight: 700;
+            background: var(--table-header-bg);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .summary-table td {
+            color: var(--text-primary);
+            font-weight: 500;
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .btn-tool {
@@ -1124,8 +1201,149 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 📱 모바일 반응형 UI 지원 */
+        @media (max-width: 768px) {
+            .hide-on-mobile {
+                display: none !important;
+            }
+
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                width: 100% !important;
+            }
+
+            /* 상단 헤더 영역 세로 스태킹 및 감싸기 */
+            #mainContainer>div:first-child,
+            .pension-bar>div:first-child {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 1rem !important;
+            }
+
+            #mainContainer>div:first-child>div,
+            .pension-bar {
+                flex-wrap: wrap;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            /* 버튼 크기 및 상단 우측 툴바 정렬 최적화 */
+            .btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+                word-break: keep-all;
+                white-space: nowrap;
+            }
+
+            #mainContainer>div:first-child>div:nth-child(2) {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: 0.5rem !important;
+            }
+
+            #mainContainer>div:first-child>div:nth-child(2)>div {
+                flex-wrap: wrap;
+                border: none !important;
+                padding: 0 !important;
+                gap: 0.5rem !important;
+            }
+
+            /* 테이블 스크롤 보장 및 요약 테이블 모바일 맞춤 적용 */
+            .section-box,
+            .unified-card,
+            .modal-content {
+                overflow-x: auto !important;
+                padding: 1rem !important;
+            }
+
+            table {
+                min-width: 500px;
+            }
+
+            /* 요약보기 모달 전용 표는 한눈에 다 들어오도록(너비 해제 및 말줄임 처리) */
+            .summary-table {
+                min-width: 100% !important;
+                table-layout: fixed;
+                /* 강제 비율 할당 및 말줄임 가능토록 설정 */
+            }
+
+            .summary-table th:nth-child(1),
+            .summary-table td:nth-child(1) {
+                width: 25%;
+            }
+
+            .summary-table th:nth-child(2),
+            .summary-table td:nth-child(2) {
+                width: 45%;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            .summary-table th:nth-child(3),
+            .summary-table td:nth-child(3) {
+                width: 30%;
+                text-align: right;
+            }
+
+            .summary-table th,
+            .summary-table td {
+                padding: 6px 4px !important;
+                font-size: 0.8rem !important;
+                white-space: nowrap !important;
+            }
+
+            /* 요약 카드 2단 그리드로 재배치 */
+            .summary-bar {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+
+            .summary-card {
+                padding: 1rem;
+            }
+
+            /* 모달창 꽉 차게 */
+            .modal-content {
+                width: 95% !important;
+            }
+
+            /* 상세 레이어 모바일 맞춤 적용 (말줄임표) */
+            .details-hover-layer {
+                max-width: 90vw !important;
+            }
+
+            .details-hover-layer table {
+                table-layout: fixed !important;
+            }
+
+            .details-hover-layer th:first-child,
+            .details-hover-layer td:first-child {
+                width: 60%;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            .details-hover-layer th:last-child,
+            .details-hover-layer td:last-child {
+                width: 40%;
+                white-space: nowrap !important;
+            }
         }
     </style>
 </head>
@@ -1158,7 +1376,9 @@
             </div>
             <div class="login-btn-container">
                 <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
-                <button class="btn btn-tool login-btn" style="margin-top: 0.75rem; border: 1px solid var(--accent-blue); color: var(--accent-blue);" onclick="loginWithPasskey()">
+                <button class="btn btn-tool login-btn"
+                    style="margin-top: 0.75rem; border: 1px solid var(--accent-blue); color: var(--accent-blue);"
+                    onclick="loginWithPasskey()">
                     <span style="margin-right:0.5rem;">🆔</span> 지문 / 안면 인식 로그인
                 </button>
             </div>
@@ -1167,26 +1387,36 @@
 
         <div class="login-card" id="adminCreateContainer" style="display: none;">
             <h1>시작하기</h1>
-            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가 없습니다.<br>기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
-            
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가
+                없습니다.<br>기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
+
             <!-- Primary Option: Data Import -->
-            <div style="margin-bottom: 2rem; padding: 1rem; background: rgba(0, 163, 196, 0.05); border: 1px dashed var(--accent-blue); border-radius: 0.5rem;">
-                <p style="font-size: 0.85rem; color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">기존 데이터 복원 (권장)</p>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">JSON 파일을 이 화면에 드래그하여 드롭하세요.</p>
-                <button class="btn btn-blue" style="width: 100%; font-size: 0.85rem;" onclick="openGitHubModal()">☁️ GitHub에서 가져오기</button>
+            <div
+                style="margin-bottom: 2rem; padding: 1rem; background: rgba(0, 163, 196, 0.05); border: 1px dashed var(--accent-blue); border-radius: 0.5rem;">
+                <p style="font-size: 0.85rem; color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">기존
+                    데이터 복원 (권장)</p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">JSON 파일을 이 화면에 드래그하여
+                    드롭하세요.</p>
+                <button class="btn btn-blue" style="width: 100%; font-size: 0.85rem;" onclick="openGitHubModal()">☁️
+                    GitHub에서 가져오기</button>
             </div>
 
             <!-- Secondary Option: New Registration (Restricted) -->
             <div id="setupKeySection">
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">새로운 환경을 시작하시겠습니까?</p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">새로운 환경을 시작하시겠습니까?
+                </p>
                 <div class="login-input">
-                    <input type="password" id="setupMasterKey" placeholder="설치 마스터 키 입력" onkeypress="if(event.key === 'Enter') verifySetupKey()">
+                    <input type="password" id="setupMasterKey" placeholder="설치 마스터 키 입력"
+                        onkeypress="if(event.key === 'Enter') verifySetupKey()">
                 </div>
-                <button class="btn btn-tool" style="width: 100%; justify-content: center;" onclick="verifySetupKey()">인증 및 등록 시작</button>
+                <button class="btn btn-tool" style="width: 100%; justify-content: center;" onclick="verifySetupKey()">인증
+                    및 등록 시작</button>
             </div>
 
-            <div id="adminFieldsSection" style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1rem;">
-                <p style="font-size: 0.85rem; color: var(--accent-blue); font-weight: 700; margin-bottom: 1rem;">신규 관리자 계정 생성</p>
+            <div id="adminFieldsSection"
+                style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1rem;">
+                <p style="font-size: 0.85rem; color: var(--accent-blue); font-weight: 700; margin-bottom: 1rem;">신규 관리자
+                    계정 생성</p>
                 <div class="login-input">
                     <input type="text" id="adminName" placeholder="사용자 이름 (ex. 본인 이름)">
                 </div>
@@ -1211,15 +1441,18 @@
                 <div style="width: 1px; height: 20px; background: var(--glass-border); margin: 0 0.25rem;"></div>
                 <button class="btn-header-tool" onclick="openInstallmentModal()">
                     <span style="font-size: 1.1rem;">💳</span>
-                    <span>할부 관리</span>
+                    <span>Card</span>
                 </button>
             </div>
-            
+
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <!-- Main Action Group -->
-                <div style="display: flex; gap: 0.5rem; padding-right: 0.75rem; border-right: 1px solid var(--glass-border);">
-                    <button class="btn btn-teal" id="btnCarryOver" onclick="manualCarryOver()">전달 데이터 이월</button>
-                    <button class="btn btn-blue" onclick="openGitHubModal()">☁️ GitHub 연동</button>
+                <div
+                    style="display: flex; gap: 0.5rem; padding-right: 0.75rem; border-right: 1px solid var(--glass-border);">
+                    <button class="btn btn-teal" id="btnCarryOver" onclick="manualCarryOver()" title="전달 데이터 이월">🔄<span
+                            class="hide-on-mobile">데이터 복사</span></button>
+                    <button class="btn btn-blue" onclick="openGitHubModal()" title="GitHub">☁️<span
+                            class="hide-on-mobile"> GitHub</span></button>
                 </div>
 
                 <!-- Tool Group -->
@@ -1228,7 +1461,9 @@
                     <button class="btn-header-tool" onclick="openDataManageModal()" title="데이터 관리">⚙️</button>
                     <button class="btn-header-tool" onclick="openAccountModal()" title="계정">👤</button>
                     <button class="btn-header-tool" onclick="openManualModal()" title="매뉴얼">📖</button>
-                    <button class="btn" style="background: #334155; color: white; padding: 0.4rem 0.8rem; border-radius: 0.375rem; font-size: 0.85rem;" onclick="logout()">로그아웃</button>
+                    <button class="btn"
+                        style="background: #334155; color: white; padding: 0.4rem 0.8rem; border-radius: 0.375rem; font-size: 0.85rem;"
+                        onclick="logout()">로그아웃</button>
                 </div>
             </div>
         </div>
@@ -1236,13 +1471,14 @@
         <!-- Pension & Sync Bar -->
         <div class="pension-bar">
             <div style="display: flex; gap: 1rem; align-items: center;">
-                <button class="btn-pension" onclick="openPensionModal()">
-                    <img src="data:image/png;base64,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" style="height: 16px; margin-right: 5px; vertical-align: middle;">
-                    연금 정보
+                <button class="btn-pension" onclick="openPensionModal()" title="연금 정보">
+                    <img src="data:image/png;base64,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"
+                        style="height: 16px; margin-right: 5px; vertical-align: middle;">
+                    <span class="hide-on-mobile">연금 정보</span>
                 </button>
             </div>
-            <button class="btn-save-sync" onclick="manualGitHubSync()">
-                <span>💾 실시간 저장 (GitHub)</span>
+            <button class="btn-save-sync" onclick="manualGitHubSync()" title="실시간 저장 (GitHub)">
+                <span>💾<span class="hide-on-mobile"> 실시간 저장 (GitHub)</span></span>
             </button>
         </div>
 
@@ -1439,7 +1675,19 @@
             <div class="modal-header">
                 <span class="modal-title">카드 할부 관리</span>
                 <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <select id="installmentSortSelect" onchange="sortInstallments(this.value)"
+                        style="padding: 0.4rem 2rem 0.4rem 0.8rem; font-size: 0.85rem; border-color: var(--glass-border); border-radius: 0.375rem;">
+                        <option value="">정렬 방식 선택</option>
+                        <option value="date_desc">사용일 (최신순)</option>
+                        <option value="date_asc" selected>사용일 (과거순)</option>
+                        <option value="amount_desc">금액 (높은순)</option>
+                        <option value="amount_asc">금액 (낮은순)</option>
+                        <option value="endDate_asc">종료일 (가까운순)</option>
+                        <option value="endDate_desc">종료일 (먼순)</option>
+                    </select>
                     <button class="btn btn-add" onclick="addRow('installment')">+ 할부 추가</button>
+                    <button class="btn btn-green" style="padding: 0.35rem 1rem; font-size: 0.875rem;"
+                        onclick="saveInstallment()">저장</button>
                     <button class="btn-close" onclick="closeInstallmentModal()">&times;</button>
                 </div>
             </div>
@@ -1447,11 +1695,11 @@
                 <table style="font-size: 0.85rem;">
                     <thead>
                         <tr>
-                            <th style="width: 120px; text-align: center;">사용일</th>
-                            <th style="width: 100px; text-align: center;">카드</th>
-                            <th style="width: 380px; text-align: center;">사용처</th>
+                            <th style="width: 110px; text-align: center;">사용일</th>
+                            <th style="width: 90px; text-align: center;">카드</th>
+                            <th style="width: 410px; text-align: center;">사용처</th>
                             <th style="width: 170px; text-align: center;">금액</th>
-                            <th style="width: 140px; text-align: center;">회차 (현재/전체)</th>
+                            <th style="width: 110px; text-align: center;">회차 (현재/전체)</th>
                             <th style="width: 120px; text-align: center;">원금</th>
                             <th style="width: 120px; text-align: center;">잔액</th>
                             <th style="width: 110px; text-align: center;">종료</th>
@@ -1468,8 +1716,6 @@
                 </div>
                 <div>할부 총 잔액: <span id="total-installment" style="color: var(--accent-red);">0</span>원</div>
             </div>
-            <button class="btn btn-add" style="margin-top: 1rem; display: none;" onclick="addRow('installment')">+ 할부
-                추가</button>
         </div>
     </div>
 
@@ -1574,23 +1820,28 @@
                 </ul>
             </div>
 
-            <div id="manual-github" class="manual-tab-content" style="line-height: 1.6; color: var(--text-primary); display: none;">
+            <div id="manual-github" class="manual-tab-content"
+                style="line-height: 1.6; color: var(--text-primary); display: none;">
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. GitHub 연동의 장점</h3>
-                <p>GitHub 연동을 통해 데이터를 클라우드에 안전하게 보관하고, 여러 기기(PC, 모바일 등)에서 동일한 데이터를 동기화하여 사용할 수 있습니다. 브라우저의 로컬 스토리지가 삭제되어도 데이터가 안전하게 유지됩니다.</p>
+                <p>GitHub 연동을 통해 데이터를 클라우드에 안전하게 보관하고, 여러 기기(PC, 모바일 등)에서 동일한 데이터를 동기화하여 사용할 수 있습니다. 브라우저의 로컬 스토리지가
+                    삭제되어도 데이터가 안전하게 유지됩니다.</p>
 
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">2. 연동 설정 방법</h3>
                 <p>오른쪽 상단의 <strong>[☁️ GitHub 연동]</strong> 버튼을 클릭하여 설정을 시작합니다.</p>
                 <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>Personal Access Token:</strong> GitHub 계정에서 발급받은 토큰(fine-grained 또는 classic)을 입력합니다. (최소 repo 권한 필요)</li>
+                    <li><strong>Personal Access Token:</strong> GitHub 계정에서 발급받은 토큰(fine-grained 또는 classic)을 입력합니다. (최소
+                        repo 권한 필요)</li>
                     <li><strong>Repository:</strong> 데이터를 저장할 클라우드 저장소 이름(ex: username/repo-name)을 입력합니다.</li>
                     <li><strong>Path:</strong> 데이터 파일이 저장될 경로(ex: data/)를 지정합니다.</li>
                 </ol>
 
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">3. 자동 데이터 동기화</h3>
-                <p><strong>[자동 동기화]</strong> 옵션을 활성화하면 데이터를 저장할 때마다 자동으로 GitHub에 업로드(Push)되고, 앱을 새로고침하거나 월을 변경할 때 최신 데이터를 다운로드(Pull)하여 동기화합니다.</p>
+                <p><strong>[자동 동기화]</strong> 옵션을 활성화하면 데이터를 저장할 때마다 자동으로 GitHub에 업로드(Push)되고, 앱을 새로고침하거나 월을 변경할 때 최신
+                    데이터를 다운로드(Pull)하여 동기화합니다.</p>
 
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">4. 수동 동기화 및 관리</h3>
-                <p>설정 메뉴에서 필요할 때마다 <strong>업로드</strong> 또는 <strong>다운로드</strong> 버튼을 눌러 수동으로 데이터를 주고받을 수 있습니다. 동기화 성공 여부는 하단에 메시지로 표시됩니다.</p>
+                <p>설정 메뉴에서 필요할 때마다 <strong>업로드</strong> 또는 <strong>다운로드</strong> 버튼을 눌러 수동으로 데이터를 주고받을 수 있습니다. 동기화 성공
+                    여부는 하단에 메시지로 표시됩니다.</p>
             </div>
 
             <button class="btn btn-add" style="margin-top: 2rem; width: 100%; justify-content: center;"
@@ -1601,7 +1852,7 @@
     <script>
         console.log("[Init] Main script parsing start...");
         // --- 1. Global State Variables ---
-        let state = { 
+        let state = {
             sections: { cash: [], 'non-cash': [], income: [], 'real-estate': [], retirement: [], debt: [], 'v-expense': [], 'f-expense': [], 'y-expense': [], installment: [] },
             pension: { beforeTax: '', afterTax: '', startDate: '', totalPaid: '', totalPeriod: '' }
         };
@@ -1609,7 +1860,7 @@
         let isLoggedIn = false;
 
         // --- Setup & Security Keys ---
-        const MASTER_SETUP_KEY = "vibe2026"; 
+        const MASTER_SETUP_KEY = "vibe2026";
 
         function verifySetupKey() {
             const inputKey = document.getElementById('setupMasterKey').value.trim();
@@ -1641,12 +1892,12 @@
             const key = await deriveKey(password, salt);
             const encoded = new TextEncoder().encode(text);
             const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, encoded);
-            
+
             const combined = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
             combined.set(salt, 0);
             combined.set(iv, salt.length);
             combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
-            
+
             return {
                 _isEncrypted: true,
                 payload: btoa(String.fromCharCode(...combined))
@@ -1680,7 +1931,7 @@
             try {
                 const challenge = crypto.getRandomValues(new Uint8Array(32));
                 const userID = crypto.getRandomValues(new Uint8Array(16));
-                
+
                 const publicKeyCredentialCreationOptions = {
                     challenge,
                     rp: { name: "Vibe Asset Manager", id: window.location.hostname || "localhost" },
@@ -1694,7 +1945,7 @@
                 if (credential) {
                     const passkeyData = {
                         credentialId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
-                        encryptedPw: btoa(encodeURIComponent(pw)) 
+                        encryptedPw: btoa(encodeURIComponent(pw))
                     };
                     localStorage.setItem(`passkey_${id}`, JSON.stringify(passkeyData));
                     alert("Passkey가 성공적으로 등록되었습니다. 이제 지문/안면 인식으로 로그인할 수 있습니다.");
@@ -1707,13 +1958,13 @@
 
         async function loginWithPasskey() {
             if (!window.PublicKeyCredential) return alert("이 브라우저는 생체 인증을 지원하지 않습니다.");
-            
+
             const savedId = localStorage.getItem('savedLoginId') || prompt("로그인할 아이디를 입력하세요:");
             if (!savedId) return;
-            
+
             const passkeyStr = localStorage.getItem(`passkey_${savedId}`);
             if (!passkeyStr) return alert("등록된 Passkey가 없습니다. 먼저 일반 로그인 후 등록해주세요.");
-            
+
             const passkeyData = JSON.parse(passkeyStr);
 
             try {
@@ -1732,7 +1983,7 @@
                 if (assertion) {
                     const pw = decodeURIComponent(atob(passkeyData.encryptedPw));
                     sessionStorage.setItem('temp_master_pw', pw);
-                    
+
                     isLoggedIn = true;
                     sessionStorage.setItem('assetLoginSession', 'true');
                     setCookie('assetLoginSession', 'true', 1);
@@ -1982,7 +2233,7 @@
 
             let yearDataStr = localStorage.getItem(yearKey);
             let yearData = null;
-            
+
             if (yearDataStr) {
                 try {
                     const parsed = JSON.parse(yearDataStr);
@@ -1992,14 +2243,14 @@
                     } else {
                         yearData = parsed;
                     }
-                } catch(e) { console.error("SaveData: load error", e); }
+                } catch (e) { console.error("SaveData: load error", e); }
             }
-            
+
             yearData = yearData || { year: document.getElementById('yearSelect').value, months: {} };
             yearData.months[monthKey] = state;
 
             const finalPassword = sessionStorage.getItem('temp_master_pw');
-            
+
             // 하이브리드 백업: 계정 정보를 데이터 객체에 포함
             yearData._backupAccounts = accountsData;
 
@@ -2009,7 +2260,7 @@
             } else {
                 localStorage.setItem(yearKey, JSON.stringify(yearData));
             }
-            
+
             console.log('Saved to Year:', yearKey, 'Month:', monthKey, finalPassword ? '(Encrypted)' : '(Plain)');
         }
 
@@ -2017,7 +2268,18 @@
             const yearVal = document.getElementById('yearSelect').value;
             const yearKey = `assetData_${yearVal}`;
             let yearData = localStorage.getItem(yearKey);
-            yearData = yearData ? JSON.parse(yearData) : { year: yearVal, months: {} };
+            try {
+                yearData = yearData ? JSON.parse(yearData) : { year: yearVal, months: {} };
+            } catch (e) {
+                yearData = { year: yearVal, months: {} };
+            }
+
+            if (!yearData.months) {
+                if (yearData._isEncrypted) {
+                    return;
+                }
+                yearData.months = {};
+            }
 
             let migrated = false;
             // 1월부터 12월까지 기존 키 검사 (예: assetData_2026-03)
@@ -2040,7 +2302,7 @@
 
         async function loadData() {
             console.log("[Load] loadData 시작");
-            migrateOldData(); 
+            migrateOldData();
 
             const yearKey = getYearKey();
             const monthKey = getMonthKey();
@@ -2063,7 +2325,7 @@
                             logout();
                             return;
                         }
-                        
+
                         // 하이브리드 백업에서 계정 정보 복원
                         if (yearData._backupAccounts && yearData._backupAccounts.length > 0) {
                             accountsData = yearData._backupAccounts;
@@ -2071,7 +2333,7 @@
                             console.log("[Migration] Remote accounts restored to local device.");
                         }
                     }
-                    
+
                     if (yearData.months && yearData.months[monthKey]) {
                         state = mergeState(yearData.months[monthKey]);
                         console.log('Loaded Month Data:', yearKey, monthKey);
@@ -2114,7 +2376,27 @@
                 return;
             }
 
-            const yearData = JSON.parse(yearDataStr);
+            let yearData = JSON.parse(yearDataStr);
+
+            if (yearData._isEncrypted) {
+                const password = sessionStorage.getItem('temp_master_pw');
+                if (!password) {
+                    alert('보안(암호화) 상태이므로 이전 데이터를 읽을 수 없습니다. 다시 로그인 후 시도해주세요.');
+                    return;
+                }
+                try {
+                    yearData = await decryptData(yearData, password);
+                } catch (err) {
+                    alert('데이터 복호화에 실패하여 이월할 수 없습니다.');
+                    return;
+                }
+            }
+
+            if (!yearData || !yearData.months) {
+                alert('이월할 수 있는 이전 데이터 구조가 없거나 손상되었습니다.');
+                return;
+            }
+
             const months = Object.keys(yearData.months).sort().reverse();
             let prevData = null;
             let prevMonth = '';
@@ -2170,6 +2452,30 @@
             }
             item.remAmount = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
             return item;
+        }
+
+        async function sortInstallments(criterion) {
+            if (!criterion) return;
+            const data = state.sections['installment'];
+            if (!data) return;
+
+            data.forEach(item => calculateInstallment(item));
+
+            data.sort((a, b) => {
+                if (criterion === 'date_asc') return (a.date || '').localeCompare(b.date || '');
+                if (criterion === 'date_desc') return (b.date || '').localeCompare(a.date || '');
+                if (criterion === 'amount_asc') return (a.amount || 0) - (b.amount || 0);
+                if (criterion === 'amount_desc') return (b.amount || 0) - (a.amount || 0);
+                if (criterion === 'endDate_asc') return (a.endDate || '').localeCompare(b.endDate || '');
+                if (criterion === 'endDate_desc') return (b.endDate || '').localeCompare(a.endDate || '');
+                return 0;
+            });
+
+            await saveData();
+            render();
+
+            // 정렬 UI 초기화 (옵션) 
+            // document.getElementById('installmentSortSelect').value = ''; 
         }
 
         async function updateValue(s, id, f, v) {
@@ -2270,14 +2576,30 @@
                     const tr = document.createElement('tr');
                     if (s === 'installment') {
                         calculateInstallment(item);
-                        const monthsLeft = item.totalMonths - item.currentMonth;
-                        // 1개남은 경우 배경색 강조
-                        if (monthsLeft === 1) {
+
+                        // 현재 조회중인 월 기준으로 다음 달(YY.MM) 계산
+                        const curY = parseInt(document.getElementById('yearSelect').value);
+                        const curM = parseInt(document.getElementById('monthSelect').value);
+                        let nextY = curY;
+                        let nextM = curM + 1;
+                        if (nextM > 12) { nextM = 1; nextY++; }
+                        const targetEndDate = `${String(nextY).substring(2)}.${String(nextM).padStart(2, '0')}`;
+
+                        // 현재 월 식별자 (YY.MM 포맷)
+                        const currentEndDate = `${String(curY).substring(2)}.${String(curM).padStart(2, '0')}`;
+
+                        // 종료일이 현재월보다 이전(만료)이면 회색 처리
+                        if (item.endDate && item.endDate < currentEndDate) {
+                            tr.style.backgroundColor = '#f1f5f9'; // 회색 (slate-100)
+                            tr.style.opacity = '0.65';
+                        }
+                        // 다음 달에 종료되는 할부 건 강조 표시 (노란색)
+                        else if (item.endDate === targetEndDate) {
                             tr.style.backgroundColor = '#fffbeb';
                         }
-                        
+
                         tr.innerHTML = `
-                            <td><input type="text" style="width: 105px; text-align: center; font-size: 0.9rem;" value="${item.date}" onchange="updateValue('${s}', ${item.id}, 'date', this.value)" placeholder="YYYY-MM-DD"></td>
+                            <td><input type="date" style="width: 100%; text-align: center; font-size: 0.9rem; padding: 0.3rem;" value="${item.date}" onchange="updateValue('${s}', ${item.id}, 'date', this.value)"></td>
                             <td>
                                 <select style="padding: 0.35rem 1.5rem 0.35rem 0.6rem; font-size: 0.85rem; font-weight: 500;" onchange="updateValue('${s}', ${item.id}, 'card', this.value)">
                                     <option value="국민" ${item.card === '국민' ? 'selected' : ''}>국민</option>
@@ -2291,18 +2613,10 @@
                                 <input type="text" class="amount" style="font-size: 1.1rem; color: var(--accent-blue); width: 100%;" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')">
                             </td>
                             <td>
-                                <div style="display:flex; align-items:center; justify-content: center; gap:4px;">
-                                    <div class="step-container">
-                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'currentMonth', -1)">-</button>
-                                        <input type="text" class="input-step" style="color: ${item.currentMonth === item.totalMonths ? 'var(--accent-green)' : 'var(--accent-blue)'}" value="${item.currentMonth}" readonly>
-                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'currentMonth', 1)">+</button>
-                                    </div>
+                                <div style="display:flex; align-items:center; justify-content: center; gap:6px;">
+                                    <input type="number" min="0" max="120" style="width: 42px; padding: 0.25rem 0.1rem; text-align: center; border: 1px solid var(--glass-border); border-radius: 4px; font-size: 0.85rem; color: ${item.currentMonth === item.totalMonths ? 'var(--accent-green)' : 'var(--accent-blue)'}; font-weight: 600;" value="${item.currentMonth}" onchange="updateValue('${s}', ${item.id}, 'currentMonth', this.value)">
                                     <span style="color:var(--text-secondary); font-weight:700;">/</span>
-                                    <div class="step-container">
-                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'totalMonths', -1)">-</button>
-                                        <input type="text" class="input-step" value="${item.totalMonths}" readonly>
-                                        <button class="btn-step" onclick="stepValue('${s}', ${item.id}, 'totalMonths', 1)">+</button>
-                                    </div>
+                                    <input type="number" min="1" max="120" style="width: 42px; padding: 0.25rem 0.1rem; text-align: center; border: 1px solid var(--glass-border); border-radius: 4px; font-size: 0.85rem; font-weight: 600;" value="${item.totalMonths}" onchange="updateValue('${s}', ${item.id}, 'totalMonths', this.value)">
                                 </div>
                             </td>
                             <td><div class="amount" style="font-weight: 700;">${formatNumber(item.monthlyPrincipal)}</div></td>
@@ -2330,7 +2644,11 @@
                             <td style="display: flex; align-items: center; gap: 8px;">
                                 <input type="text" class="text-left" style="flex: 1;" value="${item.desc}" onchange="updateValue('${s}', ${item.id}, 'desc', this.value)">
                                 <div style="display: flex; gap: 4px; flex-shrink: 0;">
-                                    <button class="btn btn-tool" onmouseenter="showHoverLayer(event, '${s}', ${item.id})" onmouseleave="hideHoverLayer()" onclick="openExpenseDetailModal('${s}', ${item.id})">상세</button>
+                                    <button class="btn btn-tool" 
+                                        onmouseenter="showHoverLayer(event, '${s}', ${item.id})" 
+                                        onmouseleave="hideHoverLayer()" 
+                                        onclick="openExpenseDetailModal('${s}', ${item.id})"
+                                        ontouchstart="event.preventDefault(); openExpenseDetailModal('${s}', ${item.id})">상세</button>
                                     <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
                                 </div>
                             </td>
@@ -2423,7 +2741,7 @@
             const layer = document.getElementById('hoverLayer');
             let html = '<table><thead><tr><th>내용</th><th style="text-align:right">금액</th></tr></thead><tbody>';
             item.details.forEach(d => {
-                html += `<tr><td>${d.content}</td><td class="amount">${formatNumber(d.amount)}</td></tr>`;
+                html += `<tr><td title="${Math.floor(d.amount) + ' ' + (d.content || '')}">${d.content}</td><td class="amount">${formatNumber(d.amount)}</td></tr>`;
             });
             html += '</tbody></table>';
             layer.innerHTML = html;
@@ -2431,7 +2749,12 @@
 
             const rect = e.target.getBoundingClientRect();
             layer.style.top = (rect.top + window.scrollY - layer.offsetHeight - 10) + 'px';
-            layer.style.left = (rect.left + window.scrollX - (layer.offsetWidth / 2) + (rect.width / 2)) + 'px';
+
+            let leftPos = rect.left + window.scrollX - (layer.offsetWidth / 2) + (rect.width / 2);
+            const maxLeft = window.innerWidth + window.scrollX - layer.offsetWidth - 20;
+            if (leftPos > maxLeft) leftPos = maxLeft;
+            if (leftPos < 20) leftPos = 20;
+            layer.style.left = leftPos + 'px';
         }
 
         function hideHoverLayer() {
@@ -2448,11 +2771,35 @@
 
             const rect = e.currentTarget.getBoundingClientRect();
             layer.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-            layer.style.left = (rect.left + window.scrollX + (rect.width / 2) - (layer.offsetWidth / 2)) + 'px';
+
+            let leftPos = rect.left + window.scrollX + (rect.width / 2) - (layer.offsetWidth / 2);
+            const maxLeft = window.innerWidth + window.scrollX - layer.offsetWidth - 20;
+            if (leftPos > maxLeft) leftPos = maxLeft;
+            if (leftPos < 20) leftPos = 20;
+            layer.style.left = leftPos + 'px';
         }
 
-        function openInstallmentModal() { document.getElementById('installmentModal').style.display = 'flex'; render(); }
+        async function openInstallmentModal() {
+            document.getElementById('installmentModal').style.display = 'flex';
+            const sortSelect = document.getElementById('installmentSortSelect');
+            if (sortSelect && sortSelect.value === '') sortSelect.value = 'date_asc';
+            if (sortSelect) await sortInstallments(sortSelect.value);
+            render();
+        }
         function closeInstallmentModal() { document.getElementById('installmentModal').style.display = 'none'; }
+
+        async function saveInstallment() {
+            await saveData();
+
+            // GitHub 실시간 저장 (설정되어 있을 경우)
+            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+            if (config.token && config.repo) {
+                await syncWithGitHub('upload');
+            }
+
+            closeInstallmentModal();
+            alert('카드 할부 내역이 로컬 및 GitHub 상에 성공적으로 실시간 저장되었습니다.');
+        }
 
 
 
@@ -2485,10 +2832,10 @@
             contentEl.innerHTML = '';
 
             let totalGrand = 0;
-            const sections = type === 'assets' 
-                ? ['cash', 'non-cash', 'income', 'real-estate'] 
+            const sections = type === 'assets'
+                ? ['cash', 'non-cash', 'income', 'real-estate']
                 : ['debt', 'v-expense', 'f-expense'];
-            
+
             const titleMap = {
                 'assets': '자산 및 수입 상세 요약',
                 'expenses': '부채 및 지출 상세 요약',
@@ -2514,7 +2861,7 @@
 
                 const table = document.createElement('table');
                 table.className = 'summary-table';
-                
+
                 let headHtml = '<thead><tr>';
                 if (s === 'debt') {
                     headHtml += '<th>분류</th><th>내용</th><th style="text-align:right">잔여금</th>';
@@ -2535,11 +2882,11 @@
                     sectionSum += amount;
 
                     if (s === 'debt') {
-                        tr.innerHTML = `<td>${item.category || '-'}</td><td>${item.content || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
+                        tr.innerHTML = `<td>${item.category || '-'}</td><td title="${item.content || '-'}">${item.content || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
                     } else if (['v-expense', 'f-expense'].includes(s)) {
-                        tr.innerHTML = `<td>${item.category || '-'}</td><td>${item.desc || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
+                        tr.innerHTML = `<td>${item.category || '-'}</td><td title="${item.desc || '-'}">${item.desc || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
                     } else {
-                        tr.innerHTML = `<td>${item.category || '-'}</td><td>${item.content || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
+                        tr.innerHTML = `<td>${item.category || '-'}</td><td title="${item.content || '-'}">${item.content || '-'}</td><td class="amount">${formatNumber(amount)}</td>`;
                     }
                     tbody.appendChild(tr);
                 });
@@ -2628,19 +2975,19 @@
             document.getElementById('ghBranch').value = config.branch || 'main';
             document.getElementById('ghAutoSync').checked = config.autoSync !== false;
             document.getElementById('gitHubModal').style.display = 'flex';
-            
+
             // 파일 목록 로드
             loadGitHubFileList();
         }
 
-                        async function loadGitHubFileList() {
+        async function loadGitHubFileList() {
             const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
             const fileListEl = document.getElementById('ghFileList');
             const viewBtn = document.getElementById('ghViewBtn');
             const previewEl = document.getElementById('ghDataPreview');
-            
+
             if (!fileListEl || !viewBtn) return;
-            
+
             previewEl.style.display = 'none';
             previewEl.innerText = '';
 
@@ -2658,11 +3005,11 @@
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
-                
+
                 if (res.ok) {
                     const files = await res.json();
                     const jsonFiles = files.filter(f => f.name.endsWith('.json'));
-                    
+
                     if (jsonFiles.length === 0) {
                         fileListEl.innerHTML = '<option value="">JSON 파일 없음</option>';
                     } else {
@@ -2670,7 +3017,7 @@
                             const displayName = f.name.replace('.json', '');
                             return `<option value="${f.path}">${displayName}</option>`;
                         }).join('');
-                        
+
                         // 파일이 1개일 때 버튼 형태 강조 (사용자 요청)
                         if (jsonFiles.length === 1) {
                             viewBtn.innerText = '데이터 보기';
@@ -2702,7 +3049,7 @@
             const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
             const filePath = document.getElementById('ghFileList').value;
             const previewEl = document.getElementById('ghDataPreview');
-            
+
             if (!filePath || !filePath.endsWith('.json')) {
                 alert('조회할 파일을 선택해주세요.');
                 return;
@@ -2711,7 +3058,7 @@
             try {
                 previewEl.style.display = 'block';
                 previewEl.innerText = '데이터 가져오는 중...';
-                
+
                 const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${config.branch}`;
                 const res = await fetch(url, {
                     headers: {
@@ -2719,7 +3066,7 @@
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
-                
+
                 if (res.ok) {
                     const data = await res.json();
                     const content = decodeURIComponent(escape(atob(data.content)));
@@ -2738,13 +3085,13 @@
             if (!state.pension) {
                 state.pension = { beforeTax: '', afterTax: '', startDate: '', totalPaid: '', totalPeriod: '' };
             }
-            
+
             document.getElementById('pensionBeforeTax').value = state.pension.beforeTax || '';
             document.getElementById('pensionAfterTax').value = state.pension.afterTax || '';
             document.getElementById('pensionStartDate').value = state.pension.startDate || '';
             document.getElementById('pensionTotalPaid').value = state.pension.totalPaid || '';
             document.getElementById('pensionTotalPeriod').value = state.pension.totalPeriod || '';
-            
+
             updatePensionHeader();
             updatePensionPeriodSubtext();
             document.getElementById('pensionModal').style.display = 'flex';
@@ -2764,7 +3111,7 @@
             };
             await saveData();
             closePensionModal();
-            
+
             // GitHub 동기화 (사용자 요청)
             await manualGitHubSync();
         }
@@ -2772,15 +3119,15 @@
         function updatePensionHeader() {
             const afterTax = document.getElementById('pensionAfterTax').value;
             let startDate = document.getElementById('pensionStartDate').value;
-            
+
             document.getElementById('pensionHeaderAmount').innerText = afterTax ? afterTax.replace('매월 ', '') : '0';
-            
+
             // "월" 누락 방지: 숫자로 끝나는 경우 "월" 추가 (예: "2039년 03" -> "2039년 03월")
             if (startDate && /\d$/.test(startDate.trim())) {
                 startDate = startDate.trim() + '월';
             }
             document.getElementById('pensionHeaderDate').innerText = startDate || '2039년 03월';
-            
+
             // 연 예상금액 계산
             const numericAmount = parseInt(afterTax.replace(/[^0-9]/g, '')) || 0;
             if (numericAmount > 0) {
@@ -2811,15 +3158,15 @@
         async function manualGitHubSync() {
             const btn = document.querySelector('.btn-save-sync');
             const originalContent = btn.innerHTML;
-            
+
             try {
                 btn.innerHTML = '<span>⏳ 저장 중...</span>';
                 btn.style.opacity = '0.7';
                 btn.disabled = true;
-                
+
                 // 1. 현재 화면 데이터 저장
-                await saveData(); 
-                
+                await saveData();
+
                 // 2. GitHub 업로드
                 const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
                 if (!config.token || !config.repo) {
@@ -2829,12 +3176,12 @@
                     btn.disabled = false;
                     return;
                 }
-                
+
                 await syncWithGitHub('upload');
-                
+
                 btn.innerHTML = '<span>✅ 저장 완료</span>';
                 btn.style.background = 'var(--accent-green)';
-                
+
                 setTimeout(() => {
                     btn.innerHTML = originalContent;
                     btn.style.background = 'var(--accent-blue)';
@@ -2875,33 +3222,33 @@
             };
             if (config.token && !config.repo) { alert('저장소 정보를 입력해주세요.'); return; }
             localStorage.setItem('assetGitHubConfig', JSON.stringify(config));
-            
+
             // 설정 저장 즉시 데이터 동기화 시도
             try {
                 const yearKey = getYearKey();
                 const downloadedData = await syncWithGitHub('download');
                 if (downloadedData) {
                     localStorage.setItem(yearKey, JSON.stringify(downloadedData));
-                    
+
                     // 만약 현재 로그인 전이라면 (초기 설정 중일 때)
                     if (!isLoggedIn) {
                         const pw = prompt("가져온 데이터를 해독하기 위한 마스터 비밀번호를 입력해주세요:");
                         if (pw) {
                             // 복호화 테스트 및 계정 복구를 포함하는 loadData 호출
                             sessionStorage.setItem('temp_master_pw', pw);
-                            await loadData(); 
-                            
+                            await loadData();
+
                             // loadData 내부에서 accountsData가 복구되었다면 로그인 성공 처리
                             if (accountsData.length > 0) {
                                 alert('GitHub 설정이 저장되었으며, 데이터를 성공적으로 가져왔습니다.');
-                                loginSuccess(); 
+                                loginSuccess();
                             } else {
                                 alert('데이터는 가져왔으나 등록된 계정 정보를 찾을 수 없습니다. 신규 등록을 진행해주세요.');
                             }
                         }
                     } else {
                         // 이미 로그인 된 상태라면 그냥 로드
-                        await loadData(); 
+                        await loadData();
                         alert('GitHub 설정이 저장되었으며, 최신 데이터를 성공적으로 가져왔습니다.');
                     }
                 } else {
@@ -2911,7 +3258,7 @@
                 console.error("Initial sync after config save failed:", e);
                 alert('GitHub 설정이 저장되었습니다. (데이터 로드 중 오류 발생)');
             }
-            
+
             closeGitHubModal();
         }
 
@@ -2946,7 +3293,7 @@
 
                     const yearDataStr = localStorage.getItem(yearKey);
                     if (!yearDataStr) return;
-                    
+
                     const body = {
                         message: `Update asset data: ${yearKey}`,
                         content: btoa(unescape(encodeURIComponent(yearDataStr))),
@@ -2980,6 +3327,45 @@
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
+
+        // --- Custom Alert Toast Override ---
+        window.alert = function (message) {
+            const existing = document.getElementById('customAlertToast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'customAlertToast';
+            toast.innerText = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(15, 23, 42, 0.9);
+                color: #ffffff;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                font-weight: 500;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                pointer-events: none;
+                transition: opacity 0.5s ease;
+                opacity: 0;
+                text-align: center;
+                white-space: pre-wrap;
+            `;
+            document.body.appendChild(toast);
+
+            // Reflow 강제 실행하여 transition 적용
+            toast.offsetHeight;
+            toast.style.opacity = '1';
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000); // 3초 유지
+        };
         // --------------------------------
 
         // --- Cookie Helpers ---
@@ -3022,7 +3408,7 @@
                                 const data = JSON.parse(event.target.result);
                                 const yearKey = getYearKey();
                                 localStorage.setItem(yearKey, JSON.stringify(data));
-                                
+
                                 const pw = prompt("파일 데이터를 해독하기 위한 마스터 비밀번호를 입력해주세요:");
                                 if (pw) {
                                     sessionStorage.setItem('temp_master_pw', pw);
@@ -3087,10 +3473,10 @@
 
             accountsData = [{ site: name, userid: id, password: pw, remarks: '최초 관리자' }];
             saveAccounts();
-            
+
             // 세션용 임시 비밀번호 저장
             sessionStorage.setItem('temp_master_pw', pw);
-            
+
             alert('관리자 계정이 생성되었습니다. 해당 계정으로 로그인합니다.');
             loginSuccess();
         }
@@ -3104,7 +3490,7 @@
             if (user) {
                 // 세션용 임시 비밀번호 저장 (메모리상에만 존재)
                 sessionStorage.setItem('temp_master_pw', pw);
-                
+
                 // 아이디 저장 처리
                 if (document.getElementById('rememberId').checked) {
                     localStorage.setItem('savedLoginId', id);
@@ -3134,7 +3520,7 @@
         }
 
         function logout() {
-            setCookie('assetLoginSession', '', -1); 
+            setCookie('assetLoginSession', '', -1);
             sessionStorage.removeItem('assetLoginSession');
             sessionStorage.removeItem('temp_master_pw'); // 비밀번호 흔적 제거
             isLoggedIn = false;
@@ -3234,8 +3620,10 @@
                         placeholder='여기에 JSON 데이터를 붙여넣으세요...'></textarea>
                 </div>
                 <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--glass-border);">
-                    <p style="font-size: 0.8rem; color: var(--accent-red); margin-bottom: 0.5rem; font-weight: 600;">⚠️ 위험구역</p>
-                    <button class="btn btn-danger-bg" style="width: 100%; justify-content: center;" onclick="deleteMonthData()">🗑️ 현재 월 데이터 전체 삭제</button>
+                    <p style="font-size: 0.8rem; color: var(--accent-red); margin-bottom: 0.5rem; font-weight: 600;">⚠️
+                        위험구역</p>
+                    <button class="btn btn-danger-bg" style="width: 100%; justify-content: center;"
+                        onclick="deleteMonthData()">🗑️ 현재 월 데이터 전체 삭제</button>
                 </div>
             </div>
             <div class="modal-footer"
@@ -3256,69 +3644,96 @@
             <div class="modal-body">
                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.2rem; line-height: 1.5;">
                     GitHub API를 통해 데이터를 원격 저장소에 보관합니다.<br>
-                    <a href="https://github.com/settings/tokens" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">GitHub PAT(Personal Access Token)</a>이 필요합니다. (권한: repo)
+                    <a href="https://github.com/settings/tokens" target="_blank"
+                        style="color: var(--accent-blue); text-decoration: underline;">GitHub PAT(Personal Access
+                        Token)</a>이 필요합니다. (권한: repo)
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
-                        <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">GitHub 토큰 (PAT)</label>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">GitHub
+                            토큰 (PAT)</label>
                         <div style="position: relative; display: flex; align-items: center;">
-                            <input type="password" id="ghToken" class="data-modal-textarea" style="height: 38px; padding: 0 40px 0 12px; width: 100%;" placeholder="ghp_xxxxxxxxxxxx">
-                            <button type="button" onclick="togglePatVisibility()" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); padding: 5px;">
+                            <input type="password" id="ghToken" class="data-modal-textarea"
+                                style="height: 38px; padding: 0 40px 0 12px; width: 100%;"
+                                placeholder="ghp_xxxxxxxxxxxx">
+                            <button type="button" onclick="togglePatVisibility()"
+                                style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); padding: 5px;">
                                 <span id="patToggleIcon">👁️</span>
                             </button>
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 2;">
-                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">저장소 (Owner/Repo)</label>
-                            <input type="text" id="ghRepo" class="data-modal-textarea" style="height: 38px; padding: 0 10px;" placeholder="uzenkaze/vibe">
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">저장소
+                                (Owner/Repo)</label>
+                            <input type="text" id="ghRepo" class="data-modal-textarea"
+                                style="height: 38px; padding: 0 10px;" placeholder="uzenkaze/vibe">
                         </div>
                         <div style="flex: 1;">
-                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">브랜치</label>
-                            <input type="text" id="ghBranch" class="data-modal-textarea" style="height: 38px; padding: 0 10px;" value="main">
+                            <label
+                                style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">브랜치</label>
+                            <input type="text" id="ghBranch" class="data-modal-textarea"
+                                style="height: 38px; padding: 0 10px;" value="main">
                         </div>
                     </div>
-                    
+
                     <div style="border-top: 1px dashed var(--glass-border); padding: 15px 0; margin-top: 5px;">
-                        <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--accent-blue);">📂 GitHub 데이터 관리 (조회)</label>
+                        <label
+                            style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--accent-blue);">📂
+                            GitHub 데이터 관리 (조회)</label>
                         <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-                            <select id="ghFileList" class="data-modal-textarea" style="height: 38px !important; box-sizing: border-box !important; flex: 1; padding: 0 10px; font-size: 0.9rem; border: 1px solid var(--glass-border); margin: 0;">
+                            <select id="ghFileList" class="data-modal-textarea"
+                                style="height: 38px !important; box-sizing: border-box !important; flex: 1; padding: 0 10px; font-size: 0.9rem; border: 1px solid var(--glass-border); margin: 0;">
                                 <option value="">파일 목록 로드 중...</option>
                             </select>
-                            <button class="btn" id="ghViewBtn" onclick="viewGitHubData()" style="height: 38px !important; box-sizing: border-box !important; padding: 0 20px; background: var(--accent-blue); color: white; border: none; font-weight: 700; border-radius: 0.5rem; font-size: 0.85rem; cursor: pointer; margin: 0; line-height: 1;">조회</button>
+                            <button class="btn" id="ghViewBtn" onclick="viewGitHubData()"
+                                style="height: 38px !important; box-sizing: border-box !important; padding: 0 20px; background: var(--accent-blue); color: white; border: none; font-weight: 700; border-radius: 0.5rem; font-size: 0.85rem; cursor: pointer; margin: 0; line-height: 1;">조회</button>
                         </div>
-                        <div id="ghDataPreview" style="margin-top: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 0.75rem; max-height: 200px; overflow-y: auto; display: none; white-space: pre-wrap; font-family: monospace; line-height: 1.4; color: #334155;"></div>
+                        <div id="ghDataPreview"
+                            style="margin-top: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 0.75rem; max-height: 200px; overflow-y: auto; display: none; white-space: pre-wrap; font-family: monospace; line-height: 1.4; color: #334155;">
+                        </div>
                     </div>
-                    <div style="background: rgba(59, 130, 246, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1); margin-top: 5px;">
-                        <label style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; width: fit-content;">
-                            <input type="checkbox" id="ghAutoSync" style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" checked>
-                            <span style="white-space: nowrap; font-weight: 600; color: var(--text-primary); flex-shrink: 0;">데이터 변경 시 자동 업로드</span>
+                    <div
+                        style="background: rgba(59, 130, 246, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1); margin-top: 5px;">
+                        <label
+                            style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; width: fit-content;">
+                            <input type="checkbox" id="ghAutoSync"
+                                style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" checked>
+                            <span
+                                style="white-space: nowrap; font-weight: 600; color: var(--text-primary); flex-shrink: 0;">데이터
+                                변경 시 자동 업로드</span>
                         </label>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer" style="padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px;">
+            <div class="modal-footer"
+                style="padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px;">
                 <button class="btn btn-tool" onclick="closeGitHubModal()">취소</button>
-                <button class="btn btn-add" style="background: var(--accent-blue);" onclick="saveGitHubConfig()">💾 설정 저장</button>
+                <button class="btn btn-add" style="background: var(--accent-blue);" onclick="saveGitHubConfig()">💾 설정
+                    저장</button>
             </div>
         </div>
     </div>
     <!-- Pension Modal -->
     <div class="modal-overlay" id="pensionModal">
         <div class="modal-content" style="max-width: 600px; padding: 2rem;">
-            <div class="modal-header" style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+            <div class="modal-header"
+                style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <img src="data:image/png;base64,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" style="height: 22px; width: auto; vertical-align: middle;">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABPCAYAAAAJMDwFAAAQAElEQVR4AexcB2AURRf+9i6XTmgJJZRA0ECkYyAgJUCQKgj+0hFCERFQERBBBKkq5fdXFFEDUpQqVUR6CUiT3kVIo4mBhJaQnv3f281dcrnbyyXkklxym3nz3rw3O+Xdm7ezM7NRibbLpgELaEAF22XTgAU0YDMsCyjVViRgMyybFVhEAzbDsohabYXaDMtmAxbRgM2wLKLWQlhoPjfJZlj5rPDiUp3NsIrLL53P/bQZVj4rvLhUZzOs4vJL53M/rdKwYmJicSPyviLcv/cEqalpz6zKxMQU3L4VY1BPbGyCYtlPnyYavcdUe43Jbt2Ixr93H+LBgzgkxCcp1pdTQVxcImKiY3H3n4e4SXUYqzunvCeP4w2aYZWG9f03u9G5zaeK0Nr/E7RtNh1nT0cYdNhcxqULN9G80cfo0GqWQT17dlwwWswnk9ahSZ1JRu8x1V5jso6tZyPwpRlo+eIU+NWeiJcaTsa4d1YgZN9lo3UrMdnQN6w9hmEDFuHFFz6Ef91JaNV4Kto1n4FOVIexunPK27z+hEH1VmlYYppo0JGsjOj7TzByaDAePzIcTVnzGkuvWvFHjjzFzCnrwT+gsbKM83LG5X7s3HYWo4YtRteXP8fpk+HZFrDt19No33IW2OCPHbmGxITkbO/JTQYRhr+HVRqWuZ3nH2POrM3mZtfLx48LPYaJBD9S1q48YiJH3orCQ6MwsNfXOHLoqmLBK34MwYdjfsZDepQqZrKgoEgbFutty4YTOPrH30xaDE7+GWqxsk0VPHbUcrBnzprnwrkbmDtrS1a2xdLlypU0KLvIGxb3ePKE1eC5BtOWAJ5oW6Lc7Mrkl4hliw8YZFsw/3cDnqUYz/tURJt2tQ2KLxaGFXX3Eb6cu82g83nFSE5OzbaoF+pUxn96N8XI9zpkC2+/2x6v9fJHrRcqZVvuL6uO6uWJCIvC0cOmPbSDowYBbV/A0BFts22LqfbO++oNbNrxAbg8vUZQolgYFvUTq386jPNnI5nMc0jLZmljzIQuWPfrWEz/rJdZP+SoMR0x4/PeWP/bOEz7tBecnO0V28xe6++/7ujkh03MuzhT+071sefwVCxcPAzvT3jFrPaMVBgMnbo25CKNQrExLFEUMWnsKpjjXYxqKpfMSlXKYNiIwFzeDbzepylmz+tr8v5LF2/p5Jcz0TpmOlHVyx1fLByE0qVd0jmWQ1ZpWIJKyJVGIiPu4dsvdyjdq8fPXQ16RUiJWr6VJPwsEXuZKlXLKhZx79/HOpmpt8AePZvo8lmasErDMrJsotPTq/9pjHIVDN9StBmCF+3FlUu3tUlFbLgyo5jVpMDNzcmk3FyhX5Mailmjo5/oZMZWwbXCylWUjVObJ6+wdRqWid47Oztg9lzTj45JY1ciu3mRiSpyJMqtd81aiUsJx6wsXfppbKKOVtupdXRWwtjSRNY8eZUucobFimnWwgfdXvNj0ihcv3YXS77fZ1RWWJnxT5MUm6ZxsNPJSpgwwM20pqfLaGHCKg2LJ+JKetHKPvrkNZR1L6GUDd9+tRM851LMUMgEp0+GKbbIrUTG49ZUn/+6fBvzP9uqWE5eCqzSsMxRgCuN3MnTX1PMym+H/JaoNUTFjIVAcPzoNfA2jlJTSpV21onqNfTS0caIZcH7wZv0PLB2bT+HE8eum4STx0PBHv7Rw6fGilPkFVnD4h7z21QALQQybQx4XWvV8j+MiQoNjxc8Z03dYLI9depV1cmbvvS8jlYi+FgRGxZvCQ3u9y1MQVDfhejeYa500qOO91jppMc7w5dg7y7jJzy0dRZqw9I28lnwDFpoZO+lVMYXc38Dn7lSkucHf+fv56RHM//YWuC9vjcHfodX2n1u0lvx4qmffw1dMyt6lkZgh7q6dF4TfFZr/55LeG/EUvTs+l8obWcVecPiOceHU7or6pePkkwev1pRbknBogW70NJvKsaNXm5gWHw6wZzNc15AzdpGXlE3NZiy5s9tmpdtenf/H27fjDEoosgbFve4x+tNwG+KTBsDPp2waf2fxkQW4cVEx+I/XeZjIS3WPoiJzXUdrq6OGPqW4ap+teoeWPzTCHiUc8t12ebeyHOvce+sMMheLAyLe81rW8Y2S1nGMGfmZqNHUFiWl8Ar43yW6uqVjP293Jb/v0VBcPcw/ubL867f9k7CgMGtwGt7ua3DnPsunr9hsA9bbAyLV+PH0qarkqJinyRg6sS1SuI8449+cwkiwu89U3m857d87Wg0a+5jshwXFwdMpGnAoZMz8NWiwQga1hpNaXLPczJzoJFfdZQrb57X27NTfzJfbAyLf4F+g1qgXgPl13E+T84Tac5rCVi5/BCe5Rx+hYql8Mnsnvh9/0d4sbG32U1kT80T+vEfdcPin9/GstWjzIIV697BvqPTsG3fJHR8pQFMXefP6J8cKVaGJQgCPvuinyn9YOaU9WDvZTJTLoXO5EGUjqBk5Y+Z0AUz5/bBD8vfwi9bx+HgiRnScZeefZvlsvbc3+ZVzQPzFwxEk2bPKRYSER6lJ8uZYendap0JVtJ74zsrNp7nQJ9O36gofxZBj9ebmH3+iY/acP6XWtaEb+1KKFPW9VmqzpN7hwxvq1gOr41lFlqlYZna2BUEIXP/jNJvjmxn8nTmrxtPwtS5JqOFFgMmv22a202rNCxTn3+Zu0Uzc04fqNTK3c/PkwDm/lgFnS8+Bx/OKmu2oHth4fr58TLkzTYWrqVoFX/axLeM5SuU0utssTUs1sKo9zuC51xM28C0BniVnbeblHI9X7OCnqhYG5ZGo5beEgUh+3mZntasIMEr4tmdXMhOfvDAFSxfEoKh/RdJ+4KmpgdNs6ypFWvDYvvgda0+A5ozWWRg8Xd7pdMIg7M5uWBCLp14GDkkGPNmbwEf28lOOZ27NtLLYpZhpUQcQUpoiAxhhI1BOPHTIe1BmF4lhT3x/oddTJ6Tt3T745NuICY2RIIHhLXwkOiHcSF4GHcAjzLBY6ITk4z/7wY+fWDJbyiN6WLgkACDFXqzDCv5/AbE/hCoB3HBlF4ciLglmeDHQDxdGojYL30Q/0tfY20olDzeS+O9xIJoXNi9b7Dv8vM4Htoef4a+jBMEJ8Pa4bQEgTgbFohzRJ8PD8QFgovhbXGJIDnlrtHmhofqL1QazZSHzOatamHCx68alGiWYTl2mAbBxUPvZpFTHDEwnQ6cZEi+9Avit76Vzs1bJJj4/MutZMYx3ZzUyqcfeEEyJ/eYk7d0GeVv+O7HHsLFW+PB/zyHQSTFUYAOUwUSTVFmuatzS7g6NyOpYUjjjIbsPOfw/JR3C74JHmq0bLMMS3AoAaeOs6QCpGkuRTzfZQDROqAczGNgXvKZJUi9cYi4+Rf41Ghua5s0rYf0GXxu7zd2X5du+nOPzHnO3RwLkRWVrjCmGUA8HSaZSCDzQJcAb8+vCRdMUNPaH3/+z/uVbFhsYMZaYpZh8Y32jYdA7VmfFMEp6EaVlBIpZiApDS6SSQkpU/yWICBV+QsTujPHwYv2rrLuzvMm6coN75lcUc+uIn4kTv+sF7YfmIxe/Zohax3adNajKrztwkrOCsvWjIJPLU+j1V6P+hYP4y/qvBU7GtYaL/Cm0R0SJoasT1Il8wgquY+Di2M9ooyH6t4eZm8bZW2vqfS4iV2lDeyj52ZLn//zSVXjLZC5ZhsWaNQ49/iWkXQnJXU0dF5LgMwXAAqghPgoEokHpyEvr34DWyDrDj1vktbP5kMCc9vAXx1PndXToA5tnS0CaukVpWRYSh+ZxtFk/fztj6kMUhIFgCIKImHZO4EuYlAsB4GGLOCg8YJXuekySyGu5l3OIoY1eHgb6cgNDz6FqvXY5hsW3aau6g/7VuOJkgOPJpnKiEUiGQhRECWFJB6Zg9R/z1DaFlgDx8KHIiUtkTw7eSJSFnsrBvZSrFOmJa9FmbWY+b5VfoJK5UTcwh9yZFjcHacOs6CuWBc0uEAOScKgwcV0ZgBfxKBAYgEJG3tDTI5jbrGG0PvLERV7VNKBSHoTSTscQBHTDEwzaGkRgGfZYSjp0pwo6wg5Niyo7ODSdw1g5yh5I6mb1HMKlJY9lByzhCgaahQj7UEoEnePYWaxhScJYThx4wPyVKLe3EryUKRAUhXJoJPJaRGOGi88X3GeVelNlZvWqjxqwumVL2mMpd8tAFrPJGEpApgpCAIhQaKTzy9Fyt+bUFyvg2FD6BEYTwOQ5kykF0DWi6jFxBNBF2GKIRIWSVbPaw3UqhLMshrIlWFx7+wbD4Omdg8mJRApFsExEZkwc2S+TCVsG4S0GOV/ysp3F0U4HjkB92JPSd5I9kT6nom9lsSnzjMtza2I4eM5B27OfsS1rpBrw+JuOvdeCbtqLUADCzT2IAgUUyCCA4FAAAKBIxmSnyJ+Q1eab+X+sydY2RXxYCsu/fs9SBEAZG8lEmYa0kX6ISxKINMgeYVSr6O6x/uwxuuZDAtqezgP2ALBo5bkoyTPJGlHomi+wFgG6HKISHsYioRtb1ijvnLc5gfxV7H/+nCkUf8lT0ReiIKkGx1PJyMtkf44X1nXQDSqtirH9RWWG57NsKgXgmNJuAbtgsrNE4JAo40CEZCRAEEggAAQhoQEMJkauhUJOwaBVElghcGMJiemPML2q72QnBZPuclTUcydJ9sBz58AgQLzCVgpBCLx3JzrobH3Wljz9cyGxZ0XSnjCZdAuCI6lOEkgQswUy8bDHKZkGVMpl39G4p4RlLPoBZF81I6/B+JRQqTknWQvBcU5llbu4lADzZ/7HXaqgv944ll+lTwxLG6Ayr0WXIaEQEWb1YIggAKBQCICSgiCAOmPMQEkAFIuLkHi3uGUr2iFvaHv4ubjgzTABLB3EiEA3GdkShNNTEgyop3sqyDAZzcc7Nxh7ZcqLzug8qgN56FHANeKpCxRAlDMIK0qEy1hHp5Ey0FEMhlXwtZuQGrGvzzMy3bld1kHI6biUtQq8lTcc0heit/yeO6URn2nQDKRfBrLRFYDHDQV0KbmLlqz0j/im99tz6v68tSwuFGqUtXhMvgw1GWegyCkj1LCgiBQGgQyJoISFAQZUiO2IWFLJ4iJD2HN17FbX+DUnYXUBYEMhoFIUCcJsWfSei/GxKIgoITDc2hf6wBc7L0oXTRCnhsWq0VVsiqc3zgAlbsvJUUJeFwyBVI3MShkpGQKSL0TgoR1L9I610WSW1sQsSfsIxyK/DTdE1FPqWPsnWRPlZGWvTYkT1bKuT46+O6Ds31la+uwyfZaxLC4RoEeh85Bx6Dx7Q1I3kpgJNEQCMkRBEGAALo4IhCfRCBhgz9S/lpCTOsI/Na37nJ/nPwnmBos0NChjlBgryRy74gGYZEwp0XqM+OKbq3RyXcnHOzKoKhdFjMsVpSgcYHjq6vg2G4BoNaQwpkrckR0OqYhLVMSm/iAmJqApJDhSNjclLzXeVmQbVwwGeKS7mH5uW64Fr1H8kDaT8ynQwAABfBJREFUORR7KckzUbOY5jkWdZXmVtQ/6nDtCqPRsdZWevtzoRxFL1jUsLTq0jQaCecBR6EqUQmg0QqBEUeMZQBfzMoE4r0TSNz8IpKPvgMxqfDNve49/RvfnXkZd2LPg70QqGOMyW4gMp0OzGdgnkrlgMDnlqJp1dkoyle+GBYrUFWuAZwHnoGdbz9OkuJFCesiMigdTQRLRYFiMY0eiwuRuLEmUq/StgjJCkO49iAE353ujEeJdyVPxd6IPZMSZpkrzaNeq70bNcoq/zfnwtC3vGhDvhkWN1ZwKgvHTivg1HMf1KV9wM4LbFAETDPop1lAd7Ig8T6Sj49E4iZvpIYuJWbBhKTUp/j1+hQsO98fCal8vozaSI2mISA1SCQa1N4MTGxBhbrlB6Nfg+Nwd6lHjKIf8tWwtOpUVw6A06Ar0DSdrmXJcw/yYzJDlCieo9CMhAKn0yEuAsnHhiJxYzmknJ0A8fEV+ZZ8iC9H78Wc461w6OYSpJInlb2TKHks9kjGwJUWPXvX2YE23v+FRuWcD60sHFUUiGFpu27f5GM4DwqFpu4ICBonGug0+ikQwYGAEjT6BUGQaEHIwEiKpkfjfCTvrEPgi9QLE5B29zcwX1t+rnDyXeDfr4HoFbrbYxJu4ccLbyH43CA8pEcfIL/5sVeSgWyfedQ+OS1ArXKEf+X3MKTRMVQs4YfidhWoYbGyBbdqsA9YCKeg2+TB5kBwrcLsdBAlLEr+i0mmZOCfUsd5chWp1+Yj5Wg3JG/3QPIeelye7o+00LkQ/1kDMeaADA8IM8TsgnjnB4jhkyBGToMYNgbi5U4QT3kSDgDS4gC3l5GUGo+tofMx40gbnIn6PcMzUcWSt0rHImMGIuzVJdC88vsY3eQ8Arym0FufI0mKX7CkYeVIm4J9SWgajIdT/wg4tF0JddXOAHkACoQEogEiKAgGQAwKzAeIAOIjwAaVdnUiUs/1Q9qJtkg7JYN4pi3Ecx0hXhsB8eYc4OYM4N7PEByqQPBZB6H+VSSVH4NDUSGYfLgVtoV/jSQxEQB5KW4MYZmGdMlvgQKcNGXR2msCxjQ5jdbVJsHJrrQkL65RoTGszD+AukYf2LffCqc3HkETsBqqaj0BO17vyfBWMkUuQvJmGSlIaY6ZJ5fKuWSK+QQqJ6BMBwje8yA0PAPB/x5Q4wfcVVfGyr9mYswBfyy7NBEPEqLkuR8VwPMn2UuJGZ6L+B7ONdHdZz4+8D+D1l7j4GDnpq2qWGNVoe69xhXq6r1gH7AGjn0fw/7lPdD4B8OuzhTiD4KqQjsIpRvS49ObPI47ZIdCnsvBHSoXb6jc6kMo0xqqSkFQPT8HqgZboG76F9QBcVDV3Q6h8jjE2lfD7hurMevEAIw/GIidkUvxNOUJmacALlAEeSoGKlxHA/At2w5v1l+DsY33o3HF/rBT2RPXFrQaKNyGpW1lOlaVbwt1jaFQ150OuyZLoWm1C5rAU9B0uA5N5yhoXk2Dpmsq7NpHQd36OtQtzkDdZB9UdX6EUO0DCO5dAWcfRD65hl031mHa8UEI2u2H4EtTcTH6mLzHR3Wxd+KVcsZietpV4w6/8t0x8IWvMbPFWQyrtxw+ZVqR1BaMacCqDMtYB7LyElMTcSvuBs5Fn8K+2zuwPuwnfH95Pj4+/hYG72uPLr/5YvTBrlh4cQrlOQrtHAnslQgYO6hdUL1kfTT3fB19ak7DtGa7MbfVKQTVWQC/Ct1Rwt4dtsu0BoqMYT1KeoSQf/bj18iN2BqxEZvC12IzwfbITThABnYx5izuxN2Ek50ryjtVgU/JhmjkEYAAz+7oUm0w+teciEl+S/FlwCEEt7uAT/w3Y2id+QisGgRPVx/TWrRJDTRQZAyrJL1VBlRsg57effF27TGY5jcXC1osxZI2G7Ga5mabOx3Hzq5XsL7jCSxuuxvzmq/BlMbBeLf+XAT5foSu1YeinntLuDt6GijJxshGA0bERcawjPTNxipADdgMqwCVX5SrthlWUf51C7BvNsMqQOUX5ar/DwAA//82ceWYAAAABklEQVQDALLx/ey9scU7AAAAAElFTkSuQmCC"
+                        style="height: 22px; width: auto; vertical-align: middle;">
                     <span class="modal-title">예상 연금 정보</span>
                 </div>
                 <button class="btn-close" onclick="closePensionModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="pension-alert-box pension-alert-orange" style="text-align: center;">
-                    <span id="pensionHeaderDate" style="margin-right: 8px;">2039년 03월</span>(<span id="pensionHeaderAge">65세</span>)부터<br>
+                    <span id="pensionHeaderDate" style="margin-right: 8px;">2039년 03월</span>(<span
+                        id="pensionHeaderAge">65세</span>)부터<br>
                     받게될 예상 연금액은 매월 <span id="pensionHeaderAmount">0</span>원 입니다.
                 </div>
-                <div class="pension-alert-box pension-info-blue" style="text-align: left; line-height: 1.6; font-weight: 500; word-break: keep-all; padding: 1rem 1.5rem;">
+                <div class="pension-alert-box pension-info-blue"
+                    style="text-align: left; line-height: 1.6; font-weight: 500; word-break: keep-all; padding: 1rem 1.5rem;">
                     ※ 위 금액은 향후 소득, 물가가 변동 없으며, 60세(현재월 기준)까지 보험료 납부를 가정하여 산정 (단, 납부 중단자는 기존 보험료 내역만을 반영)
                 </div>
 
@@ -3326,45 +3741,52 @@
                     <span style="font-size: 1.2rem;">📈</span>
                     <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">예상 노령연금액</h3>
                 </div>
-                
+
                 <table class="pension-table">
                     <tr>
                         <th>세전</th>
                         <td>
-                            <input type="text" id="pensionBeforeTax" class="pension-input" placeholder="매월 0원" oninput="formatCurrencyInput(this)">
+                            <input type="text" id="pensionBeforeTax" class="pension-input" placeholder="매월 0원"
+                                oninput="formatCurrencyInput(this)">
                         </td>
                     </tr>
                     <tr>
                         <th>세후</th>
                         <td>
-                            <input type="text" id="pensionAfterTax" class="pension-input pension-input-bold" placeholder="매월 0원" oninput="formatCurrencyInput(this); updatePensionHeader()">
+                            <input type="text" id="pensionAfterTax" class="pension-input pension-input-bold"
+                                placeholder="매월 0원" oninput="formatCurrencyInput(this); updatePensionHeader()">
                             <div id="pensionYearlyAmount" class="pension-sub-text"></div>
                         </td>
                     </tr>
                     <tr>
                         <th>연금받는시기</th>
                         <td>
-                            <input type="text" id="pensionStartDate" class="pension-input" placeholder="YYYY년 MM월" oninput="updatePensionHeader()">
+                            <input type="text" id="pensionStartDate" class="pension-input" placeholder="YYYY년 MM월"
+                                oninput="updatePensionHeader()">
                         </td>
                     </tr>
                     <tr>
                         <th>총 예상납부액</th>
                         <td>
-                            <input type="text" id="pensionTotalPaid" class="pension-input" placeholder="0원" oninput="formatCurrencyInput(this)">
+                            <input type="text" id="pensionTotalPaid" class="pension-input" placeholder="0원"
+                                oninput="formatCurrencyInput(this)">
                         </td>
                     </tr>
                     <tr>
                         <th>총 예상가입기간</th>
                         <td>
-                            <input type="text" id="pensionTotalPeriod" class="pension-input pension-input-bold" placeholder="YYYY.MM ~ YYYY.MM" oninput="updatePensionPeriodSubtext()">
+                            <input type="text" id="pensionTotalPeriod" class="pension-input pension-input-bold"
+                                placeholder="YYYY.MM ~ YYYY.MM" oninput="updatePensionPeriodSubtext()">
                             <div id="pensionPeriodSubtext" class="pension-sub-text"></div>
                         </td>
                     </tr>
                 </table>
             </div>
-            <div class="modal-footer" style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+            <div class="modal-footer"
+                style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
                 <button class="btn btn-tool" onclick="closePensionModal()">취소</button>
-                <button class="btn btn-add" style="background: var(--accent-blue);" onclick="savePensionData()">저장하기</button>
+                <button class="btn btn-add" style="background: var(--accent-blue);"
+                    onclick="savePensionData()">저장하기</button>
             </div>
         </div>
     </div>
