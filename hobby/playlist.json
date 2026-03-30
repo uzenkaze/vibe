@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_SctYIZbKmf0",
+      "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 10일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 10.2026 | Playlist",
+      "artist": "가요앤팝쏭",
+      "youtubeId": "SctYIZbKmf0",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - 가요앤팝쏭"
+    },
+    {
       "id": "related_gnQcIfUp8Ao",
       "title": "하루의 끝, 편안한 침실에서 듣는 수면음악☁잠잘때 듣는 음악,불면증 치료 음악,수면유도음악",
       "artist": "뮤직 메이트 Music Mate",
@@ -62,14 +70,6 @@
       "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 21일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 21.2026 | Playlist",
       "artist": "가요앤팝쏭",
       "youtubeId": "k0zrkq4GlVQ",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 가요앤팝쏭"
-    },
-    {
-      "id": "related_SctYIZbKmf0",
-      "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 10일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 10.2026 | Playlist",
-      "artist": "가요앤팝쏭",
-      "youtubeId": "SctYIZbKmf0",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 가요앤팝쏭"
     },
@@ -176,5 +176,5 @@
       "lyrics": "(연관 추천곡) - SMTOWN"
     }
   ],
-  "lastSync": "2026-03-30T23:17:04.782Z"
+  "lastSync": "2026-03-30T23:17:09.607Z"
 }
