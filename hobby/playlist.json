@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_ru4DicGUCY0",
+      "title": "𝐏𝐥𝐚𝐲𝐥𝐢𝐬𝐭 지금 가장 핫하고 최신 노래들 🎶  감성힙합R&B인디 플레이리스트 바로 듣기! 🎧",
+      "artist": "감정 음악",
+      "youtubeId": "ru4DicGUCY0",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
+    },
+    {
       "id": "related_SctYIZbKmf0",
       "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 10일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 10.2026 | Playlist",
       "artist": "가요앤팝쏭",
@@ -72,14 +80,6 @@
       "youtubeId": "k0zrkq4GlVQ",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 가요앤팝쏭"
-    },
-    {
-      "id": "global_ru4DicGUCY0",
-      "title": "𝐏𝐥𝐚𝐲𝐥𝐢𝐬𝐭 지금 가장 핫하고 최신 노래들 🎶  감성힙합R&B인디 플레이리스트 바로 듣기! 🎧",
-      "artist": "감정 음악",
-      "youtubeId": "ru4DicGUCY0",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
     },
     {
       "id": "global_jWQx2f-CErU",
@@ -176,5 +176,5 @@
       "lyrics": "(연관 추천곡) - SMTOWN"
     }
   ],
-  "lastSync": "2026-03-30T23:27:05.930Z"
+  "lastSync": "2026-03-30T23:27:18.589Z"
 }
