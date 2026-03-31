@@ -700,5 +700,14 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T02:47:07.928Z"
+  },
+  {
+    "id": "1774925255946",
+    "project": "GSS",
+    "name": "배우리",
+    "nickname": "Derek",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T02:47:35.946Z"
   }
 ]
