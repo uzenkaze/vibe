@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_iLyFidkcaow",
+      "title": "Billboard Pop Songs 2025 Playlist ✨Ed Sheeran, The Weeknd, Bruno Mars, Rihanna, Sia, Adele, Dua Lipa",
+      "artist": "Top Song 2025",
+      "youtubeId": "iLyFidkcaow",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Top Song 2025"
+    },
+    {
       "id": "related_rY2P7lHolMw",
       "title": "Billboard Pop Songs 2025 Playlist ✨Ed Sheeran, The Weeknd, Bruno Mars, Rihanna, Sia, Adele, Dua Lipa",
       "artist": "Top Song 2025 and 2 more",
@@ -164,16 +172,7 @@
       "duration": "4:14",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 황가람과 동네청년\n길이: 4:14"
-    },
-    {
-      "id": "global_EZq-SAnSizw",
-      "title": "황가람 (Hwang Karam) - 미치게 그리워서 | Special Live Clip",
-      "artist": " 더블엑스엔터테인먼트 xxentertainment",
-      "youtubeId": "EZq-SAnSizw",
-      "duration": "3:41",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더:  더블엑스엔터테인먼트 xxentertainment\n길이: 3:41"
     }
   ],
-  "lastSync": "2026-03-31T00:03:26.101Z"
+  "lastSync": "2026-03-31T00:03:36.757Z"
 }
