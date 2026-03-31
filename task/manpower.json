@@ -592,5 +592,14 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T01:53:08.006Z"
+  },
+  {
+    "id": "1774922003282",
+    "project": "CCE",
+    "name": "유준상",
+    "nickname": "Jelly",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T01:53:23.282Z"
   }
 ]
