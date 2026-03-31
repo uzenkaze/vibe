@@ -628,5 +628,14 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T01:54:53.612Z"
+  },
+  {
+    "id": "1774922129080",
+    "project": "GSS",
+    "name": "박창석",
+    "nickname": "Ninety",
+    "position": "이사",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-31T01:55:29.080Z"
   }
 ]
