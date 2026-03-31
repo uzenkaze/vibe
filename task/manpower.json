@@ -664,5 +664,14 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T02:44:22.957Z"
+  },
+  {
+    "id": "1774925150817",
+    "project": "GSS",
+    "name": "김덕기",
+    "nickname": "Logan",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T02:45:50.817Z"
   }
 ]
