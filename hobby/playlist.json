@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_EsdDR20qRxU",
+      "title": "[KPOP 신곡 발매] 2024년10월12일 2주차 노래모음 KPOP 플레이리스트 PLAYLIST",
+      "artist": "Shorts Music",
+      "youtubeId": "EsdDR20qRxU",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Shorts Music"
+    },
+    {
       "id": "global_CgCVZdcKcqY",
       "title": "BLACKPINK - ‘뛰어(JUMP)’ M/V",
       "artist": "BLACKPINK",
@@ -163,15 +171,7 @@
       "youtubeId": "jWQx2f-CErU",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
-    },
-    {
-      "id": "related_8bOss_kxZGk",
-      "title": "[𝑷𝒍𝒂𝒚𝒍𝒊𝒔𝒕]진짜 최신가요|2026년 1월 23일 신곡 TOP|최신곡 플레이리스트 가요모음 NEW K-POP SONGS | January 23.2026 | Playlist",
-      "artist": "가요앤팝쏭",
-      "youtubeId": "8bOss_kxZGk",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 가요앤팝쏭"
     }
   ],
-  "lastSync": "2026-03-31T09:02:16.829Z"
+  "lastSync": "2026-03-31T09:03:14.744Z"
 }
