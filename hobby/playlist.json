@@ -50,15 +50,6 @@
   ],
   "recentlyPlayed": [
     {
-      "id": "global_aJDngQW7Fwc",
-      "title": "[최신가요 실시간 인기차트] 2026년 3월 31일 5주차, 멜론차트 X, 노래모음 KPOP 플레이리스트 종합차트",
-      "artist": "Her Track",
-      "youtubeId": "aJDngQW7Fwc",
-      "duration": "3:11:28",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: Her Track\n길이: 3:11:28"
-    },
-    {
       "id": "global__gNCmIqtKGU",
       "title": "최신가요 실시간 🍈🔝인기차트 연속듣기🏵️ 광고없음 🌈6시간 연속 재생 2026년3월31일자 #인기노동요 #출근송 #퇴근송",
       "artist": "뮤직빵빵이",
@@ -66,6 +57,15 @@
       "duration": "6:07:13",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 뮤직빵빵이\n길이: 6:07:13"
+    },
+    {
+      "id": "global_aJDngQW7Fwc",
+      "title": "[최신가요 실시간 인기차트] 2026년 3월 31일 5주차, 멜론차트 X, 노래모음 KPOP 플레이리스트 종합차트",
+      "artist": "Her Track",
+      "youtubeId": "aJDngQW7Fwc",
+      "duration": "3:11:28",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: Her Track\n길이: 3:11:28"
     },
     {
       "id": "related_BJNUQwScgCI",
@@ -125,7 +125,7 @@
     },
     {
       "id": "related_gnQcIfUp8Ao",
-      "title": "Fin de la journée,dormez de la musique dansune chambre confortable☁musique de traitementdel'insomnie",
+      "title": "하루의 끝, 편안한 침실에서 듣는 수면음악☁잠잘때 듣는 음악,불면증 치료 음악,수면유도음악",
       "artist": "뮤직 메이트 Music Mate",
       "youtubeId": "gnQcIfUp8Ao",
       "isGlobal": true,
@@ -173,5 +173,5 @@
       "lyrics": "(유튜브 검색 결과)\n업로더: Beginagain 비긴어게인\n길이: 22:43"
     }
   ],
-  "lastSync": "2026-03-31T00:16:16.350Z"
+  "lastSync": "2026-03-31T00:39:25.368Z"
 }
