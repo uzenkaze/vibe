@@ -50,6 +50,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_aJDngQW7Fwc",
+      "title": "[최신가요 실시간 인기차트] 2026년 3월 31일 5주차, 멜론차트 X, 노래모음 KPOP 플레이리스트 종합차트",
+      "artist": "Her Track",
+      "youtubeId": "aJDngQW7Fwc",
+      "duration": "3:11:28",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: Her Track\n길이: 3:11:28"
+    },
+    {
       "id": "global__gNCmIqtKGU",
       "title": "최신가요 실시간 🍈🔝인기차트 연속듣기🏵️ 광고없음 🌈6시간 연속 재생 2026년3월31일자 #인기노동요 #출근송 #퇴근송",
       "artist": "뮤직빵빵이",
@@ -162,16 +171,7 @@
       "duration": "22:43",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: Beginagain 비긴어게인\n길이: 22:43"
-    },
-    {
-      "id": "global_sWAMlyK2TS8",
-      "title": "황가람 - 세상이 그대를 속일지라도 [Live Clip]",
-      "artist": "워너뮤직코리아 (Warner Music Korea)",
-      "youtubeId": "sWAMlyK2TS8",
-      "duration": "4:39",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: 워너뮤직코리아 (Warner Music Korea)\n길이: 4:39"
     }
   ],
-  "lastSync": "2026-03-31T00:15:49.839Z"
+  "lastSync": "2026-03-31T00:16:04.461Z"
 }
