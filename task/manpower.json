@@ -745,5 +745,14 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T02:49:05.520Z"
+  },
+  {
+    "id": "1774925371786",
+    "project": "GSS",
+    "name": "김수현",
+    "nickname": "Emly",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T02:49:31.786Z"
   }
 ]
