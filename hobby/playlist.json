@@ -50,6 +50,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_CgCVZdcKcqY",
+      "title": "BLACKPINK - ‘뛰어(JUMP)’ M/V",
+      "artist": "BLACKPINK",
+      "youtubeId": "CgCVZdcKcqY",
+      "duration": "3:14",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: BLACKPINK\n길이: 3:14"
+    },
+    {
       "id": "related_Qn1uRVQbnqk",
       "title": "Spotify Trending 2026 - Top Pop Hits 2026 🎶 Viral songs latest 🎧 TikTok Viral Music (Mix Hits)",
       "artist": "Dynamic Deep House",
@@ -162,15 +171,7 @@
       "youtubeId": "8bOss_kxZGk",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 가요앤팝쏭"
-    },
-    {
-      "id": "related_HoJl5uv5g8U",
-      "title": "[최신가요연속듣기 2026] KPOP 노동요 🌎 2026년 1월 5일 2주차, 멜론차트 X, 노래모음 플레이리스트 멜론 종합차트",
-      "artist": "Yeo Doll",
-      "youtubeId": "HoJl5uv5g8U",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - Yeo Doll"
     }
   ],
-  "lastSync": "2026-03-31T09:01:31.611Z"
+  "lastSync": "2026-03-31T09:02:16.829Z"
 }
