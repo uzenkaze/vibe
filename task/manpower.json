@@ -808,5 +808,15 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T04:44:13.794Z"
+  },
+  {
+    "id": "1774939099920",
+    "org": "ESI",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "박정훈",
+    "nickname": "Arc",
+    "position": "이사",
+    "jobGroup": "PM",
+    "updated_at": "2026-03-31T06:38:19.920Z"
   }
 ]
