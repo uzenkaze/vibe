@@ -709,5 +709,14 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T02:47:35.946Z"
+  },
+  {
+    "id": "1774925284838",
+    "project": "GSS",
+    "name": "이유진",
+    "nickname": "Lucy",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T02:48:04.838Z"
   }
 ]
