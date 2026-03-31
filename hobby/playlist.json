@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_HoJl5uv5g8U",
+      "title": "[최신가요연속듣기 2026] KPOP 노동요 🌎 2026년 1월 5일 2주차, 멜론차트 X, 노래모음 플레이리스트 멜론 종합차트",
+      "artist": "Yeo Doll",
+      "youtubeId": "HoJl5uv5g8U",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Yeo Doll"
+    },
+    {
       "id": "related_EsdDR20qRxU",
       "title": "[KPOP 신곡 발매] 2024년10월12일 2주차 노래모음 KPOP 플레이리스트 PLAYLIST",
       "artist": "Shorts Music",
@@ -163,15 +171,7 @@
       "youtubeId": "k0zrkq4GlVQ",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 가요앤팝쏭"
-    },
-    {
-      "id": "global_jWQx2f-CErU",
-      "title": "aespa 에스파 'Whiplash' MV",
-      "artist": "SMTOWN",
-      "youtubeId": "jWQx2f-CErU",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: SMTOWN"
     }
   ],
-  "lastSync": "2026-03-31T09:03:14.744Z"
+  "lastSync": "2026-03-31T09:03:32.326Z"
 }
