@@ -637,5 +637,14 @@
     "position": "이사",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T01:55:29.080Z"
+  },
+  {
+    "id": "1774925006079",
+    "project": "GSS",
+    "name": "송영민",
+    "nickname": "Zenith",
+    "position": "상무",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T02:43:26.079Z"
   }
 ]
