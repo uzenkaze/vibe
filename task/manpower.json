@@ -763,5 +763,14 @@
     "position": "이사",
     "jobGroup": "Architecture",
     "updated_at": "2026-03-31T04:41:28.458Z"
+  },
+  {
+    "id": "1774932114004",
+    "project": "TEC",
+    "name": "김현준",
+    "nickname": "Rhyme",
+    "position": "이사",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-31T04:41:54.004Z"
   }
 ]
