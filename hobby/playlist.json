@@ -50,6 +50,14 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "related_BJNUQwScgCI",
+      "title": "🎵광고없는 실시간 인기차트🎵 2021년 8월 20일 3주차 멜론차트 X 인기차트 TOP 100 최신가요 인기가요 국내가요 출근송 퇴근송 노래모음 가사 자막",
+      "artist": "플리쿠앤크",
+      "youtubeId": "BJNUQwScgCI",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - 플리쿠앤크"
+    },
+    {
       "id": "related_9meUeLtqOFY",
       "title": "Trending Hits 2026 🎤 Spotify Pop Mix – Best Songs Playlist & Viral Music 2026",
       "artist": "Dynamic Deep House",
@@ -88,14 +96,6 @@
       "youtubeId": "IHt4kgF-Ytk",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 힐링트리뮤직 Healing Tree Music & Sounds"
-    },
-    {
-      "id": "related_BJNUQwScgCI",
-      "title": "🎵광고없는 실시간 인기차트🎵 2021년 8월 20일 3주차 멜론차트 X 인기차트 TOP 100 최신가요 인기가요 국내가요 출근송 퇴근송 노래모음 가사 자막",
-      "artist": "플리쿠앤크",
-      "youtubeId": "BJNUQwScgCI",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 플리쿠앤크"
     },
     {
       "id": "global_ru4DicGUCY0",
@@ -173,5 +173,5 @@
       "lyrics": "(유튜브 검색 결과)\n업로더: 추억발라드 90~2000\n길이: 1:15:18"
     }
   ],
-  "lastSync": "2026-03-31T00:06:41.833Z"
+  "lastSync": "2026-03-31T00:15:26.558Z"
 }
