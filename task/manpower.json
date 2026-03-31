@@ -926,5 +926,15 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:54:22.580Z"
+  },
+  {
+    "id": "1774943709011",
+    "org": "ESM",
+    "project": "본사",
+    "name": "이훈하",
+    "nickname": "Felix",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T07:55:09.011Z"
   }
 ]
