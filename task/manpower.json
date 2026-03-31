@@ -772,5 +772,14 @@
     "position": "이사",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T04:41:54.004Z"
+  },
+  {
+    "id": "1774932147062",
+    "project": "TEC",
+    "name": "박인호",
+    "nickname": "John",
+    "position": "수석",
+    "jobGroup": "",
+    "updated_at": "2026-03-31T04:42:27.062Z"
   }
 ]
