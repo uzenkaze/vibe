@@ -781,5 +781,14 @@
     "position": "수석",
     "jobGroup": "DBA",
     "updated_at": "2026-03-31T04:42:58.017Z"
+  },
+  {
+    "id": "1774932200299",
+    "project": "TEC",
+    "name": "김욱진",
+    "nickname": "Jacob",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T04:43:20.299Z"
   }
 ]
