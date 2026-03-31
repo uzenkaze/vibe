@@ -790,5 +790,14 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T04:43:20.299Z"
+  },
+  {
+    "id": "1774932230230",
+    "project": "TEC",
+    "name": "장민욱",
+    "nickname": "Kai",
+    "position": "전임",
+    "jobGroup": "Architecture",
+    "updated_at": "2026-03-31T04:43:50.230Z"
   }
 ]
