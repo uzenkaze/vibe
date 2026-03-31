@@ -754,5 +754,14 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T02:49:31.786Z"
+  },
+  {
+    "id": "1774932068395",
+    "project": "TEC",
+    "name": "민경동",
+    "nickname": "Blue",
+    "position": "이사",
+    "jobGroup": "Architecture",
+    "updated_at": "2026-03-31T04:41:08.395Z"
   }
 ]
