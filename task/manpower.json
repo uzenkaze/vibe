@@ -1162,7 +1162,11 @@
     "nickname": "Russell",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:54:22.580Z"
+    "updated_at": "2026-03-31T07:54:22.580Z",
+    "hierarchyPos": {
+      "x": 563,
+      "y": 2970
+    }
   },
   {
     "id": "1774943709011",
