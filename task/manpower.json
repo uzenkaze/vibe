@@ -340,7 +340,11 @@
     "nickname": "Paul",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:49:14.106Z"
+    "updated_at": "2026-03-31T06:49:14.106Z",
+    "hierarchyPos": {
+      "x": 347,
+      "y": 2317
+    }
   },
   {
     "id": "1774511683551",
