@@ -514,7 +514,11 @@
     "nickname": "Fran",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:15.284Z"
+    "updated_at": "2026-03-31T06:39:15.284Z",
+    "hierarchyPos": {
+      "x": 301,
+      "y": 3074
+    }
   },
   {
     "id": "1774511837663",
