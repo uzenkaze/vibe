@@ -100,7 +100,11 @@
     "nickname": "mason",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:58.897Z"
+    "updated_at": "2026-04-01T02:12:58.897Z",
+    "hierarchyPos": {
+      "x": 786,
+      "y": 1032
+    }
   },
   {
     "id": "1774511087217",
