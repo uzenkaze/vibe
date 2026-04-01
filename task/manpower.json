@@ -130,7 +130,11 @@
     "nickname": "Rapha",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:43:21.485Z"
+    "updated_at": "2026-03-31T06:43:21.485Z",
+    "hierarchyPos": {
+      "x": 26,
+      "y": 954
+    }
   },
   {
     "id": "1774511461063",
