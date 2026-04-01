@@ -572,7 +572,11 @@
     "nickname": "Luke",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:52:15.427Z"
+    "updated_at": "2026-03-31T07:52:15.427Z",
+    "hierarchyPos": {
+      "x": 782,
+      "y": 1657
+    }
   },
   {
     "id": "1774593772694",
