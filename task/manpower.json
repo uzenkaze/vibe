@@ -1288,17 +1288,13 @@
   },
   {
     "id": "1774932200299",
-    "project": "TEC",
+    "org": "TEC",
+    "project": "",
     "name": "김욱진",
     "nickname": "Jacob",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T04:43:20.299Z",
-    "parentId": "group-1775028004948-2",
-    "hierarchyPos": {
-      "x": 729,
-      "y": 1100
-    }
+    "updated_at": "2026-04-01T23:45:43.783Z"
   },
   {
     "id": "1774932230230",
