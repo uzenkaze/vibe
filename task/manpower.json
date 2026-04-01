@@ -586,7 +586,11 @@
     "nickname": "Jane",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:57:03.317Z"
+    "updated_at": "2026-03-31T07:57:03.317Z",
+    "hierarchyPos": {
+      "x": 762,
+      "y": 1679
+    }
   },
   {
     "id": "1774593785970",
@@ -596,7 +600,11 @@
     "nickname": "Bon",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:50:42.121Z"
+    "updated_at": "2026-03-31T07:50:42.121Z",
+    "hierarchyPos": {
+      "x": 555,
+      "y": 1802
+    }
   },
   {
     "id": "1774593798782",
