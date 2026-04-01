@@ -17,7 +17,11 @@
     "nickname": "Evelyn",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:15.158Z"
+    "updated_at": "2026-03-31T06:44:15.158Z",
+    "hierarchyPos": {
+      "x": 347,
+      "y": 807
+    }
   },
   {
     "id": "1774507499921",
@@ -388,7 +392,11 @@
     "nickname": "Asher",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:50:29.307Z"
+    "updated_at": "2026-03-31T06:50:29.307Z",
+    "hierarchyPos": {
+      "x": 43,
+      "y": 762
+    }
   },
   {
     "id": "1774511826626",
