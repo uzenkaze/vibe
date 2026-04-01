@@ -7,7 +7,11 @@
     "nickname": "Kaze",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:36.911Z"
+    "updated_at": "2026-04-01T02:12:36.911Z",
+    "hierarchyPos": {
+      "x": 767,
+      "y": 420
+    }
   },
   {
     "id": "1774507467637",
@@ -40,7 +44,11 @@
     "nickname": "Chris",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:42.321Z"
+    "updated_at": "2026-04-01T02:12:42.321Z",
+    "hierarchyPos": {
+      "x": 770,
+      "y": 539
+    }
   },
   {
     "id": "1774508896990",
@@ -120,7 +128,11 @@
     "nickname": "Nick",
     "position": "이사",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:50:40.621Z"
+    "updated_at": "2026-03-31T06:50:40.621Z",
+    "hierarchyPos": {
+      "x": 590,
+      "y": 415
+    }
   },
   {
     "id": "1774511428029",
