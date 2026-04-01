@@ -326,7 +326,11 @@
     "nickname": "Leeroy",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:48.382Z"
+    "updated_at": "2026-03-31T06:39:48.382Z",
+    "hierarchyPos": {
+      "x": 333,
+      "y": 2152
+    }
   },
   {
     "id": "1774511672653",
