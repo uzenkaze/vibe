@@ -474,7 +474,11 @@
     "nickname": "Liz",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T07:50:32.889Z"
+    "updated_at": "2026-03-31T07:50:32.889Z",
+    "hierarchyPos": {
+      "x": 486,
+      "y": 1290
+    }
   },
   {
     "id": "1774593763396",
