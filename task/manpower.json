@@ -635,15 +635,6 @@
     "updated_at": "2026-03-31T01:52:29.232Z"
   },
   {
-    "id": "1774921988006",
-    "project": "CCE",
-    "name": "박수정",
-    "nickname": "Jay",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T01:53:08.006Z"
-  },
-  {
     "id": "1774921969274",
     "project": "CCE",
     "name": "윤권기",
@@ -651,6 +642,15 @@
     "position": "이사",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T01:52:49.274Z"
+  },
+  {
+    "id": "1774921988006",
+    "project": "CCE",
+    "name": "박수정",
+    "nickname": "Jay",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T01:53:08.006Z"
   },
   {
     "id": "1774922003282",
