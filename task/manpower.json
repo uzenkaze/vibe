@@ -803,12 +803,13 @@
   },
   {
     "id": "1774925345520",
-    "project": "GSS",
+    "org": "GSS",
+    "project": "",
     "name": "박민정",
     "nickname": "Hazel",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:49:05.520Z"
+    "updated_at": "2026-04-01T02:40:24.053Z"
   },
   {
     "id": "1774925371786",
