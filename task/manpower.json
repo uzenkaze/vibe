@@ -736,12 +736,13 @@
   },
   {
     "id": "1774925177566",
-    "project": "GSS",
+    "org": "본사",
+    "project": "바이린,제로그램,BSP",
     "name": "유기주",
     "nickname": "Leo",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:46:17.566Z"
+    "updated_at": "2026-04-01T00:51:36.708Z"
   },
   {
     "id": "1774925198280",
