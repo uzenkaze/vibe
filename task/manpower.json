@@ -1071,18 +1071,13 @@
   },
   {
     "id": "1774925041890",
-    "org": "본사",
+    "org": "GSS",
     "project": "바이린,제로그램,BSP",
     "name": "이영민",
     "nickname": "Walley",
     "position": "이사",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T00:51:19.595Z",
-    "parentId": "group-1775028004948-5",
-    "hierarchyPos": {
-      "x": 1917,
-      "y": 444
-    }
+    "updated_at": "2026-04-01T23:15:53.578Z"
   },
   {
     "id": "1774925062957",
