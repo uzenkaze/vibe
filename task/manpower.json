@@ -364,7 +364,11 @@
     "nickname": "Roa",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:43:10.679Z"
+    "updated_at": "2026-03-31T06:43:10.679Z",
+    "hierarchyPos": {
+      "x": 311,
+      "y": 624
+    }
   },
   {
     "id": "1774511803583",
