@@ -446,7 +446,11 @@
     "nickname": "Nemo",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:54.142Z"
+    "updated_at": "2026-03-31T06:44:54.142Z",
+    "hierarchyPos": {
+      "x": 30,
+      "y": 2709
+    }
   },
   {
     "id": "1774511771114",
@@ -536,7 +540,11 @@
     "nickname": "Patric",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:58.652Z"
+    "updated_at": "2026-03-31T06:38:58.652Z",
+    "hierarchyPos": {
+      "x": 170,
+      "y": 2813
+    }
   },
   {
     "id": "1774511849698",
