@@ -938,7 +938,11 @@
     "nickname": "Tei",
     "position": "이사",
     "jobGroup": "",
-    "updated_at": "2026-03-31T06:51:11.047Z"
+    "updated_at": "2026-03-31T06:51:11.047Z",
+    "hierarchyPos": {
+      "x": 671,
+      "y": 303
+    }
   },
   {
     "id": "1774943561869",
