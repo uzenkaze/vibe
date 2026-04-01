@@ -1495,18 +1495,13 @@
   },
   {
     "id": "1775007793257",
-    "org": "본사",
+    "org": "Sales",
     "project": "본사",
     "name": "방희진",
     "nickname": "Hugo",
     "position": "상무",
     "jobGroup": "",
-    "updated_at": "2026-04-01T01:43:13.257Z",
-    "parentId": "group-1775028004948-5",
-    "hierarchyPos": {
-      "x": 1578,
-      "y": 946
-    }
+    "updated_at": "2026-04-01T23:14:51.934Z"
   },
   {
     "id": "1775007824072",
