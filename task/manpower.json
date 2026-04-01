@@ -1148,7 +1148,11 @@
     "nickname": "Eggsy",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:52:41.869Z"
+    "updated_at": "2026-03-31T07:52:41.869Z",
+    "hierarchyPos": {
+      "x": 806,
+      "y": 2881
+    }
   },
   {
     "id": "1774943662580",
