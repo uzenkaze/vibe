@@ -672,12 +672,13 @@
   },
   {
     "id": "1774922073696",
-    "project": "CCE",
+    "org": "CCE",
+    "project": "",
     "name": "유재찬",
     "nickname": "Jack",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T01:54:33.696Z"
+    "updated_at": "2026-04-01T02:40:35.694Z"
   },
   {
     "id": "1774922093612",
