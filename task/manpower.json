@@ -795,7 +795,11 @@
     "nickname": "Luizi",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:18.242Z"
+    "updated_at": "2026-04-01T02:13:18.242Z",
+    "hierarchyPos": {
+      "x": 566,
+      "y": 2680
+    }
   },
   {
     "id": "1774594219675",
@@ -805,7 +809,11 @@
     "nickname": "Lillian",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:22.810Z"
+    "updated_at": "2026-04-01T02:13:22.810Z",
+    "hierarchyPos": {
+      "x": 768,
+      "y": 2676
+    }
   },
   {
     "id": "1774594256105",
