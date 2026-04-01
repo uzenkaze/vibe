@@ -368,7 +368,11 @@
     "nickname": "Andrew",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:40:12.148Z"
+    "updated_at": "2026-03-31T06:40:12.148Z",
+    "hierarchyPos": {
+      "x": 19,
+      "y": 2350
+    }
   },
   {
     "id": "1774511735093",
@@ -378,7 +382,11 @@
     "nickname": "Bart",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:41.146Z"
+    "updated_at": "2026-03-31T06:44:41.146Z",
+    "hierarchyPos": {
+      "x": 353,
+      "y": 2480
+    }
   },
   {
     "id": "1774511746783",
