@@ -1,0 +1,58 @@
+[
+  {
+    "id": "group-1775028004948-0",
+    "name": "ESM",
+    "x": 100,
+    "y": 200,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-1",
+    "name": "ESI",
+    "x": 450,
+    "y": 200,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-2",
+    "name": "미지정",
+    "x": 800,
+    "y": 200,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-3",
+    "name": "CCE",
+    "x": 1150,
+    "y": 200,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-4",
+    "name": "GSS",
+    "x": 1500,
+    "y": 200,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-5",
+    "name": "본사",
+    "x": 1850,
+    "y": 200,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-6",
+    "name": "TEC",
+    "x": 2200,
+    "y": 200,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-7",
+    "name": "USG",
+    "x": 2550,
+    "y": 200,
+    "parentId": null
+  }
+]
