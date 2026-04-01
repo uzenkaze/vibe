@@ -793,12 +793,13 @@
   },
   {
     "id": "1774925325986",
-    "project": "GSS",
+    "org": "GSS",
+    "project": "",
     "name": "김다혜",
     "nickname": "Diana",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:48:45.986Z"
+    "updated_at": "2026-04-01T02:40:12.336Z"
   },
   {
     "id": "1774925345520",
