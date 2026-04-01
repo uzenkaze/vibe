@@ -124,7 +124,11 @@
     "nickname": "Nick",
     "position": "이사",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:50:40.621Z"
+    "updated_at": "2026-03-31T06:50:40.621Z",
+    "hierarchyPos": {
+      "x": 597,
+      "y": 428
+    }
   },
   {
     "id": "1774511428029",
