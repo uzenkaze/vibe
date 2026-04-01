@@ -823,12 +823,13 @@
   },
   {
     "id": "1774932068395",
-    "project": "TEC",
+    "org": "TEC",
+    "project": "",
     "name": "민경돈",
     "nickname": "Blue",
     "position": "이사",
     "jobGroup": "Architecture",
-    "updated_at": "2026-03-31T04:41:28.458Z"
+    "updated_at": "2026-04-01T02:41:29.538Z"
   },
   {
     "id": "1774932114004",
