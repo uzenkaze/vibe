@@ -124,7 +124,11 @@
     "nickname": "Cielo",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:07.774Z"
+    "updated_at": "2026-04-01T02:13:07.774Z",
+    "hierarchyPos": {
+      "x": 790,
+      "y": 1271
+    }
   },
   {
     "id": "1774511146415",
