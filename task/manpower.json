@@ -1000,5 +1000,15 @@
     "position": "책임",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:43:44.072Z"
+  },
+  {
+    "id": "1775007882360",
+    "org": "USG",
+    "project": "본사",
+    "name": "한석명",
+    "nickname": "Robin",
+    "position": "이사",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:44:42.360Z"
   }
 ]
