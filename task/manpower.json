@@ -172,7 +172,11 @@
     "nickname": "Ras",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:44:28.862Z"
+    "updated_at": "2026-03-31T06:44:28.862Z",
+    "hierarchyPos": {
+      "x": 321,
+      "y": 1151
+    }
   },
   {
     "id": "1774511506741",
