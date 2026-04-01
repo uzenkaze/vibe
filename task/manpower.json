@@ -712,7 +712,11 @@
     "nickname": "kollet",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:53:05.002Z"
+    "updated_at": "2026-03-31T07:53:05.002Z",
+    "hierarchyPos": {
+      "x": 574,
+      "y": 2378
+    }
   },
   {
     "id": "1774593988483",
@@ -749,7 +753,11 @@
     "nickname": "Joshua",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T07:55:22.619Z"
+    "updated_at": "2026-03-31T07:55:22.619Z",
+    "hierarchyPos": {
+      "x": 762,
+      "y": 2375
+    }
   },
   {
     "id": "1774594053501",
