@@ -138,7 +138,11 @@
     "nickname": "Lun",
     "position": "책임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-04-01T02:13:13.122Z"
+    "updated_at": "2026-04-01T02:13:13.122Z",
+    "hierarchyPos": {
+      "x": 886,
+      "y": 1358
+    }
   },
   {
     "id": "1774511200532",
