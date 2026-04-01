@@ -214,7 +214,11 @@
     "nickname": "Aden",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:45:16.604Z"
+    "updated_at": "2026-03-31T06:45:16.604Z",
+    "hierarchyPos": {
+      "x": 4,
+      "y": 1548
+    }
   },
   {
     "id": "1774511569203",
