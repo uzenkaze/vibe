@@ -1105,7 +1105,11 @@
     "nickname": "Logan",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T23:15:39.424Z"
+    "updated_at": "2026-04-01T23:15:39.424Z",
+    "hierarchyPos": {
+      "x": 1187,
+      "y": 800
+    }
   },
   {
     "id": "1774925177566",
