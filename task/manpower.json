@@ -1312,7 +1312,12 @@
     "nickname": "Kai",
     "position": "전임",
     "jobGroup": "Architecture",
-    "updated_at": "2026-04-01T23:45:54.399Z"
+    "updated_at": "2026-04-01T23:45:54.399Z",
+    "hierarchyPos": {
+      "x": 2194,
+      "y": 637
+    },
+    "parentId": "1774932200299"
   },
   {
     "id": "1774932253794",
