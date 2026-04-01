@@ -1077,7 +1077,11 @@
     "nickname": "Walley",
     "position": "이사",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T23:15:53.578Z"
+    "updated_at": "2026-04-01T23:15:53.578Z",
+    "hierarchyPos": {
+      "x": 1200,
+      "y": 100
+    }
   },
   {
     "id": "1774925062957",
