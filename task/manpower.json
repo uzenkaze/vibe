@@ -68,7 +68,11 @@
     "nickname": "Wish",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:51.081Z"
+    "updated_at": "2026-04-01T02:12:51.081Z",
+    "hierarchyPos": {
+      "x": 811,
+      "y": 815
+    }
   },
   {
     "id": "1774511051208",
