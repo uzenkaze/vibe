@@ -1124,7 +1124,11 @@
     "nickname": "Won",
     "position": "전임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-03-31T06:50:03.159Z"
+    "updated_at": "2026-03-31T06:50:03.159Z",
+    "hierarchyPos": {
+      "x": 326,
+      "y": 3269
+    }
   },
   {
     "id": "1774939871047",
@@ -1190,7 +1194,11 @@
     "nickname": "Bonnie",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:57:34.146Z"
+    "updated_at": "2026-03-31T07:57:34.146Z",
+    "hierarchyPos": {
+      "x": 582,
+      "y": 3085
+    }
   },
   {
     "id": "1775004637980",
