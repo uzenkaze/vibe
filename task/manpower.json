@@ -1010,5 +1010,15 @@
     "position": "이사",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:44:42.360Z"
+  },
+  {
+    "id": "1775007900104",
+    "org": "USG",
+    "project": "본사",
+    "name": "김아리",
+    "nickname": "Rasha",
+    "position": "책임",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:45:00.104Z"
   }
 ]
