@@ -72,7 +72,11 @@
     "nickname": "Wish",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:51.081Z"
+    "updated_at": "2026-04-01T02:12:51.081Z",
+    "hierarchyPos": {
+      "x": 784,
+      "y": 772
+    }
   },
   {
     "id": "1774511051208",
@@ -82,7 +86,11 @@
     "nickname": "Rain",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:54.979Z"
+    "updated_at": "2026-04-01T02:12:54.979Z",
+    "hierarchyPos": {
+      "x": 780,
+      "y": 894
+    }
   },
   {
     "id": "1774511069026",
