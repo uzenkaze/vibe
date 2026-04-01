@@ -642,7 +642,11 @@
     "nickname": "Red",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:50:55.487Z"
+    "updated_at": "2026-03-31T07:50:55.487Z",
+    "hierarchyPos": {
+      "x": 774,
+      "y": 1967
+    }
   },
   {
     "id": "1774593825912",
@@ -652,7 +656,11 @@
     "nickname": "Kyle",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:56:55.281Z"
+    "updated_at": "2026-03-31T07:56:55.281Z",
+    "hierarchyPos": {
+      "x": 573,
+      "y": 2081
+    }
   },
   {
     "id": "1774593840415",
