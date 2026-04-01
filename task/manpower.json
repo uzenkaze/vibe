@@ -727,12 +727,13 @@
   },
   {
     "id": "1774925150817",
-    "project": "GSS",
+    "org": "본사",
+    "project": "바이린,제로그램,BSP",
     "name": "김덕기",
     "nickname": "Logan",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:45:50.817Z"
+    "updated_at": "2026-04-01T00:51:51.802Z"
   },
   {
     "id": "1774925177566",
