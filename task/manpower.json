@@ -824,17 +824,13 @@
   },
   {
     "id": "1774593995661",
+    "org": "TEC",
     "project": "신세계백화점 운영",
     "name": "박인호",
     "nickname": "John",
     "position": "수석",
     "jobGroup": "",
-    "updated_at": "2026-03-27T07:01:01.192Z",
-    "parentId": "group-1775028004948-2",
-    "hierarchyPos": {
-      "x": 1165,
-      "y": 1260
-    }
+    "updated_at": "2026-04-01T23:46:27.186Z"
   },
   {
     "id": "1774594002401",
