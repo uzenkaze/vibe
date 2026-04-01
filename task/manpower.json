@@ -614,7 +614,11 @@
     "nickname": "Terra",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:51:33.817Z"
+    "updated_at": "2026-03-31T07:51:33.817Z",
+    "hierarchyPos": {
+      "x": 772,
+      "y": 1824
+    }
   },
   {
     "id": "1774593808485",
@@ -624,7 +628,11 @@
     "nickname": "Karl",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:54:33.742Z"
+    "updated_at": "2026-03-31T07:54:33.742Z",
+    "hierarchyPos": {
+      "x": 574,
+      "y": 1944
+    }
   },
   {
     "id": "1774593816926",
