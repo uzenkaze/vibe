@@ -810,17 +810,13 @@
   },
   {
     "id": "1774593988483",
+    "org": "TEC",
     "project": "신세계백화점 운영",
     "name": "민경돈",
     "nickname": "Blue",
     "position": "이사",
     "jobGroup": "Architecture",
-    "updated_at": "2026-03-27T07:00:42.214Z",
-    "parentId": "group-1775028004948-2",
-    "hierarchyPos": {
-      "x": 1228,
-      "y": 1309
-    }
+    "updated_at": "2026-04-01T23:47:14.483Z"
   },
   {
     "id": "1774593995661",
