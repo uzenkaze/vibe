@@ -830,17 +830,13 @@
   },
   {
     "id": "1774594002401",
+    "org": "TEC",
     "project": "신세계백화점 운영",
     "name": "김욱진",
     "nickname": "Jacob",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T07:01:25.988Z",
-    "parentId": "group-1775028004948-2",
-    "hierarchyPos": {
-      "x": 839,
-      "y": 815
-    }
+    "updated_at": "2026-04-01T23:47:24.394Z"
   },
   {
     "id": "1774594044708",
