@@ -7,11 +7,7 @@
     "nickname": "Kaze",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:36.911Z",
-    "hierarchyPos": {
-      "x": 767,
-      "y": 420
-    }
+    "updated_at": "2026-04-01T02:12:36.911Z"
   },
   {
     "id": "1774507467637",
@@ -21,11 +17,7 @@
     "nickname": "Evelyn",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:15.158Z",
-    "hierarchyPos": {
-      "x": 347,
-      "y": 807
-    }
+    "updated_at": "2026-03-31T06:44:15.158Z"
   },
   {
     "id": "1774507499921",
@@ -44,11 +36,7 @@
     "nickname": "Chris",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:42.321Z",
-    "hierarchyPos": {
-      "x": 770,
-      "y": 539
-    }
+    "updated_at": "2026-04-01T02:12:42.321Z"
   },
   {
     "id": "1774508896990",
@@ -58,11 +46,7 @@
     "nickname": "Peco",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:46.710Z",
-    "hierarchyPos": {
-      "x": 776,
-      "y": 651
-    }
+    "updated_at": "2026-04-01T02:12:46.710Z"
   },
   {
     "id": "1774511032231",
@@ -72,11 +56,7 @@
     "nickname": "Wish",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:51.081Z",
-    "hierarchyPos": {
-      "x": 784,
-      "y": 772
-    }
+    "updated_at": "2026-04-01T02:12:51.081Z"
   },
   {
     "id": "1774511051208",
@@ -86,11 +66,7 @@
     "nickname": "Rain",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:54.979Z",
-    "hierarchyPos": {
-      "x": 780,
-      "y": 894
-    }
+    "updated_at": "2026-04-01T02:12:54.979Z"
   },
   {
     "id": "1774511069026",
@@ -100,11 +76,7 @@
     "nickname": "mason",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:58.897Z",
-    "hierarchyPos": {
-      "x": 786,
-      "y": 1032
-    }
+    "updated_at": "2026-04-01T02:12:58.897Z"
   },
   {
     "id": "1774511087217",
@@ -114,11 +86,7 @@
     "nickname": "maisie",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:02.681Z",
-    "hierarchyPos": {
-      "x": 784,
-      "y": 1151
-    }
+    "updated_at": "2026-04-01T02:13:02.681Z"
   },
   {
     "id": "1774511099292",
@@ -128,11 +96,7 @@
     "nickname": "Cielo",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:07.774Z",
-    "hierarchyPos": {
-      "x": 793,
-      "y": 1281
-    }
+    "updated_at": "2026-04-01T02:13:07.774Z"
   },
   {
     "id": "1774511146415",
@@ -142,11 +106,7 @@
     "nickname": "Lun",
     "position": "책임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-04-01T02:13:13.122Z",
-    "hierarchyPos": {
-      "x": 796,
-      "y": 1397
-    }
+    "updated_at": "2026-04-01T02:13:13.122Z"
   },
   {
     "id": "1774511200532",
@@ -156,11 +116,7 @@
     "nickname": "Nick",
     "position": "이사",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:50:40.621Z",
-    "hierarchyPos": {
-      "x": 590,
-      "y": 415
-    }
+    "updated_at": "2026-03-31T06:50:40.621Z"
   },
   {
     "id": "1774511428029",
@@ -170,11 +126,7 @@
     "nickname": "Rapha",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:43:21.485Z",
-    "hierarchyPos": {
-      "x": 26,
-      "y": 954
-    }
+    "updated_at": "2026-03-31T06:43:21.485Z"
   },
   {
     "id": "1774511461063",
@@ -184,11 +136,7 @@
     "nickname": "Nana",
     "position": "전임",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:42:38.678Z",
-    "hierarchyPos": {
-      "x": 328,
-      "y": 975
-    }
+    "updated_at": "2026-03-31T06:42:38.678Z"
   },
   {
     "id": "1774511472683",
@@ -198,11 +146,7 @@
     "nickname": "Eden",
     "position": "책임",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:40:00.882Z",
-    "hierarchyPos": {
-      "x": 20,
-      "y": 1151
-    }
+    "updated_at": "2026-03-31T06:40:00.882Z"
   },
   {
     "id": "1774511493031",
@@ -212,11 +156,7 @@
     "nickname": "Ras",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:44:28.862Z",
-    "hierarchyPos": {
-      "x": 321,
-      "y": 1151
-    }
+    "updated_at": "2026-03-31T06:44:28.862Z"
   },
   {
     "id": "1774511506741",
@@ -226,11 +166,7 @@
     "nickname": "Timo",
     "position": "책임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-03-31T06:45:06.944Z",
-    "hierarchyPos": {
-      "x": 19,
-      "y": 1339
-    }
+    "updated_at": "2026-03-31T06:45:06.944Z"
   },
   {
     "id": "1774511535770",
@@ -240,11 +176,7 @@
     "nickname": "Buzz",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:29.688Z",
-    "hierarchyPos": {
-      "x": 303,
-      "y": 1334
-    }
+    "updated_at": "2026-03-31T06:39:29.688Z"
   },
   {
     "id": "1774511555110",
@@ -254,11 +186,7 @@
     "nickname": "Aden",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:45:16.604Z",
-    "hierarchyPos": {
-      "x": 4,
-      "y": 1548
-    }
+    "updated_at": "2026-03-31T06:45:16.604Z"
   },
   {
     "id": "1774511569203",
@@ -268,11 +196,7 @@
     "nickname": "Simon",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:40:33.223Z",
-    "hierarchyPos": {
-      "x": 318,
-      "y": 1568
-    }
+    "updated_at": "2026-03-31T06:40:33.223Z"
   },
   {
     "id": "1774511585786",
@@ -282,11 +206,7 @@
     "nickname": "Matthew",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:47.835Z",
-    "hierarchyPos": {
-      "x": 61,
-      "y": 1693
-    }
+    "updated_at": "2026-03-31T06:38:47.835Z"
   },
   {
     "id": "1774511596006",
@@ -296,11 +216,7 @@
     "nickname": "Jeno",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:48:19.314Z",
-    "hierarchyPos": {
-      "x": 332,
-      "y": 1754
-    }
+    "updated_at": "2026-03-31T06:48:19.314Z"
   },
   {
     "id": "1774511607812",
@@ -310,11 +226,7 @@
     "nickname": "Louis",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:40:45.852Z",
-    "hierarchyPos": {
-      "x": 11,
-      "y": 1952
-    }
+    "updated_at": "2026-03-31T06:40:45.852Z"
   },
   {
     "id": "1774511621102",
@@ -324,11 +236,7 @@
     "nickname": "Wood",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:50:20.033Z",
-    "hierarchyPos": {
-      "x": 311,
-      "y": 467
-    }
+    "updated_at": "2026-03-31T06:50:20.033Z"
   },
   {
     "id": "1774511635428",
@@ -338,11 +246,7 @@
     "nickname": "Harry",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:36.911Z",
-    "hierarchyPos": {
-      "x": 332,
-      "y": 1942
-    }
+    "updated_at": "2026-03-31T06:38:36.911Z"
   },
   {
     "id": "1774511649711",
@@ -352,11 +256,7 @@
     "nickname": "Demian",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:48:52.111Z",
-    "hierarchyPos": {
-      "x": 4,
-      "y": 2129
-    }
+    "updated_at": "2026-03-31T06:48:52.111Z"
   },
   {
     "id": "1774511663007",
@@ -366,11 +266,7 @@
     "nickname": "Leeroy",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:48.382Z",
-    "hierarchyPos": {
-      "x": 333,
-      "y": 2152
-    }
+    "updated_at": "2026-03-31T06:39:48.382Z"
   },
   {
     "id": "1774511672653",
@@ -380,11 +276,7 @@
     "nickname": "Paul",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:49:14.106Z",
-    "hierarchyPos": {
-      "x": 347,
-      "y": 2317
-    }
+    "updated_at": "2026-03-31T06:49:14.106Z"
   },
   {
     "id": "1774511683551",
@@ -394,11 +286,7 @@
     "nickname": "Elsa",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:42:59.834Z",
-    "hierarchyPos": {
-      "x": 53,
-      "y": 561
-    }
+    "updated_at": "2026-03-31T06:42:59.834Z"
   },
   {
     "id": "1774511723788",
@@ -408,11 +296,7 @@
     "nickname": "Andrew",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:40:12.148Z",
-    "hierarchyPos": {
-      "x": 19,
-      "y": 2350
-    }
+    "updated_at": "2026-03-31T06:40:12.148Z"
   },
   {
     "id": "1774511735093",
@@ -422,11 +306,7 @@
     "nickname": "Bart",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:41.146Z",
-    "hierarchyPos": {
-      "x": 353,
-      "y": 2480
-    }
+    "updated_at": "2026-03-31T06:44:41.146Z"
   },
   {
     "id": "1774511746783",
@@ -446,11 +326,7 @@
     "nickname": "Nemo",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:54.142Z",
-    "hierarchyPos": {
-      "x": 30,
-      "y": 2709
-    }
+    "updated_at": "2026-03-31T06:44:54.142Z"
   },
   {
     "id": "1774511771114",
@@ -460,11 +336,7 @@
     "nickname": "Winni",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:48:37.492Z",
-    "hierarchyPos": {
-      "x": 346,
-      "y": 2790
-    }
+    "updated_at": "2026-03-31T06:48:37.492Z"
   },
   {
     "id": "1774511781920",
@@ -484,11 +356,7 @@
     "nickname": "Roa",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:43:10.679Z",
-    "hierarchyPos": {
-      "x": 311,
-      "y": 624
-    }
+    "updated_at": "2026-03-31T06:43:10.679Z"
   },
   {
     "id": "1774511803583",
@@ -498,11 +366,7 @@
     "nickname": "Michelle",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:07.986Z",
-    "hierarchyPos": {
-      "x": 50,
-      "y": 3004
-    }
+    "updated_at": "2026-03-31T06:39:07.986Z"
   },
   {
     "id": "1774511817096",
@@ -512,11 +376,7 @@
     "nickname": "Asher",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:50:29.307Z",
-    "hierarchyPos": {
-      "x": 43,
-      "y": 762
-    }
+    "updated_at": "2026-03-31T06:50:29.307Z"
   },
   {
     "id": "1774511826626",
@@ -526,11 +386,7 @@
     "nickname": "Fran",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:15.284Z",
-    "hierarchyPos": {
-      "x": 301,
-      "y": 3074
-    }
+    "updated_at": "2026-03-31T06:39:15.284Z"
   },
   {
     "id": "1774511837663",
@@ -540,11 +396,7 @@
     "nickname": "Patric",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:58.652Z",
-    "hierarchyPos": {
-      "x": 170,
-      "y": 2813
-    }
+    "updated_at": "2026-03-31T06:38:58.652Z"
   },
   {
     "id": "1774511849698",
@@ -554,11 +406,7 @@
     "nickname": "Daya",
     "position": "선임",
     "jobGroup": "FE개발",
-    "updated_at": "2026-03-31T06:41:00.484Z",
-    "hierarchyPos": {
-      "x": 139,
-      "y": 3077
-    }
+    "updated_at": "2026-03-31T06:41:00.484Z"
   },
   {
     "id": "1774511861893",
@@ -568,11 +416,7 @@
     "nickname": "Abel",
     "position": "",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:51:22.831Z",
-    "hierarchyPos": {
-      "x": 548,
-      "y": 766
-    }
+    "updated_at": "2026-03-31T07:51:22.831Z"
   },
   {
     "id": "1774593675890",
@@ -582,11 +426,7 @@
     "nickname": "Liz",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T07:50:32.889Z",
-    "hierarchyPos": {
-      "x": 565,
-      "y": 888
-    }
+    "updated_at": "2026-03-31T07:50:32.889Z"
   },
   {
     "id": "1774593763396",
@@ -596,11 +436,7 @@
     "nickname": "Luke",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:52:15.427Z",
-    "hierarchyPos": {
-      "x": 563,
-      "y": 1002
-    }
+    "updated_at": "2026-03-31T07:52:15.427Z"
   },
   {
     "id": "1774593772694",
@@ -610,11 +446,7 @@
     "nickname": "Jane",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:57:03.317Z",
-    "hierarchyPos": {
-      "x": 762,
-      "y": 1679
-    }
+    "updated_at": "2026-03-31T07:57:03.317Z"
   },
   {
     "id": "1774593785970",
@@ -624,11 +456,7 @@
     "nickname": "Bon",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:50:42.121Z",
-    "hierarchyPos": {
-      "x": 555,
-      "y": 1802
-    }
+    "updated_at": "2026-03-31T07:50:42.121Z"
   },
   {
     "id": "1774593798782",
@@ -638,11 +466,7 @@
     "nickname": "Terra",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:51:33.817Z",
-    "hierarchyPos": {
-      "x": 772,
-      "y": 1824
-    }
+    "updated_at": "2026-03-31T07:51:33.817Z"
   },
   {
     "id": "1774593808485",
@@ -652,11 +476,7 @@
     "nickname": "Karl",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:54:33.742Z",
-    "hierarchyPos": {
-      "x": 574,
-      "y": 1944
-    }
+    "updated_at": "2026-03-31T07:54:33.742Z"
   },
   {
     "id": "1774593816926",
@@ -666,11 +486,7 @@
     "nickname": "Red",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:50:55.487Z",
-    "hierarchyPos": {
-      "x": 774,
-      "y": 1967
-    }
+    "updated_at": "2026-03-31T07:50:55.487Z"
   },
   {
     "id": "1774593825912",
@@ -680,11 +496,7 @@
     "nickname": "Kyle",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:56:55.281Z",
-    "hierarchyPos": {
-      "x": 573,
-      "y": 2081
-    }
+    "updated_at": "2026-03-31T07:56:55.281Z"
   },
   {
     "id": "1774593840415",
@@ -694,11 +506,7 @@
     "nickname": "Sirius",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:57:10.643Z",
-    "hierarchyPos": {
-      "x": 778,
-      "y": 2093
-    }
+    "updated_at": "2026-03-31T07:57:10.643Z"
   },
   {
     "id": "1774593850661",
@@ -708,11 +516,7 @@
     "nickname": "Denny",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:56:43.647Z",
-    "hierarchyPos": {
-      "x": 569,
-      "y": 2226
-    }
+    "updated_at": "2026-03-31T07:56:43.647Z"
   },
   {
     "id": "1774593958139",
@@ -722,11 +526,7 @@
     "nickname": "Owen",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:53:25.240Z",
-    "hierarchyPos": {
-      "x": 767,
-      "y": 2228
-    }
+    "updated_at": "2026-03-31T07:53:25.240Z"
   },
   {
     "id": "1774593972520",
@@ -736,11 +536,7 @@
     "nickname": "kollet",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:53:05.002Z",
-    "hierarchyPos": {
-      "x": 574,
-      "y": 2378
-    }
+    "updated_at": "2026-03-31T07:53:05.002Z"
   },
   {
     "id": "1774593988483",
@@ -777,11 +573,7 @@
     "nickname": "Joshua",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T07:55:22.619Z",
-    "hierarchyPos": {
-      "x": 762,
-      "y": 2375
-    }
+    "updated_at": "2026-03-31T07:55:22.619Z"
   },
   {
     "id": "1774594053501",
@@ -791,11 +583,7 @@
     "nickname": "Summer",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T07:55:34.523Z",
-    "hierarchyPos": {
-      "x": 565,
-      "y": 2532
-    }
+    "updated_at": "2026-03-31T07:55:34.523Z"
   },
   {
     "id": "1774594061756",
@@ -805,11 +593,7 @@
     "nickname": "Laila",
     "position": "책임",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T07:51:13.485Z",
-    "hierarchyPos": {
-      "x": 755,
-      "y": 2540
-    }
+    "updated_at": "2026-03-31T07:51:13.485Z"
   },
   {
     "id": "1774594189885",
@@ -819,11 +603,7 @@
     "nickname": "Luizi",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:18.242Z",
-    "hierarchyPos": {
-      "x": 566,
-      "y": 2680
-    }
+    "updated_at": "2026-04-01T02:13:18.242Z"
   },
   {
     "id": "1774594219675",
@@ -833,11 +613,7 @@
     "nickname": "Lillian",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:22.810Z",
-    "hierarchyPos": {
-      "x": 768,
-      "y": 2676
-    }
+    "updated_at": "2026-04-01T02:13:22.810Z"
   },
   {
     "id": "1774594256105",
@@ -847,11 +623,7 @@
     "nickname": "Rogue",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:26.746Z",
-    "hierarchyPos": {
-      "x": 559,
-      "y": 2824
-    }
+    "updated_at": "2026-04-01T02:13:26.746Z"
   },
   {
     "id": "1774921949232",
@@ -935,11 +707,7 @@
     "nickname": "Zenith",
     "position": "상무",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:41:46.586Z",
-    "hierarchyPos": {
-      "x": 1090,
-      "y": 355
-    }
+    "updated_at": "2026-04-01T02:41:46.586Z"
   },
   {
     "id": "1774925041890",
@@ -1118,11 +886,7 @@
     "nickname": "Arc",
     "position": "이사",
     "jobGroup": "PM",
-    "updated_at": "2026-03-31T06:38:19.920Z",
-    "hierarchyPos": {
-      "x": 49,
-      "y": 388
-    }
+    "updated_at": "2026-03-31T06:38:19.920Z"
   },
   {
     "id": "1774939341355",
@@ -1132,11 +896,7 @@
     "nickname": "Jetty",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:42:21.355Z",
-    "hierarchyPos": {
-      "x": 48,
-      "y": 3172
-    }
+    "updated_at": "2026-03-31T06:42:21.355Z"
   },
   {
     "id": "1774939442600",
@@ -1146,11 +906,7 @@
     "nickname": "Jerome",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:02.600Z",
-    "hierarchyPos": {
-      "x": 102,
-      "y": 2507
-    }
+    "updated_at": "2026-03-31T06:44:02.600Z"
   },
   {
     "id": "1774939803159",
@@ -1160,11 +916,7 @@
     "nickname": "Won",
     "position": "전임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-03-31T06:50:03.159Z",
-    "hierarchyPos": {
-      "x": 326,
-      "y": 3269
-    }
+    "updated_at": "2026-03-31T06:50:03.159Z"
   },
   {
     "id": "1774939871047",
@@ -1174,11 +926,7 @@
     "nickname": "Tei",
     "position": "이사",
     "jobGroup": "",
-    "updated_at": "2026-03-31T06:51:11.047Z",
-    "hierarchyPos": {
-      "x": 677,
-      "y": 290
-    }
+    "updated_at": "2026-03-31T06:51:11.047Z"
   },
   {
     "id": "1774943561869",
@@ -1188,11 +936,7 @@
     "nickname": "Eggsy",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:52:41.869Z",
-    "hierarchyPos": {
-      "x": 770,
-      "y": 2816
-    }
+    "updated_at": "2026-03-31T07:52:41.869Z"
   },
   {
     "id": "1774943662580",
@@ -1202,11 +946,7 @@
     "nickname": "Russell",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:54:22.580Z",
-    "hierarchyPos": {
-      "x": 563,
-      "y": 2970
-    }
+    "updated_at": "2026-03-31T07:54:22.580Z"
   },
   {
     "id": "1774943709011",
@@ -1216,11 +956,7 @@
     "nickname": "Felix",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:55:09.011Z",
-    "hierarchyPos": {
-      "x": 765,
-      "y": 2949
-    }
+    "updated_at": "2026-03-31T07:55:09.011Z"
   },
   {
     "id": "1774943854146",
@@ -1230,11 +966,7 @@
     "nickname": "Bonnie",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:57:34.146Z",
-    "hierarchyPos": {
-      "x": 582,
-      "y": 3085
-    }
+    "updated_at": "2026-03-31T07:57:34.146Z"
   },
   {
     "id": "1775004637980",
@@ -1244,11 +976,7 @@
     "nickname": "Sunny.Kang",
     "position": "CTO",
     "jobGroup": "PM",
-    "updated_at": "2026-04-01T00:50:37.980Z",
-    "hierarchyPos": {
-      "x": 1400,
-      "y": -35
-    }
+    "updated_at": "2026-04-01T00:50:37.980Z"
   },
   {
     "id": "1775007754177",
