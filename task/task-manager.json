@@ -1,5 +1,23 @@
 [
   {
+    "id": "1775086050788",
+    "title": "[MC,PC]AI agent 서비스 도입 개발 진행의 건 - fromHavi 제거",
+    "receive_date": "2026-04-01",
+    "status": "progress",
+    "work_no": "43731",
+    "task_no": "60265",
+    "product_no": "",
+    "task_content": "- 상품상세 진입 시 Parameter fromHavi=Y 제거하여 GatePage는 1번만 표시되도록 수정\n- 상품상세 페에지 2번 Load되는 현상 수정",
+    "dev_deploy_date": "2026-04-07",
+    "deploy_date": "2026-04-09",
+    "pub_content": "",
+    "remarks": "",
+    "start_date": "2026-04-02",
+    "end_date": "2026-04-06",
+    "reference": "",
+    "updated_at": "2026-04-01T23:27:30.788Z"
+  },
+  {
     "id": "1774313769848",
     "title": "AI agent 서비스 도입 개발 진행의 건 - 에어컨행사",
     "receive_date": "2026-03-23",
