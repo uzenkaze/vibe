@@ -980,5 +980,15 @@
     "position": "CEO",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:42:34.177Z"
+  },
+  {
+    "id": "1775007793257",
+    "org": "본사",
+    "project": "본사",
+    "name": "방희진",
+    "nickname": "Hugo",
+    "position": "상무",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:43:13.257Z"
   }
 ]
