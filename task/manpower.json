@@ -128,7 +128,11 @@
     "nickname": "Cielo",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:07.774Z"
+    "updated_at": "2026-04-01T02:13:07.774Z",
+    "hierarchyPos": {
+      "x": 793,
+      "y": 1281
+    }
   },
   {
     "id": "1774511146415",
@@ -138,7 +142,11 @@
     "nickname": "Lun",
     "position": "책임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-04-01T02:13:13.122Z"
+    "updated_at": "2026-04-01T02:13:13.122Z",
+    "hierarchyPos": {
+      "x": 796,
+      "y": 1397
+    }
   },
   {
     "id": "1774511200532",
@@ -536,7 +544,11 @@
     "nickname": "Abel",
     "position": "",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:51:22.831Z"
+    "updated_at": "2026-03-31T07:51:22.831Z",
+    "hierarchyPos": {
+      "x": 603,
+      "y": 1446
+    }
   },
   {
     "id": "1774593675890",
