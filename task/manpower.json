@@ -228,7 +228,11 @@
     "nickname": "Simon",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:40:33.223Z"
+    "updated_at": "2026-03-31T06:40:33.223Z",
+    "hierarchyPos": {
+      "x": 318,
+      "y": 1568
+    }
   },
   {
     "id": "1774511585786",
@@ -238,7 +242,11 @@
     "nickname": "Matthew",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:47.835Z"
+    "updated_at": "2026-03-31T06:38:47.835Z",
+    "hierarchyPos": {
+      "x": 46,
+      "y": 1737
+    }
   },
   {
     "id": "1774511596006",
@@ -248,7 +256,11 @@
     "nickname": "Jeno",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:48:19.314Z"
+    "updated_at": "2026-03-31T06:48:19.314Z",
+    "hierarchyPos": {
+      "x": 332,
+      "y": 1754
+    }
   },
   {
     "id": "1774511607812",
