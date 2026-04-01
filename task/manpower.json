@@ -970,5 +970,15 @@
     "position": "CTO",
     "jobGroup": "PM",
     "updated_at": "2026-04-01T00:50:37.980Z"
+  },
+  {
+    "id": "1775007754177",
+    "org": "본사",
+    "project": "본사",
+    "name": "전구상",
+    "nickname": "Jun",
+    "position": "CEO",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:42:34.177Z"
   }
 ]
