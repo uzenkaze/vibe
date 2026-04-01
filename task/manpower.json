@@ -236,7 +236,11 @@
     "nickname": "Wood",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:50:20.033Z"
+    "updated_at": "2026-03-31T06:50:20.033Z",
+    "hierarchyPos": {
+      "x": 165,
+      "y": 503
+    }
   },
   {
     "id": "1774511635428",
