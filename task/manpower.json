@@ -957,5 +957,15 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:57:34.146Z"
+  },
+  {
+    "id": "1775004637980",
+    "org": "본사",
+    "project": "BNKR",
+    "name": "강병철",
+    "nickname": "Sunny.Kang",
+    "position": "CTO",
+    "jobGroup": "PM",
+    "updated_at": "2026-04-01T00:50:37.980Z"
   }
 ]
