@@ -990,5 +990,15 @@
     "position": "상무",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:43:13.257Z"
+  },
+  {
+    "id": "1775007824072",
+    "org": "본사",
+    "project": "본사",
+    "name": "서하나",
+    "nickname": "Chloe",
+    "position": "책임",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:43:44.072Z"
   }
 ]
