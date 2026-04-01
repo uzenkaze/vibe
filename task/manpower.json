@@ -1119,7 +1119,11 @@
     "nickname": "Leo",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T23:15:26.860Z"
+    "updated_at": "2026-04-01T23:15:26.860Z",
+    "hierarchyPos": {
+      "x": 1412,
+      "y": 821
+    }
   },
   {
     "id": "1774925198280",
@@ -1494,7 +1498,11 @@
     "nickname": "Hugo",
     "position": "상무",
     "jobGroup": "",
-    "updated_at": "2026-04-01T23:14:51.934Z"
+    "updated_at": "2026-04-01T23:14:51.934Z",
+    "hierarchyPos": {
+      "x": 1694,
+      "y": 800
+    }
   },
   {
     "id": "1775007824072",
