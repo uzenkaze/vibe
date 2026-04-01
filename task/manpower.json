@@ -158,7 +158,11 @@
     "nickname": "Eden",
     "position": "책임",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:40:00.882Z"
+    "updated_at": "2026-03-31T06:40:00.882Z",
+    "hierarchyPos": {
+      "x": 20,
+      "y": 1151
+    }
   },
   {
     "id": "1774511493031",
