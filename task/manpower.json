@@ -1510,18 +1510,13 @@
   },
   {
     "id": "1775007824072",
-    "org": "본사",
+    "org": "BSG",
     "project": "본사",
     "name": "서하나",
     "nickname": "Chloe",
     "position": "책임",
     "jobGroup": "",
-    "updated_at": "2026-04-01T01:43:44.072Z",
-    "parentId": "group-1775028004948-5",
-    "hierarchyPos": {
-      "x": 2067,
-      "y": 624
-    }
+    "updated_at": "2026-04-01T23:10:35.090Z"
   },
   {
     "id": "1775007882360",
