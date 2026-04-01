@@ -58,7 +58,11 @@
     "nickname": "Peco",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:46.710Z"
+    "updated_at": "2026-04-01T02:12:46.710Z",
+    "hierarchyPos": {
+      "x": 776,
+      "y": 651
+    }
   },
   {
     "id": "1774511032231",
