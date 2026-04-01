@@ -114,7 +114,11 @@
     "nickname": "maisie",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:02.681Z"
+    "updated_at": "2026-04-01T02:13:02.681Z",
+    "hierarchyPos": {
+      "x": 784,
+      "y": 1151
+    }
   },
   {
     "id": "1774511099292",
