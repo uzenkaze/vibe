@@ -460,7 +460,11 @@
     "nickname": "Abel",
     "position": "",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:51:22.831Z"
+    "updated_at": "2026-03-31T07:51:22.831Z",
+    "hierarchyPos": {
+      "x": 470,
+      "y": 1471
+    }
   },
   {
     "id": "1774593675890",
