@@ -456,7 +456,11 @@
     "nickname": "Winni",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:48:37.492Z"
+    "updated_at": "2026-03-31T06:48:37.492Z",
+    "hierarchyPos": {
+      "x": 346,
+      "y": 2790
+    }
   },
   {
     "id": "1774511781920",
@@ -490,7 +494,11 @@
     "nickname": "Michelle",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:07.986Z"
+    "updated_at": "2026-03-31T06:39:07.986Z",
+    "hierarchyPos": {
+      "x": 50,
+      "y": 3004
+    }
   },
   {
     "id": "1774511817096",
