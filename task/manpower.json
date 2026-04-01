@@ -82,7 +82,11 @@
     "nickname": "Rain",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:54.979Z"
+    "updated_at": "2026-04-01T02:12:54.979Z",
+    "hierarchyPos": {
+      "x": 909,
+      "y": 934
+    }
   },
   {
     "id": "1774511069026",
