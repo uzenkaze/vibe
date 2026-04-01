@@ -1515,7 +1515,12 @@
     "nickname": "Chloe",
     "position": "책임",
     "jobGroup": "",
-    "updated_at": "2026-04-01T23:10:35.090Z"
+    "updated_at": "2026-04-01T23:10:35.090Z",
+    "hierarchyPos": {
+      "x": 1432,
+      "y": 96
+    },
+    "parentId": "1775004637980"
   },
   {
     "id": "1775007882360",
