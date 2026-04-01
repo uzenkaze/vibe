@@ -502,7 +502,11 @@
     "nickname": "Jane",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:57:03.317Z"
+    "updated_at": "2026-03-31T07:57:03.317Z",
+    "hierarchyPos": {
+      "x": 670,
+      "y": 1800
+    }
   },
   {
     "id": "1774593785970",
