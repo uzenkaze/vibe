@@ -186,7 +186,11 @@
     "nickname": "Timo",
     "position": "책임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-03-31T06:45:06.944Z"
+    "updated_at": "2026-03-31T06:45:06.944Z",
+    "hierarchyPos": {
+      "x": 19,
+      "y": 1339
+    }
   },
   {
     "id": "1774511535770",
@@ -196,7 +200,11 @@
     "nickname": "Buzz",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:29.688Z"
+    "updated_at": "2026-03-31T06:39:29.688Z",
+    "hierarchyPos": {
+      "x": 303,
+      "y": 1334
+    }
   },
   {
     "id": "1774511555110",
