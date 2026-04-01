@@ -298,7 +298,11 @@
     "nickname": "Harry",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:36.911Z"
+    "updated_at": "2026-03-31T06:38:36.911Z",
+    "hierarchyPos": {
+      "x": 332,
+      "y": 1942
+    }
   },
   {
     "id": "1774511649711",
@@ -308,7 +312,11 @@
     "nickname": "Demian",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:48:52.111Z"
+    "updated_at": "2026-03-31T06:48:52.111Z",
+    "hierarchyPos": {
+      "x": 4,
+      "y": 2129
+    }
   },
   {
     "id": "1774511663007",
