@@ -1283,7 +1283,11 @@
     "nickname": "John",
     "position": "수석",
     "jobGroup": "DBA",
-    "updated_at": "2026-04-01T23:45:48.819Z"
+    "updated_at": "2026-04-01T23:45:48.819Z",
+    "hierarchyPos": {
+      "x": 1200,
+      "y": 100
+    }
   },
   {
     "id": "1774932200299",
