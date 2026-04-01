@@ -36,7 +36,11 @@
     "nickname": "Chris",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:12:42.321Z"
+    "updated_at": "2026-04-01T02:12:42.321Z",
+    "hierarchyPos": {
+      "x": 1410,
+      "y": 50
+    }
   },
   {
     "id": "1774508896990",
