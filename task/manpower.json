@@ -684,7 +684,11 @@
     "nickname": "Denny",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:56:43.647Z"
+    "updated_at": "2026-03-31T07:56:43.647Z",
+    "hierarchyPos": {
+      "x": 569,
+      "y": 2226
+    }
   },
   {
     "id": "1774593958139",
