@@ -270,7 +270,11 @@
     "nickname": "Louis",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:40:45.852Z"
+    "updated_at": "2026-03-31T06:40:45.852Z",
+    "hierarchyPos": {
+      "x": 11,
+      "y": 1952
+    }
   },
   {
     "id": "1774511621102",
