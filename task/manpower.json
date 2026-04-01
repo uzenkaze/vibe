@@ -767,7 +767,11 @@
     "nickname": "Summer",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-31T07:55:34.523Z"
+    "updated_at": "2026-03-31T07:55:34.523Z",
+    "hierarchyPos": {
+      "x": 565,
+      "y": 2532
+    }
   },
   {
     "id": "1774594061756",
