@@ -1294,17 +1294,13 @@
   },
   {
     "id": "1774932230230",
-    "project": "TEC",
+    "org": "TEC",
+    "project": "",
     "name": "장민욱",
     "nickname": "Kai",
     "position": "전임",
     "jobGroup": "Architecture",
-    "updated_at": "2026-03-31T04:43:50.230Z",
-    "parentId": "group-1775028004948-2",
-    "hierarchyPos": {
-      "x": 985,
-      "y": 1068
-    }
+    "updated_at": "2026-04-01T23:45:54.399Z"
   },
   {
     "id": "1774932253794",
