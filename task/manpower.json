@@ -1503,10 +1503,10 @@
     "jobGroup": "",
     "updated_at": "2026-04-01T23:14:51.934Z",
     "hierarchyPos": {
-      "x": 1530,
-      "y": 157
+      "x": 1347,
+      "y": 177
     },
-    "parentId": null
+    "parentId": "group-1775085402374"
   },
   {
     "id": "1775007824072",
