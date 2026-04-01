@@ -823,7 +823,11 @@
     "nickname": "Rogue",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:13:26.746Z"
+    "updated_at": "2026-04-01T02:13:26.746Z",
+    "hierarchyPos": {
+      "x": 559,
+      "y": 2824
+    }
   },
   {
     "id": "1774921949232",
