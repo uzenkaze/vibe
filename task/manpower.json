@@ -935,7 +935,11 @@
     "nickname": "Zenith",
     "position": "상무",
     "jobGroup": "개발",
-    "updated_at": "2026-04-01T02:41:46.586Z"
+    "updated_at": "2026-04-01T02:41:46.586Z",
+    "hierarchyPos": {
+      "x": 1132,
+      "y": 341
+    }
   },
   {
     "id": "1774925041890",
