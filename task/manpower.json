@@ -1240,7 +1240,11 @@
     "nickname": "Sunny.Kang",
     "position": "CTO",
     "jobGroup": "PM",
-    "updated_at": "2026-04-01T00:50:37.980Z"
+    "updated_at": "2026-04-01T00:50:37.980Z",
+    "hierarchyPos": {
+      "x": 1400,
+      "y": -35
+    }
   },
   {
     "id": "1775007754177",
