@@ -1104,7 +1104,11 @@
     "nickname": "Jetty",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:42:21.355Z"
+    "updated_at": "2026-03-31T06:42:21.355Z",
+    "hierarchyPos": {
+      "x": 48,
+      "y": 3172
+    }
   },
   {
     "id": "1774939442600",
@@ -1114,7 +1118,11 @@
     "nickname": "Jerome",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:02.600Z"
+    "updated_at": "2026-03-31T06:44:02.600Z",
+    "hierarchyPos": {
+      "x": 102,
+      "y": 2507
+    }
   },
   {
     "id": "1774939803159",
