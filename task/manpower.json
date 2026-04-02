@@ -1182,17 +1182,18 @@
   },
   {
     "id": "1774925284838",
-    "project": "GSS",
+    "project": "",
     "name": "이유진",
     "nickname": "Lucy",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:48:04.838Z",
+    "updated_at": "2026-04-02T05:04:34.834Z",
     "parentId": "group-1775028004948-2",
     "hierarchyPos": {
       "x": 992,
       "y": 1180
-    }
+    },
+    "org": "GSS"
   },
   {
     "id": "1774925306121",
