@@ -1196,17 +1196,18 @@
   },
   {
     "id": "1774925306121",
-    "project": "GSS",
+    "project": "",
     "name": "김태홍",
     "nickname": "Clark",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:48:26.121Z",
+    "updated_at": "2026-04-02T05:04:22.680Z",
     "parentId": "group-1775028004948-2",
     "hierarchyPos": {
       "x": 888,
       "y": 1361
-    }
+    },
+    "org": "GSS"
   },
   {
     "id": "1774925325986",
