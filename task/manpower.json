@@ -946,17 +946,18 @@
   },
   {
     "id": "1774921949232",
-    "project": "CCE",
+    "project": "",
     "name": "김응수",
     "nickname": "Kimos",
     "position": "이사",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T01:52:29.232Z",
+    "updated_at": "2026-04-02T05:05:35.473Z",
     "parentId": "group-1775028004948-2",
     "hierarchyPos": {
       "x": 880,
       "y": 1654
-    }
+    },
+    "org": "CCE"
   },
   {
     "id": "1774921969274",
