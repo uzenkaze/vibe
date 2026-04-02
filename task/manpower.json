@@ -1057,10 +1057,10 @@
     "position": "이사",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T01:55:29.080Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-4",
     "hierarchyPos": {
-      "x": 2087,
-      "y": 2413
+      "x": 2083,
+      "y": 2306
     }
   },
   {
