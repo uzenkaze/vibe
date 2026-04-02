@@ -974,17 +974,18 @@
   },
   {
     "id": "1774921988006",
-    "project": "CCE",
+    "project": "",
     "name": "박수정",
     "nickname": "Jay",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T01:53:08.006Z",
+    "updated_at": "2026-04-02T05:00:46.482Z",
     "parentId": "group-1775028004948-2",
     "hierarchyPos": {
       "x": 822,
       "y": 1132
-    }
+    },
+    "org": "CCE"
   },
   {
     "id": "1774922003282",
