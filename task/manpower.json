@@ -1493,10 +1493,10 @@
     "position": "책임",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:45:00.104Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-7",
     "hierarchyPos": {
-      "x": 2260,
-      "y": 364
+      "x": 2144,
+      "y": 97
     }
   },
   {
