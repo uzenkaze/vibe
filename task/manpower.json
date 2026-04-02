@@ -1090,17 +1090,18 @@
   },
   {
     "id": "1774925062957",
-    "project": "GSS",
+    "project": "",
     "name": "권정숙",
     "nickname": "Judy",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:44:22.957Z",
+    "updated_at": "2026-04-02T02:29:48.450Z",
     "parentId": "group-1775028004948-2",
     "hierarchyPos": {
       "x": 1461,
       "y": 1288
-    }
+    },
+    "org": "GSS"
   },
   {
     "id": "1774925150817",
