@@ -1072,10 +1072,10 @@
     "position": "상무",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:41:46.586Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-4",
     "hierarchyPos": {
-      "x": 2025,
-      "y": 2546
+      "x": 2001,
+      "y": 2535
     }
   },
   {
