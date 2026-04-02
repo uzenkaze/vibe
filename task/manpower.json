@@ -833,8 +833,8 @@
     "jobGroup": "",
     "updated_at": "2026-04-01T23:46:27.186Z",
     "hierarchyPos": {
-      "x": 2381,
-      "y": 722
+      "x": 2302,
+      "y": 881
     },
     "parentId": "group-1775028004948-6"
   },
@@ -1244,65 +1244,6 @@
       "x": 643,
       "y": 1359
     }
-  },
-  {
-    "id": "1774932068395",
-    "org": "TEC",
-    "project": "",
-    "name": "민경돈",
-    "nickname": "Blue",
-    "position": "이사",
-    "jobGroup": "Architecture",
-    "updated_at": "2026-04-01T02:41:29.538Z",
-    "parentId": "group-1775028004948-6",
-    "hierarchyPos": {
-      "x": 2308,
-      "y": 809
-    }
-  },
-  {
-    "id": "1774932114004",
-    "org": "TEC",
-    "project": "",
-    "name": "김현준",
-    "nickname": "Rhyme",
-    "position": "이사",
-    "jobGroup": "기획",
-    "updated_at": "2026-04-01T02:41:34.635Z",
-    "parentId": "group-1775028004948-6",
-    "hierarchyPos": {
-      "x": 2034,
-      "y": 889
-    }
-  },
-  {
-    "id": "1774932147062",
-    "org": "TEC",
-    "project": "",
-    "name": "박인호",
-    "nickname": "John",
-    "position": "수석",
-    "jobGroup": "DBA",
-    "updated_at": "2026-04-01T23:45:48.819Z",
-    "hierarchyPos": {
-      "x": 2363,
-      "y": 1215
-    }
-  },
-  {
-    "id": "1774932200299",
-    "org": "TEC",
-    "project": "",
-    "name": "김욱진",
-    "nickname": "Jacob",
-    "position": "책임",
-    "jobGroup": "개발",
-    "updated_at": "2026-04-01T23:45:43.783Z",
-    "hierarchyPos": {
-      "x": 2294,
-      "y": 1052
-    },
-    "parentId": "group-1775028004948-6"
   },
   {
     "id": "1774932230230",
