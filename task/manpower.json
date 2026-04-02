@@ -982,7 +982,7 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:00:46.482Z",
-    "parentId": "group-1775028004948-3",
+    "parentId": null,
     "hierarchyPos": {
       "x": 1350,
       "y": 2134
@@ -997,7 +997,7 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:01:29.339Z",
-    "parentId": "group-1775028004948-3",
+    "parentId": null,
     "hierarchyPos": {
       "x": 1409,
       "y": 2261
