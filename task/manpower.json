@@ -1101,10 +1101,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T02:29:48.450Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-4",
     "hierarchyPos": {
-      "x": 1948,
-      "y": 2667
+      "x": 2078,
+      "y": 2301
     },
     "org": "GSS"
   },
