@@ -1508,10 +1508,10 @@
     "position": "책임",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:45:16.824Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-7",
     "hierarchyPos": {
-      "x": 2020,
-      "y": 428
+      "x": 2105,
+      "y": 122
     }
   }
 ]
