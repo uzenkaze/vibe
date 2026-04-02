@@ -1243,17 +1243,18 @@
   },
   {
     "id": "1774925371786",
-    "project": "GSS",
+    "project": "",
     "name": "김수현",
     "nickname": "Emly",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T02:49:31.786Z",
+    "updated_at": "2026-04-02T05:05:02.830Z",
     "parentId": "group-1775028004948-2",
     "hierarchyPos": {
       "x": 643,
       "y": 1359
-    }
+    },
+    "org": "GSS"
   },
   {
     "id": "1774932230230",
