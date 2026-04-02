@@ -1103,8 +1103,8 @@
     "updated_at": "2026-04-02T02:29:48.450Z",
     "parentId": "group-1775028004948-4",
     "hierarchyPos": {
-      "x": 2078,
-      "y": 2301
+      "x": 1915,
+      "y": 2662
     },
     "org": "GSS"
   },
@@ -1118,10 +1118,10 @@
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:15:39.424Z",
     "hierarchyPos": {
-      "x": 2130,
-      "y": 2664
+      "x": 2122,
+      "y": 2660
     },
-    "parentId": null
+    "parentId": "group-1775028004948-4"
   },
   {
     "id": "1774925177566",
@@ -1146,10 +1146,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:04:48.260Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-4",
     "hierarchyPos": {
-      "x": 2313,
-      "y": 2661
+      "x": 2100,
+      "y": 2304
     },
     "org": "GSS"
   },
