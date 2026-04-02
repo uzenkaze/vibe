@@ -1478,10 +1478,10 @@
     "position": "이사",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:44:42.360Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-7",
     "hierarchyPos": {
-      "x": 2141,
-      "y": 228
+      "x": 2108,
+      "y": 114
     }
   },
   {
