@@ -997,10 +997,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:01:29.339Z",
-    "parentId": null,
+    "parentId": "group-1775028004948-3",
     "hierarchyPos": {
-      "x": 1409,
-      "y": 2280
+      "x": 1238,
+      "y": 1884
     },
     "org": "CCE"
   },
