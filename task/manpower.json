@@ -835,7 +835,7 @@
     "updated_at": "2026-04-01T23:46:27.186Z",
     "hierarchyPos": {
       "x": 2411,
-      "y": 982
+      "y": 981
     },
     "parentId": "group-1775028004948-6"
   },
@@ -1256,8 +1256,8 @@
     "jobGroup": "Architecture",
     "updated_at": "2026-04-01T23:45:54.399Z",
     "hierarchyPos": {
-      "x": 2312,
-      "y": 902
+      "x": 2086,
+      "y": 1014
     },
     "parentId": "group-1775028004948-6"
   },
