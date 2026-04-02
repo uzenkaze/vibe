@@ -36,12 +36,13 @@
     "nickname": "Rhyme",
     "position": "이사",
     "jobGroup": "Architecture",
-    "updated_at": "2026-03-26T23:21:48.005Z",
+    "updated_at": "2026-04-02T02:28:19.810Z",
     "parentId": "group-1775028004948-6",
     "hierarchyPos": {
       "x": 2092,
       "y": 884
-    }
+    },
+    "org": "TEC"
   },
   {
     "id": "1774508027476",
