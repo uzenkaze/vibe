@@ -1059,8 +1059,8 @@
     "updated_at": "2026-03-31T01:55:29.080Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 1965,
-      "y": 1852
+      "x": 2094,
+      "y": 2418
     }
   },
   {
@@ -1074,8 +1074,8 @@
     "updated_at": "2026-04-01T02:41:46.586Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 1896,
-      "y": 1980
+      "x": 2025,
+      "y": 2546
     }
   },
   {
@@ -1088,8 +1088,8 @@
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:15:53.578Z",
     "hierarchyPos": {
-      "x": 2080,
-      "y": 1980
+      "x": 2209,
+      "y": 2546
     },
     "parentId": null
   },
@@ -1103,8 +1103,8 @@
     "updated_at": "2026-04-02T02:29:48.450Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 1819,
-      "y": 2101
+      "x": 1948,
+      "y": 2667
     },
     "org": "GSS"
   },
@@ -1118,8 +1118,8 @@
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:15:39.424Z",
     "hierarchyPos": {
-      "x": 2001,
-      "y": 2098
+      "x": 2130,
+      "y": 2664
     },
     "parentId": null
   },
@@ -1133,8 +1133,8 @@
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:15:26.860Z",
     "hierarchyPos": {
-      "x": 1750,
-      "y": 2222
+      "x": 1879,
+      "y": 2788
     },
     "parentId": null
   },
@@ -1148,8 +1148,8 @@
     "updated_at": "2026-04-02T05:04:48.260Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 2184,
-      "y": 2095
+      "x": 2313,
+      "y": 2661
     },
     "org": "GSS"
   },
@@ -1163,8 +1163,8 @@
     "updated_at": "2026-04-02T05:05:15.438Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 1950,
-      "y": 2226
+      "x": 2079,
+      "y": 2792
     },
     "org": "GSS"
   },
@@ -1178,8 +1178,8 @@
     "updated_at": "2026-04-02T05:04:15.768Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 2151,
-      "y": 2225
+      "x": 2280,
+      "y": 2791
     },
     "org": "GSS"
   },
@@ -1193,8 +1193,8 @@
     "updated_at": "2026-04-02T05:04:34.834Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 2158,
-      "y": 2349
+      "x": 2287,
+      "y": 2915
     },
     "org": "GSS"
   },
@@ -1208,8 +1208,8 @@
     "updated_at": "2026-04-02T05:04:22.680Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 2346,
-      "y": 2221
+      "x": 2475,
+      "y": 2787
     },
     "org": "GSS"
   },
@@ -1224,8 +1224,8 @@
     "updated_at": "2026-04-01T02:40:12.336Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 2356,
-      "y": 2349
+      "x": 2485,
+      "y": 2915
     }
   },
   {
@@ -1239,8 +1239,8 @@
     "updated_at": "2026-04-01T02:40:24.053Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 1952,
-      "y": 2349
+      "x": 2081,
+      "y": 2915
     }
   },
   {
@@ -1253,8 +1253,8 @@
     "updated_at": "2026-04-02T05:05:02.830Z",
     "parentId": null,
     "hierarchyPos": {
-      "x": 1750,
-      "y": 2346
+      "x": 1879,
+      "y": 2912
     },
     "org": "GSS"
   },
