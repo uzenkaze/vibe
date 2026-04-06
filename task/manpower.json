@@ -969,8 +969,8 @@
     "updated_at": "2026-04-02T05:02:13.944Z",
     "parentId": "group-1775028004948-3",
     "hierarchyPos": {
-      "x": 692,
-      "y": 2142
+      "x": 566,
+      "y": 2418
     },
     "org": "CCE"
   },
@@ -982,10 +982,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:00:46.482Z",
-    "parentId": "group-1775028004948-3",
+    "parentId": "1774921949232",
     "hierarchyPos": {
-      "x": 814,
-      "y": 2437
+      "x": 711,
+      "y": 2281
     },
     "org": "CCE"
   },
