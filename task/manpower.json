@@ -1394,21 +1394,6 @@
     }
   },
   {
-    "id": "1774943854146",
-    "org": "ESM",
-    "project": "본사",
-    "name": "김태현",
-    "nickname": "Bonnie",
-    "position": "전임",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:57:34.146Z",
-    "parentId": "group-1775028004948-0",
-    "hierarchyPos": {
-      "x": 745,
-      "y": 1386
-    }
-  },
-  {
     "id": "1775004637980",
     "org": "본사",
     "project": "BNKR",
@@ -1526,6 +1511,21 @@
     "hierarchyPos": {
       "x": 840,
       "y": 1164
+    }
+  },
+  {
+    "id": "1774943854146",
+    "org": "ESM",
+    "project": "본사",
+    "name": "김태현",
+    "nickname": "Bonnie",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T07:57:34.146Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 745,
+      "y": 1386
     }
   }
 ]
