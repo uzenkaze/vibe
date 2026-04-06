@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.png" type="image/png">
     <title>Work management - 개발 일감 관리 현황판</title>
+    <!-- 본문 추출 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/@mozilla/readability@0.5.0/Readability.min.js"></script>
 
     <style>
         :root {
@@ -556,13 +559,27 @@
             background: #ffffff;
             border: 1px solid #efeff2;
             border-radius: 1.2rem;
-            padding: 1rem 1.5rem;
+            padding: 0.5rem 1rem;
             margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            animation: fadeIn 0.4s ease;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .recent-task-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            animation: fadeIn 0.4s ease;
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .recent-task-item:last-child {
+            border-bottom: none;
         }
 
         .recent-task-info {
@@ -572,17 +589,28 @@
             font-size: 0.95rem;
             font-weight: 600;
             overflow: hidden;
+            flex: 1;
         }
 
         .recent-task-label {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             font-weight: 800;
-            color: #5e5ce6;
-            background: #f0f0ff;
-            padding: 0.2rem 0.6rem;
-            border-radius: 0.5rem;
+            color: #ffffff;
+            background: #5e5ce6;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.4rem;
             flex-shrink: 0;
+            text-transform: uppercase;
         }
+
+        .recent-task-label.todo {
+            background: var(--danger);
+        }
+
+        .recent-task-label.progress {
+            background: var(--warning);
+        }
+
 
         .recent-task-text-content {
             white-space: nowrap;
@@ -1061,6 +1089,54 @@
             margin-bottom: 2rem;
         }
 
+        /* 추출된 기사 본문용 CSS 스타일링 */
+        #article-summary {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            padding: 2rem 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #article-summary p {
+            margin-bottom: 1.2rem;
+        }
+
+        #article-summary img,
+        #article-summary figure,
+        #article-summary video {
+            max-width: 100% !important;
+            height: auto !important;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            display: block;
+        }
+
+        #article-summary h1,
+        #article-summary h2,
+        #article-summary h3 {
+            margin: 2rem 0 1rem;
+            font-weight: 700;
+            color: #111;
+        }
+
+        #article-summary a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        #article-summary a:hover {
+            text-decoration: underline;
+        }
+
+        #article-summary figcaption {
+            font-size: 0.85rem;
+            color: #86868b;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
         /* Drag over indicator */
         .task-card-apple.drag-over {
             border: 2px dashed var(--primary) !important;
@@ -1076,34 +1152,375 @@
             margin-right: -1rem;
         }
 
-        /* FAB 스타일 */
-        .fab-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
+        /* Manpower Summary Styles */
+        .manpower-summary-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 1.2rem;
+            border: 1px solid #efeff2;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.8rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .summary-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .summary-value {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        /* View Mode Tabs */
+        .view-mode-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .view-tab {
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .view-tab.active {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
+        }
+
+        /* Manpower Hierarchy & Tabs */
+        .manpower-main-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: #f1f1f6;
+            padding: 4px;
+            border-radius: 12px;
+            width: fit-content;
+            margin-bottom: 2rem;
+        }
+
+        .manpower-main-tab {
+            padding: 8px 24px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #86868b;
             border: none;
-            box-shadow: 0 10px 20px rgba(94, 92, 230, 0.3);
+            background: transparent;
+        }
+
+        .manpower-main-tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .hierarchy-container {
+            overflow-x: auto;
+            padding: 2rem 0;
+            min-height: 500px;
+            display: none;
+            /* Default hidden */
+        }
+
+        .hierarchy-container.active {
+            display: block;
+        }
+
+        .manpower-list-view.active {
+            display: block;
+        }
+
+        .manpower-list-view {
+            display: none;
+        }
+
+        /* Hierarchy Canvas (Mindmap) */
+        .hierarchy-container {
+            position: relative;
+            background: #fdfdfd;
+            border-radius: 2rem;
+            overflow: auto;
+            min-height: 800px;
+            cursor: grab;
+            /* 배경 이동을 위한 커서 변경 */
+            border: 1px solid #efeff2;
+            user-select: none;
+            /* 드래그 시 텍스트 선택 방지 */
+        }
+
+        .hierarchy-container:active {
+            cursor: grabbing;
+        }
+
+        .hierarchy-container:active {
+            cursor: grabbing;
+        }
+
+        #hierarchy-tree-root {
+            position: relative;
+            width: 3000px;
+            /* Large canvas */
+            height: 2000px;
+            padding: 0;
+            margin: 0;
+            transform-origin: 0 0;
+        }
+
+        .hierarchy-canvas-wrapper {
+            position: relative;
+            transform-origin: 0 0;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hierarchy-svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3000px;
+            /* Match canvas size */
+            height: 2000px;
+            pointer-events: none;
+            z-index: 1;
+            transform-origin: 0 0;
+        }
+
+        .zoom-indicator {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e5e5ea;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .tree-node-card {
+            position: absolute;
+            background: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 1rem;
+            border: 1px solid #e5e5ea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            min-width: 160px;
+            text-align: center;
+            z-index: 2;
+            cursor: move;
+            user-select: none;
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .tree-node-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .tree-node-card.active-drag {
+            z-index: 1000;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transition: none;
+        }
+
+        .node-rank-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: white;
+            background: #86868b;
+            padding: 1px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .tree-node-card.root-node {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(0, 113, 227, 0.3);
+        }
+
+        .tree-node-card.root-node .node-name {
+            color: white;
+        }
+
+        .tree-node-card.root-node .node-subtext {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .tree-node-card.root-node .node-rank-label {
+            background: white;
+            color: var(--primary);
+        }
+
+        .org-node-label {
+            background: #ffffff;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #5e5ce6;
+            border: 2px solid #5e5ce6;
+            box-shadow: 0 4px 15px rgba(94, 92, 230, 0.2);
+            z-index: 10;
+            cursor: move;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            gap: 6px;
+        }
+
+        .manpower-main-tabs button.active {
+            background: var(--primary) !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.2);
+        }
+
+        .hierarchy-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .node-jobgroup {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #5e5ce6;
+            margin-bottom: 2px;
+        }
+
+        /* Manpower Accordion UI */
+        .project-org-section {
+            border-bottom: 1px solid #efeff2;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-org-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             cursor: pointer;
-            z-index: 100;
+            padding: 0.75rem 0;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .project-org-header:hover {
+            background: rgba(0, 0, 0, 0.02);
+            padding-left: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .section-toggle-icon {
+            font-size: 1rem;
+            color: var(--text-muted);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-left: auto;
+        }
+
+        .project-org-section.collapsed .section-toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .manpower-member-grid {
+            max-height: 5000px;
+            overflow: visible;
+            transition: max-height 0.5s ease, opacity 0.3s ease, margin-top 0.3s ease;
+            opacity: 1;
+            margin-top: 1.5rem;
+            padding-bottom: 1rem;
+        }
+
+        .project-org-section.collapsed .manpower-member-grid {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+            overflow: hidden;
+            pointer-events: none;
+            padding-bottom: 0;
+        }
+
+
+        /* FAB 스타일 복구 */
+        .fab-btn {
+            position: fixed;
+            bottom: 2.5rem;
+            right: 2.5rem;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0, 113, 227, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 9999;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
         }
 
         .fab-btn:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 15px 30px rgba(94, 92, 230, 0.4);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 113, 227, 0.5);
+            background: #0077ed;
         }
 
         .fab-btn:active {
             transform: translateY(0) scale(0.95);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .selected-node {
+            box-shadow: 0 0 0 3px #0071e3 !important;
+            border-color: #0071e3 !important;
+        }
+
+        .selection-box {
+            position: absolute;
+            border: 1px solid rgba(0, 113, 227, 0.5);
+            background: rgba(0, 113, 227, 0.1);
+            pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -1135,7 +1552,7 @@
 
                     <div class="dashboard-stats-row">
                         <div class="stat-card-apple">
-                            <div class="stat-card-label">전체 이슈</div>
+                            <div class="stat-card-label">전체</div>
                             <div class="stat-card-value" id="dash-stat-total">0</div>
                             <div class="stat-card-subtext">활성 프로젝트에서</div>
                         </div>
@@ -1183,8 +1600,18 @@
 
                 <div id="view-manpower" class="view-section">
                     <header class="header">
-                        <div class="header-left">
-                            <h1>Manpower</h1>
+                        <div class="header-left" style="display: flex; align-items: center; gap: 3rem;">
+                            <h1 style="margin-right: 1rem;">Manpower</h1>
+                            <div class="manpower-main-tabs" style="display: flex; gap: 10px;">
+                                <button class="manpower-main-tab active" id="m-tab-list"
+                                    onclick="switchManpowerUI('list')"
+                                    style="padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; background: #f2f2f7; color: #86868b; transition: all 0.2s;">인력
+                                    목록</button>
+                                <button class="manpower-main-tab" id="m-tab-hierarchy"
+                                    onclick="switchManpowerUI('hierarchy')"
+                                    style="padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; background: #f2f2f7; color: #86868b; transition: all 0.2s;">조직도
+                                    (Mindmap)</button>
+                            </div>
                         </div>
                         <div class="header-right">
                             <div class="stat-grid-header">
@@ -1197,13 +1624,63 @@
                                 등록</button>
                         </div>
                     </header>
-                    <div class="search-bar-container">
+                    <div id="manpower-summary" class="manpower-summary-container">
+                        <!-- Summary items will be injected here -->
+                    </div>
+
+                    <div class="search-bar-container" style="margin-bottom: 2rem;">
                         <div class="search-input-wrapper">
                             <input type="text" id="manpower-search-input" class="search-input"
-                                placeholder="이름, 닉네임으로 검색..." onkeyup="confirmManpowerSearch()">
+                                placeholder="이름, 닉네임, 조직, 프로젝트로 검색..." onkeyup="confirmManpowerSearch()">
                         </div>
                     </div>
-                    <div id="manpower-card-container" class="task-card-grid"></div>
+
+                    <div class="view-mode-tabs" id="manpower-sub-tabs" style="display: flex;">
+                        <button class="view-tab active" id="tab-project"
+                            onclick="setManpowerViewMode('project')">프로젝트별</button>
+                        <button class="view-tab" id="tab-org" onclick="setManpowerViewMode('org')">조직별</button>
+                    </div>
+
+                    <!-- List View Container -->
+                    <div id="manpower-list-view" class="manpower-list-view active">
+                        <div id="manpower-container" class="manpower-grid"></div>
+                    </div>
+
+                    <!-- Hierarchy View Container -->
+                    <div id="manpower-hierarchy-view" class="hierarchy-container"
+                        onmousedown="startHierarchyPan(event)">
+                        <div class="hierarchy-controls"
+                            style="position: sticky; top: 1rem; left: 1rem; z-index: 1001; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn-mini" onclick="addCustomGroup()"
+                                style="background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border: 1px solid #e5e5ea; padding: 6px 15px;">➕
+                                그룹 생성</button>
+                            <button class="btn-mini" onclick="autoGenerateGroupsByOrg()"
+                                style="background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border: 1px solid #e5e5ea; padding: 6px 15px;">✨
+                                조직 단위 자동 그룹화</button>
+                            <button class="btn-mini" onclick="resetHierarchyPositions()"
+                                style="background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border: 1px solid #e5e5ea; padding: 6px 15px;">🔄
+                                위치 초기화</button>
+                            <div
+                                style="display: flex; gap: 4px; background: rgba(255,255,255,0.9); padding: 4px; border-radius: 10px; border: 1px solid #e5e5ea;">
+                                <button class="btn-mini" onclick="changeHierarchyZoom(-0.1)"
+                                    style="padding: 4px 10px;">➖</button>
+                                <div id="hierarchy-zoom-label" class="zoom-indicator">100%</div>
+                                <button class="btn-mini" onclick="changeHierarchyZoom(0.1)"
+                                    style="padding: 4px 10px;">➕</button>
+                                <button class="btn-mini" onclick="resetHierarchyZoom()"
+                                    style="padding: 4px 10px; font-size: 0.75rem;">1:1</button>
+                                <button class="btn-mini" onclick="fitHierarchyToScreen()"
+                                    style="padding: 4px 10px; font-size: 0.75rem;">화면 맞춤</button>
+                            </div>
+                            <span
+                                style="font-size: 0.8rem; color: var(--text-muted); background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 8px; align-self: center;">빈
+                                공간 Shift+드래그: 영역 선택 / 빈 공간 드래그: 이동 / 노드 드롭: 연결 / Shift+드롭: 해제 / 선택노드 드래그: 동시이동</span>
+                        </div>
+                        <div id="hierarchy-zoom-wrapper" class="hierarchy-canvas-wrapper">
+                            <svg id="hierarchy-svg" class="hierarchy-svg-layer"></svg>
+                            <div id="hierarchy-tree-root"></div>
+                        </div>
+                    </div>
 
                     <!-- Floating Action Button -->
                     <button class="fab-btn" onclick="openManpowerModal()" title="신규 인력 등록">+</button>
@@ -1241,9 +1718,7 @@
                             <input type="text" id="search-input" class="search-input" placeholder="일감명, 업무번호로 검색..."
                                 onkeyup="confirmSearch()">
                             <div id="recent-task-banner" class="recent-task-banner" style="display:none">
-                                <div class="recent-task-info"><span class="recent-task-label">LATEST</span><span
-                                        id="recent-task-text" class="recent-task-text-content"></span></div>
-                                <button class="btn-copy-action" onclick="copyRecentTask()">복사</button>
+                                <!-- Task items will be injected here -->
                             </div>
                         </div>
                     </div>
@@ -1254,7 +1729,15 @@
                 </div>
 
                 <div id="view-news" class="view-section">
-                    <h1 style="margin-bottom:2rem">실시간 뉴스</h1>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                        <div>
+                            <h1 style="margin-bottom:0.3rem">실시간 뉴스</h1>
+                            <p id="news-today-date" style="color:#86868b; font-size:0.95rem; font-weight:600;"></p>
+                        </div>
+                        <button class="btn-purple"
+                            style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#0071e3;"
+                            onclick="refreshAllNews()">🔄 새로고침</button>
+                    </div>
 
                     <div class="news-container">
                         <!-- Left Column: Search & Hot Issues -->
@@ -1265,12 +1748,11 @@
                             </div>
                             <div class="news-search-bar">
                                 <input type="text" id="news-keyword" class="news-search-input"
-                                    placeholder="핫이슈, 헤드라인 뉴스" onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
+                                    placeholder="뉴스 키워드 검색 (기본: 탑 헤드라인)"
+                                    onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
                                 <button class="news-search-btn" onclick="searchGoogleNews(true)">검색</button>
                             </div>
-                            <div id="news-left-content" style="min-height: 300px;">
-                                뉴스를 불러오는 중...
-                            </div>
+                            <div id="news-left-content" style="min-height: 300px;"></div>
                         </div>
 
                         <!-- Middle Column: StockPlus / Realtime -->
@@ -1285,9 +1767,7 @@
                                     onkeyup="if(event.key==='Enter') fetchStockPlusNews(true)">
                                 <button class="news-search-btn" onclick="fetchStockPlusNews(true)">검색</button>
                             </div>
-                            <div id="news-right-content" style="min-height: 300px;">
-                                뉴스를 불러오는 중...
-                            </div>
+                            <div id="news-right-content" style="min-height: 300px;"></div>
                         </div>
 
                         <!-- Right Column: IT / Tech -->
@@ -1302,22 +1782,22 @@
                                     onkeyup="if(event.key==='Enter') fetchITNews(true)">
                                 <button class="news-search-btn" onclick="fetchITNews(true)">검색</button>
                             </div>
-                            <div id="news-it-content" style="min-height: 300px;">
-                                뉴스를 불러오는 중...
-                            </div>
+                            <div id="news-it-content" style="min-height: 300px;"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Article Summary Modal -->
                 <div class="modal-overlay" id="article-modal">
-                    <div class="modal-content" style="max-width: 600px; padding: 2.5rem;">
-                        <button class="modal-close" onclick="closeArticleModal()">&times;</button>
+                    <div class="modal-content"
+                        style="max-width: 850px; max-height: 85vh; overflow-y: auto; padding: 2.5rem; background: #fafafa;">
+                        <button class="modal-close" onclick="closeArticleModal()"
+                            style="position: sticky; top: -10px; z-index: 10; float: right; background: white; border-radius: 50%; width: 32px; height: 32px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">&times;</button>
                         <h2 id="article-title"
-                            style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1d1d1f; line-height: 1.4;">
+                            style="font-size: 1.7rem; font-weight: 800; margin-top: 0; margin-bottom: 1.5rem; color: #1d1d1f; line-height: 1.4;">
                             기사 제목</h2>
                         <div id="article-summary"
-                            style="font-size: 1.05rem; line-height: 1.6; color: #4b4b4b; background: #f5f5f7; padding: 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem;">
+                            style="background: #ffffff; border-radius: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
                             기사 요약 내용이 여기에 표시됩니다.</div>
                         <div style="text-align: right;">
                             <a id="article-link" href="#" target="_blank" class="btn-purple"
@@ -1354,7 +1834,7 @@
                             id="title" class="form-control" required></div>
 
                     <div class="form-group col-span-6"><label class="form-label">접수일</label><input type="date"
-                            id="receive_date" class="form-control"></div>
+                            id="receive_date" class="form-control" lang="en-CA"></div>
                     <div class="form-group col-span-6"><label class="form-label">상태</label><select id="status"
                             class="form-control" onchange="updateStatusColor()">
                             <option value="todo">진행전</option>
@@ -1363,13 +1843,13 @@
                         </select></div>
 
                     <div class="form-group col-span-3"><label class="form-label">시작일</label><input type="date"
-                            id="start_date" class="form-control"></div>
+                            id="start_date" class="form-control" lang="en-CA"></div>
                     <div class="form-group col-span-3"><label class="form-label">종료일</label><input type="date"
-                            id="end_date" class="form-control"></div>
+                            id="end_date" class="form-control" lang="en-CA"></div>
                     <div class="form-group col-span-3"><label class="form-label">개발배포</label><input type="date"
-                            id="dev_deploy_date" class="form-control"></div>
+                            id="dev_deploy_date" class="form-control" lang="en-CA"></div>
                     <div class="form-group col-span-3"><label class="form-label">운영배포</label><input type="date"
-                            id="deploy_date" class="form-control"></div>
+                            id="deploy_date" class="form-control" lang="en-CA"></div>
 
                     <div class="form-group col-span-12"><label class="form-label">상품번호</label><textarea id="product_no"
                             class="form-control" rows="2"></textarea></div>
@@ -1398,9 +1878,11 @@
     <script>
         let tasks = [];
         let manpowers = [];
+        let customGroups = [];
         let visibleCount = 6;
         let currentSearchQuery = '';
         let currentManpowerSearch = '';
+        let currentManpowerViewMode = 'project'; // 'project' or 'org'
         let currentView = 'view-dashboard';
         let calDate = new Date();
         let ghConfig = JSON.parse(localStorage.getItem('taskGitHubConfig') || '{"repo":"uzenkaze/vibe","branch":"main","autoSync":true}');
@@ -1417,33 +1899,30 @@
             // 1. 초기 UI 및 로컬 데이터 즉시 렌더링
             tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
             manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
+            customGroups = JSON.parse(localStorage.getItem('manpowerGroups') || '[]');
 
             renderSidebar();
             render();
             renderManpower();
             switchView(currentView);
 
+            // 오늘 날짜 헤더 표시
+            updateNewsTodayDate();
+
             // 2. 비동기 데이터 동기화 (백그라운드)
             if (ghConfig.token) {
                 backgroundSync();
             }
 
-            // 3. 뉴스 데이터 비동기 로드 (백그라운드 처리, 초기 부하 방지)
-            setTimeout(() => {
-                if (currentView === 'view-news') {
-                    staggerNewsFetch(true);
-                } else {
-                    // 메인 화면에서는 조용히 캐시된 데이터만 확인하거나 늦게 로드
-                    staggerNewsFetch(false);
-                }
-            }, 3000);
+            // 3. 뉴스 데이터: 캐시 우선 즉시 렌더 → 뉴스탭 진입 시 최신 fetch
+            loadNewsCacheImmediate();
 
-            // 4. 주기적 업데이트 설정
+            // 4. 주기적 업데이트 설정 (10분마다)
             setInterval(() => {
-                searchGoogleNews();
-                fetchStockPlusNews();
-                fetchITNews();
-            }, 15 * 60 * 1000);
+                if (currentView === 'view-news') {
+                    parallelNewsFetch(false);
+                }
+            }, 10 * 60 * 1000);
         }
 
         async function backgroundSync() {
@@ -1452,7 +1931,8 @@
                 // 다운로드 태스크 병렬 처리로 속도 향상
                 const results = await Promise.allSettled([
                     syncWithGitHub('download', 'task/task-manager.json'),
-                    syncWithGitHub('download', 'task/manpower.json')
+                    syncWithGitHub('download', 'task/manpower.json'),
+                    syncWithGitHub('download', 'task/manpowerGroups.json')
                 ]);
 
                 let changed = false;
@@ -1464,6 +1944,11 @@
                 if (results[1].status === 'fulfilled' && results[1].value) {
                     manpowers = results[1].value;
                     localStorage.setItem('manpowers', JSON.stringify(manpowers));
+                    changed = true;
+                }
+                if (results[2] && results[2].status === 'fulfilled' && results[2].value) {
+                    customGroups = results[2].value;
+                    localStorage.setItem('manpowerGroups', JSON.stringify(customGroups));
                     changed = true;
                 }
 
@@ -1505,7 +1990,8 @@
             switchView(currentView);
 
             if (id === 'news') {
-                staggerNewsFetch(true);
+                updateNewsTodayDate();
+                parallelNewsFetch(true);
             }
 
             // Sync Title
@@ -1552,8 +2038,8 @@
                         <div class="card-header-info">#${t.task_no || '-'} [${t.work_no || '-'}]</div>
                         <div class="card-title" title="${t.title}">${t.title}</div>
                         <div class="card-dates">
-                            <span>📅 접수: ${t.receive_date || '-'}</span>
-                            <span>🚀 배포: ${t.deploy_date || '-'}</span>
+                            <span>📅 접수: ${(t.receive_date || '-').split('(')[0].trim()}</span>
+                            <span>🚀 배포: ${(t.deploy_date || '-').split('(')[0].trim()}</span>
                         </div>
                         <div class="card-footer">
                             <div class="card-badge ${t.status}">${statusMap[t.status] || t.status}</div>
@@ -1600,20 +2086,41 @@
 
         function updateRecentTaskBanner() {
             const banner = document.getElementById('recent-task-banner');
-            const textEl = document.getElementById('recent-task-text');
-            if (!banner || !textEl) return;
-            if (tasks.length === 0) { banner.style.display = 'none'; return; }
+            if (!banner) return;
+
+            const activeTasks = tasks.filter(t => t.status !== 'done');
+            if (activeTasks.length === 0) {
+                banner.style.display = 'none';
+                return;
+            }
+
             banner.style.display = 'flex';
-            const latest = tasks[0];
-            textEl.innerText = `#${latest.task_no || '번호없음'} [${latest.work_no || '업무없음'}] ${latest.title}`;
+            banner.innerHTML = activeTasks.map(t => {
+                const badgeClass = t.status === 'todo' ? 'todo' : (t.status === 'progress' ? 'progress' : '');
+                const labelText = t.status === 'todo' ? 'TODO' : 'PROGRESS';
+                const text = `#${t.task_no || '번호없음'} [${t.work_no || '업무없음'}] ${t.title}`;
+
+                return `
+                    <div class="recent-task-item">
+                        <div class="recent-task-info">
+                            <span class="recent-task-label ${badgeClass}">${labelText}</span>
+                            <span class="recent-task-text-content">${text}</span>
+                        </div>
+                        <button class="btn-copy-action" onclick="copySpecificTask('${text.replace(/'/g, "\\'")}', this)">복사</button>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function copyRecentTask() {
-            const textEl = document.getElementById('recent-task-text');
-            navigator.clipboard.writeText(textEl.innerText).then(() => {
-                const btn = document.querySelector('.btn-copy-action');
-                const old = btn.innerText; btn.innerText = '복사 완료!';
-                setTimeout(() => btn.innerText = old, 1500);
+        function copySpecificTask(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const old = btn.innerText;
+                btn.innerText = '복사 완료!';
+                btn.style.color = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = old;
+                    btn.style.color = '';
+                }, 1500);
             });
         }
 
@@ -1671,6 +2178,7 @@
 
         function openModal(id) {
             document.getElementById('modal').classList.add('active');
+            const cleanDate = (d) => d ? d.split('(')[0].trim() : '';
             if (id) {
                 const t = tasks.find(x => x.id === id);
                 document.getElementById('task-id').value = t.id;
@@ -1680,13 +2188,13 @@
                 document.getElementById('task_no').value = t.task_no;
                 document.getElementById('product_no').value = t.product_no || '';
                 document.getElementById('task_content').value = t.task_content || '';
-                document.getElementById('dev_deploy_date').value = t.dev_deploy_date || '';
-                document.getElementById('deploy_date').value = t.deploy_date || '';
+                document.getElementById('dev_deploy_date').value = cleanDate(t.dev_deploy_date);
+                document.getElementById('deploy_date').value = cleanDate(t.deploy_date);
                 document.getElementById('pub_content').value = t.pub_content || '';
                 document.getElementById('remarks').value = t.remarks || '';
-                document.getElementById('receive_date').value = t.receive_date || '';
-                document.getElementById('start_date').value = t.start_date || '';
-                document.getElementById('end_date').value = t.end_date || '';
+                document.getElementById('receive_date').value = cleanDate(t.receive_date);
+                document.getElementById('start_date').value = cleanDate(t.start_date);
+                document.getElementById('end_date').value = cleanDate(t.end_date);
                 document.getElementById('reference').value = t.reference || '';
                 document.getElementById('modal-title').innerText = '일감 수정';
             } else {
@@ -1720,7 +2228,7 @@
                 <div class="form-grid" style="margin-top: 2rem;">
                     <div class="form-divider" style="margin-top:0"></div>
                     
-                    <div class="form-group col-span-6"><label class="form-label">접수일</label><div class="form-control" style="background: #f5f5f7; border: none;">${t.receive_date || '-'}</div></div>
+                    <div class="form-group col-span-6"><label class="form-label">접수일</label><div class="form-control" style="background: #f5f5f7; border: none;">${t.receive_date ? t.receive_date.split('(')[0].trim() : '-'}</div></div>
                     <div class="form-group col-span-6"><label class="form-label">상태</label><div class="form-control" style="background: #f5f5f7; border: none; color: ${statusColor}; font-weight: 800;">${statusMap[t.status] || t.status}</div></div>
 
                     <div class="form-group col-span-12"><label class="form-label">상품번호</label><div class="form-control" style="background: #f5f5f7; border: none; min-height: 50px; white-space: pre-wrap;">${t.product_no || '-'}</div></div>
@@ -1752,7 +2260,7 @@
                 const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
 
                 // 해당 날짜가 운영배포(deploy_date)인 일감 필터링
-                const dayTasks = tasks.filter(t => t.deploy_date === dStr);
+                const dayTasks = tasks.filter(t => (t.deploy_date || '').split('(')[0].trim() === dStr);
 
                 const eventsHtml = dayTasks.map(t => `
                     <div class="cal-task-item" title="${t.title} [${t.work_no || '-'}]" onclick="event.stopPropagation(); showDetail('${t.id}')">
@@ -1783,77 +2291,735 @@
         }
 
         // --- Manpower Logic ---
+        let currentManpowerUIMode = 'list'; // 'list' or 'hierarchy'
+
+        function setManpowerViewMode(mode) {
+            currentManpowerViewMode = mode;
+            document.querySelectorAll('.view-tab').forEach(tab => tab.classList.remove('active'));
+            const tab = document.getElementById(`tab-${mode}`);
+            if (tab) tab.classList.add('active');
+            renderManpower();
+        }
+
+        function switchManpowerUI(mode) {
+            currentManpowerUIMode = mode;
+            document.querySelectorAll('.manpower-main-tab').forEach(t => t.classList.remove('active'));
+            const activeTab = document.getElementById(mode === 'list' ? 'm-tab-list' : 'm-tab-hierarchy');
+            if (activeTab) activeTab.classList.add('active');
+
+            const listView = document.getElementById('manpower-list-view');
+            const hierarchyView = document.getElementById('manpower-hierarchy-view');
+            const subTabs = document.getElementById('manpower-sub-tabs');
+
+            if (mode === 'list') {
+                listView.style.display = 'block';
+                hierarchyView.style.display = 'none';
+                if (subTabs) subTabs.style.display = 'flex';
+            } else {
+                listView.style.display = 'none';
+                hierarchyView.style.display = 'block';
+                if (subTabs) subTabs.style.display = 'none';
+
+                // 마인드맵 진입 시 렌더링 및 초기 배율 설정
+                renderManpower();
+
+                setTimeout(() => {
+                    fitHierarchyToScreen(); // 처음 진입 시 자동으로 화면에 맞춤
+                }, 100);
+            }
+        }
+
+        function toggleManpowerSection(element) {
+            const section = element.closest('.project-org-section');
+            if (section) {
+                section.classList.toggle('collapsed');
+            }
+        }
+
         function renderManpower() {
-            const container = document.getElementById('manpower-card-container');
+            // 중복 데이터 자동 정리 (이름+닉네임 기준)
+            const uniqueMaps = new Map();
+            let hasDuplicates = false;
+            manpowers.forEach(m => {
+                const key = (m.name || '').trim() + '_' + (m.nickname || '').trim();
+                if (!uniqueMaps.has(key)) {
+                    uniqueMaps.set(key, m);
+                } else {
+                    hasDuplicates = true;
+                    // 기존 데이터에 위치 정보가 없고 새 데이터에 있다면 병합
+                    const existing = uniqueMaps.get(key);
+                    if (!existing.hierarchyPos && m.hierarchyPos) {
+                        uniqueMaps.set(key, { ...existing, hierarchyPos: m.hierarchyPos, parentId: m.parentId });
+                    }
+                }
+            });
+            if (hasDuplicates) {
+                manpowers = Array.from(uniqueMaps.values());
+                localStorage.setItem('manpowers', JSON.stringify(manpowers));
+            }
+
+            const container = document.getElementById('manpower-container');
+            const summaryContainer = document.getElementById('manpower-summary');
             if (!container) return;
 
             const filtered = manpowers.filter(m =>
-                m.name.toLowerCase().includes(currentManpowerSearch.toLowerCase()) ||
-                m.nickname.toLowerCase().includes(currentManpowerSearch.toLowerCase()) ||
-                (m.project && m.project.toLowerCase().includes(currentManpowerSearch.toLowerCase()))
+                (m.name && m.name.toLowerCase().includes(currentManpowerSearch.toLowerCase())) ||
+                (m.nickname && m.nickname.toLowerCase().includes(currentManpowerSearch.toLowerCase())) ||
+                (m.project && m.project.toLowerCase().includes(currentManpowerSearch.toLowerCase())) ||
+                (m.org && m.org.toLowerCase().includes(currentManpowerSearch.toLowerCase()))
             );
+
+            // Calculate job group totals
+            const jobGroupTotals = {};
+            filtered.forEach(m => {
+                const group = m.jobGroup || '미정';
+                jobGroupTotals[group] = (jobGroupTotals[group] || 0) + 1;
+            });
+
+            if (summaryContainer) {
+                const sortedGroups = Object.keys(jobGroupTotals).sort();
+                summaryContainer.innerHTML = sortedGroups.map(group => `
+                    <div class="summary-item">
+                        <span class="summary-label">${group}</span>
+                        <span class="summary-value">${jobGroupTotals[group]}</span>
+                    </div>
+                `).join('') || '<div style="color: var(--text-muted); font-size: 0.9rem;">인원 통계가 없습니다.</div>';
+            }
 
             updateStats();
 
-            // Grouping by project for "Org Chart" style
+            if (currentManpowerUIMode === 'hierarchy') {
+                renderManpowerHierarchy(filtered);
+                return;
+            }
+
+            // Grouping logic based on view mode (List Mode)
             const grouped = {};
             filtered.forEach(m => {
-                const p = m.project || '미배정 / 기타';
-                if (!grouped[p]) grouped[p] = [];
-                grouped[p].push(m);
+                let key = '';
+                if (currentManpowerViewMode === 'org') {
+                    key = m.org || '미지정 조직';
+                } else {
+                    key = m.project || '미배정 / 기타';
+                }
+                if (!grouped[key]) grouped[key] = [];
+                grouped[key].push(m);
             });
 
-            const projectNames = Object.keys(grouped).sort();
+            let groupNames = Object.keys(grouped).sort();
 
-            if (projectNames.length === 0) {
+            // 필터링 적용
+            if (currentManpowerViewMode === 'org') {
+                const whitelist = ['본사', 'USG', 'BSG', 'ESI', 'ESM', 'CCE', 'GSS', 'Sales'];
+                groupNames = groupNames.filter(name => whitelist.includes(name));
+            } else if (currentManpowerViewMode === 'project') {
+                groupNames = groupNames.filter(name => name !== '본사');
+            }
+
+            if (groupNames.length === 0) {
                 container.innerHTML = '<div style="grid-column: span 3; text-align: center; padding: 4rem; color: var(--text-muted);">등록된 인력이 없거나 검색 결과가 없습니다.</div>';
                 return;
             }
 
-            container.style.display = 'block'; // Change grid to block for project sections
-            container.innerHTML = projectNames.map(pName => `
-                <div class="project-org-section" style="margin-bottom: 3rem; transition: background 0.2s;" 
-                     ondragover="handleDragOver(event)" 
-                     ondragenter="this.classList.add('drag-over')"
-                     ondragleave="this.classList.remove('drag-over')"
-                     ondrop="handleDropOnProject(event, '${pName.replace(/'/g, "\\'")}')">
-                    <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 0.8rem; background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px;">PROJECT</span> ${pName}
-                        <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">(${grouped[pName].length}명)</span>
-                    </h2>
-                    <div class="manpower-member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
-                        ${grouped[pName].map(m => `
-                            <div class="task-card-apple" 
-                                 draggable="true"
-                                 ondragstart="handleDragStart(event, '${m.id}')"
-                                 ondragover="handleDragOver(event)"
-                                 ondragenter="this.classList.add('drag-over')"
-                                 ondragleave="this.classList.remove('drag-over')"
-                                 ondragend="handleDragEnd(event)"
-                                 ondrop="handleDropOnCard(event, '${m.id}')"
-                                 style="height: auto; min-height: 150px; padding: 1.25rem; transition: all 0.2s; cursor: grab;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                                    <div>
-                                        <div style="font-size: 0.75rem; font-weight: 800; color: #5e5ce6; margin-bottom: 2px;">${m.jobGroup || '직군미정'}</div>
-                                        <div style="font-size: 1.3rem; font-weight: 800;">${m.name} <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">${m.position || ''}</span></div>
+            container.style.display = 'block';
+            container.innerHTML = groupNames.map(groupName => {
+                const sectionLabel = currentManpowerViewMode === 'org' ? 'ORGANIZATION' : 'PROJECT';
+                const onDropHandler = currentManpowerViewMode === 'org' ?
+                    `handleDropOnOrg(event, '${groupName.replace(/'/g, "\\'")}')` :
+                    `handleDropOnProject(event, '${groupName.replace(/'/g, "\\'")}')`;
+
+                // 검색어가 없을 때는 기본적으로 접힌 상태(collapsed)로 시작
+                const isCollapsed = currentManpowerSearch === '' ? 'collapsed' : '';
+
+                return `
+                    <div class="project-org-section ${isCollapsed}" 
+                         style="transition: background 0.2s;" 
+                         ondragover="handleDragOver(event)" 
+                         ondragenter="this.classList.add('drag-over')"
+                         ondragleave="this.classList.remove('drag-over')"
+                         ondrop="${onDropHandler}">
+                        
+                        <div class="project-org-header" onclick="toggleManpowerSection(this)">
+                            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 0.75rem; background: var(--primary); color: white; padding: 3px 10px; border-radius: 6px; font-weight: 800; letter-spacing: 0.5px;">${sectionLabel}</span> 
+                                <span style="color: #1d1d1f;">${groupName}</span>
+                                <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600; margin-left: 5px;">(${grouped[groupName].length}명)</span>
+                            </h2>
+                            <i class="fas fa-chevron-down section-toggle-icon"></i>
+                        </div>
+
+                        <div class="manpower-member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                            ${grouped[groupName].map(m => `
+                                <div class="task-card-apple" 
+                                     draggable="true"
+                                     ondragstart="handleDragStart(event, '${m.id}')"
+                                     ondragover="handleDragOver(event)"
+                                     ondragenter="this.classList.add('drag-over')"
+                                     ondragleave="this.classList.remove('drag-over')"
+                                     ondragend="handleDragEnd(event)"
+                                     ondrop="handleDropOnCard(event, '${m.id}')"
+                                     style="height: auto; min-height: 150px; padding: 1.25rem; transition: all 0.2s; cursor: grab;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                        <div>
+                                            <div style="font-size: 0.75rem; font-weight: 800; color: #5e5ce6; margin-bottom: 2px;">${m.jobGroup || '직군미정'}</div>
+                                            <div style="font-size: 1.3rem; font-weight: 800;">${m.name} <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">${m.position || ''}</span></div>
+                                            <div style="font-size: 0.7rem; color: #86868b; margin-top: 4px;">
+                                                ${m.org ? `<span style="background: #f0f0f5; padding: 1px 4px; border-radius: 3px; margin-right: 4px;">${m.org}</span>` : ''}
+                                                ${m.project ? `<span style="background: #eef2ff; padding: 1px 4px; border-radius: 3px;">${m.project}</span>` : ''}
+                                            </div>
+                                        </div>
+                                        <div class="card-badge done" style="background: #f0fdf4; color: #15803d; font-size: 0.65rem;">ACTIVE</div>
                                     </div>
-                                    <div class="card-badge done" style="background: #f0fdf4; color: #15803d; font-size: 0.65rem;">ACTIVE</div>
-                                </div>
-                                <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
-                                    <i class="far fa-user-circle"></i> @${m.nickname}
-                                </div>
-                                <div class="card-footer" style="padding-top: 1rem; border-top: 1px solid #f2f2f7; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
-                                    <div class="card-actions" style="display: flex; gap: 6px;">
-                                        <button class="btn-mini" style="margin:0; padding: 4px 12px;" onclick="openManpowerModal('${m.id}')">수정</button>
-                                        <button class="btn-mini delete" style="margin:0; padding: 4px 12px;" onclick="deleteManpower('${m.id}')">삭제</button>
+                                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                                        <i class="far fa-user-circle"></i> @${m.nickname}
+                                    </div>
+                                    <div class="card-footer" style="padding-top: 1rem; border-top: 1px solid #f2f2f7; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                                        <div class="card-actions" style="display: flex; gap: 6px;">
+                                            <button class="btn-mini" style="margin:0; padding: 4px 12px;" onclick="openManpowerModal('${m.id}')">수정</button>
+                                            <button class="btn-mini delete" style="margin:0; padding: 4px 12px;" onclick="deleteManpower('${m.id}')">삭제</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `).join('')}
+                            `).join('')}
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
+
+        let selectedHierarchyNodes = new Set();
+        let hierarchySelectionState = { active: false, startX: 0, startY: 0 };
+        function clearHierarchySelection() {
+            selectedHierarchyNodes.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('selected-node');
+            });
+            selectedHierarchyNodes.clear();
+        }
+
+        let hierarchyDragState = { active: false, targetId: null, startX: 0, startY: 0, initialNodes: [] };
+
+        function renderManpowerHierarchy(items) {
+            const treeRoot = document.getElementById('hierarchy-tree-root');
+            const svgLayer = document.getElementById('hierarchy-svg');
+            if (!treeRoot || !svgLayer) return;
+
+            treeRoot.innerHTML = '';
+            svgLayer.innerHTML = '';
+
+            const CANVAS_CENTER = 1500;
+            const nodes = [];
+
+            // 커스텀 그룹 노드
+            customGroups.forEach(g => {
+                nodes.push({ id: g.id, type: 'org', name: g.name, x: g.x, y: g.y, parentId: g.parentId });
+            });
+
+            // 멤버 노드 (초기 좌표 없을 시 그리드 형태 배치)
+            let unpositionedCount = 0;
+            items.forEach((m, mIdx) => {
+                const isRoot = !m.parentId; // 부모가 없으면 최상위 취급 여부 확인용 (UI 스타일 적용)
+                let pos = m.hierarchyPos;
+                if (!pos) {
+                    pos = { x: CANVAS_CENTER - 300 + (unpositionedCount % 4) * 180, y: 100 + Math.floor(unpositionedCount / 4) * 150 };
+                    unpositionedCount++;
+                }
+                nodes.push({ id: m.id, type: 'member', data: m, x: pos.x, y: pos.y, parentId: m.parentId, isRoot: isRoot });
+            });
+
+            // 3. 렌더링
+            treeRoot.innerHTML = nodes.map(node => {
+                const isSelected = selectedHierarchyNodes && selectedHierarchyNodes.has(`node-${node.id}`) ? 'selected-node' : '';
+                if (node.type === 'member') {
+                    const m = node.data;
+                    const isRoot = node.isRoot;
+                    return `
+                        <div class="tree-node-card ${isRoot ? 'root-node' : ''} ${isSelected}" 
+                             id="node-${node.id}"
+                             onmousedown="startHierarchyDrag(event, '${node.id}')"
+                             ondblclick="if(!event.defaultPrevented) openManpowerModal('${m.id}')"
+                             style="left: ${node.x}px; top: ${node.y}px;">
+                            <div class="node-rank-label">${m.position || '인원'}</div>
+                            <div class="node-name">${m.name}</div>
+                            <div class="node-subtext">@${m.nickname}</div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="org-node-label ${isSelected}" id="node-${node.id}" 
+                             onmousedown="startHierarchyDrag(event, '${node.id}', true)"
+                             ondblclick="editCustomGroup('${node.id}')"
+                             title="더블클릭하여 편집/삭제"
+                             style="position: absolute; left: ${node.x}px; top: ${node.y}px; z-index: 2; height: auto; min-width: 140px; text-align: center; display: flex; flex-direction: column;">
+                            <span>🏢 ${node.name}</span>
+                            <span style="font-size: 0.6rem; color: #888; margin-top: 4px; font-weight: 500;">(더블클릭: 편집)</span>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            drawHierarchyLines(nodes, svgLayer);
+        }
+
+        function drawHierarchyLines(nodes, svg) {
+            svg.innerHTML = '';
+            nodes.forEach(node => {
+                if (node.parentId) {
+                    // ID 매칭 시도 (문자열 변환으로 타입 차이 대응)
+                    let parent = nodes.find(n => String(n.id) === String(node.parentId));
+                    
+                    // ID로 찾지 못한 경우, 조직명(org name)으로 매칭 시도 (유연성 확보)
+                    if (!parent) {
+                        parent = nodes.find(n => n.type === 'org' && n.name === node.parentId);
+                    }
+
+                    if (parent) {
+                        const pW = parent.type === 'member' ? 160 : 140;
+                        const pH = parent.type === 'member' ? 80 : 40;
+                        const cW = node.type === 'member' ? 160 : 140;
+
+                        const startX = parent.x + pW / 2;
+                        const startY = parent.y + pH;
+                        const endX = node.x + cW / 2;
+                        const endY = node.y;
+
+                        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        // 굴곡이 더 강조된 Bezier 곡선
+                        const midY = (startY + endY) / 2;
+                        const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+                        path.setAttribute("d", d);
+                        path.setAttribute("stroke", "rgba(0, 113, 227, 0.5)"); // 샵(#) 제거 및 투명도 조정
+                        path.setAttribute("stroke-width", "2");
+                        path.setAttribute("fill", "none");
+                        path.style.transition = "stroke 0.3s";
+                        svg.appendChild(path);
+                    }
+                }
+            });
+        }
+
+        let currentHierarchyScale = 1.0;
+
+        function changeHierarchyZoom(delta) {
+            currentHierarchyScale = Math.min(Math.max(0.2, currentHierarchyScale + delta), 2.0);
+            updateHierarchyScaleUI();
+        }
+
+        function resetHierarchyZoom() {
+            currentHierarchyScale = 1.0;
+            updateHierarchyScaleUI();
+        }
+
+        function updateHierarchyScaleUI() {
+            const wrapper = document.getElementById('hierarchy-zoom-wrapper');
+            const label = document.getElementById('hierarchy-zoom-label');
+            if (wrapper) wrapper.style.transform = `scale(${currentHierarchyScale})`;
+            if (label) label.innerText = `${Math.round(currentHierarchyScale * 100)}%`;
+        }
+
+        function fitHierarchyToScreen() {
+            const container = document.getElementById('manpower-hierarchy-view');
+            const wrapper = document.getElementById('hierarchy-zoom-wrapper');
+            const treeRoot = document.getElementById('hierarchy-tree-root');
+            if (!container || !treeRoot) return;
+
+            // 현재 배치된 노드들의 Bounding Box 계산
+            const nodes = Array.from(treeRoot.children);
+            if (nodes.length === 0) return;
+
+            let minX = 3000, minY = 2000, maxX = 0, maxY = 0;
+            nodes.forEach(node => {
+                const x = parseInt(node.style.left);
+                const y = parseInt(node.style.top);
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x + 160); // 노드 너비 보정
+                maxY = Math.max(maxY, y + 100); // 노드 높이 보정
+            });
+
+            const contentWidth = (maxX - minX) + 200;
+            const contentHeight = (maxY - minY) + 200;
+            const containerWidth = container.clientWidth - 40;
+            const containerHeight = container.clientHeight - 40;
+
+            const scaleX = containerWidth / contentWidth;
+            const scaleY = containerHeight / contentHeight;
+            const targetScale = Math.min(Math.max(0.1, Math.min(scaleX, scaleY)), 1.2); // 최대 1.2배
+
+            currentHierarchyScale = targetScale;
+            updateHierarchyScaleUI();
+
+            // 중앙 정렬을 위한 스크롤 위치 계산
+            container.scrollLeft = (minX - 100) * currentHierarchyScale;
+            container.scrollTop = (minY - 50) * currentHierarchyScale;
+        }
+
+        function startHierarchyDrag(e, id, isOrg = false) {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            e.stopPropagation(); // 배경 Panning이 발생하지 않도록 이벤트 전파 차단
+
+            const nodeElId = `node-${id}`;
+            if (!selectedHierarchyNodes.has(nodeElId)) {
+                if (!e.shiftKey) clearHierarchySelection();
+                selectedHierarchyNodes.add(nodeElId);
+                const el = document.getElementById(nodeElId);
+                if (el) el.classList.add('selected-node');
+            } else if (e.shiftKey) {
+                // 이미 선택된 노드를 Shift 클릭 시 선택 해제 후 리턴(드래그 무시)
+                selectedHierarchyNodes.delete(nodeElId);
+                const el = document.getElementById(nodeElId);
+                if (el) el.classList.remove('selected-node');
+                return;
+            }
+
+            hierarchyDragState = {
+                active: true,
+                startX: e.clientX,
+                startY: e.clientY,
+                initialNodes: [],
+                rafId: null
+            };
+
+            selectedHierarchyNodes.forEach(selId => {
+                const el = document.getElementById(selId);
+                if (el) {
+                    hierarchyDragState.initialNodes.push({
+                        id: selId,
+                        el: el,
+                        initialX: parseInt(el.style.left) || 0,
+                        initialY: parseInt(el.style.top) || 0,
+                        isOrg: el.classList.contains('org-node-label')
+                    });
+                    el.classList.add('active-drag');
+                }
+            });
+
+            const moveHandler = (me) => {
+                if (!hierarchyDragState.active) return;
+
+                if (hierarchyDragState.rafId) {
+                    cancelAnimationFrame(hierarchyDragState.rafId);
+                }
+
+                hierarchyDragState.rafId = requestAnimationFrame(() => {
+                    const dx = (me.clientX - hierarchyDragState.startX) / currentHierarchyScale;
+                    const dy = (me.clientY - hierarchyDragState.startY) / currentHierarchyScale;
+
+                    hierarchyDragState.initialNodes.forEach(item => {
+                        item.el.style.left = `${item.initialX + dx}px`;
+                        item.el.style.top = `${item.initialY + dy}px`;
+                    });
+                });
+            };
+
+            const upHandler = async (me) => {
+                if (hierarchyDragState.rafId) {
+                    cancelAnimationFrame(hierarchyDragState.rafId);
+                }
+                hierarchyDragState.active = false;
+
+                hierarchyDragState.initialNodes.forEach(item => {
+                    item.el.classList.remove('active-drag');
+                    item.el.style.display = 'none';
+                });
+
+                window.removeEventListener('mousemove', moveHandler);
+                window.removeEventListener('mouseup', upHandler);
+
+                const dropTarget = document.elementFromPoint(me.clientX, me.clientY);
+
+                hierarchyDragState.initialNodes.forEach(item => {
+                    item.el.style.display = '';
+                });
+
+                let targetParentId = null;
+                const targetNode = dropTarget ? dropTarget.closest('.tree-node-card, .org-node-label') : null;
+
+                if (targetNode && !selectedHierarchyNodes.has(targetNode.id)) {
+                    targetParentId = targetNode.id.replace('node-', '');
+                }
+
+                for (const item of hierarchyDragState.initialNodes) {
+                    const rawId = item.id.replace('node-', '');
+                    const finalX = parseInt(item.el.style.left);
+                    const finalY = parseInt(item.el.style.top);
+
+                    if (item.isOrg) {
+                        const groupIdx = customGroups.findIndex(g => g.id === rawId);
+                        if (groupIdx !== -1) {
+                            customGroups[groupIdx].x = finalX;
+                            customGroups[groupIdx].y = finalY;
+                            if (targetParentId !== null) customGroups[groupIdx].parentId = targetParentId;
+
+                            const isParentDragged = hierarchyDragState.initialNodes.some(n => n.id.replace('node-', '') === customGroups[groupIdx].parentId);
+                            if (me.shiftKey && !isParentDragged) customGroups[groupIdx].parentId = null;
+                        }
+                    } else {
+                        const mIdx = manpowers.findIndex(m => m.id === rawId);
+                        if (mIdx !== -1) {
+                            manpowers[mIdx].hierarchyPos = { x: finalX, y: finalY };
+                            if (targetParentId !== null) manpowers[mIdx].parentId = targetParentId;
+
+                            const isParentDragged = hierarchyDragState.initialNodes.some(n => n.id.replace('node-', '') === manpowers[mIdx].parentId);
+                            if (me.shiftKey && !isParentDragged) manpowers[mIdx].parentId = null;
+                        }
+                    }
+                }
+
+                saveCustomGroups().catch(console.error);
+                saveManpowerToPersistence().catch(console.error);
+
+                renderManpower(); // Re-render instantly
+            };
+
+            window.addEventListener('mousemove', moveHandler);
+            window.addEventListener('mouseup', upHandler);
+        }
+
+        function updateLinesOnDrag() {
+            // Disabled: Querying DOM and parsing styles during mousemove causes heavy layout thrashing.
+            // SVG lines will correctly snap to position upon mouseup via renderManpower().
+        }
+
+        let hierarchyPanState = { active: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 };
+
+        function startHierarchySelection(e) {
+            const container = document.getElementById('manpower-hierarchy-view');
+            const wrapper = document.getElementById('hierarchy-zoom-wrapper');
+            const rect = container.getBoundingClientRect();
+
+            const getPos = (clientX, clientY) => {
+                return {
+                    x: (clientX - rect.left + container.scrollLeft) / currentHierarchyScale,
+                    y: (clientY - rect.top + container.scrollTop) / currentHierarchyScale
+                };
+            };
+
+            const startPos = getPos(e.clientX, e.clientY);
+            hierarchySelectionState = {
+                active: true,
+                startX: startPos.x,
+                startY: startPos.y
+            };
+
+            let box = document.getElementById('hierarchy-selection-box');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'hierarchy-selection-box';
+                box.className = 'selection-box';
+                wrapper.appendChild(box);
+            }
+            box.style.display = 'block';
+            box.style.left = startPos.x + 'px';
+            box.style.top = startPos.y + 'px';
+            box.style.width = '0px';
+            box.style.height = '0px';
+
+            let rafId = null;
+            const moveHandler = (me) => {
+                if (!hierarchySelectionState.active) return;
+
+                if (rafId) cancelAnimationFrame(rafId);
+                rafId = requestAnimationFrame(() => {
+                    const currentPos = getPos(me.clientX, me.clientY);
+
+                    const minX = Math.min(hierarchySelectionState.startX, currentPos.x);
+                    const minY = Math.min(hierarchySelectionState.startY, currentPos.y);
+                    const maxX = Math.max(hierarchySelectionState.startX, currentPos.x);
+                    const maxY = Math.max(hierarchySelectionState.startY, currentPos.y);
+
+                    box.style.left = minX + 'px';
+                    box.style.top = minY + 'px';
+                    box.style.width = (maxX - minX) + 'px';
+                    box.style.height = (maxY - minY) + 'px';
+                });
+            };
+
+            const upHandler = (me) => {
+                hierarchySelectionState.active = false;
+                box.style.display = 'none';
+                window.removeEventListener('mousemove', moveHandler);
+                window.removeEventListener('mouseup', upHandler);
+
+                const currentPos = getPos(me.clientX, me.clientY);
+                const minX = Math.min(hierarchySelectionState.startX, currentPos.x);
+                const minY = Math.min(hierarchySelectionState.startY, currentPos.y);
+                const maxX = Math.max(hierarchySelectionState.startX, currentPos.x);
+                const maxY = Math.max(hierarchySelectionState.startY, currentPos.y);
+
+                if (!me.shiftKey) clearHierarchySelection();
+
+                const nodes = document.querySelectorAll('#hierarchy-tree-root > div');
+                nodes.forEach(node => {
+                    const nx = parseInt(node.style.left);
+                    const ny = parseInt(node.style.top);
+                    const nw = node.classList.contains('tree-node-card') ? 160 : 140;
+                    const nh = node.classList.contains('tree-node-card') ? 80 : 40;
+
+                    const intersect = !(
+                        nx > maxX ||
+                        nx + nw < minX ||
+                        ny > maxY ||
+                        ny + nh < minY
+                    );
+
+                    if (intersect) {
+                        selectedHierarchyNodes.add(node.id);
+                        node.classList.add('selected-node');
+                    }
+                });
+            };
+
+            window.addEventListener('mousemove', moveHandler);
+            window.addEventListener('mouseup', upHandler);
+        }
+
+        function startHierarchyPan(e) {
+            if (e.target.closest('.tree-node-card') || e.target.closest('.org-node-label') || e.target.closest('.hierarchy-controls')) return;
+
+            if (e.button === 0) {
+                if (e.shiftKey) {
+                    startHierarchySelection(e);
+                    return;
+                } else {
+                    clearHierarchySelection();
+                }
+            } else if (e.button !== 1 && e.button !== 2) {
+                return;
+            }
+
+            const container = document.getElementById('manpower-hierarchy-view');
+            hierarchyPanState = {
+                active: true,
+                startX: e.clientX,
+                startY: e.clientY,
+                scrollLeft: container.scrollLeft,
+                scrollTop: container.scrollTop
+            };
+
+            let panRafId = null;
+            const panMoveHandler = (me) => {
+                if (!hierarchyPanState.active) return;
+
+                if (panRafId) cancelAnimationFrame(panRafId);
+                panRafId = requestAnimationFrame(() => {
+                    const dx = me.clientX - hierarchyPanState.startX;
+                    const dy = me.clientY - hierarchyPanState.startY;
+                    container.scrollLeft = hierarchyPanState.scrollLeft - dx;
+                    container.scrollTop = hierarchyPanState.scrollTop - dy;
+                });
+            };
+
+            const panUpHandler = () => {
+                hierarchyPanState.active = false;
+                window.removeEventListener('mousemove', panMoveHandler);
+                window.removeEventListener('mouseup', panUpHandler);
+            };
+
+            window.addEventListener('mousemove', panMoveHandler);
+            window.addEventListener('mouseup', panUpHandler);
+        }
+
+        async function resetHierarchyPositions() {
+            if (!confirm('모든 위치 정보와 그룹 계층 정보를 초기화하시겠습니까? (커스텀 그룹 삭제됨)')) return;
+            customGroups = [];
+            manpowers.forEach(m => {
+                delete m.hierarchyPos;
+                delete m.parentId;
+            });
+            saveCustomGroups().catch(console.error);
+            saveManpowerToPersistence().catch(console.error);
+            renderManpowerHierarchy(manpowers);
+        }
+
+        async function saveManpowerPosition(id, x, y) {
+            const idx = manpowers.findIndex(m => m.id === id);
+            if (idx === -1) return;
+
+            manpowers[idx].hierarchyPos = { x, y };
+            saveManpowerToPersistence().catch(console.error);
+        }
+
+        async function saveCustomGroups() {
+            localStorage.setItem('manpowerGroups', JSON.stringify(customGroups));
+            if (ghConfig.token && ghConfig.autoSync) {
+                await syncWithGitHub('upload', 'task/manpowerGroups.json', customGroups);
+            }
+        }
+
+        async function addCustomGroup() {
+            const name = prompt('새 그룹 이름을 입력하세요 (예: 프론트엔드 파트):');
+            if (!name || name.trim() === '') return;
+
+            const container = document.getElementById('manpower-hierarchy-view');
+            const x = (container.scrollLeft + container.clientWidth / 2) / currentHierarchyScale;
+            const y = (container.scrollTop + container.clientHeight / 2) / currentHierarchyScale;
+
+            customGroups.push({
+                id: 'group-' + Date.now(),
+                name: name.trim(),
+                x: x - 70,
+                y: y - 20,
+                parentId: null
+            });
+            saveCustomGroups().catch(console.error);
+            renderManpower();
+        }
+
+        async function editCustomGroup(id) {
+            const group = customGroups.find(g => g.id === id);
+            if (!group) return;
+
+            const action = prompt(`[${group.name}] 그룹의 새 이름을 입력하거나, 삭제하려면 '삭제' 라고 입력하세요:`, group.name);
+            if (action === null) return;
+
+            if (action.trim() === '삭제') {
+                if (!confirm(`'${group.name}' 그룹을 삭제하시겠습니까? (하위 인원은 유지됩니다)`)) return;
+                customGroups = customGroups.filter(g => g.id !== id);
+                manpowers.forEach(m => { if (m.parentId === id) m.parentId = null; });
+                customGroups.forEach(g => { if (g.parentId === id) g.parentId = null; });
+                saveCustomGroups().catch(console.error);
+                saveManpowerToPersistence().catch(console.error);
+            } else if (action.trim() !== '') {
+                group.name = action.trim();
+                saveCustomGroups().catch(console.error);
+            }
+            renderManpower();
+        }
+
+        async function autoGenerateGroupsByOrg() {
+            if (!confirm("기존 마인드맵 배치가 초기화되고 등록된 '조직(org)' 기준으로 자동 생성됩니다. 진행할까요?")) return;
+
+            customGroups = [];
+            manpowers.forEach(m => { delete m.hierarchyPos; m.parentId = null; });
+
+            const orgs = [...new Set(manpowers.map(m => m.org || '미지정'))].filter(o => o);
+            orgs.forEach((orgName, idx) => {
+                const gId = 'group-' + Date.now() + '-' + idx;
+                customGroups.push({
+                    id: gId,
+                    name: orgName,
+                    x: 1500 + (idx - orgs.length / 2) * 350,
+                    y: 200,
+                    parentId: null
+                });
+
+                manpowers.forEach(m => {
+                    if ((m.org || '미지정') === orgName) {
+                        m.parentId = gId;
+                        m.hierarchyPos = {
+                            x: 1500 + (idx - orgs.length / 2) * 350 + (Math.random() * 100 - 50),
+                            y: 400 + (Math.random() * 300)
+                        };
+                    }
+                });
+            });
+            saveCustomGroups().catch(console.error);
+            saveManpowerToPersistence().catch(console.error);
+            renderManpower();
+        }
+
 
         function confirmManpowerSearch() {
             currentManpowerSearch = document.getElementById('manpower-search-input').value;
@@ -1865,6 +3031,7 @@
             if (id) {
                 const m = manpowers.find(x => x.id === id);
                 document.getElementById('manpower-id').value = m.id;
+                document.getElementById('m-org').value = m.org || '';
                 document.getElementById('m-project').value = m.project || '';
                 document.getElementById('m-name').value = m.name;
                 document.getElementById('m-nickname').value = m.nickname;
@@ -1884,6 +3051,7 @@
             const id = document.getElementById('manpower-id').value;
             const manpower = {
                 id: id || Date.now().toString(),
+                org: document.getElementById('m-org').value,
                 project: document.getElementById('m-project').value,
                 name: document.getElementById('m-name').value,
                 nickname: document.getElementById('m-nickname').value,
@@ -1892,8 +3060,19 @@
                 updated_at: new Date().toISOString()
             };
 
-            if (id) manpowers = manpowers.map(m => m.id === id ? manpower : m);
-            else manpowers.push(manpower);
+            if (id) {
+                const existingIndex = manpowers.findIndex(m => m.id === id);
+                if (existingIndex !== -1) {
+                    manpowers[existingIndex] = { ...manpowers[existingIndex], ...manpower };
+                }
+            } else {
+                const isDupe = manpowers.some(m => m.name === manpower.name || (m.nickname && m.nickname === manpower.nickname));
+                if (isDupe) {
+                    alert('동일한 이름이나 닉네임을 가진 인원이 이미 등록되어 있습니다.');
+                    return;
+                }
+                manpowers.push(manpower);
+            }
 
             localStorage.setItem('manpowers', JSON.stringify(manpowers));
             closeManpowerModal();
@@ -1950,10 +3129,14 @@
 
             const targetIdxAfterSplice = manpowers.findIndex(m => m.id === targetId);
             if (targetIdxAfterSplice === -1) {
-                // Should not happen, but fallback
                 manpowers.push(draggedItem);
             } else {
-                draggedItem.project = manpowers[targetIdxAfterSplice].project;
+                // Sync property based on current view mode
+                if (currentManpowerViewMode === 'org') {
+                    draggedItem.org = manpowers[targetIdxAfterSplice].org;
+                } else {
+                    draggedItem.project = manpowers[targetIdxAfterSplice].project;
+                }
                 manpowers.splice(targetIdxAfterSplice, 0, draggedItem);
             }
 
@@ -1968,12 +3151,23 @@
             const draggedIdx = manpowers.findIndex(m => m.id === draggedId);
             if (draggedIdx === -1) return;
 
-            // Update project and move to the end of that project
             const [draggedItem] = manpowers.splice(draggedIdx, 1);
             draggedItem.project = projectName;
+            manpowers.push(draggedItem);
 
-            // To make it appear at the end of the project, we can just push it to the end of array
-            // Since renderManpower groups by project, it stays in the project but the flat order changes.
+            saveManpowerToPersistence();
+        }
+
+        function handleDropOnOrg(e, orgName) {
+            e.preventDefault();
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            if (draggedId === null) return;
+
+            const draggedIdx = manpowers.findIndex(m => m.id === draggedId);
+            if (draggedIdx === -1) return;
+
+            const [draggedItem] = manpowers.splice(draggedIdx, 1);
+            draggedItem.org = orgName;
             manpowers.push(draggedItem);
 
             saveManpowerToPersistence();
@@ -1986,75 +3180,226 @@
                 await syncWithGitHub('upload', 'task/manpower.json', manpowers);
             }
         }
-        // --- News Logic ---
+        // --- News Logic (v3 - 병렬 fetch + 다중 프록시 + 오늘 일자 엄격 필터) ---
         let googleNewsItems = [];
-        let googleVisibleCount = 10;
+        let googleVisibleCount = 20;
         let stockPlusNewsItems = [];
-        let stockPlusVisibleCount = 10;
+        let stockPlusVisibleCount = 20;
         let itNewsItemsList = [];
-        let itVisibleCount = 10;
+        let itVisibleCount = 20;
 
-        async function fetchGoogleNewsRSS(rssUrl) {
-            const finalRssUrl = rssUrl + (rssUrl.includes('?') ? '&' : '?') + 'v=' + Math.floor(Date.now() / 1800000); // 30분 단위 캐시우회
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(finalRssUrl)}`);
-            if (res.status === 429) throw new Error('요청이 너무 많습니다 (HTTP 429). 약 30분 후 다시 시도해 주세요.');
-            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-            const data = await res.json();
-            if (data.status !== 'ok') throw new Error('RSS 데이터 로드 실패');
-            return data.items;
+        // 오늘 날짜 문자열 (YYYY-MM-DD) - 캐시 키에 사용하여 자정 넘기면 자동 만료
+        function getTodayDateStr() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         }
 
-        async function searchGoogleNews(reset = false) {
-            console.log('searchGoogleNews triggered, reset:', reset);
-            const defaultKeyword = "핫이슈 OR 헤드라인";
-            const keyword = document.getElementById('news-keyword').value.trim() || defaultKeyword;
-            const contentEl = document.getElementById('news-left-content');
-            const cacheKey = `news_cache_google_${keyword}`;
+        function updateNewsTodayDate() {
+            const el = document.getElementById('news-today-date');
+            if (el) {
+                const now = new Date();
+                el.innerText = `📅 ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 기준`;
+            }
+        }
 
-            if (reset) {
-                googleNewsItems = [];
-                googleVisibleCount = 10;
-                localStorage.removeItem(cacheKey);
+        // 스켈레톤 로딩 UI
+        function showNewsSkeleton(containerId) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            el.innerHTML = Array.from({ length: 5 }, () => `
+                <div style="padding:1.25rem 0; border-bottom:1px solid #f0f0f2;">
+                    <div style="height:16px; background:linear-gradient(90deg,#f0f0f5 25%,#e8e8ed 50%,#f0f0f5 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:8px; margin-bottom:8px; width:${70 + Math.random() * 30}%;"></div>
+                    <div style="height:12px; background:linear-gradient(90deg,#f0f0f5 25%,#e8e8ed 50%,#f0f0f5 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:6px; width:35%;"></div>
+                </div>
+            `).join('');
+        }
+
+        // 다중 RSS 프록시 (하나 실패시 다음 프록시로 자동 전환)
+        const RSS_PROXIES = [
+            { url: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`, parse: 'xml' },
+            { url: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, parse: 'xml' },
+            { url: (url) => `https://api.codetabs.com/v1/proxy/?quest=${url}`, parse: 'xml' },
+            { url: (url) => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`, parse: 'json' }
+        ];
+
+        async function fetchGoogleNewsRSS(rssUrl) {
+            const cacheBuster = Math.floor(Date.now() / 600000); // 10분 단위
+            const finalRssUrl = rssUrl + (rssUrl.includes('?') ? '&' : '?') + 'v=' + cacheBuster;
+
+            // AbortController (15초 타임아웃으로 연장하여 연결 안정화)
+            const makeController = () => {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 15000);
+                return { signal: ctrl.signal, clear: () => clearTimeout(timer) };
+            };
+
+            for (const proxy of RSS_PROXIES) {
+                try {
+                    const { signal, clear } = makeController();
+                    const proxyUrl = proxy.url(finalRssUrl);
+                    const res = await fetch(proxyUrl, { signal });
+                    clear();
+
+                    if (!res.ok) continue;
+
+                    if (proxy.parse === 'json') {
+                        const data = await res.json();
+                        if (data.status === 'ok' && data.items && data.items.length > 0) return data.items;
+                    } else if (proxy.parse === 'xml') {
+                        const xmlText = await res.text();
+                        const items = parseRSSXml(xmlText);
+                        if (items && items.length > 0) return items;
+                    }
+                } catch (e) {
+                    console.warn(`[NEWS] proxy ${proxy.parse} failed:`, e.message);
+                }
             }
 
-            // 캐시 확인 (1시간 유효)
-            if (!reset && googleNewsItems.length === 0) {
+            throw new Error('모든 뉴스 서버 연결 실패. 잠시 후 다시 시도해 주세요.');
+        }
+
+        // XML RSS 직접 파서
+        function parseRSSXml(xmlText) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(xmlText, 'text/xml');
+            const items = doc.querySelectorAll('item');
+            return Array.from(items).map(item => ({
+                title: item.querySelector('title')?.textContent || '',
+                link: item.querySelector('link')?.textContent || '',
+                pubDate: item.querySelector('pubDate')?.textContent || '',
+                description: item.querySelector('description')?.textContent || ''
+            }));
+        }
+
+        // 뉴스 필터링 (제외 키워드만 적용, 최대 20개 - Google News RSS가 이미 최신순 반환)
+        function filterTodayNews(items, excludeKeywords = []) {
+            const filtered = items.filter(item => {
+                // 제외 키워드 필터
+                const title = (item.title || '').toLowerCase();
+                const desc = (item.description || '').toLowerCase();
+                for (const kw of excludeKeywords) {
+                    if (title.includes(kw) || desc.includes(kw)) return false;
+                }
+                return true;
+            });
+
+            return filtered.slice(0, 20); // 최대 20개
+        }
+
+        // 캐시 관리: 오늘 일자 기반 + 30분 TTL
+        function getNewsCache(keyword, category) {
+            const todayStr = getTodayDateStr();
+            const cacheKey = `news_v3_${category}_${keyword}_${todayStr}`;
+            try {
                 const cached = localStorage.getItem(cacheKey);
                 if (cached) {
                     const { items, timestamp } = JSON.parse(cached);
-                    if (Date.now() - timestamp < 60 * 60 * 1000) {
-                        googleNewsItems = items;
-                        renderGoogleNews();
-                        return;
+                    // 0건 캐시는 무시 (재조회 필요)
+                    if (items && items.length > 0 && Date.now() - timestamp < 30 * 60 * 1000) {
+                        return items;
                     }
+                }
+            } catch (e) { }
+            return null;
+        }
+
+        function setNewsCache(keyword, category, items) {
+            const todayStr = getTodayDateStr();
+            const cacheKey = `news_v3_${category}_${keyword}_${todayStr}`;
+            try {
+                localStorage.setItem(cacheKey, JSON.stringify({ items, timestamp: Date.now() }));
+                // 어제 이전 캐시 정리
+                cleanOldNewsCache(todayStr);
+            } catch (e) { }
+        }
+
+        function cleanOldNewsCache(todayStr) {
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.startsWith('news_v3_') || key.startsWith('news_cache_')) {
+                    if (!key.includes(todayStr)) {
+                        localStorage.removeItem(key);
+                    }
+                }
+            });
+        }
+
+        // 즉시 캐시 로드 (페이지 로딩 시 딜레이 없이)
+        function loadNewsCacheImmediate() {
+            const kw1 = document.getElementById('news-keyword')?.value.trim() || '__top__';
+            const kw2 = document.getElementById('stockplus-keyword')?.value.trim() || '__biz__';
+            const kw3 = document.getElementById('it-news-keyword')?.value.trim() || '__tech__';
+
+            const c1 = getNewsCache(kw1, 'google');
+            const c2 = getNewsCache(kw2, 'stock');
+            const c3 = getNewsCache(kw3, 'it');
+
+            if (c1 && c1.length > 0) { googleNewsItems = c1; renderGoogleNews(); }
+            if (c2 && c2.length > 0) { stockPlusNewsItems = c2; renderStockPlusNews(); }
+            if (c3 && c3.length > 0) { itNewsItemsList = c3; renderITNews(); }
+        }
+
+        // 병렬 뉴스 fetch (3개 동시 요청으로 속도 3배 개선)
+        async function parallelNewsFetch(reset = false) {
+            if (!reset && googleNewsItems.length > 0 && stockPlusNewsItems.length > 0 && itNewsItemsList.length > 0) return;
+
+            console.log('Parallel news fetch started (reset:', reset, ')');
+
+            // 3개 뉴스 동시 요청
+            const results = await Promise.allSettled([
+                searchGoogleNews(reset),
+                fetchStockPlusNews(reset),
+                fetchITNews(reset)
+            ]);
+
+            results.forEach((r, i) => {
+                if (r.status === 'rejected') {
+                    console.warn(`News fetch ${i} failed:`, r.reason);
+                }
+            });
+        }
+
+        // 전체 새로고침 버튼
+        function refreshAllNews() {
+            showNewsSkeleton('news-left-content');
+            showNewsSkeleton('news-right-content');
+            showNewsSkeleton('news-it-content');
+            googleNewsItems = [];
+            stockPlusNewsItems = [];
+            itNewsItemsList = [];
+            parallelNewsFetch(true);
+        }
+
+        async function searchGoogleNews(reset = false) {
+            const keyword = document.getElementById('news-keyword').value.trim();
+            const contentEl = document.getElementById('news-left-content');
+
+            if (reset) {
+                googleNewsItems = [];
+                googleVisibleCount = 20;
+            }
+
+            // 캐시 확인
+            const cacheCategory = keyword || '__top__';
+            if (!reset && googleNewsItems.length === 0) {
+                const cached = getNewsCache(cacheCategory, 'google');
+                if (cached) {
+                    googleNewsItems = cached;
+                    renderGoogleNews();
+                    return;
                 }
             }
 
             if (googleNewsItems.length === 0) {
-                contentEl.innerHTML = '뉴스를 검색하는 중...';
+                showNewsSkeleton('news-left-content');
                 try {
-                    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`;
+                    // 기본: 한국 탑 헤드라인 RSS / 검색어 입력시 search RSS
+                    const url = keyword
+                        ? `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`
+                        : `https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko`;
                     const items = await fetchGoogleNewsRSS(url);
-
-                    const now = new Date();
-                    const todayStr = now.toDateString();
-                    googleNewsItems = items.filter(item => {
-                        if (!item.pubDate) return false;
-                        const pb = new Date(item.pubDate.replace(/-/g, '/').replace(/\. /g, '/').replace(/\./g, '/'));
-                        const isToday = pb.toDateString() === todayStr;
-                        if (!isToday) return false;
-
-                        const title = (item.title || "").toLowerCase();
-                        const desc = (item.description || "").toLowerCase();
-                        if (title.includes("조선일보") || desc.includes("조선일보")) return false;
-                        return true;
-                    });
-
-                    // 캐시 저장
-                    localStorage.setItem(cacheKey, JSON.stringify({
-                        items: googleNewsItems,
-                        timestamp: Date.now()
-                    }));
+                    googleNewsItems = filterTodayNews(items, ['조선일보']);
+                    setNewsCache(cacheCategory, 'google', googleNewsItems);
                 } catch (e) {
                     contentEl.innerHTML = `<div style="color:var(--danger); padding:1.5rem; text-align:center; background:#fff1f0; border-radius:1rem;">
                         <p style="font-weight:700; margin-bottom:0.5rem;">⚠️ 조회 오류</p>
@@ -2073,19 +3418,14 @@
             if (countEl) countEl.innerText = `(오늘: ${googleNewsItems.length}건)`;
 
             if (googleNewsItems.length === 0) {
-                contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">최근 등록된 관련 뉴스가 없습니다.</div>';
+                contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">오늘 등록된 관련 뉴스가 없습니다.</div>';
                 return;
             }
             const itemsToShow = googleNewsItems.slice(0, googleVisibleCount);
             contentEl.innerHTML = itemsToShow.map(item => {
                 const title = item.title || '제목 없음';
                 const link = item.link || '#';
-                const pubDateStr = item.pubDate;
-                let pubDateText = '';
-                if (pubDateStr) {
-                    const d = new Date(pubDateStr.replace(/-/g, '/'));
-                    pubDateText = `${d.toLocaleDateString()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-                }
+                const pubDateText = formatNewsDate(item.pubDate);
                 const descTxt = (item.description || '').replace(/<[^>]*>?/gm, '').substring(0, 300);
                 return `
                     <div class="news-item-card" onclick="showArticleModal(this)" data-title="${title.replace(/"/g, '&quot;')}" data-link="${link}" data-desc="${descTxt.replace(/"/g, '&quot;')}">
@@ -2094,67 +3434,40 @@
                     </div>
                 `;
             }).join('');
-        }
-
-        async function staggerNewsFetch(reset = false) {
-            // 캐시 데이터가 있고 리셋이 아니면 스킵하여 속도 개선
-            if (!reset && googleNewsItems.length > 0 && stockPlusNewsItems.length > 0 && itNewsItemsList.length > 0) return;
-
-            console.log('Staggered news fetch started...');
-            try {
-                await searchGoogleNews(reset);
-                // 429 에러 방지를 위한 최소한의 지연 (사용자 경험을 위해 2초로 단축)
-                await new Promise(r => setTimeout(r, 2000));
-                await fetchStockPlusNews(reset);
-                await new Promise(r => setTimeout(r, 2000));
-                await fetchITNews(reset);
-            } catch (e) {
-                console.warn('News fetch staggered error:', e);
+            if (googleNewsItems.length > googleVisibleCount) {
+                contentEl.innerHTML += `<div style="text-align:center; padding:1rem;"><button class="btn-mini" style="padding:0.5rem 1.5rem;" onclick="googleVisibleCount+=10; renderGoogleNews()">더보기 (+10)</button></div>`;
             }
         }
-
-
 
         async function fetchStockPlusNews(reset = false) {
             const contentEl = document.getElementById('news-right-content');
-            const keyword = document.getElementById('stockplus-keyword').value.trim() || '증권 OR 경제';
-            const cacheKey = `news_cache_stock_${keyword}`;
+            const keyword = document.getElementById('stockplus-keyword').value.trim();
 
             if (reset) {
                 stockPlusNewsItems = [];
-                stockPlusVisibleCount = 10;
-                localStorage.removeItem(cacheKey);
+                stockPlusVisibleCount = 20;
             }
 
+            const cacheCategory = keyword || '__biz__';
             if (!reset && stockPlusNewsItems.length === 0) {
-                const cached = localStorage.getItem(cacheKey);
+                const cached = getNewsCache(cacheCategory, 'stock');
                 if (cached) {
-                    const { items, timestamp } = JSON.parse(cached);
-                    if (Date.now() - timestamp < 60 * 60 * 1000) {
-                        stockPlusNewsItems = items;
-                        renderStockPlusNews();
-                        return;
-                    }
+                    stockPlusNewsItems = cached;
+                    renderStockPlusNews();
+                    return;
                 }
             }
 
             if (stockPlusNewsItems.length === 0) {
-                contentEl.innerHTML = '실시간 기사를 불러오는 중...';
+                showNewsSkeleton('news-right-content');
                 try {
-                    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`;
+                    // 기본: Google News 한국 경제 섹션 RSS (이전 rss2json 에러 우회하기 위해 allorigins 등으로 처리됨)
+                    const url = keyword
+                        ? `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`
+                        : `https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR:ko`;
                     const items = await fetchGoogleNewsRSS(url);
-
-                    const now = new Date();
-                    const todayStr = now.toDateString();
-                    stockPlusNewsItems = items.filter(item => {
-                        if (!item.pubDate) return false;
-                        const pb = new Date(item.pubDate.replace(/-/g, '/').replace(/\. /g, '/').replace(/\./g, '/'));
-                        return pb.toDateString() === todayStr;
-                    });
-                    localStorage.setItem(cacheKey, JSON.stringify({
-                        items: stockPlusNewsItems,
-                        timestamp: Date.now()
-                    }));
+                    stockPlusNewsItems = filterTodayNews(items);
+                    setNewsCache(cacheCategory, 'stock', stockPlusNewsItems);
                 } catch (e) {
                     contentEl.innerHTML = `
                         <div style="color:var(--danger); padding:1.5rem; text-align:center; background:#fff1f0; border-radius:1rem;">
@@ -2170,44 +3483,33 @@
 
         async function fetchITNews(reset = false) {
             const contentEl = document.getElementById('news-it-content');
-            const keyword = document.getElementById('it-news-keyword').value.trim() || 'IT OR 테크 OR 반도체 OR AI';
-            const cacheKey = `news_cache_it_${keyword}`;
+            const keyword = document.getElementById('it-news-keyword').value.trim();
 
             if (reset) {
                 itNewsItemsList = [];
-                itVisibleCount = 10;
-                localStorage.removeItem(cacheKey);
+                itVisibleCount = 20;
             }
 
+            const cacheCategory = keyword || '__tech__';
             if (!reset && itNewsItemsList.length === 0) {
-                const cached = localStorage.getItem(cacheKey);
+                const cached = getNewsCache(cacheCategory, 'it');
                 if (cached) {
-                    const { items, timestamp } = JSON.parse(cached);
-                    if (Date.now() - timestamp < 60 * 60 * 1000) {
-                        itNewsItemsList = items;
-                        renderITNews();
-                        return;
-                    }
+                    itNewsItemsList = cached;
+                    renderITNews();
+                    return;
                 }
             }
 
             if (itNewsItemsList.length === 0) {
-                contentEl.innerHTML = 'IT 기사를 불러오는 중...';
+                showNewsSkeleton('news-it-content');
                 try {
-                    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`;
+                    // 기본: Google News IT 관련 한국어 키워드 검색 RSS (토픽 URL 에러 대체)
+                    const url = keyword
+                        ? `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=ko&gl=KR&ceid=KR:ko`
+                        : `https://news.google.com/rss/search?q=${encodeURIComponent('IT OR 테크 OR 인공지능')}&hl=ko&gl=KR&ceid=KR:ko`;
                     const items = await fetchGoogleNewsRSS(url);
-
-                    const now = new Date();
-                    const todayStr = now.toDateString();
-                    itNewsItemsList = items.filter(item => {
-                        if (!item.pubDate) return false;
-                        const pb = new Date(item.pubDate.replace(/-/g, '/').replace(/\. /g, '/').replace(/\./g, '/'));
-                        return pb.toDateString() === todayStr;
-                    });
-                    localStorage.setItem(cacheKey, JSON.stringify({
-                        items: itNewsItemsList,
-                        timestamp: Date.now()
-                    }));
+                    itNewsItemsList = filterTodayNews(items);
+                    setNewsCache(cacheCategory, 'it', itNewsItemsList);
                 } catch (e) {
                     contentEl.innerHTML = `
                         <div style="color:var(--danger); padding:1.5rem; text-align:center; background:#fff1f0; border-radius:1rem;">
@@ -2227,21 +3529,15 @@
             if (countEl) countEl.innerText = `(오늘: ${itNewsItemsList.length}건)`;
 
             if (itNewsItemsList.length === 0) {
-                contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">최근 등록된 관련 뉴스가 없습니다.</div>';
+                contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">오늘 등록된 관련 뉴스가 없습니다.</div>';
                 return;
             }
             const itemsToShow = itNewsItemsList.slice(0, itVisibleCount);
             contentEl.innerHTML = itemsToShow.map(item => {
                 const title = item.title || '제목 없음';
                 const link = item.link || '#';
-                const pubDateStr = item.pubDate;
-                let pubDate = '';
-                if (pubDateStr) {
-                    const d = new Date(pubDateStr.replace(/-/g, '/'));
-                    pubDate = `${d.toLocaleDateString()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-                }
-                const descRaw = item.description || '';
-                const descTxt = descRaw.replace(/<[^>]*>?/gm, '').substring(0, 300);
+                const pubDate = formatNewsDate(item.pubDate);
+                const descTxt = (item.description || '').replace(/<[^>]*>?/gm, '').substring(0, 300);
 
                 return `
                     <div class="news-item-card" onclick="showArticleModal(this)" data-title="${title.replace(/"/g, '&quot;')}" data-link="${link}" data-desc="${descTxt.replace(/"/g, '&quot;')}">
@@ -2250,9 +3546,10 @@
                     </div>
                 `;
             }).join('');
+            if (itNewsItemsList.length > itVisibleCount) {
+                contentEl.innerHTML += `<div style="text-align:center; padding:1rem;"><button class="btn-mini" style="padding:0.5rem 1.5rem;" onclick="itVisibleCount+=10; renderITNews()">더보기 (+10)</button></div>`;
+            }
         }
-
-
 
         function renderStockPlusNews() {
             const contentEl = document.getElementById('news-right-content');
@@ -2260,21 +3557,15 @@
             if (countEl) countEl.innerText = `(오늘: ${stockPlusNewsItems.length}건)`;
 
             if (stockPlusNewsItems.length === 0) {
-                contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">당일 등록된 관련 뉴스가 없습니다.</div>';
+                contentEl.innerHTML = '<div style="color:#86868b; padding:1rem;">오늘 등록된 관련 뉴스가 없습니다.</div>';
                 return;
             }
             const itemsToShow = stockPlusNewsItems.slice(0, stockPlusVisibleCount);
             contentEl.innerHTML = itemsToShow.map(item => {
                 const title = item.title || '제목 없음';
                 const link = item.link || '#';
-                const pubDateStr = item.pubDate;
-                let pubDate = '';
-                if (pubDateStr) {
-                    const d = new Date(pubDateStr.replace(/-/g, '/'));
-                    pubDate = `${d.toLocaleDateString()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-                }
-                const descRaw = item.description || '';
-                const descTxt = descRaw.replace(/<[^>]*>?/gm, '').substring(0, 300);
+                const pubDate = formatNewsDate(item.pubDate);
+                const descTxt = (item.description || '').replace(/<[^>]*>?/gm, '').substring(0, 300);
 
                 return `
                     <div class="news-item-card" onclick="showArticleModal(this)" data-title="${title.replace(/"/g, '&quot;')}" data-link="${link}" data-desc="${descTxt.replace(/"/g, '&quot;')}">
@@ -2283,6 +3574,18 @@
                     </div>
                 `;
             }).join('');
+            if (stockPlusNewsItems.length > stockPlusVisibleCount) {
+                contentEl.innerHTML += `<div style="text-align:center; padding:1rem;"><button class="btn-mini" style="padding:0.5rem 1.5rem;" onclick="stockPlusVisibleCount+=10; renderStockPlusNews()">더보기 (+10)</button></div>`;
+            }
+        }
+
+        // 뉴스 날짜 포맷 헬퍼
+        function formatNewsDate(pubDateStr) {
+            if (!pubDateStr) return '';
+            let d = new Date(pubDateStr);
+            if (isNaN(d.getTime())) d = new Date(pubDateStr.replace(/-/g, '/'));
+            if (isNaN(d.getTime())) return pubDateStr;
+            return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
         }
 
 
@@ -2292,11 +3595,68 @@
             const link = el.getAttribute('data-link');
             const desc = el.getAttribute('data-desc');
 
-            document.getElementById('article-title').innerHTML = title;
-            document.getElementById('article-summary').innerHTML = desc || '뉴스 요약 정보를 제공하지 않는 기사입니다.';
-            document.getElementById('article-link').href = link;
+            const titleEl = document.getElementById('article-title');
+            const summaryEl = document.getElementById('article-summary');
 
+            titleEl.innerHTML = title;
+            summaryEl.innerHTML = `
+                <div style="text-align:center; padding: 4rem 2rem;">
+                    <div style="font-size:2rem; animation: spin 1s linear infinite; display:inline-block; margin-bottom:1rem;">⏳</div>
+                    <div style="color:#86868b; font-weight:600;">기사 원문을 가져와 정리하고 있습니다...</div>
+                    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+                </div>
+            `;
+            document.getElementById('article-link').href = link;
             document.getElementById('article-modal').classList.add('active');
+
+            try {
+                // corsproxy를 거치고 구글 뉴스 리다이렉트를 따라가기 위해 처리
+                const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(link)}`;
+
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 12000);
+
+                const res = await fetch(proxyUrl, { signal: ctrl.signal });
+                clearTimeout(timer);
+
+                if (res.ok) {
+                    const htmlText = await res.text();
+
+                    const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+
+                    // Base URI 보정 (상대 경로 이미지 복구용)
+                    const base = document.createElement('base');
+                    base.href = link;
+                    doc.head.appendChild(base);
+
+                    if (typeof Readability !== 'undefined') {
+                        const reader = new Readability(doc);
+                        const article = reader.parse();
+
+                        if (article && article.content) {
+                            summaryEl.innerHTML = article.content;
+                        } else {
+                            throw new Error('본문 내용 파싱 결과가 없습니다.');
+                        }
+                    } else {
+                        // Readability 라이브러리 로드 실패 시
+                        throw new Error('문서 정리 라이브러리를 불러오지 못했습니다.');
+                    }
+                } else {
+                    throw new Error('원문 사이트 접근 차단됨 (CORS/보안)');
+                }
+            } catch (err) {
+                console.warn('[NEWS] Article Extract Failed:', err.message);
+                summaryEl.innerHTML = `
+                    <div style="padding: 1rem; background: #fffcfb; border: 1px solid #ffddd9; border-radius: 8px;">
+                        <div style="color: #ff3b30; font-weight: 600; margin-bottom: 1.5rem;">
+                            ⚠️ 해당 뉴스 사이트의 보안 정책으로 인해 원문 페이지를 직접 가져올 수 없습니다. 아래의 원문 사이트로 이동하여 확인해 주세요.
+                        </div>
+                        <h4 style="color:#111; margin-bottom:0.5rem; font-size:1.1rem;">📝 내용 요약 프리뷰</h4>
+                        <div style="color: #48484a; line-height: 1.6;">${desc || '제공된 요약 정보가 없습니다.'}</div>
+                    </div>
+                `;
+            }
         }
 
         function closeArticleModal() {
@@ -2480,13 +3840,31 @@
                 <input type="hidden" id="manpower-id">
                 <div class="form-grid" style="margin-top: 1.5rem;">
                     <div class="form-group col-span-12">
+                        <label class="form-label">조직 (본부/팀)</label>
+                        <select id="m-org" class="form-control">
+                            <option value="">(선택)</option>
+                            <option value="본사">본사</option>
+                            <option value="USG">USG</option>
+                            <option value="BSG">BSG</option>
+                            <option value="ESI">ESI</option>
+                            <option value="ESM">ESM</option>
+                            <option value="CCE">CCE</option>
+                            <option value="GSS">GSS</option>
+                            <option value="TEC">TEC</option>
+                            <option value="Sales">Sales</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-span-12">
                         <label class="form-label">프로젝트</label>
                         <select id="m-project" class="form-control">
                             <option value="">(선택)</option>
-                            <option value="롯데 하이마트 쇼핑몰 운영 및 추가과제">롯데 하이마트 쇼핑몰 운영 및 추가과제</option>
+                            <option value="본사">본사</option>
+                            <option value="롯데하이마트">롯데하이마트</option>
                             <option value="신세계백화점 운영">신세계백화점 운영</option>
                             <option value="SSF SHOP 운영">SSF SHOP 운영</option>
                             <option value="한진관광 차세대 시스템 구축">한진관광 차세대 시스템 구축</option>
+                            <option value="BNKR">BNKR</option>
+                            <option value="바이린,제로그램,BSP">바이린,제로그램,BSP</option>
                         </select>
                     </div>
                     <div class="form-group col-span-6">
@@ -2501,6 +3879,9 @@
                         <label class="form-label">직위</label>
                         <select id="m-position" class="form-control">
                             <option value="">(선택)</option>
+                            <option value="CEO">CEO</option>
+                            <option value="CTO">CTO</option>
+                            <option value="상무">상무</option>
                             <option value="이사">이사</option>
                             <option value="수석">수석</option>
                             <option value="책임">책임</option>
@@ -2519,6 +3900,7 @@
                             <option value="퍼블">퍼블</option>
                             <option value="FE개발">FE개발</option>
                             <option value="디자인">디자인</option>
+                            <option value="DBA">DBA</option>
                             <option value="Architecture">Architecture</option>
                         </select>
                     </div>

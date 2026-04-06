@@ -1686,6 +1686,31 @@ body {
     opacity: 1;
 }
 
+.card-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    z-index: 10;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.card-delete-btn:hover {
+    background: var(--danger);
+    transform: scale(1.1);
+    opacity: 1;
+}
+
 .card-info h4 {
     font-size: 0.9rem;
     font-weight: 600;

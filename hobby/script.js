@@ -423,11 +423,12 @@ async function handleGlobalSearch(customQuery = null, limit = 100) {
     noResults.style.display = 'none';
     loading.style.display = 'flex';
 
-    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
+    const cleanQ = cleanSearchQuery(query);
+    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanQ)}`;
     
     // Proxy functions that return a promise
     const fetchFromProxy = async (proxyUrl) => {
-        const response = await fetch(proxyUrl);
+        const response = await fetch(proxyUrl, { method: 'GET' });
         if (!response.ok) throw new Error('Proxy failed');
         
         let html;
@@ -497,27 +498,31 @@ async function handleGlobalSearch(customQuery = null, limit = 100) {
         return results;
     };
 
-    // Parallel Proxy Requests (The fastest winning one returns first)
     const proxyUrls = [
-        // 1. CORSProxy.io (Highly reliable)
+        `https://api.codetabs.com/v1/proxy?quest=${ytUrl}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(ytUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(ytUrl)}`,
-        // 2. AllOrigins (JSON wrapper)
-        `https://api.allorigins.win/get?url=${encodeURIComponent(ytUrl)}`,
-        // 3. CodeTabs (Fast but sometimes limited)
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(ytUrl)}`,
-        // 4. ThingProxy (Fallback)
-        `https://thingproxy.freeboard.io/fetch/${ytUrl}`
+        `https://corsproxy.org/?${encodeURIComponent(ytUrl)}`,
+        `https://cors-anywhere.herokuapp.com/${ytUrl}`
     ];
 
     try {
-        // Promise.any takes the first one that SUCCEEDS.
-        // We wrap fetchFromProxy to ensure slow but failing results don't block.
         const fastestResults = await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
-        
-        // Save to cache
         searchCache.set(query, fastestResults);
         renderSongsFromCache(query, limit);
     } catch (err) {
+        console.warn("HTML proxies failed. Trying Piped API Fallback...");
+        try {
+            const pipedResults = await fetchFromPipedAPI(cleanQ, 'global_');
+            if (pipedResults && pipedResults.length > 0) {
+                searchCache.set(query, pipedResults);
+                renderSongsFromCache(query, limit);
+                return;
+            }
+        } catch (pipedErr) {
+            console.warn("Piped API also failed:", pipedErr);
+        }
+
         console.warn("All proxies failed or blocked. Trying local database fallback...");
         loading.style.display = 'none';
 
@@ -1310,6 +1315,22 @@ function addRecentSong(song) {
     syncWithGitHub('upload');
 }
 
+window.removeRecentSong = function(videoId) {
+    if (!confirm("이 곡을 다시 듣기 목록에서 삭제할까요?")) return;
+    let history = JSON.parse(localStorage.getItem(RECENTLY_PLAYED_KEY) || '[]');
+    history = history.filter(s => s.youtubeId !== videoId);
+    localStorage.setItem(RECENTLY_PLAYED_KEY, JSON.stringify(history));
+    renderHome(); // Refresh home UI
+    syncWithGitHub('upload');
+};
+
+window.clearRecentSongs = function() {
+    if (!confirm("다시 듣기 목록을 모두 삭제하시겠습니까?")) return;
+    localStorage.removeItem(RECENTLY_PLAYED_KEY);
+    renderHome(); // Refresh home UI
+    syncWithGitHub('upload');
+};
+
 
 async function renderHome() {
     const discoveryDashboard = document.getElementById('discoveryDashboard');
@@ -1333,7 +1354,8 @@ async function renderHome() {
     if (cached) {
         const { timestamp, sections } = JSON.parse(cached);
         const ageInMin = (Date.now() - timestamp) / 60000;
-        if (ageInMin < 15) { // Reduced to 15 minutes for fresher content
+        // MUST verify that sections.pop exists! (Cache migration fix)
+        if (ageInMin < 15 && sections && sections.pop) {
             renderDiscoveryFromData(sections);
             return;
         }
@@ -1360,29 +1382,41 @@ async function renderHome() {
             <div class="card-scroller" id="scrollerTrending"><div class="loading-state small"><div class="spinner"></div></div></div>
         </div>
         <div class="home-section">
+            <div class="section-header"><h2>최신 국내 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller" id="scrollerLatest"><div class="loading-state small"><div class="spinner"></div></div></div>
+        </div>
+        <div class="home-section">
+            <div class="section-header"><h2>Pop - 글로벌 히트 🌎</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller" id="scrollerPop"><div class="loading-state small"><div class="spinner"></div></div></div>
+        </div>
+        <div class="home-section">
             <div class="section-header"><h2>잔잔한 음악 🌿</h2> <span class="more-btn">더보기</span></div>
             <div class="card-scroller" id="scrollerSuggested"><div class="loading-state small"><div class="spinner"></div></div></div>
         </div>
-        <div class="home-section">
-            <div class="section-header"><h2>최신 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller" id="scrollerLatest"><div class="loading-state small"><div class="spinner"></div></div></div>
-        </div>
     `;
 
+    // Calculate recent 6 months query
+    function getRecent6MonthsQuery() {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+        // e.g., "2025년 10월 ~ 2026년 3월 최신 국내 가요 신곡"
+        return `${start.getFullYear()}년 ${start.getMonth() + 1}월 ~ ${now.getFullYear()}년 ${now.getMonth() + 1}월 최신 국내 가요 신곡`;
+    }
 
     // 3. Fetch from Network in Parallel
     try {
-        const [trending, suggested, latest] = await Promise.all([
+        const [trending, latest, pop, suggested] = await Promise.all([
             fetchCategorySongs("실시간 인기 차트 TOP 20", "scrollerTrending", 12),
-            fetchCategorySongs("잔잔하고 편안한 수면 명상 음악", "scrollerSuggested", 12),
-            fetchCategorySongs(new Date().getFullYear() + " 신곡 최신 발매", "scrollerLatest", 12)
+            fetchCategorySongs(getRecent6MonthsQuery(), "scrollerLatest", 12),
+            fetchCategorySongs("Trending Global Pop Hits " + new Date().getFullYear(), "scrollerPop", 12),
+            fetchCategorySongs("잔잔하고 편안한 수면 명상 음악", "scrollerSuggested", 12)
         ]);
 
 
-        if (trending && suggested && latest) {
+        if (trending && latest && pop && suggested) {
             const cacheData = {
                 timestamp: Date.now(),
-                sections: { trending, suggested, latest }
+                sections: { trending, latest, pop, suggested }
             };
             localStorage.setItem(HOME_CACHE_KEY, JSON.stringify(cacheData));
         }
@@ -1390,7 +1424,7 @@ async function renderHome() {
         console.warn("Network discovery failed, showing fallbacks.", e);
         // If everything fails, pick from the first few hardcoded songs
         const fallback = songs.slice(0, 10).map(s => ({...s, youtubeId: s.youtubeId || 'dQw4w9WgXcQ'}));
-        renderDiscoveryFromData({ trending: fallback, suggested: fallback, latest: fallback });
+        renderDiscoveryFromData({ trending: fallback, latest: fallback, pop: fallback, suggested: fallback });
     }
 }
 
@@ -1419,8 +1453,14 @@ function renderDiscoveryFromData(sections) {
     if (recentSongs.length > 0) {
         recentSectionHtml = `
             <div class="home-section" id="sectionRecently">
-                <div class="section-header"><h2>다시 듣기 🕒</h2> <span class="more-btn">모두 보기</span></div>
-                <div class="card-scroller">${renderCardList(recentSongs)}</div>
+                <div class="section-header">
+                    <h2>다시 듣기 🕒</h2> 
+                    <div style="display:flex; gap:10px;">
+                        <span class="more-btn delete-all" onclick="clearRecentSongs()" style="color:var(--danger); border-color:var(--danger);"><i class="fas fa-trash-alt"></i> 전체 삭제</span>
+                        <span class="more-btn">모두 보기</span>
+                    </div>
+                </div>
+                <div class="card-scroller">${renderCardList(recentSongs, true)}</div>
             </div>
         `;
     }
@@ -1432,25 +1472,30 @@ function renderDiscoveryFromData(sections) {
             <div class="card-scroller">${renderCardList(sections.trending)}</div>
         </div>
         <div class="home-section">
-            <div class="section-header"><h2>잔잔한 음악 🌿</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller">${renderCardList(sections.suggested)}</div>
+            <div class="section-header"><h2>최신 국내 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller">${renderCardList(sections.latest)}</div>
         </div>
         <div class="home-section">
-            <div class="section-header"><h2>최신 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller">${renderCardList(sections.latest)}</div>
+            <div class="section-header"><h2>Pop - 글로벌 히트 🌎</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller">${renderCardList(sections.pop)}</div>
+        </div>
+        <div class="home-section">
+            <div class="section-header"><h2>잔잔한 음악 🌿</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller">${renderCardList(sections.suggested)}</div>
         </div>
     `;
 }
 
 
 
-function renderCardList(songsList) {
+function renderCardList(songsList, isRecent = false) {
     if (!songsList) return '';
     return songsList.map(song => `
         <div class="music-card" onclick="handleSongClick(${JSON.stringify(song).replace(/"/g, '&quot;')}, 'audio')">
             <div class="card-thumb-wrapper">
                 <img src="https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg" loading="lazy">
                 <div class="card-play-overlay"><i class="fas fa-play"></i></div>
+                ${isRecent ? `<div class="card-delete-btn" onclick="event.stopPropagation(); removeRecentSong('${song.youtubeId}')" title="삭제"><i class="fas fa-times"></i></div>` : ''}
             </div>
             <div class="card-info">
                 <h4>${song.title}</h4>
@@ -1650,18 +1695,83 @@ function playPrevious() {
     }
 }
 
+/**
+ * Clean search query to prevent proxy/encoding errors
+ */
+function cleanSearchQuery(text) {
+    if (!text) return "";
+    let clean = text.split(/[|│\/\[\(]/)[0].trim();
+    clean = clean.replace(/[^\w\sㄱ-ㅎ가-힣]/g, ' ').replace(/\s+/g, ' ').trim();
+    return clean || text.substring(0, 50); 
+}
+
+/**
+ * Piped API Fallback Loader - Extremely robust alternative to HTML scraping.
+ */
+async function fetchFromPipedAPI(query, idPrefix = 'global_') {
+    const pipedNodes = [
+        'https://pipedapi.kavin.rocks',
+        'https://pipedapi.tokhmi.xyz',
+        'https://pipedapi.smnz.de'
+    ];
+    
+    for (const node of pipedNodes) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+            
+            const res = await fetch(`${node}/search?q=${encodeURIComponent(query)}&filter=all`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (!res.ok) continue;
+            const data = await res.json();
+            
+            if (data.items && data.items.length > 0) {
+                return data.items.filter(item => item.type === "stream" || (item.url && item.url.includes('?v='))).map(item => {
+                    const videoId = item.url.split('?v=')[1] || item.url.split('/watch?v=')[1];
+                    let durationText = "";
+                    if (item.duration) {
+                        const mins = Math.floor(item.duration / 60);
+                        const secs = item.duration % 60;
+                        durationText = `${mins}:${secs.toString().padStart(2, '0')}`;
+                    }
+                    return {
+                        id: idPrefix + videoId, 
+                        title: item.title,
+                        artist: item.uploaderName || 'YouTube Artist',
+                        youtubeId: videoId,
+                        duration: durationText,
+                        isGlobal: true,
+                        lyrics: `(API 자동 검색 결과)\n업로더: ${item.uploaderName || 'Unknown'}`
+                    };
+                });
+            }
+        } catch(e) {
+            console.warn(`Piped node ${node} failed`, e);
+        }
+    }
+    throw new Error("All piped nodes failed");
+}
+
 
 async function fetchRelatedSongs(query, timeoutMs = 7000) {
-    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
+    const cleanQ = cleanSearchQuery(query);
+    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanQ)}`;
     
     const fetchFromProxy = async (proxyUrl) => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
         try {
-            const response = await fetch(proxyUrl, { signal: controller.signal });
+            const response = await fetch(proxyUrl, { 
+                method: 'GET',
+                signal: controller.signal 
+            });
+            
             clearTimeout(timeoutId);
-            if (!response.ok) throw new Error('Proxy failed');
+            if (!response.ok) throw new Error(`Proxy failed: ${response.status}`);
             
             let html;
             const contentType = response.headers.get('content-type');
@@ -1670,26 +1780,33 @@ async function fetchRelatedSongs(query, timeoutMs = 7000) {
                 html = json.contents || json;
             } else { html = await response.text(); }
             
+            if (!html || typeof html !== 'string') throw new Error('Invalid content');
+
             const jsonMatch = html.match(/ytInitialData\s*=\s*({.+?});/);
             if (!jsonMatch) throw new Error('No ytInitialData');
             const ytData = JSON.parse(jsonMatch[1]);
             
             let contents = [];
             try {
-                contents = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
-            } catch(e) {
-                contents = ytData.contents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
-            }
+                const primary = ytData.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents;
+                if (primary && primary.length > 0) {
+                    contents = primary[0].itemSectionRenderer?.contents || [];
+                } else if (ytData.contents?.sectionListRenderer?.contents) {
+                    contents = ytData.contents.sectionListRenderer.contents[0].itemSectionRenderer?.contents || [];
+                }
+            } catch(e) { console.warn("Parse path failed, fallback..."); }
             
+            if (!contents || contents.length === 0) return [];
+
             return contents.filter(item => item.videoRenderer).map(item => {
                 const v = item.videoRenderer;
                 return {
                     id: 'related_' + v.videoId,
                     title: v.title.runs[0].text,
-                    artist: v.ownerText.runs[0].text,
+                    artist: (v.ownerText && v.ownerText.runs) ? v.ownerText.runs[0].text : 'YouTube Artist',
                     youtubeId: v.videoId,
                     isGlobal: true,
-                    lyrics: `(연관 추천곡) - ${v.ownerText.runs[0].text}`
+                    lyrics: `(연관 추천곡) - ${v.ownerText?.runs[0]?.text || 'Youtube'}`
                 };
             });
         } catch (e) {
@@ -1699,12 +1816,24 @@ async function fetchRelatedSongs(query, timeoutMs = 7000) {
     };
 
     const proxyUrls = [
+        `https://api.codetabs.com/v1/proxy?quest=${ytUrl}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(ytUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(ytUrl)}`,
-        `https://api.allorigins.win/get?url=${encodeURIComponent(ytUrl)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(ytUrl)}`
+        `https://corsproxy.org/?${encodeURIComponent(ytUrl)}`,
+        `https://cors-anywhere.herokuapp.com/${ytUrl}`
     ];
 
-    return await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
+    try {
+        const results = await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
+        return results || [];
+    } catch (e) {
+        console.warn("All search proxies failed:", e);
+        try {
+            return await fetchFromPipedAPI(cleanQ, 'related_');
+        } catch (pipedErr) {
+            return [];
+        }
+    }
 }
 
 
