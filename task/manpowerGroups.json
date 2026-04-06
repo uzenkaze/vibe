@@ -1,0 +1,79 @@
+[
+  {
+    "id": "group-1775028004948-0",
+    "name": "ESM",
+    "x": 407,
+    "y": 525,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-1",
+    "name": "ESI",
+    "x": 1805,
+    "y": 639,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-2",
+    "name": "BSG",
+    "x": 1290,
+    "y": 289,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-3",
+    "name": "CCE",
+    "x": 692,
+    "y": 2179,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-4",
+    "name": "GSS",
+    "x": 2099,
+    "y": 2262,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-5",
+    "name": "본사",
+    "x": 91,
+    "y": 317,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-6",
+    "name": "TEC",
+    "x": 2879,
+    "y": 620,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028004948-7",
+    "name": "USG",
+    "x": 2137,
+    "y": 113,
+    "parentId": null
+  },
+  {
+    "id": "group-1775028104948",
+    "name": "CEO",
+    "x": 998,
+    "y": 68,
+    "parentId": null
+  },
+  {
+    "id": "group-1775085241642",
+    "name": "CTO",
+    "x": 748,
+    "y": 202,
+    "parentId": null
+  },
+  {
+    "id": "group-1775085402374",
+    "name": "SALES",
+    "x": 1282,
+    "y": 187,
+    "parentId": null
+  }
+]

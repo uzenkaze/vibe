@@ -1,21 +1,33 @@
 [
   {
     "id": "1774508175423",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "한용식",
     "nickname": "Kaze",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T06:56:15.423Z"
+    "updated_at": "2026-04-01T02:12:36.911Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 272,
+      "y": 867
+    }
   },
   {
     "id": "1774507467637",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "김광석",
     "nickname": "Evelyn",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T06:44:27.637Z"
+    "updated_at": "2026-03-31T06:44:15.158Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1713,
+      "y": 878
+    }
   },
   {
     "id": "1774507499921",
@@ -24,546 +36,1496 @@
     "nickname": "Rhyme",
     "position": "이사",
     "jobGroup": "Architecture",
-    "updated_at": "2026-03-26T23:21:48.005Z"
+    "updated_at": "2026-04-02T02:28:19.810Z",
+    "parentId": "group-1775028004948-6",
+    "hierarchyPos": {
+      "x": 2977,
+      "y": 724
+    },
+    "org": "TEC"
   },
   {
     "id": "1774508027476",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "김민준",
     "nickname": "Chris",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T06:53:47.477Z"
+    "updated_at": "2026-04-01T02:12:42.321Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 30,
+      "y": 936
+    }
   },
   {
     "id": "1774508896990",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "임정현",
     "nickname": "Peco",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:56:40.575Z"
+    "updated_at": "2026-04-01T02:12:46.710Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 265,
+      "y": 1734
+    }
   },
   {
     "id": "1774511032231",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "송송희",
     "nickname": "Wish",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T07:47:41.217Z"
+    "updated_at": "2026-04-01T02:12:51.081Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 1,
+      "y": 1731
+    }
   },
   {
     "id": "1774511051208",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "이운우",
     "nickname": "Rain",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:48:54.685Z"
+    "updated_at": "2026-04-01T02:12:54.979Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 1,
+      "y": 1444
+    }
   },
   {
     "id": "1774511069026",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "강석구",
     "nickname": "mason",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:49:14.595Z"
+    "updated_at": "2026-04-01T02:12:58.897Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 1035,
+      "y": 917
+    }
   },
   {
     "id": "1774511087217",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "나연이",
     "nickname": "maisie",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:56:18.577Z"
+    "updated_at": "2026-04-01T02:13:02.681Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 1039,
+      "y": 1106
+    }
   },
   {
     "id": "1774511099292",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "박흥열",
     "nickname": "Cielo",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:56:03.105Z"
+    "updated_at": "2026-04-01T02:13:07.774Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 512,
+      "y": 1734
+    }
   },
   {
     "id": "1774511146415",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "문연희",
     "nickname": "Lun",
     "position": "책임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-03-26T07:45:57.042Z"
+    "updated_at": "2026-04-01T02:13:13.122Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 753,
+      "y": 1759
+    }
   },
   {
     "id": "1774511200532",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "이희준",
     "nickname": "Nick",
     "position": "이사",
     "jobGroup": "기획",
-    "updated_at": "2026-03-26T07:46:40.532Z"
+    "updated_at": "2026-03-31T06:50:40.621Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 272,
+      "y": 742
+    }
   },
   {
     "id": "1774511428029",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "진덕언",
     "nickname": "Rapha",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-26T23:20:38.746Z"
+    "updated_at": "2026-03-31T06:43:21.485Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2177,
+      "y": 884
+    }
   },
   {
     "id": "1774511461063",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "전한비",
     "nickname": "Nana",
     "position": "전임",
     "jobGroup": "기획",
-    "updated_at": "2026-03-26T23:20:26.118Z"
+    "updated_at": "2026-03-31T06:42:38.678Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2459,
+      "y": 1267
+    }
   },
   {
     "id": "1774511472683",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "길인수",
     "nickname": "Eden",
     "position": "책임",
     "jobGroup": "기획",
-    "updated_at": "2026-03-26T23:20:09.312Z"
+    "updated_at": "2026-03-31T06:40:00.882Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2365,
+      "y": 1152
+    }
   },
   {
     "id": "1774511493031",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "전예림",
     "nickname": "Ras",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-26T23:19:56.694Z"
+    "updated_at": "2026-03-31T06:44:28.862Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2380,
+      "y": 890
+    }
   },
   {
     "id": "1774511506741",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "김상배",
     "nickname": "Timo",
     "position": "책임",
     "jobGroup": "퍼블",
-    "updated_at": "2026-03-26T23:19:35.485Z"
+    "updated_at": "2026-03-31T06:45:06.944Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2287,
+      "y": 1034
+    }
   },
   {
     "id": "1774511535770",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "안민식",
     "nickname": "Buzz",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:18:43.073Z"
+    "updated_at": "2026-03-31T06:39:29.688Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1614,
+      "y": 998
+    }
   },
   {
     "id": "1774511555110",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "방승현",
     "nickname": "Aden",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:18:29.295Z"
+    "updated_at": "2026-03-31T06:45:16.604Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1343,
+      "y": 1409
+    }
   },
   {
     "id": "1774511569203",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "조성현",
     "nickname": "Simon",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:18:14.355Z"
+    "updated_at": "2026-03-31T06:40:33.223Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2215,
+      "y": 1264
+    }
   },
   {
     "id": "1774511585786",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "곽준영",
     "nickname": "Matthew",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:17:58.265Z"
+    "updated_at": "2026-03-31T06:38:47.835Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1831,
+      "y": 1000
+    }
   },
   {
     "id": "1774511596006",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "박성범",
     "nickname": "Jeno",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:17:45.359Z"
+    "updated_at": "2026-03-31T06:48:19.314Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1549,
+      "y": 1406
+    }
   },
   {
     "id": "1774511607812",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "박주한",
     "nickname": "Louis",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:17:18.140Z"
+    "updated_at": "2026-03-31T06:40:45.852Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1283,
+      "y": 1561
+    }
   },
   {
     "id": "1774511621102",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "문동윤",
     "nickname": "Wood",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:17:02.303Z"
+    "updated_at": "2026-03-31T06:50:20.033Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2300,
+      "y": 1573
+    }
   },
   {
     "id": "1774511635428",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "하윤철",
     "nickname": "Harry",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:16:45.637Z"
+    "updated_at": "2026-03-31T06:38:36.911Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1677,
+      "y": 1128
+    }
   },
   {
     "id": "1774511649711",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "곽재훈",
     "nickname": "Demian",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:16:33.405Z"
+    "updated_at": "2026-03-31T06:48:52.111Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1744,
+      "y": 1409
+    }
   },
   {
     "id": "1774511663007",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "이덕균",
     "nickname": "Leeroy",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:16:20.060Z"
+    "updated_at": "2026-03-31T06:39:48.382Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2094,
+      "y": 1137
+    }
   },
   {
     "id": "1774511672653",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "이진우",
     "nickname": "Paul",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:16:02.041Z"
+    "updated_at": "2026-03-31T06:49:14.106Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2106,
+      "y": 1698
+    }
   },
   {
     "id": "1774511683551",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "윤예원",
     "nickname": "Elsa",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:15:46.313Z"
+    "updated_at": "2026-03-31T06:42:59.834Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2108,
+      "y": 1572
+    }
   },
   {
     "id": "1774511723788",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "김승열",
     "nickname": "Andrew",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:15:06.838Z"
+    "updated_at": "2026-03-31T06:40:12.148Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1817,
+      "y": 1259
+    }
   },
   {
     "id": "1774511735093",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "이규진",
     "nickname": "Bart",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:14:48.946Z"
+    "updated_at": "2026-03-31T06:44:41.146Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1472,
+      "y": 1129
+    }
   },
   {
     "id": "1774511746783",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "편석호",
     "nickname": "Travis",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:14:34.754Z"
+    "updated_at": "2026-03-31T06:40:24.395Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2025,
+      "y": 1265
+    }
   },
   {
     "id": "1774511757717",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "이준오",
     "nickname": "Nemo",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:14:20.408Z"
+    "updated_at": "2026-03-31T06:44:54.142Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1881,
+      "y": 1132
+    }
   },
   {
     "id": "1774511771114",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "함연주",
     "nickname": "Winni",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:14:02.283Z"
+    "updated_at": "2026-03-31T06:48:37.492Z",
+    "parentId": "1774507467637",
+    "hierarchyPos": {
+      "x": 1951,
+      "y": 1411
+    }
   },
   {
     "id": "1774511781920",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "이주호",
     "nickname": "Wade",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:13:34.096Z"
+    "updated_at": "2026-03-31T06:49:04.677Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2182,
+      "y": 1417
+    }
   },
   {
     "id": "1774511792290",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "주소연",
     "nickname": "Roa",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:13:14.746Z"
+    "updated_at": "2026-03-31T06:43:10.679Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1894,
+      "y": 1571
+    }
   },
   {
     "id": "1774511803583",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "박소라",
     "nickname": "Michelle",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:12:55.058Z"
+    "updated_at": "2026-03-31T06:39:07.986Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1622,
+      "y": 1261
+    }
   },
   {
     "id": "1774511817096",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "조수현",
     "nickname": "Asher",
     "position": "사원",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:12:39.456Z"
+    "updated_at": "2026-03-31T06:50:29.307Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1684,
+      "y": 1560
+    }
   },
   {
     "id": "1774511826626",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "김효욱",
     "nickname": "Fran",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:12:15.262Z"
+    "updated_at": "2026-03-31T06:39:15.284Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2033,
+      "y": 1007
+    }
   },
   {
     "id": "1774511837663",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "이선용",
     "nickname": "Patric",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:11:34.706Z"
+    "updated_at": "2026-03-31T06:38:58.652Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1416,
+      "y": 1261
+    }
   },
   {
     "id": "1774511849698",
+    "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
     "name": "김도은",
     "nickname": "Daya",
     "position": "선임",
     "jobGroup": "FE개발",
-    "updated_at": "2026-03-26T23:11:52.584Z"
+    "updated_at": "2026-03-31T06:41:00.484Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1886,
+      "y": 1700
+    }
   },
   {
     "id": "1774511861893",
+    "org": "ESM",
     "project": "한진관광 차세대 시스템 구축",
     "name": "문성만",
     "nickname": "Abel",
     "position": "",
     "jobGroup": "개발",
-    "updated_at": "2026-03-26T23:09:54.807Z"
+    "updated_at": "2026-03-31T07:51:22.831Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 6,
+      "y": 1280
+    }
   },
   {
     "id": "1774593675890",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "이숙영",
     "nickname": "Liz",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-27T06:57:00.585Z"
+    "updated_at": "2026-03-31T07:50:32.889Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 364,
+      "y": 1414
+    }
   },
   {
     "id": "1774593763396",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "김장현",
     "nickname": "Luke",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:57:21.691Z"
+    "updated_at": "2026-03-31T07:52:15.427Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 217,
+      "y": 1134
+    }
   },
   {
     "id": "1774593772694",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "김희정",
     "nickname": "Jane",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:57:41.687Z"
+    "updated_at": "2026-03-31T07:57:03.317Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 333,
+      "y": 1599
+    }
   },
   {
     "id": "1774593785970",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "이경호",
     "nickname": "Bon",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:57:59.917Z"
+    "updated_at": "2026-03-31T07:50:42.121Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 266,
+      "y": 993
+    }
   },
   {
     "id": "1774593798782",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "우혜정",
     "nickname": "Terra",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:58:17.788Z"
+    "updated_at": "2026-03-31T07:51:33.817Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 923,
+      "y": 1545
+    }
   },
   {
     "id": "1774593808485",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "권대영",
     "nickname": "Karl",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:58:34.510Z"
+    "updated_at": "2026-03-31T07:54:33.742Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 535,
+      "y": 865
+    }
   },
   {
     "id": "1774593816926",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "김효중",
     "nickname": "Red",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:58:55.286Z"
+    "updated_at": "2026-03-31T07:50:55.487Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 446,
+      "y": 1125
+    }
   },
   {
     "id": "1774593825912",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "강현우",
     "nickname": "Kyle",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:59:13.883Z"
+    "updated_at": "2026-03-31T07:56:55.281Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 962,
+      "y": 1361
+    }
   },
   {
     "id": "1774593840415",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "이현승",
     "nickname": "Sirius",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:59:30.145Z"
+    "updated_at": "2026-03-31T07:57:10.643Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 539,
+      "y": 990
+    }
   },
   {
     "id": "1774593850661",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "김성훈",
     "nickname": "Denny",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:59:47.870Z"
+    "updated_at": "2026-03-31T07:56:43.647Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 35,
+      "y": 1120
+    }
   },
   {
     "id": "1774593958139",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "오창환",
     "nickname": "Owen",
     "position": "전임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T07:00:07.306Z"
+    "updated_at": "2026-03-31T07:53:25.240Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 408,
+      "y": 1237
+    }
   },
   {
     "id": "1774593972520",
+    "org": "ESM",
     "project": "신세계백화점 운영",
     "name": "백대현",
     "nickname": "kollet",
     "position": "선임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T07:00:24.552Z"
+    "updated_at": "2026-03-31T07:53:05.002Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 698,
+      "y": 1580
+    }
   },
   {
     "id": "1774593988483",
+    "org": "TEC",
     "project": "신세계백화점 운영",
     "name": "민경돈",
     "nickname": "Blue",
     "position": "이사",
     "jobGroup": "Architecture",
-    "updated_at": "2026-03-27T07:00:42.214Z"
+    "updated_at": "2026-04-01T23:47:14.483Z",
+    "hierarchyPos": {
+      "x": 2749,
+      "y": 728
+    },
+    "parentId": "group-1775028004948-6"
   },
   {
     "id": "1774593995661",
+    "org": "TEC",
     "project": "신세계백화점 운영",
     "name": "박인호",
     "nickname": "John",
     "position": "수석",
     "jobGroup": "",
-    "updated_at": "2026-03-27T07:01:01.192Z"
+    "updated_at": "2026-04-01T23:46:27.186Z",
+    "hierarchyPos": {
+      "x": 2978,
+      "y": 853
+    },
+    "parentId": "group-1775028004948-6"
   },
   {
     "id": "1774594002401",
+    "org": "TEC",
     "project": "신세계백화점 운영",
     "name": "김욱진",
     "nickname": "Jacob",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T07:01:25.988Z"
+    "updated_at": "2026-04-01T23:47:24.394Z",
+    "hierarchyPos": {
+      "x": 2750,
+      "y": 856
+    },
+    "parentId": "group-1775028004948-6"
   },
   {
     "id": "1774594044708",
+    "org": "ESM",
     "project": "SSF SHOP 운영",
     "name": "배영희",
     "nickname": "Joshua",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-27T07:01:49.292Z"
+    "updated_at": "2026-03-31T07:55:22.619Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 763,
+      "y": 747
+    }
   },
   {
     "id": "1774594053501",
+    "org": "ESM",
     "project": "SSF SHOP 운영",
     "name": "나하나",
     "nickname": "Summer",
     "position": "수석",
     "jobGroup": "기획",
-    "updated_at": "2026-03-27T07:02:06.332Z"
+    "updated_at": "2026-03-31T07:55:34.523Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 123,
+      "y": 1589
+    }
   },
   {
     "id": "1774594061756",
+    "org": "ESM",
     "project": "SSF SHOP 운영",
     "name": "윤숙영",
     "nickname": "Laila",
     "position": "책임",
     "jobGroup": "기획",
-    "updated_at": "2026-03-27T07:02:22.510Z"
+    "updated_at": "2026-03-31T07:51:13.485Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 810,
+      "y": 977
+    }
   },
   {
     "id": "1774594189885",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "윤경수",
     "nickname": "Luizi",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:49:49.885Z"
+    "updated_at": "2026-04-01T02:13:18.242Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 68,
+      "y": 797
+    }
   },
   {
     "id": "1774594219675",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "백명선",
     "nickname": "Lillian",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:50:19.675Z"
+    "updated_at": "2026-04-01T02:13:22.810Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 190,
+      "y": 1358
+    }
   },
   {
     "id": "1774594256105",
-    "project": "롯데 하이마트 쇼핑몰 운영 및 추가과제",
+    "org": "ESM",
+    "project": "롯데하이마트",
     "name": "강재윤",
     "nickname": "Rogue",
     "position": "책임",
     "jobGroup": "개발",
-    "updated_at": "2026-03-27T06:50:56.105Z"
+    "updated_at": "2026-04-01T02:13:26.746Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 599,
+      "y": 1281
+    }
+  },
+  {
+    "id": "1774921949232",
+    "project": "",
+    "name": "김응수",
+    "nickname": "Kimos",
+    "position": "이사",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:05:35.473Z",
+    "parentId": "group-1775028004948-3",
+    "hierarchyPos": {
+      "x": 687,
+      "y": 2294
+    },
+    "org": "CCE"
+  },
+  {
+    "id": "1774921969274",
+    "project": "",
+    "name": "윤권기",
+    "nickname": "Ryan",
+    "position": "이사",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:02:13.944Z",
+    "parentId": "group-1775028004948-3",
+    "hierarchyPos": {
+      "x": 567,
+      "y": 2430
+    },
+    "org": "CCE"
+  },
+  {
+    "id": "1774921988006",
+    "project": "",
+    "name": "박수정",
+    "nickname": "Jay",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:00:46.482Z",
+    "parentId": "group-1775028004948-3",
+    "hierarchyPos": {
+      "x": 814,
+      "y": 2437
+    },
+    "org": "CCE"
+  },
+  {
+    "id": "1774922003282",
+    "project": "",
+    "name": "유준상",
+    "nickname": "Jelly",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:01:29.339Z",
+    "parentId": "group-1775028004948-3",
+    "hierarchyPos": {
+      "x": 868,
+      "y": 2564
+    },
+    "org": "CCE"
+  },
+  {
+    "id": "1774922049938",
+    "project": "",
+    "name": "서광호",
+    "nickname": "L.kel",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:01:49.982Z",
+    "parentId": "group-1775028004948-3",
+    "hierarchyPos": {
+      "x": 610,
+      "y": 2694
+    },
+    "org": "CCE"
+  },
+  {
+    "id": "1774922073696",
+    "org": "CCE",
+    "project": "",
+    "name": "유재찬",
+    "nickname": "Jack",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T02:40:35.694Z",
+    "parentId": "group-1775028004948-3",
+    "hierarchyPos": {
+      "x": 535,
+      "y": 2570
+    }
+  },
+  {
+    "id": "1774922093612",
+    "org": "CCE",
+    "project": "",
+    "name": "유경호",
+    "nickname": "Julian",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T02:39:28.281Z",
+    "parentId": "group-1775028004948-3",
+    "hierarchyPos": {
+      "x": 826,
+      "y": 2690
+    }
+  },
+  {
+    "id": "1774922129080",
+    "project": "GSS",
+    "name": "박창석",
+    "nickname": "Ninety",
+    "position": "이사",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-31T01:55:29.080Z",
+    "parentId": "group-1775028004948-4",
+    "hierarchyPos": {
+      "x": 2089,
+      "y": 2358
+    }
+  },
+  {
+    "id": "1774925006079",
+    "org": "GSS",
+    "project": "",
+    "name": "송영민",
+    "nickname": "Zenith",
+    "position": "상무",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T02:41:46.586Z",
+    "parentId": "group-1775028004948-4",
+    "hierarchyPos": {
+      "x": 1999,
+      "y": 2474
+    }
+  },
+  {
+    "id": "1774925041890",
+    "org": "GSS",
+    "project": "바이린,제로그램,BSP",
+    "name": "이영민",
+    "nickname": "Walley",
+    "position": "이사",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T23:15:53.578Z",
+    "hierarchyPos": {
+      "x": 2206,
+      "y": 2476
+    },
+    "parentId": "group-1775028004948-4"
+  },
+  {
+    "id": "1774925062957",
+    "project": "",
+    "name": "권정숙",
+    "nickname": "Judy",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T02:29:48.450Z",
+    "parentId": "group-1775028004948-4",
+    "hierarchyPos": {
+      "x": 1913,
+      "y": 2601
+    },
+    "org": "GSS"
+  },
+  {
+    "id": "1774925150817",
+    "org": "GSS",
+    "project": "바이린,제로그램,BSP",
+    "name": "김덕기",
+    "nickname": "Logan",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T23:15:39.424Z",
+    "hierarchyPos": {
+      "x": 2120,
+      "y": 2599
+    },
+    "parentId": "group-1775028004948-4"
+  },
+  {
+    "id": "1774925177566",
+    "org": "GSS",
+    "project": "바이린,제로그램,BSP",
+    "name": "유기주",
+    "nickname": "Leo",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T23:15:26.860Z",
+    "hierarchyPos": {
+      "x": 1816,
+      "y": 2722
+    },
+    "parentId": "group-1775028004948-4"
+  },
+  {
+    "id": "1774925198280",
+    "project": "",
+    "name": "동립권",
+    "nickname": "Richard",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:04:48.260Z",
+    "parentId": "group-1775028004948-4",
+    "hierarchyPos": {
+      "x": 2315,
+      "y": 2598
+    },
+    "org": "GSS"
+  },
+  {
+    "id": "1774925227928",
+    "project": "",
+    "name": "전지환",
+    "nickname": "Polak",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:05:15.438Z",
+    "parentId": "group-1775028004948-4",
+    "hierarchyPos": {
+      "x": 2016,
+      "y": 2726
+    },
+    "org": "GSS"
+  },
+  {
+    "id": "1774925255946",
+    "project": "",
+    "name": "배우리",
+    "nickname": "Derek",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:04:15.768Z",
+    "parentId": "group-1775028004948-4",
+    "hierarchyPos": {
+      "x": 2217,
+      "y": 2725
+    },
+    "org": "GSS"
+  },
+  {
+    "id": "1774925284838",
+    "project": "",
+    "name": "이유진",
+    "nickname": "Lucy",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:04:34.834Z",
+    "parentId": "1774925227928",
+    "hierarchyPos": {
+      "x": 2219,
+      "y": 2860
+    },
+    "org": "GSS"
+  },
+  {
+    "id": "1774925306121",
+    "project": "",
+    "name": "김태홍",
+    "nickname": "Clark",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:04:22.680Z",
+    "parentId": "group-1775028004948-4",
+    "hierarchyPos": {
+      "x": 2412,
+      "y": 2721
+    },
+    "org": "GSS"
+  },
+  {
+    "id": "1774925325986",
+    "org": "GSS",
+    "project": "",
+    "name": "김다혜",
+    "nickname": "Diana",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T02:40:12.336Z",
+    "parentId": "1774925227928",
+    "hierarchyPos": {
+      "x": 2416,
+      "y": 2860
+    }
+  },
+  {
+    "id": "1774925345520",
+    "org": "GSS",
+    "project": "",
+    "name": "박민정",
+    "nickname": "Hazel",
+    "position": "사원",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T02:40:24.053Z",
+    "parentId": "1774925227928",
+    "hierarchyPos": {
+      "x": 2013,
+      "y": 2860
+    }
+  },
+  {
+    "id": "1774925371786",
+    "project": "",
+    "name": "김수현",
+    "nickname": "Emly",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-02T05:05:02.830Z",
+    "parentId": "1774925227928",
+    "hierarchyPos": {
+      "x": 1811,
+      "y": 2857
+    },
+    "org": "GSS"
+  },
+  {
+    "id": "1774932230230",
+    "org": "TEC",
+    "project": "",
+    "name": "장민욱",
+    "nickname": "Kai",
+    "position": "전임",
+    "jobGroup": "Architecture",
+    "updated_at": "2026-04-01T23:45:54.399Z",
+    "hierarchyPos": {
+      "x": 2752,
+      "y": 990
+    },
+    "parentId": "group-1775028004948-6"
+  },
+  {
+    "id": "1774932253794",
+    "org": "TEC",
+    "project": "",
+    "name": "이창제",
+    "nickname": "Lan",
+    "position": "책임",
+    "jobGroup": "개발",
+    "updated_at": "2026-04-01T23:46:05.901Z",
+    "hierarchyPos": {
+      "x": 2869,
+      "y": 1155
+    },
+    "parentId": "group-1775028004948-6"
+  },
+  {
+    "id": "1774939099920",
+    "org": "ESI",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "박정훈",
+    "nickname": "Arc",
+    "position": "이사",
+    "jobGroup": "PM",
+    "updated_at": "2026-03-31T06:38:19.920Z",
+    "parentId": "1774939341355",
+    "hierarchyPos": {
+      "x": 1794,
+      "y": 748
+    }
+  },
+  {
+    "id": "1774939341355",
+    "org": "ESI",
+    "project": "본사",
+    "name": "임희은",
+    "nickname": "Jetty",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:42:21.355Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1486,
+      "y": 1562
+    }
+  },
+  {
+    "id": "1774939442600",
+    "org": "ESI",
+    "project": "본사",
+    "name": "이주일",
+    "nickname": "Jerome",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:44:02.600Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 1939,
+      "y": 881
+    }
+  },
+  {
+    "id": "1774939803159",
+    "org": "ESI",
+    "project": "본사",
+    "name": "임대원",
+    "nickname": "Won",
+    "position": "전임",
+    "jobGroup": "퍼블",
+    "updated_at": "2026-03-31T06:50:03.159Z",
+    "parentId": "group-1775028004948-1",
+    "hierarchyPos": {
+      "x": 2474,
+      "y": 1042
+    }
+  },
+  {
+    "id": "1774939871047",
+    "org": "ESM",
+    "project": "본사",
+    "name": "김형태",
+    "nickname": "Tei",
+    "position": "이사",
+    "jobGroup": "",
+    "updated_at": "2026-03-31T06:51:11.047Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 396,
+      "y": 626
+    }
+  },
+  {
+    "id": "1774943561869",
+    "org": "ESM",
+    "project": "본사",
+    "name": "신동화",
+    "nickname": "Eggsy",
+    "position": "선임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T07:52:41.869Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 559,
+      "y": 1461
+    }
+  },
+  {
+    "id": "1774943662580",
+    "org": "ESM",
+    "project": "본사",
+    "name": "김창훈",
+    "nickname": "Russell",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T07:54:22.580Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 530,
+      "y": 741
+    }
+  },
+  {
+    "id": "1774943709011",
+    "org": "ESM",
+    "project": "본사",
+    "name": "이훈하",
+    "nickname": "Felix",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T07:55:09.011Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 840,
+      "y": 1164
+    }
+  },
+  {
+    "id": "1774943854146",
+    "org": "ESM",
+    "project": "본사",
+    "name": "김태현",
+    "nickname": "Bonnie",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T07:57:34.146Z",
+    "parentId": "group-1775028004948-0",
+    "hierarchyPos": {
+      "x": 745,
+      "y": 1386
+    }
+  },
+  {
+    "id": "1775004637980",
+    "org": "본사",
+    "project": "BNKR",
+    "name": "강병철",
+    "nickname": "Sunny.Kang",
+    "position": "CTO",
+    "jobGroup": "PM",
+    "updated_at": "2026-04-01T23:13:29.698Z",
+    "hierarchyPos": {
+      "x": 633,
+      "y": 306
+    },
+    "parentId": "group-1775085241642"
+  },
+  {
+    "id": "1775007754177",
+    "org": "본사",
+    "project": "본사",
+    "name": "전구상",
+    "nickname": "Jun",
+    "position": "CEO",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:42:34.177Z",
+    "parentId": "group-1775028104948",
+    "hierarchyPos": {
+      "x": 981,
+      "y": 190
+    }
+  },
+  {
+    "id": "1775007793257",
+    "org": "Sales",
+    "project": "본사",
+    "name": "방희진",
+    "nickname": "Hugo",
+    "position": "상무",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T23:14:51.934Z",
+    "hierarchyPos": {
+      "x": 1456,
+      "y": 85
+    },
+    "parentId": "group-1775085402374"
+  },
+  {
+    "id": "1775007824072",
+    "org": "BSG",
+    "project": "",
+    "name": "서하나",
+    "nickname": "Chloe",
+    "position": "책임",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T23:36:17.275Z",
+    "hierarchyPos": {
+      "x": 1430,
+      "y": 383
+    },
+    "parentId": "group-1775028004948-2"
+  },
+  {
+    "id": "1775007882360",
+    "org": "USG",
+    "project": "본사",
+    "name": "한석명",
+    "nickname": "Robin",
+    "position": "이사",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:44:42.360Z",
+    "parentId": "group-1775028004948-7",
+    "hierarchyPos": {
+      "x": 2335,
+      "y": 202
+    }
+  },
+  {
+    "id": "1775007900104",
+    "org": "USG",
+    "project": "본사",
+    "name": "김아리",
+    "nickname": "Rasha",
+    "position": "책임",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:45:00.104Z",
+    "parentId": "group-1775028004948-7",
+    "hierarchyPos": {
+      "x": 2064,
+      "y": 330
+    }
+  },
+  {
+    "id": "1775007916824",
+    "org": "USG",
+    "project": "본사",
+    "name": "유지영",
+    "nickname": "Emma",
+    "position": "책임",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:45:16.824Z",
+    "parentId": "group-1775028004948-7",
+    "hierarchyPos": {
+      "x": 2244,
+      "y": 338
+    }
   }
 ]
