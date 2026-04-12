@@ -1156,35 +1156,45 @@
         .manpower-summary-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 1.2rem;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             border: 1px solid #efeff2;
         }
 
         .summary-item {
-            background: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.8rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background: #f5f5f7;
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            font-size: 0.9rem;
-            font-weight: 600;
+            gap: 0.8rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .summary-item:hover {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(0, 113, 227, 0.1);
+            transform: translateY(-2px);
         }
 
         .summary-label {
-            color: var(--text-muted);
-            font-size: 0.8rem;
+            color: #86868b;
+            font-size: 0.85rem;
         }
 
         .summary-value {
             color: var(--primary);
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         /* View Mode Tabs */
@@ -1521,6 +1531,51 @@
             background: rgba(0, 113, 227, 0.1);
             pointer-events: none;
             z-index: 1000;
+        }
+
+        /* Toast Styles */
+        #toast-container {
+            position: fixed;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            background: rgba(29, 29, 31, 0.9);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .toast-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-item.error {
+            background: rgba(255, 59, 48, 0.95);
+        }
+
+        .toast-item.warning {
+            background: rgba(255, 149, 0, 0.95);
         }
     </style>
 </head>
@@ -2320,7 +2375,8 @@
                 hierarchyView.style.display = 'block';
                 if (subTabs) subTabs.style.display = 'none';
 
-                // 마인드맵 진입 시 렌더링 및 초기 배율 설정
+                // 마인드맵 진입 시 그룹 동기화 및 렌더링
+                syncGroupsFromManpower();
                 renderManpower();
 
                 setTimeout(() => {
@@ -2369,21 +2425,69 @@
                 (m.org && m.org.toLowerCase().includes(currentManpowerSearch.toLowerCase()))
             );
 
-            // Calculate job group totals
-            const jobGroupTotals = {};
-            filtered.forEach(m => {
-                const group = m.jobGroup || '미정';
-                jobGroupTotals[group] = (jobGroupTotals[group] || 0) + 1;
+            // Calculate counts based on Custom Groups (Hierarchy) instead of literal 'org' field
+            const groupTotals = {};
+            
+            // Helper to get the top-level root group, either by parentId or by matching org name
+            const getResolvedRootInfo = (member) => {
+                // 1. Explicit hierarchy link exists
+                if (member.parentId) {
+                    const findRootId = (id) => {
+                        const g = customGroups.find(x => x.id === id);
+                        if (!g) return null;
+                        if (!g.parentId || g.parentId === 'root') return { id: g.id, name: g.name };
+                        return findRootId(g.parentId);
+                    };
+                    const rootInfo = findRootId(member.parentId);
+                    if (rootInfo) return rootInfo;
+                }
+                
+                // 2. Fallback: match by 'org' text field if mindmap connection is missing
+                if (member.org) {
+                    const matchedGroup = customGroups.find(g => g.name === member.org);
+                    if (matchedGroup) {
+                        // find the root of this matched group
+                        const findRootCandidate = (g) => {
+                            if (!g.parentId || g.parentId === 'root') return { id: g.id, name: g.name };
+                            const p = customGroups.find(x => x.id === g.parentId);
+                            return p ? findRootCandidate(p) : { id: g.id, name: g.name };
+                        };
+                        return findRootCandidate(matchedGroup);
+                    }
+                }
+                return null;
+            };
+
+            // Summary calculation
+            const summaryGroups = customGroups.filter(g => !g.parentId || g.parentId === 'root');
+            summaryGroups.forEach(g => {
+                // Count all members resolved to this root
+                groupTotals[g.name] = manpowers.filter(m => {
+                    const root = getResolvedRootInfo(m);
+                    return root && root.id === g.id;
+                }).length;
             });
 
             if (summaryContainer) {
-                const sortedGroups = Object.keys(jobGroupTotals).sort();
-                summaryContainer.innerHTML = sortedGroups.map(group => `
-                    <div class="summary-item">
-                        <span class="summary-label">${group}</span>
-                        <span class="summary-value">${jobGroupTotals[group]}</span>
+                const orgsToShow = summaryGroups
+                                    .map(g => ({ name: g.name, count: groupTotals[g.name] }))
+                                    .filter(g => g.count > 0)
+                                    .sort((a, b) => {
+                                        const whitelist = ['본사', 'USG', 'BSG', 'ESI', 'ESM', 'CCE', 'GSS', 'Sales'];
+                                        const aIdx = whitelist.indexOf(a.name);
+                                        const bIdx = whitelist.indexOf(b.name);
+                                        if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                                        if (aIdx !== -1) return -1;
+                                        if (bIdx !== -1) return 1;
+                                        return a.name.localeCompare(b.name);
+                                    });
+
+                summaryContainer.innerHTML = orgsToShow.map(org => `
+                    <div class="summary-item" onclick="navigateToManpowerGroup('${org.name}')">
+                        <span class="summary-label">${org.name}</span>
+                        <span class="summary-value">${org.count}</span>
                     </div>
-                `).join('') || '<div style="color: var(--text-muted); font-size: 0.9rem;">인원 통계가 없습니다.</div>';
+                `).join('') || '<div style="color: var(--text-muted); font-size: 0.9rem;">조직도에 그룹을 먼저 생성해 주세요.</div>';
             }
 
             updateStats();
@@ -2395,27 +2499,36 @@
 
             // Grouping logic based on view mode (List Mode)
             const grouped = {};
-            filtered.forEach(m => {
-                let key = '';
-                if (currentManpowerViewMode === 'org') {
-                    key = m.org || '미지정 조직';
-                } else {
-                    key = m.project || '미배정 / 기타';
-                }
-                if (!grouped[key]) grouped[key] = [];
-                grouped[key].push(m);
-            });
-
-            let groupNames = Object.keys(grouped).sort();
-
-            // 필터링 적용
+            
             if (currentManpowerViewMode === 'org') {
-                const whitelist = ['본사', 'USG', 'BSG', 'ESI', 'ESM', 'CCE', 'GSS', 'Sales'];
-                groupNames = groupNames.filter(name => whitelist.includes(name));
-            } else if (currentManpowerViewMode === 'project') {
-                groupNames = groupNames.filter(name => name !== '본사');
+                const rootGroups = customGroups.filter(g => !g.parentId || g.parentId === 'root');
+                rootGroups.forEach(g => { grouped[g.name] = []; });
+
+                filtered.forEach(m => {
+                    const root = getResolvedRootInfo(m);
+                    const groupName = root ? root.name : '미지정 / 기타';
+                    if (!grouped[groupName]) grouped[groupName] = [];
+                    grouped[groupName].push(m);
+                });
+            } else {
+                filtered.forEach(m => {
+                    const key = m.project || '미배정 / 기타';
+                    if (!grouped[key]) grouped[key] = [];
+                    grouped[key].push(m);
+                });
             }
 
+            let groupNames = Object.keys(grouped).sort((a, b) => {
+                const whitelist = ['본사', 'USG', 'BSG', 'ESI', 'ESM', 'CCE', 'GSS', 'Sales'];
+                const aIdx = whitelist.indexOf(a);
+                const bIdx = whitelist.indexOf(b);
+                if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                if (aIdx !== -1) return -1;
+                if (bIdx !== -1) return 1;
+                return a.localeCompare(b);
+            });
+
+            // Remove previous hardcoded filtering logic that restricted visibility
             if (groupNames.length === 0) {
                 container.innerHTML = '<div style="grid-column: span 3; text-align: center; padding: 4rem; color: var(--text-muted);">등록된 인력이 없거나 검색 결과가 없습니다.</div>';
                 return;
@@ -2427,9 +2540,13 @@
                 const onDropHandler = currentManpowerViewMode === 'org' ?
                     `handleDropOnOrg(event, '${groupName.replace(/'/g, "\\'")}')` :
                     `handleDropOnProject(event, '${groupName.replace(/'/g, "\\'")}')`;
-
-                // 검색어가 없을 때는 기본적으로 접힌 상태(collapsed)로 시작
+                
+                // If there's a search term, expand, otherwise respect default
                 const isCollapsed = currentManpowerSearch === '' ? 'collapsed' : '';
+                const members = grouped[groupName] || [];
+                
+                // Don't show empty "Unassigned" section if there are actually no unassigned people
+                if (groupName === '미지정 / 기타' && members.length === 0) return '';
 
                 return `
                     <div class="project-org-section ${isCollapsed}" 
@@ -2518,13 +2635,23 @@
             // 멤버 노드 (초기 좌표 없을 시 그리드 형태 배치)
             let unpositionedCount = 0;
             items.forEach((m, mIdx) => {
-                const isRoot = !m.parentId; // 부모가 없으면 최상위 취급 여부 확인용 (UI 스타일 적용)
+                // Determine 'Effective Parent' for visualization
+                let effectiveParentId = m.parentId;
+                if (!effectiveParentId && m.org) {
+                    const orgTrimmed = m.org.trim().toLowerCase();
+                    const matchedGroup = customGroups.find(g => g.name.trim().toLowerCase() === orgTrimmed);
+                    if (matchedGroup) {
+                        effectiveParentId = matchedGroup.id;
+                    }
+                }
+
+                const isRoot = !effectiveParentId; // 실제/가상 부모가 모두 없으면 최상위 취급
                 let pos = m.hierarchyPos;
                 if (!pos) {
                     pos = { x: CANVAS_CENTER - 300 + (unpositionedCount % 4) * 180, y: 100 + Math.floor(unpositionedCount / 4) * 150 };
                     unpositionedCount++;
                 }
-                nodes.push({ id: m.id, type: 'member', data: m, x: pos.x, y: pos.y, parentId: m.parentId, isRoot: isRoot });
+                nodes.push({ id: m.id, type: 'member', data: m, x: pos.x, y: pos.y, parentId: effectiveParentId, isRoot: isRoot });
             });
 
             // 3. 렌더링
@@ -2548,17 +2675,112 @@
                     return `
                         <div class="org-node-label ${isSelected}" id="node-${node.id}" 
                              onmousedown="startHierarchyDrag(event, '${node.id}', true)"
-                             ondblclick="editCustomGroup('${node.id}')"
-                             title="더블클릭하여 편집/삭제"
+                             title="${node.name}"
                              style="position: absolute; left: ${node.x}px; top: ${node.y}px; z-index: 2; height: auto; min-width: 140px; text-align: center; display: flex; flex-direction: column;">
                             <span>🏢 ${node.name}</span>
-                            <span style="font-size: 0.6rem; color: #888; margin-top: 4px; font-weight: 500;">(더블클릭: 편집)</span>
                         </div>
                     `;
                 }
             }).join('');
 
             drawHierarchyLines(nodes, svgLayer);
+        }
+
+        function navigateToManpowerGroup(groupName) {
+            if (currentManpowerUIMode === 'list') {
+                // 상단 집계는 조직 기준이므로, 리스트 뷰가 프로젝트별인 경우 조직별로 강제 전환
+                if (currentManpowerViewMode !== 'org') {
+                    setManpowerViewMode('org');
+                }
+
+                // renderManpower()에 의해 DOM이 재구성될 시간을 줌
+                setTimeout(() => {
+                    const sections = document.querySelectorAll('.project-org-section');
+                    let target = null;
+                    sections.forEach(sec => {
+                        // h2 내의 두 번째 span이 실제 조직명임 (첫 번째는 ORGANIZATION 라벨)
+                        const spans = sec.querySelectorAll('.project-org-header h2 span');
+                        const titleSpan = spans.length > 1 ? spans[1] : spans[0];
+                        
+                        if (titleSpan && titleSpan.innerText.trim() === groupName) {
+                            target = sec;
+                            // 접혀있는 섹션이면 강제로 펼침
+                            if (sec.classList.contains('collapsed')) {
+                                sec.classList.remove('collapsed');
+                            }
+                        }
+                    });
+
+                    if (target) {
+                        // 상단 바 높이를 고려한 정밀 스크롤 이동
+                        const headerOffset = 180;
+                        const elementPosition = target.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+
+                        // 강조 효과
+                        target.style.transition = 'background-color 0.5s';
+                        target.style.backgroundColor = 'rgba(0, 113, 227, 0.1)';
+                        setTimeout(() => target.style.backgroundColor = '', 2000);
+                    } else {
+                        showToast(`현재 검색/필터 상태에서 ${groupName} 그룹을 찾을 수 없습니다.`);
+                    }
+                }, 150);
+            } else if (currentManpowerUIMode === 'hierarchy') {
+                // Find org node label in Mindmap
+                const nodes = document.querySelectorAll('.org-node-label');
+                let target = null;
+                nodes.forEach(node => {
+                    if (node.innerText.includes(groupName)) target = node;
+                });
+
+                if (target) {
+                    const container = document.getElementById('manpower-hierarchy-view');
+                    const rect = target.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+
+                    // 중앙 정렬 이동
+                    container.scrollTo({
+                        left: container.scrollLeft + (rect.left - containerRect.left) - (containerRect.width / 2) + (rect.width / 2),
+                        top: container.scrollTop + (rect.top - containerRect.top) - (containerRect.height / 2) + (rect.height / 2),
+                        behavior: 'smooth'
+                    });
+
+                    // 강조 표시
+                    target.classList.add('selected-node');
+                    setTimeout(() => target.classList.remove('selected-node'), 3000);
+                } else {
+                    showToast(`${groupName} 그룹 노드를 조직도에서 찾을 수 없습니다.`);
+                }
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${type}`;
+            toast.innerText = message;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Auto-remove
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
         }
 
         function drawHierarchyLines(nodes, svg) {
@@ -2654,19 +2876,58 @@
             container.scrollTop = (minY - 50) * currentHierarchyScale;
         }
 
+        function getDescendantNodeIds(parentId) {
+            let results = [];
+            // 인원 노드 매칭
+            manpowers.forEach(m => {
+                const nodeElId = `node-${m.id}`;
+                // 직접 parentId 연결 또는 조직명 텍스트 매칭
+                if (m.parentId === parentId) {
+                    results.push(nodeElId);
+                } else if (!m.parentId && m.org) {
+                    const pg = customGroups.find(g => g.id === parentId);
+                    if (pg && pg.name.trim().toLowerCase() === m.org.trim().toLowerCase()) {
+                        results.push(nodeElId);
+                    }
+                }
+            });
+            // 하위 그룹 노드 매칭
+            customGroups.forEach(g => {
+                if (g.parentId === parentId) {
+                    const gid = `node-${g.id}`;
+                    results.push(gid);
+                    results = results.concat(getDescendantNodeIds(g.id));
+                }
+            });
+            return results;
+        }
+
         function startHierarchyDrag(e, id, isOrg = false) {
             if (e.button !== 0) return;
-            e.preventDefault();
+            // e.preventDefault(); // dblclick 등 후속 이벤트 방해 방지를 위해 제거
             e.stopPropagation(); // 배경 Panning이 발생하지 않도록 이벤트 전파 차단
 
             const nodeElId = `node-${id}`;
-            if (!selectedHierarchyNodes.has(nodeElId)) {
-                if (!e.shiftKey) clearHierarchySelection();
-                selectedHierarchyNodes.add(nodeElId);
-                const el = document.getElementById(nodeElId);
-                if (el) el.classList.add('selected-node');
-            } else if (e.shiftKey) {
-                // 이미 선택된 노드를 Shift 클릭 시 선택 해제 후 리턴(드래그 무시)
+            const targetNodes = new Set();
+            targetNodes.add(nodeElId);
+
+            // 그룹인 경우 하위 모든 노드(대물림)를 함께 선택 처리
+            if (isOrg) {
+                getDescendantNodeIds(id).forEach(cid => targetNodes.add(cid));
+            }
+
+            // 선택 업데이트
+            targetNodes.forEach(nid => {
+                if (!selectedHierarchyNodes.has(nid)) {
+                    if (!e.shiftKey && targetNodes.size === 1) clearHierarchySelection();
+                    selectedHierarchyNodes.add(nid);
+                    const el = document.getElementById(nid);
+                    if (el) el.classList.add('selected-node');
+                }
+            });
+
+            if (e.shiftKey && selectedHierarchyNodes.has(nodeElId) && targetNodes.size === 1) {
+                // Shift 클릭 시 단일 노드 선택 해제 및 리턴
                 selectedHierarchyNodes.delete(nodeElId);
                 const el = document.getElementById(nodeElId);
                 if (el) el.classList.remove('selected-node');
@@ -2677,6 +2938,7 @@
                 active: true,
                 startX: e.clientX,
                 startY: e.clientY,
+                moved: false, // 실제 드래그 여부 체크
                 initialNodes: [],
                 rafId: null
             };
@@ -2706,10 +2968,16 @@
                     const dx = (me.clientX - hierarchyDragState.startX) / currentHierarchyScale;
                     const dy = (me.clientY - hierarchyDragState.startY) / currentHierarchyScale;
 
-                    hierarchyDragState.initialNodes.forEach(item => {
-                        item.el.style.left = `${item.initialX + dx}px`;
-                        item.el.style.top = `${item.initialY + dy}px`;
-                    });
+                    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+                        hierarchyDragState.moved = true;
+                    }
+
+                    if (hierarchyDragState.moved) {
+                        hierarchyDragState.initialNodes.forEach(item => {
+                            item.el.style.left = `${item.initialX + dx}px`;
+                            item.el.style.top = `${item.initialY + dy}px`;
+                        });
+                    }
                 });
             };
 
@@ -2770,7 +3038,10 @@
                 saveCustomGroups().catch(console.error);
                 saveManpowerToPersistence().catch(console.error);
 
-                renderManpower(); // Re-render instantly
+                // 실제 이동이 있었을 때만 렌더링 (재렌더링 시 DOM이 파괴되어 dblclick이 소멸하는 문제 보완)
+                if (hierarchyDragState.moved) {
+                    renderManpower();
+                }
             };
 
             window.addEventListener('mousemove', moveHandler);
@@ -2968,24 +3239,71 @@
         }
 
         async function editCustomGroup(id) {
+            console.log('editCustomGroup triggered for:', id);
             const group = customGroups.find(g => g.id === id);
-            if (!group) return;
+            if (!group) {
+                console.error('Group not found for id:', id);
+                return;
+            }
 
-            const action = prompt(`[${group.name}] 그룹의 새 이름을 입력하거나, 삭제하려면 '삭제' 라고 입력하세요:`, group.name);
+            // 하위 노드 체크 (인원 또는 하위 그룹)
+            const childMembers = manpowers.filter(m => m.parentId === id);
+            const childGroups = customGroups.filter(g => g.parentId === id);
+            const hasChildren = childMembers.length > 0 || childGroups.length > 0;
+
+            let promptMsg = `[${group.name}] 그룹의 새 이름을 입력하세요.\n--------------------------------------`;
+            if (!hasChildren) {
+                promptMsg += `\n(삭제하시려면 '삭제'를 입력하세요)`;
+            } else {
+                promptMsg += `\n(하위 노드가 ${childMembers.length + childGroups.length}개 있어 삭제가 불가능합니다)`;
+            }
+
+            const action = prompt(promptMsg, group.name);
             if (action === null) return;
 
-            if (action.trim() === '삭제') {
-                if (!confirm(`'${group.name}' 그룹을 삭제하시겠습니까? (하위 인원은 유지됩니다)`)) return;
+            const trimmedAction = action.trim();
+            if (trimmedAction === '삭제') {
+                if (hasChildren) {
+                    showToast("하위 노드가 있는 그룹은 삭제할 수 없습니다. 연결을 먼저 해제해 주세요.", "error");
+                    return;
+                }
+                
                 customGroups = customGroups.filter(g => g.id !== id);
-                manpowers.forEach(m => { if (m.parentId === id) m.parentId = null; });
-                customGroups.forEach(g => { if (g.parentId === id) g.parentId = null; });
                 saveCustomGroups().catch(console.error);
-                saveManpowerToPersistence().catch(console.error);
-            } else if (action.trim() !== '') {
-                group.name = action.trim();
+                showToast(`'${group.name}' 그룹이 삭제되었습니다.`);
+            } else if (trimmedAction !== '') {
+                group.name = trimmedAction;
                 saveCustomGroups().catch(console.error);
+                showToast("그룹 이름이 변경되었습니다.");
             }
             renderManpower();
+        }
+
+        function syncGroupsFromManpower() {
+            let changed = false;
+            const existingGroupNames = new Set(customGroups.map(g => g.name.trim().toLowerCase()));
+            // 인원 목록에 존재하는 고유한 상위 조직명 추출
+            const orgs = [...new Set(manpowers.map(m => (m.org || '').trim()))].filter(o => o !== '');
+            
+            orgs.forEach((orgName, idx) => {
+                if (!existingGroupNames.has(orgName.toLowerCase())) {
+                    const gId = 'group-' + Date.now() + '-' + idx;
+                    // 새 조직 발견 시 중앙 부근에 기본 생성
+                    customGroups.push({
+                        id: gId,
+                        name: orgName,
+                        x: 1500 + (Math.random() * 400 - 200),
+                        y: 300 + (Math.random() * 200),
+                        parentId: null
+                    });
+                    changed = true;
+                }
+            });
+            
+            if (changed) {
+                saveCustomGroups().catch(console.error);
+                showToast("새로운 조직 그룹이 동기화되었습니다.");
+            }
         }
 
         async function autoGenerateGroupsByOrg() {
