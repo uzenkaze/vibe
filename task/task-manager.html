@@ -500,6 +500,10 @@
             background: var(--warning);
         }
 
+        .cal-event-dot.hold {
+            background: #8e8e93;
+        }
+
         .cal-event-dot.done {
             background: var(--success);
         }
@@ -667,6 +671,10 @@
 
         .task-card-apple.progress {
             background-color: #fffbeb;
+        }
+
+        .task-card-apple.hold {
+            background-color: #f2f2f7;
         }
 
         /* Very light orange/amber */
@@ -912,6 +920,12 @@
             background: #fff9f0;
         }
 
+        #status.status-hold {
+            color: #8e8e93;
+            font-weight: 700;
+            background: #f2f2f7;
+        }
+
         #status.status-done {
             color: #34c759;
             font-weight: 700;
@@ -934,6 +948,11 @@
         .card-badge.progress {
             background: #fff9f0;
             color: #ff9500;
+        }
+
+        .card-badge.hold {
+            background: #f2f2f7;
+            color: #8e8e93;
         }
 
         .card-badge.done {
@@ -1622,6 +1641,11 @@
                             <div class="stat-card-subtext">이번 주 완료</div>
                         </div>
                         <div class="stat-card-apple">
+                            <div class="stat-card-label">보류</div>
+                            <div class="stat-card-value" id="dash-stat-hold" style="color: #8e8e93;">0</div>
+                            <div class="stat-card-subtext">일시 중단</div>
+                        </div>
+                        <div class="stat-card-apple">
                             <div class="stat-card-label">팀 멤버</div>
                             <div class="stat-card-value" id="dash-stat-manpower">0</div>
                             <div class="stat-card-subtext">활성 멤버</div>
@@ -1761,6 +1785,10 @@
                                     <div id="stat-progress" class="stat-value" style="color:var(--warning)">0</div>
                                 </div>
                                 <div class="stat-card-mini">
+                                    <h3>보류</h3>
+                                    <div id="stat-hold" class="stat-value" style="color:#8e8e93">0</div>
+                                </div>
+                                <div class="stat-card-mini">
                                     <h3>완료</h3>
                                     <div id="stat-done" class="stat-value" style="color:var(--success)">0</div>
                                 </div>
@@ -1894,6 +1922,7 @@
                             class="form-control" onchange="updateStatusColor()">
                             <option value="todo">진행전</option>
                             <option value="progress">진행중</option>
+                            <option value="hold">보류</option>
                             <option value="done">완료</option>
                         </select></div>
 
@@ -2087,7 +2116,7 @@
 
             const displayTasks = filtered.slice(0, visibleCount);
             container.innerHTML = displayTasks.map(t => {
-                const statusMap = { todo: '진행전', progress: '진행중', done: '완료' };
+                const statusMap = { todo: '진행전', progress: '진행중', hold: '보류', done: '완료' };
                 return `
                     <div class="task-card-apple ${t.status}" onclick="showDetail('${t.id}')">
                         <div class="card-header-info">#${t.task_no || '-'} [${t.work_no || '-'}]</div>
@@ -2122,10 +2151,10 @@
         }
 
         function updateStats() {
-            const stats = { total: tasks.length, todo: 0, progress: 0, done: 0 };
+            const stats = { total: tasks.length, todo: 0, progress: 0, hold: 0, done: 0 };
             tasks.forEach(t => { if (stats[t.status] !== undefined) stats[t.status]++; });
             ['stat', 'dash-stat'].forEach(prefix => {
-                ['total', 'todo', 'progress', 'done'].forEach(key => {
+                ['total', 'todo', 'progress', 'hold', 'done'].forEach(key => {
                     const el = document.getElementById(`${prefix}-${key}`);
                     if (el) el.innerText = stats[key];
                 });
@@ -2151,8 +2180,8 @@
 
             banner.style.display = 'flex';
             banner.innerHTML = activeTasks.map(t => {
-                const badgeClass = t.status === 'todo' ? 'todo' : (t.status === 'progress' ? 'progress' : '');
-                const labelText = t.status === 'todo' ? 'TODO' : 'PROGRESS';
+                const badgeClass = t.status === 'todo' ? 'todo' : (t.status === 'progress' ? 'progress' : (t.status === 'hold' ? 'hold' : ''));
+                const labelText = t.status === 'todo' ? 'TODO' : (t.status === 'progress' ? 'PROGRESS' : (t.status === 'hold' ? 'HOLD' : ''));
                 const text = `#${t.task_no || '번호없음'} [${t.work_no || '업무없음'}] ${t.title}`;
 
                 return `
@@ -2265,8 +2294,8 @@
 
         function showDetail(id) {
             const t = tasks.find(x => x.id === id);
-            const statusMap = { todo: '진행전', progress: '진행중', done: '완료' };
-            const statusColorMap = { todo: '#ff3b30', progress: '#ff9500', done: '#34c759' };
+            const statusMap = { todo: '진행전', progress: '진행중', hold: '보류', done: '완료' };
+            const statusColorMap = { todo: '#ff3b30', progress: '#ff9500', hold: '#8e8e93', done: '#34c759' };
             const statusColor = statusColorMap[t.status] || '#1d1d1f';
 
             document.getElementById('detail-content').innerHTML = `
