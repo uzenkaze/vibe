@@ -716,6 +716,16 @@ function setupEventListeners() {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleGlobalSearch();
+            
+            // --- Critical Hybrid App Fix: Prevent keyboard from dismissing on Enter ---
+            // Small delay to ensure the event cycle finishes, then refocus
+            setTimeout(() => {
+                searchInput.focus();
+                // Ensure cursor is at the end
+                const val = searchInput.value;
+                searchInput.value = '';
+                searchInput.value = val;
+            }, 10);
         }
     });
 
@@ -725,7 +735,21 @@ function setupEventListeners() {
 
 
     if (globalSearchBtn) {
-        globalSearchBtn.addEventListener('click', () => handleGlobalSearch());
+        globalSearchBtn.addEventListener('click', () => {
+            handleGlobalSearch();
+            // Force focus back on mobile after clicking the button
+            if (window.innerWidth < 900) searchInput.focus();
+        });
+    }
+
+    // --- Critical Hybrid App Fix: Ensure focus when clicking any part of the search box ---
+    const searchBox = document.querySelector('.search-box');
+    if (searchBox && searchInput) {
+        searchBox.addEventListener('click', (e) => {
+            if (e.target !== searchInput && e.target !== globalSearchBtn && !globalSearchBtn.contains(e.target)) {
+                searchInput.focus();
+            }
+        });
     }
 
     // Settings listeners
