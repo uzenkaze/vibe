@@ -1222,7 +1222,7 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:40:12.336Z",
-    "parentId": "1774925177566",
+    "parentId": null,
     "hierarchyPos": {
       "x": 107,
       "y": 1848
