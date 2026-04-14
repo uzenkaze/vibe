@@ -39,8 +39,8 @@
     "updated_at": "2026-04-02T02:28:19.810Z",
     "parentId": "group-1775028004948-6",
     "hierarchyPos": {
-      "x": 547,
-      "y": 2131
+      "x": 542,
+      "y": 1973
     },
     "org": "TEC"
   },
@@ -819,8 +819,8 @@
     "jobGroup": "Architecture",
     "updated_at": "2026-04-01T23:47:14.483Z",
     "hierarchyPos": {
-      "x": 310,
-      "y": 2124
+      "x": 305,
+      "y": 1966
     },
     "parentId": "group-1775028004948-6"
   },
@@ -834,8 +834,8 @@
     "jobGroup": "",
     "updated_at": "2026-04-01T23:46:27.186Z",
     "hierarchyPos": {
-      "x": 523,
-      "y": 2291
+      "x": 518,
+      "y": 2133
     },
     "parentId": "group-1775028004948-6"
   },
@@ -849,8 +849,8 @@
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:47:24.394Z",
     "hierarchyPos": {
-      "x": 315,
-      "y": 2268
+      "x": 310,
+      "y": 2110
     },
     "parentId": "group-1775028004948-6"
   },
@@ -1268,8 +1268,8 @@
     "jobGroup": "Architecture",
     "updated_at": "2026-04-01T23:45:54.399Z",
     "hierarchyPos": {
-      "x": 297,
-      "y": 2428
+      "x": 292,
+      "y": 2270
     },
     "parentId": "group-1775028004948-6"
   },
@@ -1283,8 +1283,8 @@
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:46:05.901Z",
     "hierarchyPos": {
-      "x": 414,
-      "y": 2593
+      "x": 409,
+      "y": 2435
     },
     "parentId": "group-1775028004948-6"
   },
