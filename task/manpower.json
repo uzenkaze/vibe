@@ -8,10 +8,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:12:36.911Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 246,
-      "y": 862
+      "x": 1785,
+      "y": 729
     }
   },
   {
@@ -23,10 +23,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:44:15.158Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1713,
-      "y": 878
+      "x": 453,
+      "y": 892
     }
   },
   {
@@ -37,12 +37,12 @@
     "position": "이사",
     "jobGroup": "Architecture",
     "updated_at": "2026-04-02T02:28:19.810Z",
-    "parentId": "group-1775028004948-6",
+    "org": "TEC",
+    "parentId": "group-1776149215288-2",
     "hierarchyPos": {
-      "x": 414,
-      "y": 2213
-    },
-    "org": "TEC"
+      "x": 1603,
+      "y": 1731
+    }
   },
   {
     "id": "1774508027476",
@@ -53,10 +53,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:12:42.321Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 4,
-      "y": 931
+      "x": 2605,
+      "y": 1290
     }
   },
   {
@@ -68,10 +68,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:12:46.710Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 239,
-      "y": 1729
+      "x": 2610,
+      "y": 1437
     }
   },
   {
@@ -83,10 +83,10 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:12:51.081Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": -25,
-      "y": 1726
+      "x": 1782,
+      "y": 954
     }
   },
   {
@@ -98,10 +98,10 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:12:54.979Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": -25,
-      "y": 1439
+      "x": 1942,
+      "y": 1387
     }
   },
   {
@@ -113,10 +113,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:12:58.897Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 1009,
-      "y": 912
+      "x": 2503,
+      "y": 615
     }
   },
   {
@@ -128,10 +128,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:13:02.681Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 1013,
-      "y": 1101
+      "x": 2515,
+      "y": 710
     }
   },
   {
@@ -143,10 +143,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:13:07.774Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 486,
-      "y": 1729
+      "x": 2506,
+      "y": 820
     }
   },
   {
@@ -158,10 +158,10 @@
     "position": "책임",
     "jobGroup": "퍼블",
     "updated_at": "2026-04-01T02:13:13.122Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 727,
-      "y": 1754
+      "x": 2413,
+      "y": 1205
     }
   },
   {
@@ -173,10 +173,10 @@
     "position": "이사",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T06:50:40.621Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "1774593785970",
     "hierarchyPos": {
-      "x": 246,
-      "y": 737
+      "x": 1954,
+      "y": 750
     }
   },
   {
@@ -188,10 +188,10 @@
     "position": "수석",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T06:43:21.485Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2177,
-      "y": 884
+      "x": 1084,
+      "y": 1196
     }
   },
   {
@@ -203,10 +203,10 @@
     "position": "전임",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T06:42:38.678Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2399,
-      "y": 1420
+      "x": 964,
+      "y": 1358
     }
   },
   {
@@ -218,10 +218,10 @@
     "position": "책임",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T06:40:00.882Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2423,
-      "y": 1261
+      "x": 753,
+      "y": 1367
     }
   },
   {
@@ -233,10 +233,10 @@
     "position": "수석",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T06:44:28.862Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2236,
-      "y": 1008
+      "x": 539,
+      "y": 1353
     }
   },
   {
@@ -248,10 +248,10 @@
     "position": "책임",
     "jobGroup": "퍼블",
     "updated_at": "2026-03-31T06:45:06.944Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2302,
-      "y": 1137
+      "x": 366,
+      "y": 757
     }
   },
   {
@@ -263,10 +263,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:39:29.688Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1614,
-      "y": 998
+      "x": 554,
+      "y": 759
     }
   },
   {
@@ -278,10 +278,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:45:16.604Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1343,
-      "y": 1409
+      "x": 309,
+      "y": 1372
     }
   },
   {
@@ -293,10 +293,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:40:33.223Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2215,
-      "y": 1264
+      "x": 83,
+      "y": 1370
     }
   },
   {
@@ -308,10 +308,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:38:47.835Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1831,
-      "y": 1000
+      "x": 188,
+      "y": 962
     }
   },
   {
@@ -323,10 +323,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:48:19.314Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1549,
-      "y": 1406
+      "x": 807,
+      "y": 628
     }
   },
   {
@@ -338,10 +338,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:40:45.852Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1283,
-      "y": 1561
+      "x": 103,
+      "y": 742
     }
   },
   {
@@ -353,10 +353,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:50:20.033Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2300,
-      "y": 1573
+      "x": 671,
+      "y": 875
     }
   },
   {
@@ -368,10 +368,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:38:36.911Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1677,
-      "y": 1128
+      "x": 203,
+      "y": 825
     }
   },
   {
@@ -383,10 +383,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:48:52.111Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1744,
-      "y": 1409
+      "x": 918,
+      "y": 718
     }
   },
   {
@@ -398,10 +398,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:39:48.382Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2094,
-      "y": 1137
+      "x": 496,
+      "y": 1149
     }
   },
   {
@@ -413,10 +413,10 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:49:14.106Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2106,
-      "y": 1698
+      "x": 915,
+      "y": 820
     }
   },
   {
@@ -428,10 +428,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:42:59.834Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2108,
-      "y": 1572
+      "x": 703,
+      "y": 781
     }
   },
   {
@@ -443,10 +443,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:40:12.148Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1817,
-      "y": 1259
+      "x": 939,
+      "y": 938
     }
   },
   {
@@ -458,10 +458,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:44:41.146Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1472,
-      "y": 1129
+      "x": 252,
+      "y": 655
     }
   },
   {
@@ -473,10 +473,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:40:24.395Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2025,
-      "y": 1265
+      "x": 766,
+      "y": 1230
     }
   },
   {
@@ -488,10 +488,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:44:54.142Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1881,
-      "y": 1132
+      "x": 968,
+      "y": 1058
     }
   },
   {
@@ -503,10 +503,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:48:37.492Z",
-    "parentId": "1774507467637",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1951,
-      "y": 1411
+      "x": 392,
+      "y": 1041
     }
   },
   {
@@ -518,10 +518,10 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:49:04.677Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2182,
-      "y": 1417
+      "x": 74,
+      "y": 1099
     }
   },
   {
@@ -533,10 +533,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:43:10.679Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1894,
-      "y": 1571
+      "x": 898,
+      "y": 1228
     }
   },
   {
@@ -548,10 +548,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:39:07.986Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1622,
-      "y": 1261
+      "x": 664,
+      "y": 640
     }
   },
   {
@@ -563,10 +563,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:50:29.307Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1684,
-      "y": 1560
+      "x": 596,
+      "y": 1076
     }
   },
   {
@@ -578,10 +578,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:39:15.284Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2033,
-      "y": 1007
+      "x": 165,
+      "y": 1246
     }
   },
   {
@@ -593,10 +593,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:38:58.652Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1416,
-      "y": 1261
+      "x": 372,
+      "y": 1237
     }
   },
   {
@@ -608,10 +608,10 @@
     "position": "선임",
     "jobGroup": "FE개발",
     "updated_at": "2026-03-31T06:41:00.484Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1886,
-      "y": 1700
+      "x": 571,
+      "y": 1239
     }
   },
   {
@@ -623,10 +623,10 @@
     "position": "",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:51:22.831Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": -20,
-      "y": 1275
+      "x": 2421,
+      "y": 1386
     }
   },
   {
@@ -638,10 +638,10 @@
     "position": "수석",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T07:50:32.889Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 338,
-      "y": 1409
+      "x": 2571,
+      "y": 1145
     }
   },
   {
@@ -653,10 +653,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:52:15.427Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 191,
-      "y": 1129
+      "x": 2254,
+      "y": 887
     }
   },
   {
@@ -668,10 +668,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:57:03.317Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 307,
-      "y": 1594
+      "x": 2527,
+      "y": 1010
     }
   },
   {
@@ -683,10 +683,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:50:42.121Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 240,
-      "y": 988
+      "x": 2035,
+      "y": 930
     }
   },
   {
@@ -698,10 +698,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:51:33.817Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 897,
-      "y": 1540
+      "x": 1508,
+      "y": 1354
     }
   },
   {
@@ -713,10 +713,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:54:33.742Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 509,
-      "y": 860
+      "x": 2016,
+      "y": 585
     }
   },
   {
@@ -728,10 +728,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:50:55.487Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 420,
-      "y": 1120
+      "x": 1733,
+      "y": 1353
     }
   },
   {
@@ -743,10 +743,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:56:55.281Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 936,
-      "y": 1356
+      "x": 1550,
+      "y": 654
     }
   },
   {
@@ -758,10 +758,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:57:10.643Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 513,
-      "y": 985
+      "x": 1816,
+      "y": 1076
     }
   },
   {
@@ -773,10 +773,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:56:43.647Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 9,
-      "y": 1115
+      "x": 2108,
+      "y": 1373
     }
   },
   {
@@ -788,10 +788,10 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:53:25.240Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 382,
-      "y": 1232
+      "x": 1548,
+      "y": 1158
     }
   },
   {
@@ -803,10 +803,10 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:53:05.002Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 672,
-      "y": 1575
+      "x": 1498,
+      "y": 910
     }
   },
   {
@@ -818,11 +818,11 @@
     "position": "이사",
     "jobGroup": "Architecture",
     "updated_at": "2026-04-01T23:47:14.483Z",
+    "parentId": "group-1776149215288-2",
     "hierarchyPos": {
-      "x": 186,
-      "y": 2217
-    },
-    "parentId": "group-1775028004948-6"
+      "x": 1685,
+      "y": 1603
+    }
   },
   {
     "id": "1774593995661",
@@ -833,11 +833,11 @@
     "position": "수석",
     "jobGroup": "",
     "updated_at": "2026-04-01T23:46:27.186Z",
+    "parentId": "group-1776149215288-2",
     "hierarchyPos": {
-      "x": 415,
-      "y": 2342
-    },
-    "parentId": "group-1775028004948-6"
+      "x": 1791,
+      "y": 1733
+    }
   },
   {
     "id": "1774594002401",
@@ -848,11 +848,11 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:47:24.394Z",
+    "parentId": "group-1776149215288-2",
     "hierarchyPos": {
-      "x": 187,
-      "y": 2345
-    },
-    "parentId": "group-1775028004948-6"
+      "x": 1606,
+      "y": 1858
+    }
   },
   {
     "id": "1774594044708",
@@ -863,10 +863,10 @@
     "position": "수석",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T07:55:22.619Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 737,
-      "y": 742
+      "x": 1493,
+      "y": 777
     }
   },
   {
@@ -878,10 +878,10 @@
     "position": "수석",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T07:55:34.523Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 97,
-      "y": 1584
+      "x": 1540,
+      "y": 1015
     }
   },
   {
@@ -893,10 +893,10 @@
     "position": "책임",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T07:51:13.485Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 740,
-      "y": 866
+      "x": 2275,
+      "y": 710
     }
   },
   {
@@ -908,10 +908,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:13:18.242Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 42,
-      "y": 792
+      "x": 2231,
+      "y": 619
     }
   },
   {
@@ -923,10 +923,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:13:22.810Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 164,
-      "y": 1353
+      "x": 2223,
+      "y": 1016
     }
   },
   {
@@ -938,10 +938,10 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:13:26.746Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 573,
-      "y": 1276
+      "x": 1730,
+      "y": 1202
     }
   },
   {
@@ -952,12 +952,12 @@
     "position": "이사",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:05:35.473Z",
-    "parentId": "group-1775028004948-3",
+    "org": "CCE",
+    "parentId": "group-1776149215288-3",
     "hierarchyPos": {
-      "x": 1155,
-      "y": 2245
-    },
-    "org": "CCE"
+      "x": 1113,
+      "y": 1612
+    }
   },
   {
     "id": "1774921969274",
@@ -967,12 +967,12 @@
     "position": "이사",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:02:13.944Z",
-    "parentId": "group-1775028004948-3",
+    "org": "CCE",
+    "parentId": "group-1776149215288-3",
     "hierarchyPos": {
-      "x": 1024,
-      "y": 2386
-    },
-    "org": "CCE"
+      "x": 920,
+      "y": 1614
+    }
   },
   {
     "id": "1774921988006",
@@ -982,12 +982,12 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:00:46.482Z",
-    "parentId": "group-1775028004948-3",
+    "org": "CCE",
+    "parentId": "group-1776149215288-3",
     "hierarchyPos": {
-      "x": 1277,
-      "y": 2388
-    },
-    "org": "CCE"
+      "x": 1225,
+      "y": 1755
+    }
   },
   {
     "id": "1774922003282",
@@ -997,12 +997,12 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:01:29.339Z",
-    "parentId": "group-1775028004948-3",
+    "org": "CCE",
+    "parentId": "group-1776149215288-3",
     "hierarchyPos": {
-      "x": 1326,
-      "y": 2532
-    },
-    "org": "CCE"
+      "x": 1046,
+      "y": 1754
+    }
   },
   {
     "id": "1774922049938",
@@ -1012,12 +1012,12 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:01:49.982Z",
-    "parentId": "group-1775028004948-3",
+    "org": "CCE",
+    "parentId": "group-1776149215288-3",
     "hierarchyPos": {
-      "x": 1068,
-      "y": 2662
-    },
-    "org": "CCE"
+      "x": 866,
+      "y": 1754
+    }
   },
   {
     "id": "1774922073696",
@@ -1028,10 +1028,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:40:35.694Z",
-    "parentId": "group-1775028004948-3",
+    "parentId": "group-1776149215288-3",
     "hierarchyPos": {
-      "x": 993,
-      "y": 2538
+      "x": 947,
+      "y": 1891
     }
   },
   {
@@ -1043,10 +1043,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:39:28.281Z",
-    "parentId": "group-1775028004948-3",
+    "parentId": "group-1776149215288-3",
     "hierarchyPos": {
-      "x": 1284,
-      "y": 2658
+      "x": 1144,
+      "y": 1889
     }
   },
   {
@@ -1057,10 +1057,10 @@
     "position": "이사",
     "jobGroup": "기획",
     "updated_at": "2026-03-31T01:55:29.080Z",
-    "parentId": "group-1775028004948-4",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2188,
-      "y": 2160
+      "x": 249,
+      "y": 1608
     }
   },
   {
@@ -1072,10 +1072,10 @@
     "position": "상무",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:41:46.586Z",
-    "parentId": "group-1775028004948-4",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2098,
-      "y": 2276
+      "x": 99,
+      "y": 1730
     }
   },
   {
@@ -1087,11 +1087,11 @@
     "position": "이사",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:15:53.578Z",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2305,
-      "y": 2278
-    },
-    "parentId": "group-1775028004948-4"
+      "x": 279,
+      "y": 1730
+    }
   },
   {
     "id": "1774925062957",
@@ -1101,12 +1101,12 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T02:29:48.450Z",
-    "parentId": "group-1775028004948-4",
+    "org": "GSS",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2012,
-      "y": 2403
-    },
-    "org": "GSS"
+      "x": 457,
+      "y": 1731
+    }
   },
   {
     "id": "1774925150817",
@@ -1117,11 +1117,11 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:15:39.424Z",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2219,
-      "y": 2401
-    },
-    "parentId": "group-1775028004948-4"
+      "x": 44,
+      "y": 1983
+    }
   },
   {
     "id": "1774925177566",
@@ -1132,11 +1132,11 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:15:26.860Z",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 1915,
-      "y": 2524
-    },
-    "parentId": "group-1775028004948-4"
+      "x": 465,
+      "y": 1857
+    }
   },
   {
     "id": "1774925198280",
@@ -1146,12 +1146,12 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:04:48.260Z",
-    "parentId": "group-1775028004948-4",
+    "org": "GSS",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2414,
-      "y": 2400
-    },
-    "org": "GSS"
+      "x": 81,
+      "y": 1850
+    }
   },
   {
     "id": "1774925227928",
@@ -1161,12 +1161,12 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:05:15.438Z",
-    "parentId": "group-1775028004948-4",
+    "org": "GSS",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2115,
-      "y": 2528
-    },
-    "org": "GSS"
+      "x": 275,
+      "y": 1847
+    }
   },
   {
     "id": "1774925255946",
@@ -1176,12 +1176,12 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:04:15.768Z",
-    "parentId": "group-1775028004948-4",
+    "org": "GSS",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2316,
-      "y": 2527
-    },
-    "org": "GSS"
+      "x": 76,
+      "y": 2130
+    }
   },
   {
     "id": "1774925284838",
@@ -1191,12 +1191,12 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:04:34.834Z",
-    "parentId": "1774925227928",
+    "org": "GSS",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2323,
-      "y": 2656
-    },
-    "org": "GSS"
+      "x": 421,
+      "y": 1981
+    }
   },
   {
     "id": "1774925306121",
@@ -1206,12 +1206,12 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:04:22.680Z",
-    "parentId": "group-1775028004948-4",
+    "org": "GSS",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2511,
-      "y": 2523
-    },
-    "org": "GSS"
+      "x": 606,
+      "y": 1987
+    }
   },
   {
     "id": "1774925325986",
@@ -1222,10 +1222,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:40:12.336Z",
-    "parentId": "1774925227928",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2522,
-      "y": 2660
+      "x": 303,
+      "y": 2122
     }
   },
   {
@@ -1237,10 +1237,10 @@
     "position": "사원",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T02:40:24.053Z",
-    "parentId": "1774925227928",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 2096,
-      "y": 2658
+      "x": 496,
+      "y": 2113
     }
   },
   {
@@ -1251,12 +1251,12 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-04-02T05:05:02.830Z",
-    "parentId": "group-1775028004948-4",
+    "org": "GSS",
+    "parentId": "group-1776149215288-5",
     "hierarchyPos": {
-      "x": 1874,
-      "y": 2667
-    },
-    "org": "GSS"
+      "x": 235,
+      "y": 1984
+    }
   },
   {
     "id": "1774932230230",
@@ -1267,11 +1267,11 @@
     "position": "전임",
     "jobGroup": "Architecture",
     "updated_at": "2026-04-01T23:45:54.399Z",
+    "parentId": "group-1776149215288-2",
     "hierarchyPos": {
-      "x": 189,
-      "y": 2479
-    },
-    "parentId": "group-1775028004948-6"
+      "x": 1788,
+      "y": 1860
+    }
   },
   {
     "id": "1774932253794",
@@ -1282,11 +1282,11 @@
     "position": "책임",
     "jobGroup": "개발",
     "updated_at": "2026-04-01T23:46:05.901Z",
+    "parentId": "group-1776149215288-2",
     "hierarchyPos": {
-      "x": 306,
-      "y": 2644
-    },
-    "parentId": "group-1775028004948-6"
+      "x": 1694,
+      "y": 1995
+    }
   },
   {
     "id": "1774939099920",
@@ -1297,10 +1297,10 @@
     "position": "이사",
     "jobGroup": "PM",
     "updated_at": "2026-03-31T06:38:19.920Z",
-    "parentId": "1774939341355",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1794,
-      "y": 748
+      "x": 445,
+      "y": 645
     }
   },
   {
@@ -1312,10 +1312,10 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:42:21.355Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 1486,
-      "y": 1562
+      "x": 728,
+      "y": 1074
     }
   },
   {
@@ -1327,10 +1327,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T06:44:02.600Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "1774511635428",
     "hierarchyPos": {
-      "x": 1939,
-      "y": 881
+      "x": 242,
+      "y": 1064
     }
   },
   {
@@ -1342,10 +1342,10 @@
     "position": "전임",
     "jobGroup": "퍼블",
     "updated_at": "2026-03-31T06:50:03.159Z",
-    "parentId": "group-1775028004948-1",
+    "parentId": "group-1776149215288-1",
     "hierarchyPos": {
-      "x": 2498,
-      "y": 1138
+      "x": 720,
+      "y": 1002
     }
   },
   {
@@ -1357,10 +1357,10 @@
     "position": "이사",
     "jobGroup": "",
     "updated_at": "2026-03-31T06:51:11.047Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 370,
-      "y": 621
+      "x": 1781,
+      "y": 585
     }
   },
   {
@@ -1372,25 +1372,25 @@
     "position": "선임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:52:41.869Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 533,
-      "y": 1456
+      "x": 2193,
+      "y": 1258
     }
   },
   {
     "id": "1774943662580",
     "org": "ESM",
-    "project": "본사",
+    "project": "한진관광 차세대 시스템 구축",
     "name": "김창훈",
     "nickname": "Russell",
     "position": "수석",
     "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:54:22.580Z",
-    "parentId": "group-1775028004948-0",
+    "updated_at": "2026-04-14T06:41:58.867Z",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 504,
-      "y": 736
+      "x": 1920,
+      "y": 1234
     }
   },
   {
@@ -1402,11 +1402,11 @@
     "position": "CTO",
     "jobGroup": "PM",
     "updated_at": "2026-04-01T23:13:29.698Z",
+    "parentId": "group-1776149215288-6",
     "hierarchyPos": {
-      "x": 636,
-      "y": 323
-    },
-    "parentId": "group-1775085241642"
+      "x": 253,
+      "y": 263
+    }
   },
   {
     "id": "1775007754177",
@@ -1417,10 +1417,10 @@
     "position": "CEO",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:42:34.177Z",
-    "parentId": "group-1775028104948",
+    "parentId": "group-1776149215288-6",
     "hierarchyPos": {
-      "x": 981,
-      "y": 190
+      "x": 62,
+      "y": 265
     }
   },
   {
@@ -1432,11 +1432,11 @@
     "position": "상무",
     "jobGroup": "",
     "updated_at": "2026-04-01T23:14:51.934Z",
+    "parentId": "group-1776149215288-7",
     "hierarchyPos": {
-      "x": 1456,
-      "y": 85
-    },
-    "parentId": "group-1775085402374"
+      "x": 476,
+      "y": 220
+    }
   },
   {
     "id": "1775007824072",
@@ -1447,11 +1447,11 @@
     "position": "책임",
     "jobGroup": "",
     "updated_at": "2026-04-06T01:01:58.133Z",
+    "parentId": "group-1776149215288-8",
     "hierarchyPos": {
-      "x": 1430,
-      "y": 383
-    },
-    "parentId": "group-1775028004948-2"
+      "x": 1214,
+      "y": 206
+    }
   },
   {
     "id": "1775007882360",
@@ -1462,10 +1462,10 @@
     "position": "이사",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:44:42.360Z",
-    "parentId": "group-1775028004948-7",
+    "parentId": "group-1776149215288-9",
     "hierarchyPos": {
-      "x": 2335,
-      "y": 202
+      "x": 753,
+      "y": 218
     }
   },
   {
@@ -1477,10 +1477,10 @@
     "position": "책임",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:45:00.104Z",
-    "parentId": "group-1775028004948-7",
+    "parentId": "group-1776149215288-9",
     "hierarchyPos": {
-      "x": 2064,
-      "y": 330
+      "x": 967,
+      "y": 149
     }
   },
   {
@@ -1492,10 +1492,10 @@
     "position": "책임",
     "jobGroup": "",
     "updated_at": "2026-04-01T01:45:16.824Z",
-    "parentId": "group-1775028004948-7",
+    "parentId": "group-1776149215288-9",
     "hierarchyPos": {
-      "x": 2244,
-      "y": 338
+      "x": 955,
+      "y": 286
     }
   },
   {
@@ -1507,10 +1507,10 @@
     "position": "수석",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:55:09.011Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 814,
-      "y": 1159
+      "x": 2060,
+      "y": 1134
     }
   },
   {
@@ -1522,10 +1522,10 @@
     "position": "전임",
     "jobGroup": "개발",
     "updated_at": "2026-03-31T07:57:34.146Z",
-    "parentId": "group-1775028004948-0",
+    "parentId": "group-1776149215288-0",
     "hierarchyPos": {
-      "x": 719,
-      "y": 1381
+      "x": 2273,
+      "y": 1471
     }
   }
 ]
