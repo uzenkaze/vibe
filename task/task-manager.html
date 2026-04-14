@@ -1828,11 +1828,6 @@
                             <div class="stat-card-value" id="dash-stat-hold" style="color: #8e8e93;">0</div>
                             <div class="stat-card-subtext">일시 중단</div>
                         </div>
-                        <div class="stat-card-apple">
-                            <div class="stat-card-label">팀 멤버</div>
-                            <div class="stat-card-value" id="dash-stat-manpower">0</div>
-                            <div class="stat-card-subtext">활성 멤버</div>
-                        </div>
                     </div>
 
                     <div class="start-section">
@@ -2358,8 +2353,6 @@
             });
 
             // Update Manpower Dash Stat
-            const dashManpower = document.getElementById('dash-stat-manpower');
-            if (dashManpower) dashManpower.innerText = manpowers.length;
 
             const mainManpowerTotal = document.getElementById('stat-manpower-total');
             if (mainManpowerTotal) mainManpowerTotal.innerText = manpowers.length;
