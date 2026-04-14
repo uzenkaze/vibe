@@ -2450,6 +2450,7 @@
             localStorage.setItem('tasks', JSON.stringify(tasks));
             render();
             showToast('저장되었습니다.');
+            closeModal();
 
             if (ghConfig.token && ghConfig.autoSync) {
                 const saveBtn = document.querySelector('.btn-save-main');
