@@ -680,75 +680,129 @@
         }
 
         .recent-task-banner {
-            background: #ffffff;
-            border: 1px solid #efeff2;
-            border-radius: 1.2rem;
-            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 1.5rem;
+            padding: 1.2rem;
             margin-top: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            animation: fadeIn 0.4s ease;
-            max-height: 250px;
+            gap: 0.8rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 350px;
             overflow-y: auto;
             scrollbar-width: none;
-            /* Firefox */
-            -ms-overflow-style: none;
-            /* IE/Edge */
         }
 
         .recent-task-banner::-webkit-scrollbar {
             display: none;
-            /* Chrome/Safari */
         }
 
         .recent-task-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.6rem 0.5rem;
-            border-bottom: 1px solid #f5f5f7;
+            padding: 1rem 1.2rem;
+            background: #ffffff;
+            border: 1px solid #f2f2f7;
+            border-radius: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            position: relative;
+            overflow: hidden;
         }
 
-        .recent-task-item:last-child {
-            border-bottom: none;
+        .recent-task-item:hover {
+            transform: translateY(-3px) scale(1.005);
+            box-shadow: 0 12px 24px rgba(0, 113, 227, 0.08);
+            border-color: rgba(0, 113, 227, 0.2);
+            background: #ffffff;
+            z-index: 2;
         }
 
         .recent-task-info {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 0.95rem;
-            font-weight: 600;
-            overflow: hidden;
+            gap: 1.2rem;
             flex: 1;
+            min-width: 0;
+        }
+
+        .recent-task-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .recent-task-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
         }
 
         .recent-task-label {
             font-size: 0.65rem;
             font-weight: 800;
             color: #ffffff;
-            background: #5e5ce6;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.4rem;
-            flex-shrink: 0;
+            padding: 3px 10px;
+            border-radius: 20px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
-        .recent-task-label.todo {
-            background: var(--danger);
+        .recent-task-label.todo { background: linear-gradient(135deg, #ff5e62, #ff9966); }
+        .recent-task-label.progress { background: linear-gradient(135deg, #00b09b, #96c93d); }
+        .recent-task-label.hold { background: linear-gradient(135deg, #8e9eab, #eef2f3); color: #444; }
+
+        .recent-task-no {
+            font-family: "SF Mono", "Menlo", monospace;
+            font-size: 0.8rem;
+            color: #0071e3;
+            font-weight: 700;
+            background: rgba(0, 113, 227, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
-        .recent-task-label.progress {
-            background: var(--warning);
-        }
-
-
-        .recent-task-text-content {
+        .recent-task-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1d1d1f;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .recent-task-sub-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.78rem;
+            color: #86868b;
+            font-weight: 500;
+        }
+
+        .recent-task-deploy {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #34c759;
+            font-weight: 700;
+        }
+
+        .recent-task-work-no {
+            background: #f2f2f7;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-weight: 600;
         }
 
         .btn-copy-action {
@@ -2585,16 +2639,26 @@
                 const badgeClass = t.status === 'todo' ? 'todo' : (t.status === 'progress' ? 'progress' : (t.status === 'hold' ? 'hold' : ''));
                 const labelText = t.status === 'todo' ? 'TODO' : (t.status === 'progress' ? 'PROGRESS' : (t.status === 'hold' ? 'HOLD' : ''));
 
-                const formattedDeployDate = t.deploy_date ? ` | 배포 : ${t.deploy_date.split('(')[0].replace(/-/g, '.').trim()}` : '';
-                const text = `#${t.task_no || '번호없음'} [${t.work_no || '업무없음'}] ${t.title}${formattedDeployDate}`;
+                // 복사용 및 노출용 텍스트 (순수 텍스트 조합)
+                const mainInfoText = `#${t.task_no || '-'} [${t.work_no || '-'}] ${t.title}`;
+                const deployText = t.deploy_date ? ` | 배포: ${t.deploy_date.split('(')[0].trim()}` : '';
+                const fullText = mainInfoText + deployText;
 
                 return `
                     <div class="recent-task-item">
                         <div class="recent-task-info">
                             <span class="recent-task-label ${badgeClass}">${labelText}</span>
-                            <span class="recent-task-text-content">${text}</span>
+                            <div class="recent-task-meta">
+                                <span class="recent-task-title" title="${fullText}">${fullText}</span>
+                            </div>
                         </div>
-                        <button class="btn-copy-action" onclick="copySpecificTask('${text.replace(/'/g, "\\'")}', this)">복사</button>
+                        <button class="btn-copy-action" onclick="copySpecificTask('${fullText.replace(/'/g, "\\'")}', this)" title="정보 복사">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>복사</span>
+                        </button>
                     </div>
                 `;
             }).join('');
