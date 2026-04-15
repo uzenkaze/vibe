@@ -1349,21 +1349,6 @@
     }
   },
   {
-    "id": "1774939442600",
-    "org": "ESI",
-    "project": "본사",
-    "name": "이주일",
-    "nickname": "Jerome",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:02.600Z",
-    "parentId": "1774511635428",
-    "hierarchyPos": {
-      "x": 242,
-      "y": 1064
-    }
-  },
-  {
     "id": "1775007882360",
     "org": "USG",
     "project": "본사",
@@ -1376,6 +1361,21 @@
     "hierarchyPos": {
       "x": 753,
       "y": 218
+    }
+  },
+  {
+    "id": "1774939442600",
+    "org": "ESI",
+    "project": "본사",
+    "name": "이주일",
+    "nickname": "Jerome",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:44:02.600Z",
+    "parentId": "1774511635428",
+    "hierarchyPos": {
+      "x": 242,
+      "y": 1064
     }
   },
   {
