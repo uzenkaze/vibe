@@ -1304,21 +1304,6 @@
     }
   },
   {
-    "id": "1774939341355",
-    "org": "ESI",
-    "project": "본사",
-    "name": "임희은",
-    "nickname": "Jetty",
-    "position": "전임",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:42:21.355Z",
-    "parentId": "group-1776149215288-1",
-    "hierarchyPos": {
-      "x": 728,
-      "y": 1074
-    }
-  },
-  {
     "id": "1774939442600",
     "org": "ESI",
     "project": "본사",
@@ -1331,6 +1316,21 @@
     "hierarchyPos": {
       "x": 242,
       "y": 1064
+    }
+  },
+  {
+    "id": "1774939341355",
+    "org": "ESI",
+    "project": "본사",
+    "name": "임희은",
+    "nickname": "Jetty",
+    "position": "전임",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:42:21.355Z",
+    "parentId": "group-1776149215288-1",
+    "hierarchyPos": {
+      "x": 728,
+      "y": 1074
     }
   },
   {
