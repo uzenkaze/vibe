@@ -1,1 +1,218 @@
-[]
+[
+  {
+    "id": "qqbzxjj0j",
+    "tableName": "PR_4DAYS_POPL_GOODS_HIST",
+    "tableComments": "4일간 인기상품이력",
+    "columns": [
+      {
+        "id": "50hp6vsa2",
+        "seq": 1,
+        "columnName": "SUM_NO",
+        "comments": "4일간집계번호",
+        "dataType": "VARCHAR2(8)",
+        "pk": "P1",
+        "nullable": "N",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "wgl2pb0g0",
+        "seq": 2,
+        "columnName": "SUM_SCT_CD",
+        "comments": "집계구분코드\n[AC006] 집계구분코드",
+        "dataType": "VARCHAR2(2)",
+        "pk": "P2",
+        "nullable": "N",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "61908ncus",
+        "seq": 3,
+        "columnName": "DISP_NO",
+        "comments": "전시번호\n전시번호 : 집계구분코드가 전체인 경우 -1",
+        "dataType": "VARCHAR2(10)",
+        "pk": "P3",
+        "nullable": "N",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "6r93zh8vc",
+        "seq": 4,
+        "columnName": "GOODS_NO",
+        "comments": "상품번호",
+        "dataType": "VARCHAR2(10)",
+        "pk": "P4",
+        "nullable": "N",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "gfvflfrwx",
+        "seq": 5,
+        "columnName": "SALE_AMT",
+        "comments": "판매금액",
+        "dataType": "NUMBER(15)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "ymytzok38",
+        "seq": 6,
+        "columnName": "SALE_QTY",
+        "comments": "판매수량",
+        "dataType": "NUMBER(14)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "6b8207335",
+        "seq": 7,
+        "columnName": "DISP_MID_NO",
+        "comments": "전시중번호",
+        "dataType": "VARCHAR2(10)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "xho9bnia2",
+        "seq": 8,
+        "columnName": "DISP_LRG_NO",
+        "comments": "전시대번호",
+        "dataType": "VARCHAR2(10)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "ajqbq07q2",
+        "seq": 9,
+        "columnName": "DISP_SML_NO",
+        "comments": "전시소번호",
+        "dataType": "VARCHAR2(10)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "ceb1k5qex",
+        "seq": 10,
+        "columnName": "DISP_THN_NO",
+        "comments": "전시세번호",
+        "dataType": "VARCHAR2(10)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "7oz56zv6s",
+        "seq": 11,
+        "columnName": "SYS_REGR_ID",
+        "comments": "시스템등록자아이디",
+        "dataType": "VARCHAR2(320)",
+        "pk": "",
+        "nullable": "N",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "bl43zhnxq",
+        "seq": 12,
+        "columnName": "SYS_REG_DTIME",
+        "comments": "시스템등록일시",
+        "dataType": "DATE(7)",
+        "pk": "",
+        "nullable": "N",
+        "defaultValue": "SYSDATE",
+        "note": ""
+      },
+      {
+        "id": "1th33bztn",
+        "seq": 13,
+        "columnName": "SYS_REG_REQ_ID",
+        "comments": "시스템등록요청아이디",
+        "dataType": "VARCHAR2(30)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "katqbzd1w",
+        "seq": 14,
+        "columnName": "SYS_REG_PGM_ID",
+        "comments": "시스템등록프로그램아이디",
+        "dataType": "VARCHAR2(30)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "62fyf91cx",
+        "seq": 15,
+        "columnName": "SYS_MODR_ID",
+        "comments": "시스템수정자아이디",
+        "dataType": "VARCHAR2(320)",
+        "pk": "",
+        "nullable": "N",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "w6lnch31v",
+        "seq": 16,
+        "columnName": "SYS_MOD_DTIME",
+        "comments": "시스템수정일시",
+        "dataType": "DATE(7)",
+        "pk": "",
+        "nullable": "N",
+        "defaultValue": "SYSDATE",
+        "note": ""
+      },
+      {
+        "id": "02gdu5y4y",
+        "seq": 17,
+        "columnName": "SYS_MOD_REQ_ID",
+        "comments": "시스템수정요청아이디",
+        "dataType": "VARCHAR2(30)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "m38b3xwau",
+        "seq": 18,
+        "columnName": "SYS_MOD_PGM_ID",
+        "comments": "시스템수정프로그램아이디",
+        "dataType": "VARCHAR2(30)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      },
+      {
+        "id": "1c94uhpao",
+        "seq": 19,
+        "columnName": "RNK",
+        "comments": "우선순위",
+        "dataType": "NUMBER(14)",
+        "pk": "",
+        "nullable": "Y",
+        "defaultValue": "",
+        "note": ""
+      }
+    ]
+  }
+]
