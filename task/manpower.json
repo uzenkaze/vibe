@@ -405,6 +405,21 @@
     }
   },
   {
+    "id": "1774939442600",
+    "org": "ESI",
+    "project": "본사",
+    "name": "이주일",
+    "nickname": "Jerome",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:44:02.600Z",
+    "parentId": "1774511635428",
+    "hierarchyPos": {
+      "x": 242,
+      "y": 1064
+    }
+  },
+  {
     "id": "1774511663007",
     "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
@@ -492,21 +507,6 @@
     "hierarchyPos": {
       "x": 766,
       "y": 1230
-    }
-  },
-  {
-    "id": "1774939442600",
-    "org": "ESI",
-    "project": "본사",
-    "name": "이주일",
-    "nickname": "Jerome",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:02.600Z",
-    "parentId": "1774511635428",
-    "hierarchyPos": {
-      "x": 242,
-      "y": 1064
     }
   },
   {
