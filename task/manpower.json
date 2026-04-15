@@ -1446,12 +1446,13 @@
     "nickname": "Chloe",
     "position": "책임",
     "jobGroup": "",
-    "updated_at": "2026-04-06T01:01:58.133Z",
+    "updated_at": "2026-04-15T00:12:03.780Z",
     "parentId": "group-1776149215288-8",
     "hierarchyPos": {
       "x": 1214,
       "y": 206
-    }
+    },
+    "status": "퇴사"
   },
   {
     "id": "1775007882360",
