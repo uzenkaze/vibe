@@ -1,34 +1,5 @@
 [
   {
-    "id": "jsmwtfddp",
-    "tableName": "\"",
-    "tableComments": "1",
-    "columns": [
-      {
-        "id": "n7o410e8q",
-        "seq": 1,
-        "columnName": "4일간집계번호",
-        "comments": "VARCHAR2(8)",
-        "dataType": "P1",
-        "pk": "N",
-        "nullable": "Y",
-        "defaultValue": "",
-        "note": "\"1. 집합적 정의"
-      },
-      {
-        "id": "r4gyws01x",
-        "seq": 2,
-        "columnName": "SUM_SCT_CD",
-        "comments": "\"집계구분코드",
-        "dataType": "",
-        "pk": "",
-        "nullable": "Y",
-        "defaultValue": "",
-        "note": ""
-      }
-    ]
-  },
-  {
     "id": "a0u7shw0n",
     "tableName": "[AC006] 집계구분코드\"",
     "tableComments": "VARCHAR2(2)",
