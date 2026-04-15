@@ -15,6 +15,21 @@
     }
   },
   {
+    "id": "1774939099920",
+    "org": "ESI",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "박정훈",
+    "nickname": "Arc",
+    "position": "이사",
+    "jobGroup": "PM",
+    "updated_at": "2026-03-31T06:38:19.920Z",
+    "parentId": "group-1776149215288-1",
+    "hierarchyPos": {
+      "x": 445,
+      "y": 645
+    }
+  },
+  {
     "id": "1774507467637",
     "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
@@ -252,21 +267,6 @@
     "hierarchyPos": {
       "x": 366,
       "y": 757
-    }
-  },
-  {
-    "id": "1774939099920",
-    "org": "ESI",
-    "project": "한진관광 차세대 시스템 구축",
-    "name": "박정훈",
-    "nickname": "Arc",
-    "position": "이사",
-    "jobGroup": "PM",
-    "updated_at": "2026-03-31T06:38:19.920Z",
-    "parentId": "group-1776149215288-1",
-    "hierarchyPos": {
-      "x": 445,
-      "y": 645
     }
   },
   {
