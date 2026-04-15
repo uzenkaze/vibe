@@ -330,6 +330,21 @@
     }
   },
   {
+    "id": "1774511757717",
+    "org": "ESI",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이준오",
+    "nickname": "Nemo",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:44:54.142Z",
+    "parentId": "group-1776149215288-1",
+    "hierarchyPos": {
+      "x": 968,
+      "y": 1058
+    }
+  },
+  {
     "id": "1774511569203",
     "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
@@ -507,21 +522,6 @@
     "hierarchyPos": {
       "x": 766,
       "y": 1230
-    }
-  },
-  {
-    "id": "1774511757717",
-    "org": "ESI",
-    "project": "한진관광 차세대 시스템 구축",
-    "name": "이준오",
-    "nickname": "Nemo",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:44:54.142Z",
-    "parentId": "group-1776149215288-1",
-    "hierarchyPos": {
-      "x": 968,
-      "y": 1058
     }
   },
   {
