@@ -1444,6 +1444,15 @@
             margin-right: -1rem;
         }
 
+        /* Organizational Section Highlight */
+        .project-org-section.active-highlight {
+            background-color: rgba(0, 113, 227, 0.05) !important;
+            border: 2px solid var(--primary) !important;
+            box-shadow: 0 0 25px rgba(0, 113, 227, 0.15) !important;
+            border-radius: 1.5rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         /* Manpower Summary Styles */
         .manpower-summary-container {
             display: flex;
@@ -2350,6 +2359,7 @@
         let currentView = 'view-dashboard';
         let currentStatusFilter = 'all';
         let calDate = new Date();
+        let lastExpandedManpowerGroup = null;
         let ghConfig = JSON.parse(localStorage.getItem('taskGitHubConfig') || '{"repo":"uzenkaze/vibe","branch":"main","autoSync":true}');
 
         let menus = [
@@ -2556,7 +2566,13 @@
             const section = document.getElementById('recent-task-section');
             if (!banner) return;
 
-            const activeTasks = tasks.filter(t => t.status !== 'done');
+            const today = new Date().toISOString().split('T')[0];
+            const activeTasks = tasks.filter(t => {
+                if (t.status === 'done') return false;
+                if (!t.deploy_date) return true;
+                const cleanDate = t.deploy_date.split('(')[0].trim();
+                return cleanDate >= today;
+            });
             if (activeTasks.length === 0) {
                 if (section) section.style.display = 'none';
                 else banner.style.display = 'none';
@@ -2938,7 +2954,22 @@
         function toggleManpowerSection(element) {
             const section = element.closest('.project-org-section');
             if (section) {
-                section.classList.toggle('collapsed');
+                const alreadyOpen = !section.classList.contains('collapsed');
+                const groupName = section.getAttribute('data-group-name');
+
+                // 모든 섹션 닫기 및 하이라이트 제거
+                document.querySelectorAll('.project-org-section').forEach(sec => {
+                    sec.classList.add('collapsed');
+                    sec.classList.remove('active-highlight');
+                });
+
+                // 클릭한 섹션이 닫혀 있었다면 엶
+                if (!alreadyOpen) {
+                    section.classList.remove('collapsed');
+                    lastExpandedManpowerGroup = groupName;
+                } else {
+                    lastExpandedManpowerGroup = null;
+                }
             }
         }
 
@@ -3108,27 +3139,22 @@
                     `handleDropOnOrg(event, '${groupName.replace(/'/g, "\\'")}')` :
                     `handleDropOnProject(event, '${groupName.replace(/'/g, "\\'")}')`;
 
-                // If there's a search term, expand, otherwise respect default
-                const isCollapsed = currentManpowerSearch === '' ? 'collapsed' : '';
+                // 검색어가 있으면 모두 펼치고, 없으면 마지막으로 확장된 그룹만 펼침
+                let isCollapsed = '';
+                if (currentManpowerSearch === '') {
+                    isCollapsed = (groupName === lastExpandedManpowerGroup) ? '' : 'collapsed';
+                }
                 const members = grouped[groupName] || [];
 
                 // 미지정/미배정 그룹은 인원이 없을 경우 노출하지 않음
                 if ((groupName.includes('미지정') || groupName.includes('미배정')) && members.length === 0) return '';
 
-                // 직급(position) 기반 정렬 로직 추가
-                const rankOrder = ['CEO', 'CTO', '상무', '이사', '수석', '책임', '전임', '선임', '사원'];
-                const getRankValue = (pos) => {
-                    if (!pos) return 999;
-                    const posUpper = pos.toUpperCase();
-                    for (let i = 0; i < rankOrder.length; i++) {
-                        if (posUpper.includes(rankOrder[i])) return i;
-                    }
-                    return 999;
-                };
-                members.sort((a, b) => getRankValue(a.position) - getRankValue(b.position) || (a.name || '').localeCompare(b.name || ''));
+                // 자동 직급 정렬 로직 제거 (수동 드래그 정렬 순서를 유지하기 위함)
+                // 필요 시 이 부분을 주석 해제하거나 가나다순으로 초기 정렬을 수행할 수 있습니다.
+                // members.sort((a, b) => getRankValue(a.position) - getRankValue(b.position) || (a.name || '').localeCompare(b.name || ''));
 
                 return `
-                    <div class="project-org-section ${isCollapsed}" 
+                    <div class="project-org-section ${isCollapsed}" data-group-name="${groupName.replace(/"/g, '&quot;')}" 
                          ondragover="handleDragOver(event)" 
                          ondragenter="this.classList.add('drag-over')"
                          ondragleave="this.classList.remove('drag-over')"
@@ -3157,7 +3183,7 @@
                                      ondragleave="this.classList.remove('drag-over')"
                                      ondragend="handleDragEnd(event)"
                                      ondrop="handleDropOnCard(event, '${m.id}')"
-                                     style="height: auto; min-height: 150px; padding: 1.25rem; transition: all 0.2s; cursor: grab; opacity: ${m.status === '퇴사' ? '0.5' : '1'};">
+                                     style="height: auto; min-height: 150px; padding: 1.25rem; transition: all 0.2s; cursor: grab; background-color: ${m.status === '퇴사' ? '#f2f2f7' : '#f0fdf4'}; border: 1px solid ${m.status === '퇴사' ? '#e5e5ea' : '#dcfce7'}; opacity: ${m.status === '퇴사' ? '0.7' : '1'};">
                                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                                         <div>
                                             <div style="font-size: 0.75rem; font-weight: 800; color: #5e5ce6; margin-bottom: 2px;">${m.jobGroup || '직군미정'}</div>
@@ -3331,43 +3357,39 @@
                     setManpowerViewMode('org');
                 }
 
-                // renderManpower()에 의해 DOM이 재구성될 시간을 줌
                 setTimeout(() => {
-                    const sections = document.querySelectorAll('.project-org-section');
-                    let target = null;
-                    sections.forEach(sec => {
-                        // h2 내의 두 번째 span이 실제 조직명임 (첫 번째는 ORGANIZATION 라벨)
-                        const spans = sec.querySelectorAll('.project-org-header h2 span');
-                        const titleSpan = spans.length > 1 ? spans[1] : spans[0];
-
-                        if (titleSpan && titleSpan.innerText.trim() === groupName) {
-                            target = sec;
-                            // 접혀있는 섹션이면 강제로 펼침
-                            if (sec.classList.contains('collapsed')) {
-                                sec.classList.remove('collapsed');
-                            }
-                        }
-                    });
-
+                    const target = document.querySelector(`.project-org-section[data-group-name="${groupName}"]`);
+                    
                     if (target) {
-                        // 상단 바 높이를 고려한 정밀 스크롤 이동
-                        const headerOffset = 180;
-                        const elementPosition = target.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                        window.scrollTo({
-                            top: offsetPosition,
-                            behavior: 'smooth'
+                        // 다른 모든 섹션 닫기 및 이전 활성 상태 제거
+                        document.querySelectorAll('.project-org-section').forEach(sec => {
+                            sec.classList.add('collapsed');
+                            sec.classList.remove('active-highlight');
                         });
 
-                        // 강조 효과
-                        target.style.transition = 'background-color 0.5s';
-                        target.style.backgroundColor = 'rgba(0, 113, 227, 0.1)';
-                        setTimeout(() => target.style.backgroundColor = '', 2000);
+                        // 타겟 섹션 활성화 및 펼침
+                        target.classList.remove('collapsed');
+                        target.classList.add('active-highlight');
+                        lastExpandedManpowerGroup = groupName;
+
+                        // 상단 바 높이를 고려한 정밀 스크롤 이동 (.main-content 기준)
+                        const mainContent = document.querySelector('.main-content');
+                        if (mainContent) {
+                            const headerOffset = 150;
+                            const targetPosition = target.offsetTop - headerOffset;
+
+                            mainContent.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+
+                        // 활성화 스타일 적용 (강조)
+                        target.classList.add('active-highlight');
                     } else {
                         showToast(`현재 검색/필터 상태에서 ${groupName} 그룹을 찾을 수 없습니다.`);
                     }
-                }, 150);
+                }, 200);
             } else if (currentManpowerUIMode === 'hierarchy') {
                 // Find org node label in Mindmap
                 const nodes = document.querySelectorAll('.org-node-label');
