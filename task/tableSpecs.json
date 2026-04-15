@@ -1,34 +1,5 @@
 [
   {
-    "id": "a0u7shw0n",
-    "tableName": "[AC006] 집계구분코드\"",
-    "tableComments": "VARCHAR2(2)",
-    "columns": [
-      {
-        "id": "82udt27ti",
-        "seq": 1,
-        "columnName": "N",
-        "comments": "",
-        "dataType": "",
-        "pk": "",
-        "nullable": "Y",
-        "defaultValue": "",
-        "note": ""
-      },
-      {
-        "id": "8usyciyuk",
-        "seq": 3,
-        "columnName": "DISP_NO",
-        "comments": "\"전시번호",
-        "dataType": "",
-        "pk": "",
-        "nullable": "Y",
-        "defaultValue": "",
-        "note": ""
-      }
-    ]
-  },
-  {
     "id": "b0ky2eagd",
     "tableName": "전시번호 : 집계구분코드가 전체인 경우 -1\"",
     "tableComments": "VARCHAR2(10)",
