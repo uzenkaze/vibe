@@ -1394,6 +1394,21 @@
     }
   },
   {
+    "id": "1775007916824",
+    "org": "USG",
+    "project": "본사",
+    "name": "유지영",
+    "nickname": "Emma",
+    "position": "책임",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:45:16.824Z",
+    "parentId": "group-1776149215288-9",
+    "hierarchyPos": {
+      "x": 955,
+      "y": 286
+    }
+  },
+  {
     "id": "1774939341355",
     "org": "ESI",
     "project": "본사",
@@ -1497,21 +1512,6 @@
     "hierarchyPos": {
       "x": 967,
       "y": 149
-    }
-  },
-  {
-    "id": "1775007916824",
-    "org": "USG",
-    "project": "본사",
-    "name": "유지영",
-    "nickname": "Emma",
-    "position": "책임",
-    "jobGroup": "",
-    "updated_at": "2026-04-01T01:45:16.824Z",
-    "parentId": "group-1776149215288-9",
-    "hierarchyPos": {
-      "x": 955,
-      "y": 286
     }
   },
   {
