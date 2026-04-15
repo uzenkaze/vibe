@@ -1,5 +1,35 @@
 [
   {
+    "id": "1774939871047",
+    "org": "ESM",
+    "project": "본사",
+    "name": "김형태",
+    "nickname": "Tei",
+    "position": "이사",
+    "jobGroup": "",
+    "updated_at": "2026-03-31T06:51:11.047Z",
+    "parentId": "group-1776149215288-0",
+    "hierarchyPos": {
+      "x": 1781,
+      "y": 585
+    }
+  },
+  {
+    "id": "1774511200532",
+    "org": "ESM",
+    "project": "신세계백화점 운영",
+    "name": "이희준",
+    "nickname": "Nick",
+    "position": "이사",
+    "jobGroup": "기획",
+    "updated_at": "2026-03-31T06:50:40.621Z",
+    "parentId": "1774593785970",
+    "hierarchyPos": {
+      "x": 1954,
+      "y": 750
+    }
+  },
+  {
     "id": "1774508175423",
     "org": "ESM",
     "project": "롯데하이마트",
@@ -135,21 +165,6 @@
     }
   },
   {
-    "id": "1774939871047",
-    "org": "ESM",
-    "project": "본사",
-    "name": "김형태",
-    "nickname": "Tei",
-    "position": "이사",
-    "jobGroup": "",
-    "updated_at": "2026-03-31T06:51:11.047Z",
-    "parentId": "group-1776149215288-0",
-    "hierarchyPos": {
-      "x": 1781,
-      "y": 585
-    }
-  },
-  {
     "id": "1774511087217",
     "org": "ESM",
     "project": "롯데하이마트",
@@ -192,21 +207,6 @@
     "hierarchyPos": {
       "x": 2413,
       "y": 1205
-    }
-  },
-  {
-    "id": "1774511200532",
-    "org": "ESM",
-    "project": "신세계백화점 운영",
-    "name": "이희준",
-    "nickname": "Nick",
-    "position": "이사",
-    "jobGroup": "기획",
-    "updated_at": "2026-03-31T06:50:40.621Z",
-    "parentId": "1774593785970",
-    "hierarchyPos": {
-      "x": 1954,
-      "y": 750
     }
   },
   {
