@@ -1304,6 +1304,21 @@
     }
   },
   {
+    "id": "1775007754177",
+    "org": "본사",
+    "project": "본사",
+    "name": "전구상",
+    "nickname": "Jun",
+    "position": "CEO",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:42:34.177Z",
+    "parentId": "group-1776149215288-6",
+    "hierarchyPos": {
+      "x": 62,
+      "y": 265
+    }
+  },
+  {
     "id": "1774939871047",
     "org": "ESM",
     "project": "본사",
@@ -1436,21 +1451,6 @@
     "hierarchyPos": {
       "x": 253,
       "y": 263
-    }
-  },
-  {
-    "id": "1775007754177",
-    "org": "본사",
-    "project": "본사",
-    "name": "전구상",
-    "nickname": "Jun",
-    "position": "CEO",
-    "jobGroup": "",
-    "updated_at": "2026-04-01T01:42:34.177Z",
-    "parentId": "group-1776149215288-6",
-    "hierarchyPos": {
-      "x": 62,
-      "y": 265
     }
   },
   {
