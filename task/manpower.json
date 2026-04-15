@@ -225,6 +225,21 @@
     }
   },
   {
+    "id": "1774511635428",
+    "org": "ESI",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "하윤철",
+    "nickname": "Harry",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:38:36.911Z",
+    "parentId": "group-1776149215288-1",
+    "hierarchyPos": {
+      "x": 203,
+      "y": 825
+    }
+  },
+  {
     "id": "1774511461063",
     "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
@@ -387,21 +402,6 @@
     "hierarchyPos": {
       "x": 671,
       "y": 875
-    }
-  },
-  {
-    "id": "1774511635428",
-    "org": "ESI",
-    "project": "한진관광 차세대 시스템 구축",
-    "name": "하윤철",
-    "nickname": "Harry",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:36.911Z",
-    "parentId": "group-1776149215288-1",
-    "hierarchyPos": {
-      "x": 203,
-      "y": 825
     }
   },
   {
