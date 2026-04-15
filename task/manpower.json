@@ -525,6 +525,21 @@
     }
   },
   {
+    "id": "1774511837663",
+    "org": "ESI",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이선용",
+    "nickname": "Patric",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:38:58.652Z",
+    "parentId": "group-1776149215288-1",
+    "hierarchyPos": {
+      "x": 372,
+      "y": 1237
+    }
+  },
+  {
     "id": "1774511771114",
     "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
@@ -612,21 +627,6 @@
     "hierarchyPos": {
       "x": 165,
       "y": 1246
-    }
-  },
-  {
-    "id": "1774511837663",
-    "org": "ESI",
-    "project": "한진관광 차세대 시스템 구축",
-    "name": "이선용",
-    "nickname": "Patric",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:38:58.652Z",
-    "parentId": "group-1776149215288-1",
-    "hierarchyPos": {
-      "x": 372,
-      "y": 1237
     }
   },
   {
