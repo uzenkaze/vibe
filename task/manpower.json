@@ -135,6 +135,21 @@
     }
   },
   {
+    "id": "1774939871047",
+    "org": "ESM",
+    "project": "본사",
+    "name": "김형태",
+    "nickname": "Tei",
+    "position": "이사",
+    "jobGroup": "",
+    "updated_at": "2026-03-31T06:51:11.047Z",
+    "parentId": "group-1776149215288-0",
+    "hierarchyPos": {
+      "x": 1781,
+      "y": 585
+    }
+  },
+  {
     "id": "1774511087217",
     "org": "ESM",
     "project": "롯데하이마트",
@@ -777,21 +792,6 @@
     "hierarchyPos": {
       "x": 1550,
       "y": 654
-    }
-  },
-  {
-    "id": "1774939871047",
-    "org": "ESM",
-    "project": "본사",
-    "name": "김형태",
-    "nickname": "Tei",
-    "position": "이사",
-    "jobGroup": "",
-    "updated_at": "2026-03-31T06:51:11.047Z",
-    "parentId": "group-1776149215288-0",
-    "hierarchyPos": {
-      "x": 1781,
-      "y": 585
     }
   },
   {
