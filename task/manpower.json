@@ -1349,6 +1349,21 @@
     }
   },
   {
+    "id": "1775007793257",
+    "org": "Sales",
+    "project": "본사",
+    "name": "방희진",
+    "nickname": "Hugo",
+    "position": "상무",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T23:14:51.934Z",
+    "parentId": "group-1776149215288-7",
+    "hierarchyPos": {
+      "x": 476,
+      "y": 220
+    }
+  },
+  {
     "id": "1774939341355",
     "org": "ESI",
     "project": "본사",
@@ -1436,21 +1451,6 @@
     "hierarchyPos": {
       "x": 62,
       "y": 265
-    }
-  },
-  {
-    "id": "1775007793257",
-    "org": "Sales",
-    "project": "본사",
-    "name": "방희진",
-    "nickname": "Hugo",
-    "position": "상무",
-    "jobGroup": "",
-    "updated_at": "2026-04-01T23:14:51.934Z",
-    "parentId": "group-1776149215288-7",
-    "hierarchyPos": {
-      "x": 476,
-      "y": 220
     }
   },
   {
