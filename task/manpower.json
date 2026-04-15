@@ -315,6 +315,21 @@
     }
   },
   {
+    "id": "1774511663007",
+    "org": "ESI",
+    "project": "한진관광 차세대 시스템 구축",
+    "name": "이덕균",
+    "nickname": "Leeroy",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T06:39:48.382Z",
+    "parentId": "group-1776149215288-1",
+    "hierarchyPos": {
+      "x": 496,
+      "y": 1149
+    }
+  },
+  {
     "id": "1774511555110",
     "org": "ESI",
     "project": "한진관광 차세대 시스템 구축",
@@ -432,21 +447,6 @@
     "hierarchyPos": {
       "x": 918,
       "y": 718
-    }
-  },
-  {
-    "id": "1774511663007",
-    "org": "ESI",
-    "project": "한진관광 차세대 시스템 구축",
-    "name": "이덕균",
-    "nickname": "Leeroy",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T06:39:48.382Z",
-    "parentId": "group-1776149215288-1",
-    "hierarchyPos": {
-      "x": 496,
-      "y": 1149
     }
   },
   {
