@@ -1334,6 +1334,21 @@
     }
   },
   {
+    "id": "1775007882360",
+    "org": "USG",
+    "project": "본사",
+    "name": "한석명",
+    "nickname": "Robin",
+    "position": "이사",
+    "jobGroup": "",
+    "updated_at": "2026-04-01T01:44:42.360Z",
+    "parentId": "group-1776149215288-9",
+    "hierarchyPos": {
+      "x": 753,
+      "y": 218
+    }
+  },
+  {
     "id": "1774939341355",
     "org": "ESI",
     "project": "본사",
@@ -1453,21 +1468,6 @@
       "y": 206
     },
     "status": "퇴사"
-  },
-  {
-    "id": "1775007882360",
-    "org": "USG",
-    "project": "본사",
-    "name": "한석명",
-    "nickname": "Robin",
-    "position": "이사",
-    "jobGroup": "",
-    "updated_at": "2026-04-01T01:44:42.360Z",
-    "parentId": "group-1776149215288-9",
-    "hierarchyPos": {
-      "x": 753,
-      "y": 218
-    }
   },
   {
     "id": "1775007900104",
