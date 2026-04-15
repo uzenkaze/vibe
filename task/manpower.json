@@ -135,6 +135,21 @@
     }
   },
   {
+    "id": "1774593785970",
+    "org": "ESM",
+    "project": "신세계백화점 운영",
+    "name": "이경호",
+    "nickname": "Bon",
+    "position": "수석",
+    "jobGroup": "개발",
+    "updated_at": "2026-03-31T07:50:42.121Z",
+    "parentId": "group-1776149215288-0",
+    "hierarchyPos": {
+      "x": 2035,
+      "y": 930
+    }
+  },
+  {
     "id": "1774511051208",
     "org": "ESM",
     "project": "롯데하이마트",
@@ -717,21 +732,6 @@
     "hierarchyPos": {
       "x": 2527,
       "y": 1010
-    }
-  },
-  {
-    "id": "1774593785970",
-    "org": "ESM",
-    "project": "신세계백화점 운영",
-    "name": "이경호",
-    "nickname": "Bon",
-    "position": "수석",
-    "jobGroup": "개발",
-    "updated_at": "2026-03-31T07:50:42.121Z",
-    "parentId": "group-1776149215288-0",
-    "hierarchyPos": {
-      "x": 2035,
-      "y": 930
     }
   },
   {
