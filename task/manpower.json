@@ -780,6 +780,21 @@
     }
   },
   {
+    "id": "1774939871047",
+    "org": "ESM",
+    "project": "본사",
+    "name": "김형태",
+    "nickname": "Tei",
+    "position": "이사",
+    "jobGroup": "",
+    "updated_at": "2026-03-31T06:51:11.047Z",
+    "parentId": "group-1776149215288-0",
+    "hierarchyPos": {
+      "x": 1781,
+      "y": 585
+    }
+  },
+  {
     "id": "1774593840415",
     "org": "ESM",
     "project": "신세계백화점 운영",
@@ -1346,21 +1361,6 @@
     "hierarchyPos": {
       "x": 476,
       "y": 220
-    }
-  },
-  {
-    "id": "1774939871047",
-    "org": "ESM",
-    "project": "본사",
-    "name": "김형태",
-    "nickname": "Tei",
-    "position": "이사",
-    "jobGroup": "",
-    "updated_at": "2026-03-31T06:51:11.047Z",
-    "parentId": "group-1776149215288-0",
-    "hierarchyPos": {
-      "x": 1781,
-      "y": 585
     }
   },
   {
