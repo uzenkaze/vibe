@@ -754,13 +754,22 @@
             border-radius: 20px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             flex-shrink: 0;
         }
 
-        .recent-task-label.todo { background: linear-gradient(135deg, #ff5e62, #ff9966); }
-        .recent-task-label.progress { background: linear-gradient(135deg, #00b09b, #96c93d); }
-        .recent-task-label.hold { background: linear-gradient(135deg, #8e9eab, #eef2f3); color: #444; }
+        .recent-task-label.todo {
+            background: linear-gradient(135deg, #ff5e62, #ff9966);
+        }
+
+        .recent-task-label.progress {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+        }
+
+        .recent-task-label.hold {
+            background: linear-gradient(135deg, #8e9eab, #eef2f3);
+            color: #444;
+        }
 
         .recent-task-no {
             font-family: "SF Mono", "Menlo", monospace;
@@ -1117,6 +1126,541 @@
             transform: scale(1.1) translateY(-5px);
             box-shadow: 0 12px 35px rgba(0, 113, 227, 0.5);
             background: #0077ed;
+        }
+
+        /* Shimmer Animation */
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* Table Spec Styles */
+        #ts-column-list input {
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        #ts-column-list input:focus {
+            background: #fff !important;
+            box-shadow: inset 0 0 0 1px #0071e3;
+        }
+
+        .ts-group-header {
+            padding: 15px 15px 5px 15px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #98989d;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Table Spec Dark Mode */
+        #view-table-spec {
+            background-color: #1c1c1e;
+            color: #f5f5f7;
+            padding: 2rem;
+            border-radius: 1.5rem;
+        }
+
+        #view-table-spec h1 {
+            color: #ffffff;
+        }
+
+        #view-table-spec .ts-sidebar-cont,
+        #view-table-spec .ts-main-cont {
+            background: #2c2c2e !important;
+            border-color: #3a3a3c !important;
+        }
+
+        #view-table-spec input,
+        #view-table-spec textarea {
+            background: #3a3a3c !important;
+            color: #ffffff !important;
+            border-color: #48484a !important;
+        }
+
+        #view-table-spec label {
+            color: #98989d !important;
+        }
+
+        .ts-column-tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .ts-column-tr:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .ts-column-tr td input:focus {
+            background: #48484a !important;
+            box-shadow: 0 0 0 2px #0071e3;
+        }
+
+        /* Table Spec Preview Popover - Apple Style Light Theme */
+        /* Table Spec Preview Popover - Refined Light Blue Theme */
+        #ts-preview-layer {
+            position: fixed;
+            z-index: 2147483647;
+            width: 800px;
+            max-height: 650px;
+            background: #fff;
+            border: 1px solid rgba(0, 113, 227, 0.2);
+            border-radius: 1rem;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.15);
+            padding: 0;
+            /* 헤더가 꽉 차도록 0으로 변경 */
+            display: none;
+            flex-direction: column;
+            pointer-events: auto;
+            overflow: hidden;
+            animation: tsFloatIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: text;
+        }
+
+        .ts-preview-header {
+            background: #f0f7ff;
+            /* 연한 블루 계열 */
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e1e9f5;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ts-preview-title-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .ts-preview-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #1d1d1f;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ts-preview-logical {
+            font-size: 0.95rem;
+            color: #4c4c4e;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .ts-preview-table-container {
+            padding: 1.25rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .ts-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        .ts-preview-table th {
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 0.75rem;
+            color: #86868b;
+            font-weight: 600;
+            border-bottom: 2px solid #f2f2f5;
+            background: #fff;
+        }
+
+        .ts-preview-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f2f2f5;
+            vertical-align: middle;
+        }
+
+        .ts-preview-row:hover {
+            background: rgba(0, 113, 227, 0.03);
+        }
+
+
+        /* 닫기 버튼 스타일: Apple 스타일의 원형 버튼 */
+        .ts-preview-close {
+            position: absolute !important;
+            top: 15px !important;
+            right: 15px !important;
+            width: 26px !important;
+            height: 26px !important;
+            background: #e5e5e7 !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease-in-out !important;
+            border: none !important;
+            color: #86868b !important;
+            z-index: 100 !important;
+            padding: 0 !important;
+        }
+
+        .ts-preview-close:hover {
+            background: #ff3b30 !important;
+            color: #ffffff !important;
+            transform: scale(1.1) !important;
+            box-shadow: 0 2px 8px rgba(255, 59, 48, 0.4) !important;
+        }
+
+        .ts-preview-close::before {
+            content: '✕';
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* 커스텀 툴팁 스타일: 가독성 강화 */
+        #ts-code-tooltip {
+            position: fixed;
+            z-index: 2147483647;
+            background: #ffffff;
+            border: 1px solid #0071e3;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0,113,227,0.25);
+            font-size: 0.95rem;
+            color: #1d1d1f;
+            max-width: 450px;
+            min-width: 200px;
+            pointer-events: none;
+            display: none;
+            line-height: 1.6;
+            backdrop-filter: blur(20px);
+            white-space: pre-line;
+            font-weight: 400;
+        }
+        /* 프리뷰 내 검색창 스타일 */
+        .ts-preview-search-wrapper {
+            position: relative;
+            margin-right: 45px;
+            flex-grow: 1;
+            max-width: 250px;
+        }
+
+        .ts-preview-search {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            border-radius: 8px;
+            border: 1px solid #d2d2d7;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .ts-preview-search:focus {
+            border-color: #0071e3;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+
+        .ts-preview-search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        /* Custom Scrollbar for Preview */
+        .ts-preview-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ts-preview-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ts-preview-body::-webkit-scrollbar-thumb {
+            background: #d2d2d7;
+            border-radius: 10px;
+        }
+
+        .ts-preview-body::-webkit-scrollbar-thumb:hover {
+            background: #86868b;
+        }
+
+        /* ERD 시각화 레이어 스타일 */
+        .erd-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(245, 245, 247, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .erd-header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #d2d2d7;
+            background: #fff;
+        }
+
+        .erd-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #fbfbfc;
+            cursor: grab;
+        }
+
+        .erd-container:active {
+            cursor: grabbing;
+        }
+
+        #erd-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10000px; /* 대폭 확장 */
+            height: 10000px;
+            transform-origin: 0 0;
+            will-change: transform; /* GPU 가속 최적화 */
+            backface-visibility: hidden;
+        }
+
+        .erd-node {
+            position: absolute;
+            background: #ffffff;
+            border: 1px solid #0071e3;
+            border-radius: 12px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.15);
+            cursor: move;
+            user-select: none;
+            z-index: 10;
+            transition: box-shadow 0.2s;
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .erd-node:hover {
+            box-shadow: 0 8px 25px rgba(0, 113, 227, 0.25);
+            border-width: 2px;
+        }
+
+        .erd-node .node-title {
+            font-weight: 700;
+            color: #1d1d1f;
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
+        .erd-node .node-comment {
+            font-size: 0.8rem;
+            color: #86868b;
+            margin-top: 4px;
+            pointer-events: none;
+        }
+
+        /* 노드 색상 테마 */
+        .erd-node.theme-blue { background: #e1f5fe; border-color: #03a9f4; }
+        .erd-node.theme-green { background: #e8f5e9; border-color: #4caf50; }
+        .erd-node.theme-yellow { background: #fffde7; border-color: #fbc02d; }
+        .erd-node.theme-red { background: #ffebee; border-color: #f44336; }
+        .erd-node.theme-purple { background: #f3e5f5; border-color: #9c27b0; }
+
+        .erd-node .color-picker {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            display: none;
+            gap: 4px;
+            background: rgba(255,255,255,0.9);
+            padding: 4px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 20;
+        }
+
+        .erd-node:hover .color-picker {
+            display: flex;
+        }
+
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.3);
+        }
+
+        .erd-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: visible !important; /* 선이 잘리지 않도록 함 */
+        }
+
+        .erd-link {
+            stroke: #0071e3;
+            stroke-width: 1.5;
+            fill: none;
+            opacity: 0.4;
+            transition: opacity 0.2s, stroke-width 0.2s;
+        }
+
+        .erd-node:hover ~ .erd-svg .erd-link,
+        .erd-link:hover {
+            opacity: 1;
+            stroke-width: 2.5;
+        }
+
+        /* 공통 검색창 스타일 */
+        .search-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            right: 10px;
+            width: 18px;
+            height: 18px;
+            background: #86868b;
+            color: #fff;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            border: none;
+            z-index: 10;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .search-clear-btn:hover {
+            background: #1d1d1f;
+        }
+
+        /* ERD 검색 및 하이라이트 스타일 */
+        .erd-search-input {
+            padding: 8px 15px 8px 35px;
+            border-radius: 8px;
+            border: 1px solid #d2d2d7;
+            font-size: 0.9rem;
+            width: 280px;
+            outline: none;
+            transition: all 0.2s;
+            background: #f5f5f7;
+        }
+
+        .erd-search-input:focus {
+            border-color: #0071e3;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+        }
+
+        .erd-node.highlight {
+            border-color: #0071e3 !important;
+            border-width: 4px !important;
+            box-shadow: 0 0 30px rgba(0, 113, 227, 0.6) !important;
+            transform: scale(1.05) !important;
+            z-index: 100 !important;
+            opacity: 1 !important;
+        }
+
+        .erd-node.dimmed {
+            display: none !important;
+        }
+
+        .erd-link.dimmed {
+            display: none !important;
+        }
+
+        @keyframes tsFloatIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ts-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            margin-top: 10px;
+        }
+
+        .ts-preview-table th {
+            text-align: left;
+            padding: 8px 6px;
+            color: #1d1d1f;
+            font-weight: 700;
+            background: #f5f5f7;
+            /* 헤더 배경색 구분 */
+            border-bottom: 2px solid #efeff2;
+        }
+
+        .ts-preview-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f5f5f7;
+            color: #1d1d1f;
+        }
+
+        .ts-fav-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #d2d2d7;
+            padding: 4px;
+            transition: all 0.2s;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .ts-fav-btn.active {
+            color: #ffcc00;
+        }
+
+        .ts-fav-btn:hover {
+            transform: scale(1.1);
         }
 
         .btn-floating-save {
@@ -2004,7 +2548,7 @@
     </style>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={corePlugins:{preflight:false}}</script>
+    <script>tailwind.config = { corePlugins: { preflight: false } }</script>
 </head>
 
 <body>
@@ -2263,12 +2807,14 @@
                                 <span class="news-column-title">🔥 주요 뉴스 검색 <small id="google-news-count"
                                         style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
-                            <div class="news-search-bar">
-                                <input type="text" id="news-keyword" class="news-search-input"
-                                    placeholder="뉴스 키워드 검색 (기본: 탑 헤드라인)"
-                                    onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
+                                <div class="search-container" style="flex:1;">
+                                    <input type="text" id="news-keyword" class="news-search-input"
+                                        placeholder="뉴스 키워드 검색 (기본: 탑 헤드라인)"
+                                        oninput="toggleClearBtn('news-keyword')"
+                                        onkeyup="if(event.key==='Enter') searchGoogleNews(true)">
+                                    <button class="search-clear-btn" id="news-keyword-clear" onclick="clearSearchInput('news-keyword', () => searchGoogleNews(true))">✕</button>
+                                </div>
                                 <button class="news-search-btn" onclick="searchGoogleNews(true)">검색</button>
-                            </div>
                             <div id="news-left-content" style="min-height: 300px;"></div>
                         </div>
 
@@ -2278,12 +2824,14 @@
                                 <span class="news-column-title">📈 증권플러스 실시간 <small id="stock-news-count"
                                         style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
-                            <div class="news-search-bar">
-                                <input type="text" id="stockplus-keyword" class="news-search-input"
-                                    placeholder="증권, 경제 뉴스 검색 (기본: 증권)"
-                                    onkeyup="if(event.key==='Enter') fetchStockPlusNews(true)">
+                                <div class="search-container" style="flex:1;">
+                                    <input type="text" id="stockplus-keyword" class="news-search-input"
+                                        placeholder="증권, 경제 뉴스 검색 (기본: 증권)"
+                                        oninput="toggleClearBtn('stockplus-keyword')"
+                                        onkeyup="if(event.key==='Enter') fetchStockPlusNews(true)">
+                                    <button class="search-clear-btn" id="stockplus-keyword-clear" onclick="clearSearchInput('stockplus-keyword', () => fetchStockPlusNews(true))">✕</button>
+                                </div>
                                 <button class="news-search-btn" onclick="fetchStockPlusNews(true)">검색</button>
-                            </div>
                             <div id="news-right-content" style="min-height: 300px;"></div>
                         </div>
 
@@ -2293,74 +2841,128 @@
                                 <span class="news-column-title">💻 IT / 테크 최신 뉴스 <small id="it-news-count"
                                         style="font-size: 0.7rem; font-weight: normal; color: #86868b;"></small></span>
                             </div>
-                            <div class="news-search-bar">
-                                <input type="text" id="it-news-keyword" class="news-search-input"
-                                    placeholder="IT, 테크 뉴스 검색 (기본: IT)"
-                                    onkeyup="if(event.key==='Enter') fetchITNews(true)">
+                                <div class="search-container" style="flex:1;">
+                                    <input type="text" id="it-news-keyword" class="news-search-input"
+                                        placeholder="IT, 테크 뉴스 검색 (기본: IT)"
+                                        oninput="toggleClearBtn('it-news-keyword')"
+                                        onkeyup="if(event.key==='Enter') fetchITNews(true)">
+                                    <button class="search-clear-btn" id="it-news-keyword-clear" onclick="clearSearchInput('it-news-keyword', () => fetchITNews(true))">✕</button>
+                                </div>
                                 <button class="news-search-btn" onclick="fetchITNews(true)">검색</button>
-                            </div>
                             <div id="news-it-content" style="min-height: 300px;"></div>
                         </div>
                     </div>
                 </div>
 
-                
+
                 <div id="view-table-spec" class="view-section">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
                         <div>
-                            <h1 style="margin-bottom:0.3rem">테이블 명세서 관리기</h1>
-                            <p style="color:#86868b; font-size:0.95rem; font-weight:600;">테이블 구조 등록, 관리 및 일괄 입력</p>
+                            <h1 style="margin-bottom:0.3rem">테이블 정의서 관리</h1>
+                            <p style="color:#98989d; font-size:0.95rem; font-weight:600;">테이블 구조 등록, 관리 및 일괄 입력</p>
                         </div>
                         <div style="display:flex; gap:10px;">
-                            <button class="btn-purple" style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#0071e3; color:#fff;" onclick="openTableBulkModal()">📥 일괄 등록</button>
-                            <button class="btn-purple" style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#34c759; color:#fff;" onclick="addNewTableSpec()">➕ 신규 테이블 추가</button>
+                            <button class="btn-purple"
+                                style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#4338ca; color:#fff;"
+                                onclick="openTableBulkModal()">📥 일괄 등록</button>
+                            <button class="btn-purple"
+                                style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#8e8e93; color:#fff;"
+                                onclick="downloadTableSpecs()">💾 JSON 다운로드</button>
+                            <button class="btn-purple"
+                                style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#0071e3; color:#fff;"
+                                onclick="backupTableSpecsToGitHub()">☁️ 서버 백업</button>
+                            <button class="btn-purple"
+                                style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#ff9500; color:#fff;"
+                                onclick="showERDPrefixSelector()">🖼️ ERD</button>
+                            <button class="btn-purple"
+                                style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#34c759; color:#fff;"
+                                onclick="addNewTableSpec()">➕ 테이블 추가</button>
                         </div>
                     </div>
-                    <div style="display:flex; gap:20px; height:600px; min-height:600px;">
+                    <div style="display:flex; gap:20px; height:calc(100vh - 280px); min-height:500px;">
                         <!-- Left sidebar -->
-                        <div style="width:280px; background:#fff; border-radius:1rem; border:1px solid #e5e5ea; display:flex; flex-direction:column; overflow:hidden;">
-                            <div style="padding:15px; border-bottom:1px solid #e5e5ea; font-weight:800; color:#1d1d1f; font-size:1.1rem; background:#fafafa;">🗂️ 테이블 목록</div>
-                            <div id="ts-table-list" style="flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:5px;"></div>
+                        <div class="ts-sidebar-cont"
+                            style="width:380px; background:#fff; border-radius:1rem; border:1px solid #e5e5ea; display:flex; flex-direction:column; overflow:hidden;">
+                            <div
+                                style="padding:15px; border-bottom:1px solid #3a3a3c; font-weight:800; color:#ffffff; font-size:1.1rem; background:rgba(255,255,255,0.05);">
+                                🗂️ 테이블 목록</div>
+                            <div
+                                style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); background:transparent; display:flex; align-items:center; gap:5px;">
+                                <div class="search-container" style="flex:1;">
+                                    <input type="text" id="ts-search-input" placeholder="테이블명/설명 검색..."
+                                        style="width:100%; padding:8px 12px; border:1px solid #3a3a3c; border-radius:0.5rem; font-size:0.85rem; background:#3a3a3c; color:#fff;"
+                                        oninput="toggleClearBtn('ts-search-input'); filterTableSpecs();">
+                                    <button class="search-clear-btn" id="ts-search-input-clear" style="right:8px;" onclick="clearSearchInput('ts-search-input', filterTableSpecs)">✕</button>
+                                </div>
+                            </div>
+                            <div id="ts-table-list"
+                                style="flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:5px;"
+                                onmouseover="handleTableListMouseOver(event)"></div>
                         </div>
-                        
+
                         <!-- Right content -->
-                        <div style="flex:1; background:#fff; border-radius:1rem; border:1px solid #e5e5ea; display:flex; flex-direction:column; overflow:hidden;">
-                            <div id="ts-empty-view" style="display:flex; flex-direction:column; justify-content:center; align-items:center; flex:1; color:#86868b; text-align:center;">
+                        <div class="ts-main-cont"
+                            style="flex:1; background:#fff; border-radius:1rem; border:1px solid #e5e5ea; display:flex; flex-direction:column; overflow:hidden;">
+                            <div id="ts-empty-view"
+                                style="display:flex; flex-direction:column; justify-content:center; align-items:center; flex:1; color:#86868b; text-align:center;">
                                 <div style="font-size:4rem; margin-bottom:1rem;">🗄️</div>
-                                <div style="font-size:1.2rem; font-weight:700; color:#1d1d1f; margin-bottom:0.5rem;">선택된 테이블이 없습니다.</div>
+                                <div style="font-size:1.2rem; font-weight:700; color:#f5f5f7; margin-bottom:0.5rem;">선택된
+                                    테이블이 없습니다.</div>
                                 <div>좌측에서 테이블을 선택하거나 우상단에서 신규로 생성해주세요.</div>
                             </div>
                             <div id="ts-main-view" style="display:none; flex-direction:column; height:100%;">
-                                <div style="padding:20px; border-bottom:1px solid #e5e5ea; display:flex; flex-direction:column; gap:15px; background:#fafafa;">
+                                <div
+                                    style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:15px; background:rgba(255,255,255,0.02);">
                                     <div style="display:flex; gap:15px;">
                                         <div style="flex:1;">
-                                            <label style="font-size:0.8rem; color:#86868b; font-weight:800;">TABLE_NAME (물리명)</label>
-                                            <input type="text" id="ts-meta-name" onchange="updateTsMeta()" style="width:100%; padding:8px 12px; margin-top:5px; border:1px solid #d2d2d7; border-radius:0.5rem; font-family:monospace; font-weight:bold; font-size:1.1rem; text-transform:uppercase;" />
+                                            <label style="font-size:0.8rem; color:#98989d; font-weight:800;">TABLE_NAME
+                                                (물리명)</label>
+                                            <input type="text" id="ts-meta-name" onchange="updateTsMeta()"
+                                                style="width:100%; padding:8px 12px; margin-top:5px; border:1px solid #3a3a3c; border-radius:0.5rem; font-family:monospace; font-weight:bold; font-size:1.1rem; text-transform:uppercase; background:#2c2c2e; color:#fff;" />
                                         </div>
                                         <div style="flex:2;">
-                                            <label style="font-size:0.8rem; color:#86868b; font-weight:800;">Table_Comments (논리명 / 설명)</label>
-                                            <input type="text" id="ts-meta-comments" onchange="updateTsMeta()" style="width:100%; padding:8px 12px; margin-top:5px; border:1px solid #d2d2d7; border-radius:0.5rem; font-size:1.1rem;" />
+                                            <label
+                                                style="font-size:0.8rem; color:#98989d; font-weight:800;">Table_Comments
+                                                (논리명 / 설명)</label>
+                                            <input type="text" id="ts-meta-comments" onchange="updateTsMeta()"
+                                                style="width:100%; padding:8px 12px; margin-top:5px; border:1px solid #3a3a3c; border-radius:0.5rem; font-size:1.1rem; background:#2c2c2e; color:#fff;" />
                                         </div>
                                     </div>
                                     <div style="display:flex; justify-content:flex-end; gap:10px;">
-                                        <button onclick="deleteCurrentTableSpec()" style="padding:6px 15px; border-radius:2rem; border:none; background:#ff3b30; color:#fff; font-weight:bold; cursor:pointer;">테이블 삭제</button>
-                                        <button onclick="addTableSpecColumn()" style="padding:6px 15px; border-radius:2rem; border:none; background:#1d1d1f; color:#fff; font-weight:bold; cursor:pointer;">+ 컬럼 추가</button>
-                                        <button onclick="saveTableSpecs()" style="padding:6px 15px; border-radius:2rem; border:none; background:#0071e3; color:#fff; font-weight:bold; cursor:pointer;">저장하기</button>
+                                        <button onclick="deleteCurrentTableSpec()"
+                                            style="padding:6px 15px; border-radius:2rem; border:none; background:#ff3b30; color:#fff; font-weight:bold; cursor:pointer;">테이블
+                                            삭제</button>
+                                        <button onclick="addTableSpecColumn()"
+                                            style="padding:6px 15px; border-radius:2rem; border:none; background:#3a3a3c; color:#fff; font-weight:bold; cursor:pointer;">+
+                                            컬럼 추가</button>
+                                        <button onclick="saveTableSpecs()"
+                                            style="padding:6px 15px; border-radius:2rem; border:none; background:#0071e3; color:#fff; font-weight:bold; cursor:pointer;">저장하기</button>
                                     </div>
                                 </div>
                                 <div style="flex:1; overflow:auto;">
-                                    <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.85rem;">
-                                        <thead style="position:sticky; top:0; z-index:10; background:#f5f5f7;">
+                                    <table
+                                        style="width:100%; border-collapse:collapse; text-align:left; font-size:0.85rem;">
+                                        <thead style="position:sticky; top:0; z-index:10; background:#3a3a3c;">
                                             <tr>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7; width:60px; text-align:center;">SEQ</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7;">COLUMN_NAME</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7;">COMMENTS</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7;">DATA_TYPE</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7; width:60px; text-align:center;">PK</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7; width:80px; text-align:center;">NULLABLE</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7;">DEFAULT</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7;">비고</th>
-                                                <th style="padding:10px; border-bottom:1px solid #d2d2d7; width:60px; text-align:center;">관리</th>
+                                                <th
+                                                    style="padding:10px; border-bottom:1px solid #48484a; width:60px; text-align:center;">
+                                                    SEQ</th>
+                                                <th style="padding:10px; border-bottom:1px solid #48484a;">COLUMN_NAME
+                                                </th>
+                                                <th style="padding:10px; border-bottom:1px solid #48484a;">COMMENTS</th>
+                                                <th style="padding:10px; border-bottom:1px solid #48484a;">DATA_TYPE
+                                                </th>
+                                                <th
+                                                    style="padding:10px; border-bottom:1px solid #48484a; width:60px; text-align:center;">
+                                                    PK</th>
+                                                <th
+                                                    style="padding:10px; border-bottom:1px solid #48484a; width:80px; text-align:center;">
+                                                    NULLABLE</th>
+                                                <th style="padding:10px; border-bottom:1px solid #48484a;">DEFAULT</th>
+                                                <th style="padding:10px; border-bottom:1px solid #48484a;">비고</th>
+                                                <th
+                                                    style="padding:10px; border-bottom:1px solid #48484a; width:60px; text-align:center;">
+                                                    관리</th>
                                             </tr>
                                         </thead>
                                         <tbody id="ts-column-list"></tbody>
@@ -2370,19 +2972,26 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Table Spec Bulk Modal -->
                 <div class="modal-overlay" id="ts-bulk-modal">
                     <div class="modal-content" style="max-width:800px; padding:2.5rem; border-radius:1.5rem;">
                         <button class="modal-close" onclick="closeTableBulkModal()">&times;</button>
-                        <h2 style="margin-top:0; font-size:1.8rem; font-weight:800; margin-bottom:1.5rem;">일괄 등록 (Excel / TSV)</h2>
-                        <div style="background:#f5f5f7; padding:15px; border-radius:1rem; font-size:0.9rem; margin-bottom:15px; border:1px solid #e5e5ea; line-height:1.6;">
-                            <strong>데이터 순서:</strong> TABLE_NAME | Table_Comments | SEQ | COLUMN_NAME | COMMENTS | DATA_TYPE | PK | NULLABLE | DEFAULT | 비고<br>
+                        <h2 style="margin-top:0; font-size:1.8rem; font-weight:800; margin-bottom:1.5rem;">일괄 등록 (Excel
+                            / TSV)</h2>
+                        <div
+                            style="background:#f5f5f7; padding:15px; border-radius:1rem; font-size:0.9rem; margin-bottom:15px; border:1px solid #e5e5ea; line-height:1.6;">
+                            <strong>데이터 순서:</strong> TABLE_NAME | Table_Comments | SEQ | COLUMN_NAME | COMMENTS |
+                            DATA_TYPE | PK | NULLABLE | DEFAULT | 비고<br>
                             엑셀에서 이 양식대로 작성된 셀들을 선택하여 복사한 뒤, 아래에 붙여넣기 하세요.
                         </div>
-                        <textarea id="ts-bulk-data" style="width:100%; height:250px; padding:15px; border:1px solid #d2d2d7; border-radius:1rem; font-family:monospace; font-size:0.85rem; resize:none;" placeholder="탭(Tab)으로 구분된 데이터를 붙여넣기하세요..."></textarea>
+                        <textarea id="ts-bulk-data"
+                            style="width:100%; height:250px; padding:15px; border:1px solid #d2d2d7; border-radius:1rem; font-family:monospace; font-size:0.85rem; resize:none;"
+                            placeholder="탭(Tab)으로 구분된 데이터를 붙여넣기하세요..."></textarea>
                         <div style="text-align:right; margin-top:20px;">
-                            <button onclick="processTableBulkData()" style="padding:12px 30px; background:#0071e3; color:#fff; border:none; border-radius:2rem; cursor:pointer; font-weight:bold; font-size:1rem;">데이터 파싱 및 자동저장</button>
+                            <button onclick="processTableBulkData()"
+                                style="padding:12px 30px; background:#0071e3; color:#fff; border:none; border-radius:2rem; cursor:pointer; font-weight:bold; font-size:1rem;">데이터
+                                파싱 및 자동저장</button>
                         </div>
                     </div>
                 </div>
@@ -2411,6 +3020,58 @@
 
             </div>
         </main>
+    </div>
+
+    <!-- ERD Prefix Selector Modal -->
+    <div id="erd-prefix-modal" class="modal-overlay" style="z-index:4000;">
+        <div class="modal-content" style="max-width:500px; padding:30px;">
+            <h2 style="margin-bottom:15px; display:flex; align-items:center; gap:10px;">🗂️ 업무 영역 선택 (Prefix)</h2>
+            <p style="color:#86868b; margin-bottom:25px; font-size:0.9rem;">시각화할 테이블 그룹의 접두어를 선택하세요. 테이블이 너무 많을 경우 그룹별로 보는 것이 효율적입니다.</p>
+            <div id="erd-prefix-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:10px; max-height:300px; overflow-y:auto; padding:5px;">
+                <!-- Prefixes will be injected here -->
+            </div>
+            <div style="margin-top:30px; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn-mini" onclick="openERDView('ALL')" style="background:#0071e3; color:#fff; padding:10px 20px;">전체 보기</button>
+                <button class="btn-mini" onclick="document.getElementById('erd-prefix-modal').style.display='none'" style="background:#f5f5f7; padding:10px 20px;">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ERD Visualization Layer -->
+    <div id="erd-view" class="erd-overlay">
+        <header class="erd-header">
+            <div>
+                <h1 style="font-size:1.5rem; margin:0;">Table Relationship ERD</h1>
+                <p style="color:#86868b; font-size:0.9rem; margin-top:4px;">테이블 간의 PK-FK 관계를 시각화합니다. (드래그하여 이동 가능)</p>
+            </div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; color:#86868b; z-index:2;">🔍</span>
+                    <div class="search-container">
+                        <input type="text" id="erd-search-input" class="erd-search-input" placeholder="테이블명 또는 설명 검색..." 
+                            style="padding-left:35px !important;"
+                            oninput="toggleClearBtn('erd-search-input'); searchERDNodes(this.value)">
+                        <button class="search-clear-btn" id="erd-search-input-clear" onclick="clearSearchInput('erd-search-input', () => searchERDNodes(''))">✕</button>
+                    </div>
+                </div>
+                <button class="btn-mini" onclick="autoLayoutERD()" style="background:#f5f5f7; padding:8px 15px; border-radius:8px; font-weight:600;">🔄 자동 정렬</button>
+                <button class="modal-close" onclick="closeERDView()" style="position:static; font-size:2rem;">&times;</button>
+            </div>
+        </header>
+        <div id="erd-container" class="erd-container">
+            <div id="erd-content">
+                <svg id="erd-svg" class="erd-svg"></svg>
+                <!-- Nodes will be injected here -->
+            </div>
+            <!-- ERD Zoom Controls -->
+            <div class="erd-zoom-controls" style="position:absolute; bottom:30px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); padding:8px 15px; border-radius:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); display:flex; gap:10px; align-items:center; z-index:100;">
+                <button class="btn-mini" onclick="zoomERD(-0.1)" style="font-size:1.2rem;">➖</button>
+                <span id="erd-zoom-label" style="font-weight:700; min-width:45px; text-align:center;">100%</span>
+                <button class="btn-mini" onclick="zoomERD(0.1)" style="font-size:1.2rem;">➕</button>
+                <div style="width:1px; height:15px; background:#d2d2d7; margin:0 5px;"></div>
+                <button class="btn-mini" onclick="resetERDZoom()" style="font-weight:600; font-size:0.85rem;">1:1</button>
+            </div>
+        </div>
     </div>
 
     <!-- v2.2: Full Field Restoration + Detail Grid Fix + Date Fix -->
@@ -2498,6 +3159,7 @@
         let currentManpowerViewMode = 'project'; // 'project' or 'org'
         let currentView = 'view-dashboard';
         let currentStatusFilter = 'all';
+        let currentTableSearch = '';
         let calDate = new Date();
         let lastExpandedManpowerGroup = null;
         let ghConfig = JSON.parse(localStorage.getItem('taskGitHubConfig') || '{"repo":"uzenkaze/vibe","branch":"main","autoSync":true}');
@@ -2508,7 +3170,7 @@
             { id: 'dashboard', name: '대시보드', icon: '📊', viewId: 'view-dashboard' },
             { id: 'task', name: '일감관리', icon: '📁', viewId: 'view-task' },
             { id: 'manpower', name: 'Manpower', icon: '👥', viewId: 'view-manpower' },
-            { id: 'table_spec', name: '테이블명세', icon: '🗄️', viewId: 'view-table-spec' },
+            { id: 'table_spec', name: '테이블 정의서', icon: '🗄️', viewId: 'view-table-spec' },
             { id: 'news', name: '실시간 뉴스', icon: '📰', viewId: 'view-news' },
             { id: 'settings', name: '설정', icon: '⚙️', viewId: 'view-settings' }
         ];
@@ -2591,21 +3253,796 @@
         }
 
 
-        
+
+        function toggleClearBtn(inputId) {
+            const input = document.getElementById(inputId);
+            const btn = document.getElementById(inputId + '-clear');
+            if (input && btn) {
+                btn.style.display = input.value ? 'flex' : 'none';
+            }
+        }
+
+        function clearSearchInput(inputId, callback) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = '';
+                toggleClearBtn(inputId);
+                input.focus();
+                if (callback) callback();
+            }
+        }
+
         let currentTableSpec = null;
+
+        function filterTableSpecs() {
+            currentTableSearch = document.getElementById('ts-search-input').value.toLowerCase();
+            renderTableSpecs();
+        }
+
         function renderTableSpecs() {
             const listEl = document.getElementById('ts-table-list');
-            if(!listEl) return;
+            if (!listEl) return;
             listEl.innerHTML = '';
-            tableSpecs.forEach(t => {
-                const isActive = currentTableSpec && currentTableSpec.id === t.id;
-                const bg = isActive ? 'background:#0071e3; color:#fff;' : 'background:transparent; color:#1d1d1f; cursor:pointer; hover:background:#f5f5f7';
-                listEl.innerHTML += `<div style="padding:12px 15px; border-radius:0.8rem; border:1px solid ${isActive?'#0071e3':'transparent'}; transition:all 0.2s; cursor:pointer; ${bg}" onclick="selectTableSpec('${t.id}')">
-                    <div style="font-size:0.95rem; font-weight:800; font-family:monospace;">${t.tableName||'NEW_TABLE'}</div>
-                    <div style="font-size:0.8rem; margin-top:4px; opacity:${isActive?'0.9':'0.6'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.tableComments||'설명없음'}</div>
-                </div>`;
+
+            // Filtering
+            let filtered = tableSpecs.filter(t =>
+                (t.tableName || '').toLowerCase().includes(currentTableSearch) ||
+                (t.tableComments || '').toLowerCase().includes(currentTableSearch)
+            );
+
+            // Separate Favorites
+            const favorites = filtered.filter(t => t.isFavorite);
+
+            // Render Favorites Group first
+            if (favorites.length > 0) {
+                const favHeader = document.createElement('div');
+                favHeader.className = 'ts-group-header';
+                favHeader.style.color = '#ffcc00';
+                favHeader.innerText = '⭐ 즐겨찾기';
+                listEl.appendChild(favHeader);
+
+                favorites.forEach(t => renderTableItem(listEl, t));
+            }
+
+            // Grouping by prefix (before first '_')
+            const groups = {};
+            filtered.forEach(t => {
+                const prefix = (t.tableName || 'OTHER').split('_')[0].toUpperCase();
+                if (!groups[prefix]) groups[prefix] = [];
+                groups[prefix].push(t);
             });
+
+            const sortedKeys = Object.keys(groups).sort();
+
+            sortedKeys.forEach(key => {
+                // Render Group Header
+                const header = document.createElement('div');
+                header.className = 'ts-group-header';
+                header.innerText = key;
+                listEl.appendChild(header);
+
+                // Render Table Items in Group
+                groups[key].forEach(t => renderTableItem(listEl, t));
+            });
+
             renderTableSpecViewer();
+        }
+
+        function renderTableItem(container, t) {
+            const isActive = currentTableSpec && currentTableSpec.id === t.id;
+            const bg = isActive ? 'background:#0071e3; color:#fff;' : 'background:transparent; color:#f5f5f7; cursor:pointer;';
+
+            const item = document.createElement('div');
+            item.className = 'ts-table-item';
+            item.style.cssText = `padding:6px 12px; border-radius:0.6rem; border:1px solid ${isActive ? '#0071e3' : 'transparent'}; transition:all 0.2s; cursor:pointer; margin:1px 0; ${bg} display:flex; align-items:flex-start; gap:8px; position:relative;`;
+
+            item.onclick = (e) => {
+                if (e.target.closest('.ts-fav-btn')) return;
+                selectTableSpec(t.id);
+            }
+            // Data attributes for delegation
+            item.setAttribute('data-ts-id', t.id);
+            item.className = 'ts-table-item';
+
+            const favClass = t.isFavorite ? 'active' : '';
+            const commentsColor = isActive ? '#fff' : '#98989d';
+
+            item.innerHTML = `
+                <div style="flex:1; line-height:1.4; pointer-events:none;">
+                    <div style="display:inline-block; font-size:0.88rem; font-weight:800; font-family:monospace; word-break:break-all; color:inherit;">${t.tableName || 'NEW_TABLE'}</div>
+                    <span style="font-size:0.75rem; font-weight:normal; opacity:0.8; color:${commentsColor}; margin-left:4px;">${t.tableComments ? '(' + t.tableComments + ')' : ''}</span>
+                </div>
+                <button class="ts-fav-btn ${favClass}" style="margin-top:2px; pointer-events:auto;" onclick="toggleTsFavorite('${t.id}', event)">${t.isFavorite ? '★' : '☆'}</button>
+            `;
+            container.appendChild(item);
+        }
+
+        let lastTsHoverId = null;
+        function handleTableListMouseOver(e) {
+            const item = e.target.closest('.ts-table-item');
+            if (item) {
+                const id = item.getAttribute('data-ts-id');
+                if (id !== lastTsHoverId) {
+                    // 기존 타이머 취소
+                    if (erdHoverTimeout) clearTimeout(erdHoverTimeout);
+                    
+                    lastTsHoverId = id;
+                    
+                    // 500ms 지연 후 표시
+                    erdHoverTimeout = setTimeout(() => {
+                        showTablePreview(item, e, id);
+                        erdHoverTimeout = null;
+                    }, 500);
+                }
+            } else {
+                // 아이템 영역을 벗어나면 타이머 취소 및 레이어 숨기기 (선택사항)
+                if (erdHoverTimeout) {
+                    clearTimeout(erdHoverTimeout);
+                    erdHoverTimeout = null;
+                }
+            }
+        }
+
+        // 마우스가 목록 영역을 벗어나면 상태 초기화 및 타이머 취소
+        document.getElementById('ts-table-list')?.addEventListener('mouseleave', () => {
+            lastTsHoverId = null;
+            if (erdHoverTimeout) {
+                clearTimeout(erdHoverTimeout);
+                erdHoverTimeout = null;
+            }
+        });
+
+        function toggleTsFavorite(id, e) {
+            if (e) e.stopPropagation();
+            const spec = tableSpecs.find(t => t.id === id);
+            if (spec) {
+                spec.isFavorite = !spec.isFavorite;
+                saveTableSpecs(false);
+                renderTableSpecs();
+            }
+        }
+
+        function getOrCreatePreviewLayer() {
+            let el = document.getElementById('ts-preview-layer');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'ts-preview-layer';
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        function showTablePreview(el, e, id) {
+            const spec = tableSpecs.find(t => t.id === id);
+            if (!spec) return;
+
+            const previewEl = getOrCreatePreviewLayer();
+
+            // 프리뷰 레이어 스타일 초기화 (라이트 모드 강제)
+            previewEl.classList.remove('dark');
+            previewEl.style.cssText = `
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: fixed !important;
+                z-index: 2147483647 !important;
+                pointer-events: auto !important;
+                background: rgba(255, 255, 255, 0.98) !important;
+                color: #1d1d1f !important;
+            `;
+
+            // 전체 컬럼 표시 로직
+            let rowsHtml = (spec.columns || []).map(c => {
+                const hasCode = /\[([A-Z0-9]+)\]/.test(c.comments || '') || (c.note && c.note.length > 0);
+                const codeInfo = c.note ? c.note.replace(/"/g, "&quot;") : '';
+                const helpStyle = hasCode ? 'text-decoration:underline dotted #0071e3; cursor:help;' : '';
+                const onMouseEnter = hasCode ? `onmouseenter="showCodeTooltip(this)" onmouseleave="hideCodeTooltip()" data-note="${codeInfo}"` : '';
+
+                return `
+                    <tr class="ts-preview-row">
+                        <td ${onMouseEnter} style="font-weight:700; color:${c.pk === 'Y' ? '#0071e3' : '#1d1d1f'}; ${helpStyle}">${c.columnName}</td>
+                        <td style="color:#515154; font-size:0.85rem;">${c.comments || ''}</td>
+                        <td style="color:#86868b; font-family:monospace; font-size:0.75rem;">${c.dataType}</td>
+                        <td style="text-align:center">${c.pk === 'Y' ? '🔑' : ''}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            previewEl.innerHTML = `
+                <div class="ts-preview-header">
+                    <div class="ts-preview-title-area">
+                        <div class="ts-preview-title">
+                            ${spec.tableName} 
+                            <span style="font-size:1.1rem; margin: 0 4px;">📋</span>
+                            <span class="ts-preview-logical" style="font-size: 0.9rem; color: #86868b; font-weight: 400;">${spec.tableComments ? '(' + spec.tableComments + ')' : ''}</span>
+                        </div>
+                    </div>
+                    <div class="ts-preview-search-wrapper">
+                        <span class="ts-preview-search-icon">🔍</span>
+                        <div class="search-container" style="flex:1;">
+                            <input type="text" id="ts-preview-search-input" class="ts-preview-search" placeholder="컬럼명 또는 논리명 검색..." 
+                                oninput="toggleClearBtn('ts-preview-search-input'); filterPreviewRows(this.value)">
+                            <button class="search-clear-btn" id="ts-preview-search-input-clear" onclick="clearSearchInput('ts-preview-search-input', () => filterPreviewRows(''))">✕</button>
+                        </div>
+                    </div>
+                    <button class="ts-preview-close" onclick="hideTablePreview()"></button>
+                </div>
+                <div class="ts-preview-table-container ts-preview-body">
+                    <table class="ts-preview-table">
+                        <thead style="position:sticky; top:0; z-index:1;">
+                            <tr><th style="width:30%">컬럼명</th><th style="width:35%">논리명(설명)</th><th style="width:25%">타입</th><th style="width:10%">PK</th></tr>
+                        </thead>
+                        <tbody>${rowsHtml || '<tr><td colspan="4" style="text-align:center; padding:30px; color:#c7c7cc;">등록된 컬럼이 없습니다.</td></tr>'}</tbody>
+                    </table>
+                </div>
+            `;
+
+            // Position calculation
+            const rect = el.getBoundingClientRect();
+            let top = rect.top;
+            let left = rect.right + 15;
+
+            const previewWidth = 700;
+            const previewHeight = 500;
+
+            if (left + previewWidth > window.innerWidth) {
+                left = rect.left - previewWidth - 15;
+            }
+            if (left < 10) left = 10;
+            if (top + previewHeight > window.innerHeight) {
+                top = Math.max(10, window.innerHeight - previewHeight - 20);
+            }
+
+            previewEl.style.top = top + 'px';
+            previewEl.style.left = left + 'px';
+        }
+
+        function filterPreviewRows(query) {
+            const lowerQuery = query.toLowerCase().trim();
+            const rows = document.querySelectorAll('.ts-preview-row');
+            
+            rows.forEach(row => {
+                const colName = row.cells[0].innerText.toLowerCase();
+                const logicalName = row.cells[1].innerText.toLowerCase();
+                
+                if (colName.includes(lowerQuery) || logicalName.includes(lowerQuery)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function hideTablePreview() {
+            document.getElementById('ts-preview-layer').style.display = 'none';
+        }
+
+        // 외부 클릭 시 프리뷰 닫기 로직
+        window.addEventListener('mousedown', function (e) {
+            const previewEl = document.getElementById('ts-preview-layer');
+            if (previewEl && previewEl.style.display === 'flex') {
+                // 클릭한 요소가 프리뷰 레이어 내부가 아니고, 사이드바 아이템도 아닌 경우 닫기
+                if (!previewEl.contains(e.target) && !e.target.closest('.ts-table-item')) {
+                    hideTablePreview();
+                }
+            }
+        });
+
+
+
+        // --- Code Info Tooltip Logic ---
+        function getOrCreateCodeTooltip() {
+            let el = document.getElementById('ts-code-tooltip');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'ts-code-tooltip';
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        function showCodeTooltip(target) {
+            const text = target.getAttribute('data-note');
+            const tooltip = getOrCreateCodeTooltip();
+            
+            // 툴팁을 항상 DOM 끝으로 이동시켜 최상단에 오도록 함
+            if (tooltip.parentNode) {
+                tooltip.parentNode.appendChild(tooltip);
+            }
+            
+            tooltip.innerText = text && text.trim() ? text : '등록된 코드 상세 정보가 없습니다.';
+            tooltip.style.display = 'block';
+
+            const rect = target.getBoundingClientRect();
+            let top = rect.bottom + 10;
+            let left = rect.left;
+
+            // Screen edge check
+            if (left + 450 > window.innerWidth) {
+                left = window.innerWidth - 470;
+            }
+            if (top + 200 > window.innerHeight) {
+                top = rect.top - tooltip.offsetHeight - 10;
+                if (top < 10) top = 10;
+            }
+
+            tooltip.style.top = top + 'px';
+            tooltip.style.left = left + 'px';
+        }
+
+        function hideCodeTooltip() {
+            const tooltip = document.getElementById('ts-code-tooltip');
+            if (tooltip) tooltip.style.display = 'none';
+        }
+
+
+        // --- ERD Visualization Logic ---
+        let erdNodes = [];
+        let erdLinks = [];
+        let isDraggingNode = false;
+        let isPanning = false;
+        let dragTarget = null;
+        let dragOffset = { x: 0, y: 0 };
+        
+        // Load last view state
+        const savedErdState = JSON.parse(localStorage.getItem('erdViewState') || '{"panX":0, "panY":0, "scale":1.0, "query":""}');
+        let panX = savedErdState.panX;
+        let panY = savedErdState.panY;
+        let erdScale = savedErdState.scale;
+        let erdLastQuery = savedErdState.query || "";
+        let currentErdPrefix = "ALL";
+        let erdAnimationFrame = null; // rAF 관리를 위한 변수
+        let erdHoverTimeout = null;   // 호버 지연(Debounce)을 위한 변수
+
+        function showERDPrefixSelector() {
+            const prefixes = [...new Set(tableSpecs.map(t => (t.tableName || "").split('_')[0]))].filter(x => x).sort();
+            const listEl = document.getElementById('erd-prefix-list');
+            listEl.innerHTML = '';
+            
+            prefixes.forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-mini';
+                btn.style.cssText = 'padding:12px; font-weight:700; background:#f5f5f7; border:1px solid #d2d2d7; border-radius:10px; transition:all 0.2s;';
+                btn.innerText = p;
+                btn.onclick = () => {
+                    document.getElementById('erd-prefix-modal').style.display = 'none';
+                    openERDView(p);
+                };
+                btn.onmouseover = () => btn.style.borderColor = '#0071e3';
+                btn.onmouseout = () => btn.style.borderColor = '#d2d2d7';
+                listEl.appendChild(btn);
+            });
+            
+            document.getElementById('erd-prefix-modal').style.display = 'flex';
+        }
+
+        function openERDView(prefix) {
+            currentErdPrefix = prefix || currentErdPrefix;
+            const overlay = document.getElementById('erd-view');
+            const container = document.getElementById('erd-container');
+            const content = document.getElementById('erd-content');
+            
+            overlay.style.display = 'flex';
+            content.innerHTML = '<svg id="erd-svg" class="erd-svg"></svg>'; // Reset
+
+            // Filter Specs by Prefix
+            let filteredSpecs = tableSpecs;
+            if (currentErdPrefix !== 'ALL') {
+                filteredSpecs = tableSpecs.filter(t => (t.tableName || "").startsWith(currentErdPrefix + "_") || t.tableName === currentErdPrefix);
+            }
+            
+            // Pan Event Binding
+            container.onmousedown = (e) => {
+                // 프리뷰 레이어가 열려있다면 닫기
+                const preview = document.getElementById('ts-preview-layer');
+                if (preview && preview.style.display !== 'none') {
+                    preview.style.display = 'none';
+                    if (e.target.closest('.erd-node')) return; // 노드를 클릭해서 닫은 경우 드래그 방지
+                }
+
+                if (!e.target.closest('.erd-node') && !e.target.closest('.erd-zoom-controls')) {
+                    isPanning = true;
+                    dragOffset.x = e.clientX - panX;
+                    dragOffset.y = e.clientY - panY;
+                    container.style.cursor = 'grabbing';
+                }
+            };
+            
+            // Zoom Wheel Binding
+            container.onwheel = (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.05 : 0.05;
+                zoomERD(delta);
+            };
+
+            window.addEventListener('mousemove', (e) => {
+                if (isPanning) {
+                    panX = e.clientX - dragOffset.x;
+                    panY = e.clientY - dragOffset.y;
+                    
+                    if (!erdAnimationFrame) {
+                        erdAnimationFrame = requestAnimationFrame(() => {
+                            updateERDTransform();
+                            erdAnimationFrame = null;
+                        });
+                    }
+                }
+            });
+            window.addEventListener('mouseup', () => {
+                isPanning = false;
+                if (container) container.style.cursor = 'grab';
+            });
+
+            // 1. Identify Relations (Heuristic: Table A column matches Table B PK)
+            const relations = [];
+            const pkMap = {}; 
+            
+            filteredSpecs.forEach(spec => {
+                (spec.columns || []).forEach(col => {
+                    if (col.pk === 'Y') {
+                        if (!pkMap[col.columnName]) pkMap[col.columnName] = [];
+                        pkMap[col.columnName].push(spec.id);
+                    }
+                });
+            });
+
+            filteredSpecs.forEach(sourceTable => {
+                (sourceTable.columns || []).forEach(col => {
+                    if (col.pk !== 'Y' && pkMap[col.columnName]) {
+                        pkMap[col.columnName].forEach(targetId => {
+                            if (sourceTable.id !== targetId) {
+                                relations.push({ from: sourceTable.id, to: targetId });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // 2. Create Nodes with Grid Layout
+            const horizontalGap = 350;
+            const verticalGap = 200;
+            const cols = Math.ceil(Math.sqrt(filteredSpecs.length));
+            
+            const nodes = filteredSpecs.map((spec, i) => {
+                const row = Math.floor(i / cols);
+                const col = i % cols;
+                // 저장된 위치가 있으면 사용, 없으면 그리드 레이아웃 적용
+                return {
+                    id: spec.id,
+                    name: spec.tableName,
+                    comment: spec.tableComments,
+                    color: spec.color || '', // 색상 추가
+                    x: spec.x !== undefined ? spec.x : (500 + (col * horizontalGap)),
+                    y: spec.y !== undefined ? spec.y : (300 + (row * verticalGap))
+                };
+            });
+
+            erdNodes = nodes;
+            erdLinks = relations;
+
+            // 3. Render Nodes
+            nodes.forEach(node => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = `erd-node ${node.color ? 'theme-' + node.color : ''}`;
+                nodeEl.id = `node-${node.id}`;
+                nodeEl.style.left = node.x + 'px';
+                nodeEl.style.top = node.y + 'px';
+                nodeEl.innerHTML = `
+                    <div class="node-title">${node.name}</div>
+                    <div class="node-comment">${node.comment || ''}</div>
+                    <div class="color-picker">
+                        <div class="color-dot" style="background:#fff" onclick="changeNodeColor('${node.id}', '')"></div>
+                        <div class="color-dot" style="background:#03a9f4" onclick="changeNodeColor('${node.id}', 'blue')"></div>
+                        <div class="color-dot" style="background:#4caf50" onclick="changeNodeColor('${node.id}', 'green')"></div>
+                        <div class="color-dot" style="background:#fbc02d" onclick="changeNodeColor('${node.id}', 'yellow')"></div>
+                        <div class="color-dot" style="background:#f44336" onclick="changeNodeColor('${node.id}', 'red')"></div>
+                        <div class="color-dot" style="background:#9c27b0" onclick="changeNodeColor('${node.id}', 'purple')"></div>
+                    </div>
+                `;
+                
+                nodeEl.onmousedown = (e) => {
+                    // 프리뷰 레이어 닫기
+                    const preview = document.getElementById('ts-preview-layer');
+                    if (preview && preview.style.display !== 'none') {
+                        preview.style.display = 'none';
+                    }
+
+                    if (e.target.classList.contains('color-dot')) return; // 색상 클릭 시 드래그 방지
+                    e.stopPropagation(); 
+                    startDragNode(e, node);
+                };
+
+                // 마우스 오버 시 속성 정보(프리뷰) 표시 (지연 시간 적용)
+                nodeEl.onmouseenter = (e) => {
+                    if (isDraggingNode || isPanning) return;
+                    
+                    // 기존 타이머 취소
+                    if (erdHoverTimeout) clearTimeout(erdHoverTimeout);
+                    
+                    // 500ms 동안 머물렀을 때만 표시
+                    erdHoverTimeout = setTimeout(() => {
+                        showTablePreview(nodeEl, e, node.id);
+                        erdHoverTimeout = null;
+                    }, 500);
+                };
+
+                nodeEl.onmouseleave = () => {
+                    // 테이블을 벗어나면 타이머 취소
+                    if (erdHoverTimeout) {
+                        clearTimeout(erdHoverTimeout);
+                        erdHoverTimeout = null;
+                    }
+                };
+
+                content.appendChild(nodeEl);
+            });
+
+            drawERDLinks();
+            
+            // 마지막 상태 복원 (검색어 포함)
+            const searchInput = document.querySelector('.erd-search-input');
+            if (searchInput && erdLastQuery) {
+                searchInput.value = erdLastQuery;
+                searchERDNodes(erdLastQuery, true); // true: 자동 포커스 이동 방지 (이미 시점이 저장되어 있으므로)
+            }
+            
+            updateERDTransform();
+        }
+
+        function updateERDTransform() {
+            const content = document.getElementById('erd-content');
+            if (!content) return;
+            // translate3d를 사용하여 하드웨어 가속(GPU) 강제 적용
+            content.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${erdScale})`;
+            const label = document.getElementById('erd-zoom-label');
+            if (label) label.innerText = Math.round(erdScale * 100) + '%';
+            
+            // 상태 저장
+            const query = document.querySelector('.erd-search-input')?.value || "";
+            localStorage.setItem('erdViewState', JSON.stringify({ panX, panY, scale: erdScale, query: query }));
+        }
+
+        function zoomERD(delta) {
+            erdScale = Math.min(Math.max(0.1, erdScale + delta), 2);
+            updateERDTransform();
+        }
+
+        function resetERDZoom() {
+            erdScale = 1.0;
+            updateERDTransform();
+        }
+
+        function drawERDLinks() {
+            const svg = document.getElementById('erd-svg');
+            svg.innerHTML = ''; 
+            
+            const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            defs.innerHTML = `
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#0071e3" />
+                </marker>
+            `;
+            svg.appendChild(defs);
+
+            erdLinks.forEach(link => {
+                const fromNode = erdNodes.find(n => n.id === link.from);
+                const toNode = erdNodes.find(n => n.id === link.to);
+                if (!fromNode || !toNode) return;
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                updateLinePath(line, fromNode, toNode);
+                line.setAttribute("class", "erd-link");
+                line.setAttribute("marker-end", "url(#arrowhead)");
+                svg.appendChild(line);
+                link.element = line;
+            });
+        }
+
+        function updateLinePath(line, from, to) {
+            const fX = from.x + 90;
+            const fY = from.y + 25;
+            const tX = to.x + 90;
+            const tY = to.y + 25;
+            
+            // Bezier curve
+            const cp1x = fX + (tX - fX) * 0.5;
+            const cp1y = fY;
+            const cp2x = fX + (tX - fX) * 0.5;
+            const cp2y = tY;
+            
+            line.setAttribute("d", `M ${fX} ${fY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${tX} ${tY}`);
+        }
+
+        function startDragNode(e, node) {
+            isDraggingNode = true;
+            dragTarget = node;
+            const rect = document.getElementById(`node-${node.id}`).getBoundingClientRect();
+            dragOffset.x = e.clientX - node.x;
+            dragOffset.y = e.clientY - node.y;
+            
+            document.onmousemove = dragNode;
+            document.onmouseup = stopDragNode;
+            e.preventDefault();
+        }
+
+        function dragNode(e) {
+            if (!isDraggingNode) return;
+            dragTarget.x = e.clientX - dragOffset.x;
+            dragTarget.y = e.clientY - dragOffset.y;
+            
+            if (!erdAnimationFrame) {
+                erdAnimationFrame = requestAnimationFrame(() => {
+                    const el = document.getElementById(`node-${dragTarget.id}`);
+                    if (el) {
+                        el.style.left = dragTarget.x + 'px';
+                        el.style.top = dragTarget.y + 'px';
+                    }
+                    
+                    // Update related links
+                    erdLinks.forEach(link => {
+                        if (link.from === dragTarget.id || link.to === dragTarget.id) {
+                            const from = erdNodes.find(n => n.id === link.from);
+                            const to = erdNodes.find(n => n.id === link.to);
+                            updateLinePath(link.element, from, to);
+                        }
+                    });
+                    erdAnimationFrame = null;
+                });
+            }
+        }
+
+        function stopDragNode() {
+            if (isDraggingNode && dragTarget) {
+                // tableSpecs 데이터에 위치 정보 영구 저장
+                const spec = tableSpecs.find(s => s.id === dragTarget.id);
+                if (spec) {
+                    spec.x = dragTarget.x;
+                    spec.y = dragTarget.y;
+                    saveTableSpecs(false); // 무음 저장 (토스트 메시지 없이)
+                }
+            }
+            isDraggingNode = false;
+            document.onmousemove = null;
+            document.onmouseup = null;
+        }
+
+        function autoLayoutERD() {
+            // 사용자 확인 메시지 추가
+            if (!confirm('사용자가 직접 편집한 테이블 위치와 화면 설정이 모두 초기화됩니다.\n자동 정렬을 진행하시겠습니까?')) {
+                return;
+            }
+
+            // 위치 정보 및 뷰 상태 초기화
+            tableSpecs.forEach(spec => {
+                delete spec.x;
+                delete spec.y;
+                delete spec.color; // 색상도 초기화할지 여부는 정책에 따라 다르나, 완전 초기화라면 포함
+            });
+            panX = 0;
+            panY = 0;
+            erdScale = 1.0;
+            erdLastQuery = "";
+            
+            // 저장
+            saveTableSpecs(false);
+            localStorage.removeItem('erdViewState');
+
+            openERDView();
+            
+            // Add a small bounce animation to show it's refreshed
+            const nodes = document.querySelectorAll('.erd-node');
+            nodes.forEach(el => {
+                el.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                setTimeout(() => el.style.transition = 'none', 600);
+            });
+        }
+
+        function closeERDView() {
+            document.getElementById('erd-view').style.display = 'none';
+        }
+
+        function changeNodeColor(id, color) {
+            const spec = tableSpecs.find(s => s.id === id);
+            if (spec) {
+                spec.color = color;
+                saveTableSpecs(false);
+                
+                const el = document.getElementById(`node-${id}`);
+                if (el) {
+                    el.className = `erd-node ${color ? 'theme-' + color : ''}`;
+                }
+            }
+        }
+
+        function searchERDNodes(query, skipPan = false) {
+            const lowerQuery = query.toLowerCase().trim();
+            const nodes = document.querySelectorAll('.erd-node');
+            const links = document.querySelectorAll('.erd-link');
+            
+            // 상태 즉시 저장
+            erdLastQuery = query;
+            const currentState = JSON.parse(localStorage.getItem('erdViewState') || '{}');
+            currentState.query = query;
+            localStorage.setItem('erdViewState', JSON.stringify(currentState));
+
+            if (!lowerQuery) {
+                nodes.forEach(n => {
+                    n.classList.remove('highlight', 'dimmed');
+                    n.style.display = '';
+                });
+                links.forEach(l => {
+                    l.classList.remove('dimmed');
+                    l.style.display = '';
+                });
+                return;
+            }
+
+            // 1. 검색어와 일치하는 중심 테이블(들) 찾기
+            const matchedNodeIds = [];
+            nodes.forEach(node => {
+                const title = node.querySelector('.node-title').innerText.toLowerCase();
+                const comment = node.querySelector('.node-comment').innerText.toLowerCase();
+                if (title.includes(lowerQuery) || comment.includes(lowerQuery)) {
+                    matchedNodeIds.push(node.id.replace('node-', ''));
+                }
+            });
+
+            // 2. 관계된 테이블 ID 수집 (중심 테이블 + 연결된 테이블)
+            const visibleNodeIds = new Set(matchedNodeIds);
+            erdLinks.forEach(link => {
+                const fromId = String(link.from);
+                const toId = String(link.to);
+                if (matchedNodeIds.includes(fromId)) visibleNodeIds.add(toId);
+                if (matchedNodeIds.includes(toId)) visibleNodeIds.add(fromId);
+            });
+
+            // 3. 노드 표시/숨김 처리
+            let firstMatch = null;
+            nodes.forEach(node => {
+                const nodeId = node.id.replace('node-', '');
+                const title = node.querySelector('.node-title').innerText.toLowerCase();
+                
+                if (visibleNodeIds.has(nodeId)) {
+                    node.style.display = '';
+                    node.classList.remove('dimmed');
+                    // 정확히 매칭된 테이블만 하이라이트 처리
+                    if (title === lowerQuery) {
+                        node.classList.add('highlight');
+                        if (!firstMatch) firstMatch = node;
+                    } else {
+                        node.classList.remove('highlight');
+                    }
+                } else {
+                    node.style.display = 'none';
+                    node.classList.add('dimmed');
+                }
+            });
+
+            // 4. 링크 표시/숨김 처리 (연결된 양쪽 노드가 모두 보일 때만 표시)
+            erdLinks.forEach(link => {
+                const fromVisible = visibleNodeIds.has(String(link.from));
+                const toVisible = visibleNodeIds.has(String(link.to));
+                
+                if (fromVisible && toVisible) {
+                    // 특히 검색된 중심 노드와 관련된 링크만 더 강조하고 싶다면 여기서 추가 로직 가능
+                    link.element.style.display = '';
+                    link.element.classList.remove('dimmed');
+                } else {
+                    link.element.style.display = 'none';
+                    link.element.classList.add('dimmed');
+                }
+            });
+
+            // 첫 번째 검색 결과로 화면 이동 (수동 검색 시에만)
+            if (firstMatch && !skipPan) {
+                const nodeId = firstMatch.id.replace('node-', '');
+                const nodeData = erdNodes.find(n => n.id == nodeId);
+                if (nodeData) {
+                    panX = (window.innerWidth / 2) - nodeData.x - 110;
+                    panY = (window.innerHeight / 2) - nodeData.y - 40;
+                    updateERDTransform();
+                }
+            }
         }
 
         function selectTableSpec(id) {
@@ -2614,43 +4051,49 @@
         }
 
         function renderTableSpecViewer() {
-            if(!currentTableSpec) {
-                if(document.getElementById('ts-empty-view')) document.getElementById('ts-empty-view').style.display = 'flex';
-                if(document.getElementById('ts-main-view')) document.getElementById('ts-main-view').style.display = 'none';
+            if (!currentTableSpec) {
+                if (document.getElementById('ts-empty-view')) document.getElementById('ts-empty-view').style.display = 'flex';
+                if (document.getElementById('ts-main-view')) document.getElementById('ts-main-view').style.display = 'none';
                 return;
             }
-            if(document.getElementById('ts-empty-view')) document.getElementById('ts-empty-view').style.display = 'none';
-            if(document.getElementById('ts-main-view')) document.getElementById('ts-main-view').style.display = 'flex';
-            
+            if (document.getElementById('ts-empty-view')) document.getElementById('ts-empty-view').style.display = 'none';
+            if (document.getElementById('ts-main-view')) document.getElementById('ts-main-view').style.display = 'flex';
+
             document.getElementById('ts-meta-name').value = currentTableSpec.tableName || '';
             document.getElementById('ts-meta-comments').value = currentTableSpec.tableComments || '';
-            
+
             const tbody = document.getElementById('ts-column-list');
             tbody.innerHTML = '';
             const cols = currentTableSpec.columns || [];
-            cols.sort((a,b)=>a.seq-b.seq).forEach(c => {
+            cols.sort((a, b) => a.seq - b.seq).forEach(c => {
+                const hasCode = /\[([A-Z0-9]+)\]/.test(c.comments || '');
+                const codeInfo = (hasCode && c.note) ? c.note.replace(/"/g, '&quot;') : '';
+                const helpStyle = hasCode ? 'text-decoration:underline dotted #0071e3 !important;' : '';
+                const onMouseEnter = hasCode && codeInfo ? `onmouseenter="showCodeTooltip(this, '${codeInfo}')" onmouseleave="hideCodeTooltip()"` : '';
+
                 const tr = document.createElement('tr');
+                tr.className = 'ts-column-tr';
                 tr.style.borderBottom = '1px solid #efeff2';
                 tr.innerHTML = `
                     <td style="padding:6px;"><input type="number" style="width:100%; border:none; text-align:center; font-family:monospace; background:transparent;" value="${c.seq}" onchange="updateTsCol('${c.id}','seq',this.value)"></td>
-                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; font-weight:bold; color:#0071e3; font-family:monospace; background:transparent;" value="${c.columnName||''}" onchange="updateTsCol('${c.id}','columnName',this.value)"></td>
-                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; background:transparent;" value="${c.comments||''}" onchange="updateTsCol('${c.id}','comments',this.value)"></td>
-                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; font-family:monospace; font-size:0.75rem; text-transform:uppercase; background:transparent;" value="${c.dataType||''}" onchange="updateTsCol('${c.id}','dataType',this.value)"></td>
+                    <td style="padding:6px;"><input type="text" ${onMouseEnter} style="width:100%; border:none; font-weight:bold; color:#0071e3; font-family:monospace; background:transparent; ${helpStyle}" value="${c.columnName || ''}" onchange="updateTsCol('${c.id}','columnName',this.value)"></td>
+                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; background:transparent;" value="${c.comments || ''}" onchange="updateTsCol('${c.id}','comments',this.value)"></td>
+                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; font-family:monospace; font-size:0.75rem; text-transform:uppercase; background:transparent;" value="${c.dataType || ''}" onchange="updateTsCol('${c.id}','dataType',this.value)"></td>
                     <td style="padding:6px; text-align:center;">
                         <select style="border:1px solid #d2d2d7; border-radius:4px; padding:2px; background:#fff;" onchange="updateTsCol('${c.id}','pk',this.value)">
                             <option value=""></option>
-                            <option value="Y" ${c.pk==='Y'?'selected':''}>Y</option>
-                            <option value="N" ${c.pk==='N'?'selected':''}>N</option>
+                            <option value="Y" ${c.pk === 'Y' ? 'selected' : ''}>Y</option>
+                            <option value="N" ${c.pk === 'N' ? 'selected' : ''}>N</option>
                         </select>
                     </td>
                     <td style="padding:6px; text-align:center;">
                         <select style="border:1px solid #d2d2d7; border-radius:4px; padding:2px; background:#fff;" onchange="updateTsCol('${c.id}','nullable',this.value)">
-                            <option value="Y" ${c.nullable==='Y'?'selected':''}>Y</option>
-                            <option value="N" ${c.nullable==='N'?'selected':''}>N</option>
+                            <option value="Y" ${c.nullable === 'Y' ? 'selected' : ''}>Y</option>
+                            <option value="N" ${c.nullable === 'N' ? 'selected' : ''}>N</option>
                         </select>
                     </td>
-                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; font-family:monospace; font-size:0.75rem; color:#ff3b30; background:transparent;" value="${c.defaultValue||''}" onchange="updateTsCol('${c.id}','defaultValue',this.value)"></td>
-                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; color:#86868b; font-size:0.8rem; background:transparent;" value="${c.note||''}" onchange="updateTsCol('${c.id}','note',this.value)"></td>
+                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; font-family:monospace; font-size:0.75rem; color:#ff3b30; background:transparent;" value="${c.defaultValue || ''}" onchange="updateTsCol('${c.id}','defaultValue',this.value)"></td>
+                    <td style="padding:6px;"><input type="text" style="width:100%; border:none; color:#86868b; font-size:0.8rem; background:transparent;" value="${c.note || ''}" onchange="updateTsCol('${c.id}','note',this.value)"></td>
                     <td style="padding:6px; text-align:center;">
                         <button onclick="deleteTsCol('${c.id}')" style="background:transparent; border:none; color:#ff3b30; cursor:pointer;" title="삭제">❌</button>
                     </td>
@@ -2660,44 +4103,44 @@
         }
 
         function updateTsMeta() {
-            if(!currentTableSpec) return;
+            if (!currentTableSpec) return;
             currentTableSpec.tableName = document.getElementById('ts-meta-name').value.trim().toUpperCase();
             currentTableSpec.tableComments = document.getElementById('ts-meta-comments').value.trim();
-            saveTableSpecs(false); 
+            saveTableSpecs(false);
             renderTableSpecs();
         }
 
         function updateTsCol(id, field, val) {
-            if(!currentTableSpec) return;
-            const c = currentTableSpec.columns.find(x=>x.id===id);
-            if(c) {
-                if(field==='seq') val = parseInt(val)||0;
-                if(field==='columnName') val = val.toUpperCase();
+            if (!currentTableSpec) return;
+            const c = currentTableSpec.columns.find(x => x.id === id);
+            if (c) {
+                if (field === 'seq') val = parseInt(val) || 0;
+                if (field === 'columnName') val = val.toUpperCase();
                 c[field] = val;
             }
         }
 
         function deleteTsCol(id) {
-            if(!currentTableSpec) return;
-            currentTableSpec.columns = currentTableSpec.columns.filter(x=>x.id!==id);
+            if (!currentTableSpec) return;
+            currentTableSpec.columns = currentTableSpec.columns.filter(x => x.id !== id);
             renderTableSpecViewer();
         }
 
         function addTableSpecColumn() {
-            if(!currentTableSpec) return;
-            if(!currentTableSpec.columns) currentTableSpec.columns = [];
-            const maxSeq = currentTableSpec.columns.reduce((m,c)=>Math.max(m,c.seq),0);
+            if (!currentTableSpec) return;
+            if (!currentTableSpec.columns) currentTableSpec.columns = [];
+            const maxSeq = currentTableSpec.columns.reduce((m, c) => Math.max(m, c.seq), 0);
             currentTableSpec.columns.push({
-                id: Math.random().toString(36).substr(2,9),
-                seq: maxSeq+1,
-                columnName: '', comments: '', dataType: 'VARCHAR2(100)', pk: '', nullable:'Y', defaultValue: '', note: ''
+                id: Math.random().toString(36).substr(2, 9),
+                seq: maxSeq + 1,
+                columnName: '', comments: '', dataType: 'VARCHAR2(100)', pk: '', nullable: 'Y', defaultValue: '', note: ''
             });
             renderTableSpecViewer();
         }
 
         function addNewTableSpec() {
             const t = {
-                id: Math.random().toString(36).substr(2,9),
+                id: Math.random().toString(36).substr(2, 9),
                 tableName: 'NEW_TABLE',
                 tableComments: '신규 테이블',
                 columns: []
@@ -2708,67 +4151,168 @@
         }
 
         function deleteCurrentTableSpec() {
-            if(!currentTableSpec) return;
-            if(confirm(`[${currentTableSpec.tableName}] 테이블을 삭제하시겠습니까?`)) {
-                tableSpecs = tableSpecs.filter(x=>x.id!==currentTableSpec.id);
+            if (!currentTableSpec) return;
+            if (confirm(`[${currentTableSpec.tableName}] 테이블을 삭제하시겠습니까?`)) {
+                tableSpecs = tableSpecs.filter(x => x.id !== currentTableSpec.id);
                 currentTableSpec = null;
                 saveTableSpecs();
                 renderTableSpecs();
             }
         }
 
-        function saveTableSpecs(notify=true) {
+        function saveTableSpecs(notify = true) {
             localStorage.setItem('tableSpecs', JSON.stringify(tableSpecs));
-            if(ghConfig && ghConfig.token && ghConfig.autoSync) {
-                if(typeof syncWithGitHub === 'function') {
+            if (ghConfig && ghConfig.token && ghConfig.autoSync) {
+                if (typeof syncWithGitHub === 'function') {
                     syncWithGitHub('upload', 'task/tableSpecs.json', tableSpecs).catch(e => console.error(e));
                 }
             }
-            if(notify) alert('저장되었습니다.');
+            if (notify) showToast('저장되었습니다.', '✅');
+        }
+
+        function downloadTableSpecs() {
+            if (!tableSpecs || tableSpecs.length === 0) {
+                showToast('다운로드할 데이터가 없습니다.', '⚠️');
+                return;
+            }
+            const dataStr = JSON.stringify(tableSpecs, null, 4);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `table-specs-backup-${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        async function backupTableSpecsToGitHub() {
+            if (!ghConfig.token || !ghConfig.repo) { showToast('GitHub 설정을 먼저 확인해주세요.', '⚠️'); return; }
+            if (!confirm('현재 테이블 정의서 데이터를 서버(GitHub)에 백업 파일로 저장하시겠습니까?')) return;
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const backupPath = `task/backup/table-specs-${dateStr}.json`;
+            const message = `Table Specs Backup: ${dateStr}`;
+
+            try {
+                const success = await uploadToGitHub(backupPath, tableSpecs, message);
+                if (success) {
+                    showToast(`${dateStr} 서버 백업 파일이 생성되었습니다.`, '☁️');
+                } else {
+                    showToast('백업 업로드 중 오류가 발생했습니다.', '❌');
+                }
+            } catch (e) {
+                console.error("Table Backup Error:", e);
+                showToast('백업 실패: ' + e.message, '❌');
+            }
         }
 
         function openTableBulkModal() {
-            document.getElementById('ts-bulk-modal').style.display='flex';
-            document.getElementById('ts-bulk-data').value='';
+            document.getElementById('ts-bulk-modal').style.display = 'flex';
+            document.getElementById('ts-bulk-data').value = '';
             document.getElementById('ts-bulk-data').focus();
         }
         function closeTableBulkModal() {
-            document.getElementById('ts-bulk-modal').style.display='none';
+            document.getElementById('ts-bulk-modal').style.display = 'none';
         }
         function processTableBulkData() {
             const raw = document.getElementById('ts-bulk-data').value;
-            if(!raw.trim()) { alert('에러'); return; }
-            const lines = raw.split('\n');
+            if (!raw.trim()) { showToast('입력된 데이터가 없습니다.', '⚠️'); return; }
+
+            // 표준 TSV 파싱 (따옴표 및 내부 줄바꿈 처리)
+            const rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < raw.length; i++) {
+                const char = raw[i];
+                const nextChar = raw[i + 1];
+                if (inQuotes) {
+                    if (char === '"' && nextChar === '"') {
+                        currentField += '"'; i++;
+                    } else if (char === '"') {
+                        inQuotes = false;
+                    } else {
+                        currentField += char;
+                    }
+                } else {
+                    if (char === '"') {
+                        inQuotes = true;
+                    } else if (char === '\t') {
+                        currentRow.push(currentField);
+                        currentField = '';
+                    } else if (char === '\n' || char === '\r') {
+                        if (char === '\r' && nextChar === '\n') i++;
+                        currentRow.push(currentField);
+                        rows.push(currentRow);
+                        currentRow = [];
+                        currentField = '';
+                    } else {
+                        currentField += char;
+                    }
+                }
+            }
+            if (currentField || currentRow.length > 0) {
+                currentRow.push(currentField);
+                rows.push(currentRow);
+            }
+
             let count = 0;
             let m = {};
-            lines.forEach(l => {
-                if(!l.trim()) return;
-                const p = l.split('\t');
-                if(p.length<4) return;
-                const tName = p[0]?.trim().toUpperCase();
+            let lastTName = '';
+            let lastTComm = '';
+
+            rows.forEach(p => {
+                // 의미 있는 데이터가 없는 행 스킵
+                if (p.length < 4 || (!p[0]?.trim() && !p[3]?.trim())) return;
+
+                let tName = p[0]?.trim().toUpperCase();
+                let tComm = p[1]?.trim();
+
+                if (!tName) {
+                    tName = lastTName;
+                    tComm = lastTComm;
+                } else {
+                    lastTName = tName;
+                    lastTComm = tComm;
+                }
+
+                if (!tName) return;
+
                 const cName = p[3]?.trim().toUpperCase();
-                if(!tName || !cName) return;
-                if(!m[tName]) m[tName]={ comments: p[1]?.trim()||'', cols:[] };
+                if (!cName) return;
+
+                let pkVal = p[6]?.trim() || '';
+                if (/^P\d+$/i.test(pkVal)) pkVal = 'Y';
+
+                if (!m[tName]) m[tName] = { comments: tComm || '', cols: [] };
                 m[tName].cols.push({
-                    id: Math.random().toString(36).substr(2,9),
-                    seq: parseInt(p[2])||0,
+                    id: Math.random().toString(36).substr(2, 9),
+                    seq: parseInt(p[2]) || (m[tName].cols.length + 1),
                     columnName: cName,
-                    comments: p[4]?.trim()||'', dataType: p[5]?.trim()||'',
-                    pk: p[6]?.trim()||'', nullable: p[7]?.trim()||'Y',
-                    defaultValue: p[8]?.trim()||'', note: p[9]?.trim()||''
+                    comments: p[4]?.trim() || '',
+                    dataType: p[5]?.trim() || '',
+                    pk: pkVal,
+                    nullable: p[7]?.trim() || 'Y',
+                    defaultValue: p[8]?.trim() || '',
+                    note: p[9]?.trim() || ''
                 });
                 count++;
             });
-            if(count === 0){ alert('유효 데이터 없음. 탭 구분을 확인하세요.'); return; }
+            if (count === 0) { alert('유효 데이터 없음. 탭 구분을 확인하세요.'); return; }
             Object.keys(m).forEach(k => {
-                let e = tableSpecs.find(x=>x.tableName===k);
-                if(!e) {
-                    e = { id: Math.random().toString(36).substr(2,9), tableName: k, tableComments: m[k].comments, columns:[] };
+                let e = tableSpecs.find(x => x.tableName === k);
+                if (!e) {
+                    e = { id: Math.random().toString(36).substr(2, 9), tableName: k, tableComments: m[k].comments, columns: [] };
                     tableSpecs.push(e);
-                } else if(!e.tableComments && m[k].comments) {
+                } else if (!e.tableComments && m[k].comments) {
                     e.tableComments = m[k].comments;
                 }
-                if(!e.columns) e.columns = [];
+                if (!e.columns) e.columns = [];
                 e.columns.push(...m[k].cols);
             });
             saveTableSpecs(false);
@@ -3540,9 +5084,9 @@
                                                 ${m.project ? `<span style="background: #eef2ff; padding: 1px 4px; border-radius: 3px;">${m.project}</span>` : ''}
                                             </div>
                                         </div>
-                                        ${m.status === '퇴사' 
-                                            ? '<div class="card-badge" style="background: #fff0f0; color: #ff3b30; font-size: 0.65rem;">퇴사</div>' 
-                                            : '<div class="card-badge done" style="background: #f0fdf4; color: #15803d; font-size: 0.65rem;">재직</div>'}
+                                        ${m.status === '퇴사'
+                        ? '<div class="card-badge" style="background: #fff0f0; color: #ff3b30; font-size: 0.65rem;">퇴사</div>'
+                        : '<div class="card-badge done" style="background: #f0fdf4; color: #15803d; font-size: 0.65rem;">재직</div>'}
                                     </div>
                                     <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
                                         <i class="far fa-user-circle"></i> @${m.nickname}
@@ -3706,7 +5250,7 @@
 
                 setTimeout(() => {
                     const target = document.querySelector(`.project-org-section[data-group-name="${groupName}"]`);
-                    
+
                     if (target) {
                         // 다른 모든 섹션 닫기 및 이전 활성 상태 제거
                         document.querySelectorAll('.project-org-section').forEach(sec => {
@@ -4500,7 +6044,7 @@
                 document.getElementById('m-nickname').value = m.nickname;
                 document.getElementById('m-position').value = m.position || '';
                 document.getElementById('m-jobgroup').value = m.jobGroup || '';
-                
+
                 const statusVal = m.status || '재직';
                 const statusRadio = document.querySelector(`input[name="m-status"][value="${statusVal}"]`);
                 if (statusRadio) statusRadio.checked = true;
@@ -5162,12 +6706,16 @@
             } catch (e) { console.error("GitHub Sync Error:", e); }
         }
 
-        function showSyncToast() {
+        function showToast(msg, icon = 'ℹ️') {
             const toast = document.createElement('div');
-            toast.style.cssText = `position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:30px; font-size:0.85rem; z-index:10000; animation: fadeOut 3s forwards; pointer-events:none;`;
-            toast.innerText = '☁️ GitHub 동기화 완료';
+            toast.style.cssText = `position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:30px; font-size:0.85rem; z-index:10001; animation: fadeOut 3s forwards; pointer-events:none; display:flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15);`;
+            toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
+        }
+
+        function showSyncToast() {
+            showToast('GitHub 동기화 완료', '☁️');
         }
 
         function openGitHubSettings() {
@@ -5397,12 +6945,17 @@
                     </div>
                     <div class="form-group col-span-12">
                         <label class="form-label">재직 상태</label>
-                        <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; background: #f9f9fa; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #efeff2;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500;">
-                                <input type="radio" name="m-status" value="재직" checked style="accent-color: var(--primary); transform: scale(1.1);"> 재직 중
+                        <div
+                            style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; background: #f9f9fa; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #efeff2;">
+                            <label
+                                style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500;">
+                                <input type="radio" name="m-status" value="재직" checked
+                                    style="accent-color: var(--primary); transform: scale(1.1);"> 재직 중
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500;">
-                                <input type="radio" name="m-status" value="퇴사" style="accent-color: #ff3b30; transform: scale(1.1);"> 퇴사
+                            <label
+                                style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500;">
+                                <input type="radio" name="m-status" value="퇴사"
+                                    style="accent-color: #ff3b30; transform: scale(1.1);"> 퇴사
                             </label>
                         </div>
                     </div>
@@ -5413,6 +6966,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Table Spec Preview Layer -->
+    <div id="ts-preview-layer" style="display:none; z-index:2147483647 !important;"></div>
 </body>
 
 </html>
