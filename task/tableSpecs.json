@@ -22973,7 +22973,9 @@
         "defaultValue": "NULL",
         "note": ""
       }
-    ]
+    ],
+    "x": 2475,
+    "y": 1394
   },
   {
     "id": "cznwe23ln",
@@ -26777,7 +26779,9 @@
         "defaultValue": "",
         "note": ""
       }
-    ]
+    ],
+    "x": 1530,
+    "y": 1568
   },
   {
     "id": "ieppumssx",
