@@ -4701,7 +4701,7 @@
   {
     "id": "7jqmqg7ie",
     "tableName": "CS_INQ_ORD_DTL_INFO",
-    "tableComments": "문의주문내역정보\n1. 집합적 정의\n  - 1:1 문의시 포함한 주문내역 집합\n2. 기능적 정의\n3. 기타",
+    "tableComments": "문의주문내역정보",
     "columns": [
       {
         "id": "eglx3wssn",
