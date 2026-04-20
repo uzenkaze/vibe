@@ -10280,7 +10280,8 @@
         "defaultValue": "N'",
         "note": ""
       }
-    ]
+    ],
+    "isFavorite": true
   },
   {
     "id": "rt98cdpmw",
