@@ -38274,7 +38274,8 @@
         "defaultValue": "",
         "note": ""
       }
-    ]
+    ],
+    "isFavorite": true
   },
   {
     "id": "warbmwiaz",
