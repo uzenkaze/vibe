@@ -19693,7 +19693,8 @@
         "defaultValue": "N'",
         "note": ""
       }
-    ]
+    ],
+    "isFavorite": true
   },
   {
     "id": "xcr65hjqo",
