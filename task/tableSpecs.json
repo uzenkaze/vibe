@@ -2870,7 +2870,7 @@
   {
     "id": "ox3kx38h8",
     "tableName": "CS_FAQ_INQ_TP_MGMT",
-    "tableComments": "고객문의유형코드\n1. 집합적 정의\n  -  BO에서 관리하는 고객 문의 유형 코드의 집합\n2. 기능적 정의\n3. 기타",
+    "tableComments": "고객문의유형코드",
     "columns": [
       {
         "id": "9e04y4uy5",
