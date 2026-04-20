@@ -21739,7 +21739,8 @@
         "defaultValue": "",
         "note": ""
       }
-    ]
+    ],
+    "isFavorite": true
   },
   {
     "id": "jwtla7znj",
