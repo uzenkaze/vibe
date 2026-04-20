@@ -28565,7 +28565,8 @@
         "defaultValue": "",
         "note": ""
       }
-    ]
+    ],
+    "isFavorite": true
   },
   {
     "id": "q1xc30fac",
