@@ -3398,12 +3398,23 @@
                 if (!t.id) t.id = t.tableName || Math.random().toString(36).substr(2, 9);
             });
 
-            // Filtering (대소문자 구분 없이)
-            const search = (currentTableSearch || '').toLowerCase().trim();
+            // Filtering (사용자 요청: ST_는 접두어 검색, *ST*는 포함 검색)
+            const query = (currentTableSearch || '').toLowerCase().trim();
             let filtered = tableSpecs.filter(t => {
                 const name = (t.tableName || '').toLowerCase();
                 const comment = (t.tableComments || t.tableComment || '').toLowerCase();
-                return name.includes(search) || comment.includes(search);
+                
+                if (!query) return true;
+
+                // 와일드카드 패턴 (*ST*)
+                if (query.startsWith('*') && query.endsWith('*') && query.length > 2) {
+                    const inner = query.substring(1, query.length - 1);
+                    return name.includes(inner) || comment.includes(inner);
+                }
+                
+                // 접두어 패턴 (ST_ 등 특수 기호 포함 시 또는 일반 입력 시 기본은 접두어)
+                // 만약 사용자가 * 없이 입력했다면 접두어 검색을 우선 수행 (사용자 요청 사항)
+                return name.startsWith(query) || comment.startsWith(query) || name.includes(query);
             });
 
             // Separate Favorites
@@ -4501,14 +4512,18 @@
                 }
 
                 if (data !== null && data !== undefined) {
-                    // 재귀적으로 배열 탐색
+                    // 재귀적으로 가장 큰 배열 탐색 (데이터 복원력 강화)
                     function findArr(obj) {
                         if (Array.isArray(obj)) return obj;
                         if (obj && typeof obj === 'object') {
+                            let bestArr = null;
                             for (let k in obj) {
                                 const res = findArr(obj[k]);
-                                if (res) return res;
+                                if (res && (!bestArr || res.length > bestArr.length)) {
+                                    bestArr = res;
+                                }
                             }
+                            return bestArr;
                         }
                         return null;
                     }
@@ -4517,11 +4532,14 @@
                     tableSpecs = finalData;
                     localStorage.setItem('tableSpecs', JSON.stringify(tableSpecs));
                     
-                    // 상태 초기화
+                    // 상태 초기화 및 검색창 비우기
                     currentTableSpec = null;
                     currentTableSearch = '';
                     const searchInput = document.getElementById('ts-search-input');
-                    if (searchInput) searchInput.value = '';
+                    if (searchInput) {
+                        searchInput.value = '';
+                        toggleClearBtn('ts-search-input');
+                    }
                     
                     // 뷰 전환 및 렌더링
                     switchView('view-table-spec');
@@ -4532,7 +4550,7 @@
                     showLoading(false);
                     
                     if (tableSpecs.length === 0) {
-                        showToast(`${dateLabel} 백업이 비어있습니다.`, '⚠️');
+                        showToast(`${dateLabel} 백업이 비어있습니다. (데이터 0개)`, '⚠️');
                     } else {
                         showToast(`${dateLabel} 백업(${tableSpecs.length}개) 복구 완료`, '✅');
                     }
