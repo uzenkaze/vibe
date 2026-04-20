@@ -80,6 +80,39 @@
             overflow: hidden;
         }
 
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: fadeIn 0.2s ease;
+        }
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 3.5px solid #e5e5ea;
+            border-top: 3.5px solid #0071e3;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .loading-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            letter-spacing: -0.01em;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .app-wrapper {
             display: flex;
             height: 100vh;
@@ -2870,7 +2903,10 @@
                                 onclick="downloadTableSpecs()">💾 JSON 다운로드</button>
                             <button class="btn-purple"
                                 style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#0071e3; color:#fff;"
-                                onclick="backupTableSpecsToGitHub()">☁️ 서버 백업</button>
+                                onclick="syncTableSpecsFromServer()">🔄 서버 동기화</button>
+                            <button class="btn-purple"
+                                style="font-size:0.9rem; padding:0.6rem 1.2rem; border-radius:2rem; background:#f5f5f7; color:#1d1d1f; border:1px solid #d2d2d7;"
+                                onclick="showBackupHistory()" title="백업 기록 조회">🕒</button>
                             <button class="btn-purple"
                                 style="font-size:0.9rem; padding:0.6rem 1.5rem; border-radius:2rem; background:#ff9500; color:#fff;"
                                 onclick="showERDPrefixSelector()">🖼️ ERD</button>
@@ -2884,8 +2920,11 @@
                         <div class="ts-sidebar-cont"
                             style="width:380px; background:#fff; border-radius:1rem; border:1px solid #e5e5ea; display:flex; flex-direction:column; overflow:hidden;">
                             <div
-                                style="padding:15px; border-bottom:1px solid #3a3a3c; font-weight:800; color:#ffffff; font-size:1.1rem; background:rgba(255,255,255,0.05);">
-                                🗂️ 테이블 목록</div>
+                                style="padding:15px; border-bottom:1px solid #3a3a3c; font-weight:800; color:#ffffff; font-size:1.1rem; background:rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
+                                <span>🗂️ 테이블 목록</span>
+                                <button onclick="scrollToTableListTop()" title="최상위로 이동" 
+                                    style="background:rgba(255,255,255,0.1); border:none; color:#ffffff; cursor:pointer; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.2s; font-size:0.8rem;">▲</button>
+                            </div>
                             <div
                                 style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); background:transparent; display:flex; align-items:center; gap:5px;">
                                 <div class="search-container" style="flex:1;">
@@ -3020,6 +3059,41 @@
 
             </div>
         </main>
+    </div>
+
+    <!-- Sync Conflict Modal -->
+    <div class="modal-overlay" id="ts-sync-modal" style="z-index: 5000;">
+        <div class="modal-content" style="max-width:480px; padding:2.2rem; border-radius:1.8rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+            <div style="text-align:center; margin-bottom:1.5rem;">
+                <div style="font-size:3rem; margin-bottom:1rem;">🔄</div>
+                <h2 style="margin:0; font-size:1.6rem; font-weight:800; color:#1d1d1f;">데이터 동기화 확인</h2>
+                <p style="color:#86868b; margin-top:0.5rem; font-size:0.95rem;">서버와 로컬의 데이터가 서로 다릅니다.<br>어느 쪽 데이터를 유지할까요?</p>
+            </div>
+            
+            <div style="background:#f5f5f7; padding:1.2rem; border-radius:1.2rem; margin-bottom:1.8rem; border:1px solid #e5e5ea;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div style="background:#fff; padding:12px; border-radius:12px; border:1px solid #d2d2d7; text-align:center;">
+                        <div style="color:#86868b; font-weight:700; font-size:0.75rem; margin-bottom:6px; text-transform:uppercase;">💻 로컬 데이터</div>
+                        <div id="sync-local-info" style="font-size:1.05rem; font-weight:800; color:#1d1d1f;">-</div>
+                        <div style="font-size:0.7rem; color:#98989d; margin-top:2px;">현재 브라우저</div>
+                    </div>
+                    <div style="background:#fff; padding:12px; border-radius:12px; border:1px solid #0071e3; text-align:center;">
+                        <div style="color:#0071e3; font-weight:700; font-size:0.75rem; margin-bottom:6px; text-transform:uppercase;">☁️ 서버 데이터</div>
+                        <div id="sync-server-info" style="font-size:1.05rem; font-weight:800; color:#1d1d1f;">-</div>
+                        <div style="font-size:0.7rem; color:#98989d; margin-top:2px;">GitHub 백업</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button onclick="executeSyncAction('download')" 
+                    style="padding:14px; background:#0071e3; color:#fff; border:none; border-radius:14px; font-weight:700; cursor:pointer; font-size:0.95rem; transition:all 0.2s;">서버 데이터 불러오기 (Download)</button>
+                <button onclick="executeSyncAction('upload')" 
+                    style="padding:14px; background:#ffffff; color:#1d1d1f; border:1.5px solid #d2d2d7; border-radius:14px; font-weight:700; cursor:pointer; font-size:0.95rem; transition:all 0.2s;">로컬 데이터를 서버에 반영 (Upload)</button>
+                <button onclick="closeSyncModal()" 
+                    style="padding:12px; background:transparent; border:none; color:#86868b; font-weight:600; cursor:pointer; font-size:0.9rem;">취소</button>
+            </div>
+        </div>
     </div>
 
     <!-- ERD Prefix Selector Modal -->
@@ -3279,16 +3353,58 @@
             renderTableSpecs();
         }
 
+        function scrollToTableListTop() {
+            const listEl = document.getElementById('ts-table-list');
+            if (listEl) {
+                listEl.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
         function renderTableSpecs() {
             const listEl = document.getElementById('ts-table-list');
             if (!listEl) return;
             listEl.innerHTML = '';
 
-            // Filtering
-            let filtered = tableSpecs.filter(t =>
-                (t.tableName || '').toLowerCase().includes(currentTableSearch) ||
-                (t.tableComments || '').toLowerCase().includes(currentTableSearch)
-            );
+            // 데이터 구조 유연성: 재귀적으로 첫 번째 배열 탐색
+            function findFirstArray(obj) {
+                if (Array.isArray(obj)) return obj;
+                if (obj && typeof obj === 'object') {
+                    for (let key in obj) {
+                        const result = findFirstArray(obj[key]);
+                        if (result) return result;
+                    }
+                }
+                return null;
+            }
+
+            if (typeof tableSpecs === 'string') {
+                try { tableSpecs = JSON.parse(tableSpecs); } catch(e) { tableSpecs = []; }
+            }
+
+            if (tableSpecs && !Array.isArray(tableSpecs)) {
+                tableSpecs = findFirstArray(tableSpecs) || [];
+            }
+            if (!Array.isArray(tableSpecs)) tableSpecs = [];
+
+            // 빈 데이터 알림
+            if (tableSpecs.length === 0) {
+                listEl.innerHTML = '<div style="padding:2rem 1rem; text-align:center; color:#86868b; font-size:0.95rem;">저장된 테이블 목록이 없습니다.<br>백업 파일이 비어있을 수 있습니다.</div>';
+                renderTableSpecViewer();
+                return;
+            }
+
+            // 데이터 정규화: ID가 없는 경우 생성
+            tableSpecs.forEach(t => {
+                if (!t.id) t.id = t.tableName || Math.random().toString(36).substr(2, 9);
+            });
+
+            // Filtering (대소문자 구분 없이)
+            const search = (currentTableSearch || '').toLowerCase().trim();
+            let filtered = tableSpecs.filter(t => {
+                const name = (t.tableName || '').toLowerCase();
+                const comment = (t.tableComments || t.tableComment || '').toLowerCase();
+                return name.includes(search) || comment.includes(search);
+            });
 
             // Separate Favorites
             const favorites = filtered.filter(t => t.isFavorite);
@@ -3329,7 +3445,8 @@
         }
 
         function renderTableItem(container, t) {
-            const isActive = currentTableSpec && currentTableSpec.id === t.id;
+            const tid = t.id || t.tableName;
+            const isActive = currentTableSpec && (currentTableSpec.id === tid || currentTableSpec.tableName === t.tableName);
             const bg = isActive ? 'background:#0071e3; color:#fff;' : 'background:transparent; color:#f5f5f7; cursor:pointer;';
 
             const item = document.createElement('div');
@@ -3338,19 +3455,20 @@
 
             item.onclick = (e) => {
                 if (e.target.closest('.ts-fav-btn')) return;
-                selectTableSpec(t.id);
+                selectTableSpec(tid);
             }
             // Data attributes for delegation
-            item.setAttribute('data-ts-id', t.id);
+            item.setAttribute('data-ts-id', tid);
             item.className = 'ts-table-item';
 
             const favClass = t.isFavorite ? 'active' : '';
+            const comments = t.tableComments || t.tableComment || '';
             const commentsColor = isActive ? '#fff' : '#98989d';
 
             item.innerHTML = `
                 <div style="flex:1; line-height:1.4; pointer-events:none;">
                     <div style="display:inline-block; font-size:0.88rem; font-weight:800; font-family:monospace; word-break:break-all; color:inherit;">${t.tableName || 'NEW_TABLE'}</div>
-                    <span style="font-size:0.75rem; font-weight:normal; opacity:0.8; color:${commentsColor}; margin-left:4px;">${t.tableComments ? '(' + t.tableComments + ')' : ''}</span>
+                    <span style="font-size:0.75rem; font-weight:normal; opacity:0.8; color:${commentsColor}; margin-left:4px;">${comments ? '(' + comments + ')' : ''}</span>
                 </div>
                 <button class="ts-fav-btn ${favClass}" style="margin-top:2px; pointer-events:auto;" onclick="toggleTsFavorite('${t.id}', event)">${t.isFavorite ? '★' : '☆'}</button>
             `;
@@ -4188,25 +4306,243 @@
             URL.revokeObjectURL(url);
         }
 
-        async function backupTableSpecsToGitHub() {
-            if (!ghConfig.token || !ghConfig.repo) { showToast('GitHub 설정을 먼저 확인해주세요.', '⚠️'); return; }
-            if (!confirm('현재 테이블 정의서 데이터를 서버(GitHub)에 백업 파일로 저장하시겠습니까?')) return;
 
+
+        let serverTableSpecs = null;
+
+        function showLoading(isVisible, text = '서버와 통신 중입니다...') {
+            const overlay = document.getElementById('global-loading');
+            const textEl = overlay.querySelector('.loading-text');
+            if (textEl) textEl.innerText = text;
+            overlay.style.display = isVisible ? 'flex' : 'none';
+        }
+
+        async function syncTableSpecsFromServer() {
+            if (!ghConfig.token || !ghConfig.repo) { 
+                showToast('GitHub 설정을 먼저 확인해주세요.', '⚠️'); 
+                return; 
+            }
+            
+            showLoading(true, '서버 데이터를 조회하는 중...');
+            try {
+                const mainPath = `task/tableSpecs.json`;
+                serverTableSpecs = await syncWithGitHub('download', mainPath);
+
+                if (!serverTableSpecs) {
+                    showLoading(false);
+                    if (confirm('서버에 데이터가 없습니다. 현재 데이터를 서버에 초기 백업하시겠습니까?')) {
+                        await executeSyncAction('upload');
+                    }
+                    return;
+                }
+
+                const localStr = JSON.stringify(tableSpecs);
+                const serverStr = JSON.stringify(serverTableSpecs);
+                
+                if (localStr === serverStr) {
+                    showLoading(false);
+                    showToast('이미 서버와 최신 상태로 동기화되어 있습니다.', '✅');
+                    return;
+                }
+
+                // 데이터 비교 정보 표시
+                const localSize = new Blob([localStr]).size;
+                const serverSize = new Blob([serverStr]).size;
+                
+                document.getElementById('sync-local-info').innerText = `${tableSpecs.length}개`;
+                document.getElementById('sync-server-info').innerText = `${serverTableSpecs.length}개`;
+                
+                document.getElementById('sync-local-info').title = `크기: ${formatSize(localSize)}`;
+                document.getElementById('sync-server-info').title = `크기: ${formatSize(serverSize)}`;
+                
+                showLoading(false);
+                document.getElementById('ts-sync-modal').style.display = 'flex';
+            } catch (e) {
+                showLoading(false);
+                console.error("Sync Check Error:", e);
+                showToast('동기화 확인 실패: ' + e.message, '❌');
+            }
+        }
+
+        function formatSize(bytes) {
+            return bytes > 1024 ? (bytes / 1024).toFixed(2) + ' KB' : bytes + ' Bytes';
+        }
+
+        function closeSyncModal() {
+            document.getElementById('ts-sync-modal').style.display = 'none';
+        }
+
+        async function executeSyncAction(action) {
+            closeSyncModal();
             const now = new Date();
             const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             const backupPath = `task/backup/table-specs-${dateStr}.json`;
-            const message = `Table Specs Backup: ${dateStr}`;
+            const mainPath = `task/tableSpecs.json`;
 
             try {
-                const success = await uploadToGitHub(backupPath, tableSpecs, message);
-                if (success) {
-                    showToast(`${dateStr} 서버 백업 파일이 생성되었습니다.`, '☁️');
-                } else {
-                    showToast('백업 업로드 중 오류가 발생했습니다.', '❌');
+                if (action === 'download') {
+                    if (serverTableSpecs && Array.isArray(serverTableSpecs)) {
+                        showLoading(true, '데이터를 적용하는 중...');
+                        tableSpecs = serverTableSpecs;
+                        localStorage.setItem('tableSpecs', JSON.stringify(tableSpecs));
+                        currentTableSpec = null;
+                        renderTableSpecs();
+                        renderTableSpecViewer();
+                        showLoading(false);
+                        showToast('서버 데이터를 성공적으로 불러왔습니다.', '✅');
+                    } else {
+                        showToast('불러올 서버 데이터가 유효하지 않습니다.', '⚠️');
+                    }
+                } else if (action === 'upload') {
+                    const jsonStr = JSON.stringify(tableSpecs, null, 2);
+                    const sizeInBytes = new Blob([jsonStr]).size;
+                    const sizeStr = formatSize(sizeInBytes);
+
+                    showLoading(true, '서버에 백업 및 업로드 중...');
+                    const success = await uploadToGitHub(backupPath, tableSpecs, `Sync Backup: ${dateStr}`);
+                    if (success) {
+                        // 메인 파일 업데이트
+                        await uploadToGitHub(mainPath, tableSpecs, `Master Sync: ${dateStr}`);
+                        
+                        // 업로드 성공 시 로컬 상태가 최신이므로 별도 다운로드 검증 없이 유지
+                        localStorage.setItem('tableSpecs', JSON.stringify(tableSpecs));
+                        renderTableSpecs();
+                        renderTableSpecViewer();
+                        
+                        showLoading(false);
+                        showToast(`서버 백업 완료: ${dateStr} (${sizeStr})`, '✅');
+                    } else {
+                        showLoading(false);
+                        showToast('서버 업로드 중 오류가 발생했습니다.', '❌');
+                    }
                 }
             } catch (e) {
-                console.error("Table Backup Error:", e);
-                showToast('백업 실패: ' + e.message, '❌');
+                showLoading(false);
+                console.error("Sync Execute Error:", e);
+                showToast('동기화 작업 실패: ' + e.message, '❌');
+            }
+        }
+
+        async function showBackupHistory() {
+            if (!ghConfig.token || !ghConfig.repo) { 
+                showToast('GitHub 설정을 먼저 확인해주세요.', '⚠️'); 
+                return; 
+            }
+            
+            showLoading(true, '백업 목록을 불러오는 중...');
+            try {
+                const url = `https://api.github.com/repos/${ghConfig.repo}/contents/task/backup?ref=${ghConfig.branch}`;
+                const headers = {
+                    'Authorization': `token ${ghConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                };
+                
+                const res = await fetch(url, { headers });
+                if (!res.ok) throw new Error('백업 목록을 가져오지 못했습니다.');
+                
+                const files = await res.json();
+                const backups = files.filter(f => f.name.startsWith('table-specs-') && f.name.endsWith('.json'))
+                                     .sort((a, b) => b.name.localeCompare(a.name));
+                
+                renderBackupList(backups);
+                showLoading(false);
+                document.getElementById('ts-history-modal').style.display = 'flex';
+            } catch (e) {
+                showLoading(false);
+                console.error("Fetch History Error:", e);
+                showToast('목록 조회 실패: ' + e.message, '❌');
+            }
+        }
+
+        function renderBackupList(backups) {
+            const container = document.getElementById('backup-list-container');
+            if (backups.length === 0) {
+                container.innerHTML = '<div style="padding:2rem; text-align:center; color:#86868b;">저장된 백업이 없습니다.</div>';
+                return;
+            }
+            
+            container.innerHTML = backups.map(f => {
+                const dateMatch = f.name.match(/\d{4}-\d{2}-\d{2}/);
+                const dateStr = dateMatch ? dateMatch[0] : f.name;
+                const sizeStr = formatSize(f.size);
+                
+                return `
+                    <div class="nav-item" onclick="loadSpecificBackup('${f.path}', '${dateStr}')" 
+                         style="justify-content:space-between; background:#f9f9fb; border:1px solid #efeff2; padding:12px 16px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.2rem;">📄</span>
+                            <div>
+                                <div style="font-weight:700; color:#1d1d1f;">${dateStr} 백업</div>
+                                <div style="font-size:0.75rem; color:#86868b;">${f.name}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:600; color:#0071e3; font-size:0.85rem;">${sizeStr}</div>
+                            <div style="font-size:0.7rem; color:#98989d;">복구하기 &gt;</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function closeBackupHistory() {
+            document.getElementById('ts-history-modal').style.display = 'none';
+        }
+
+        async function loadSpecificBackup(path, dateLabel) {
+            if (!confirm(`${dateLabel} 시점의 데이터를 서버에서 불러와 현재 화면에 덮어쓰시겠습니까?`)) return;
+            
+            showLoading(true, `${dateLabel} 데이터를 불러오는 중...`);
+            try {
+                let data = await syncWithGitHub('download', path);
+                
+                if (typeof data === 'string') {
+                    try { data = JSON.parse(data); } catch(e) {}
+                }
+
+                if (data !== null && data !== undefined) {
+                    // 재귀적으로 배열 탐색
+                    function findArr(obj) {
+                        if (Array.isArray(obj)) return obj;
+                        if (obj && typeof obj === 'object') {
+                            for (let k in obj) {
+                                const res = findArr(obj[k]);
+                                if (res) return res;
+                            }
+                        }
+                        return null;
+                    }
+                    
+                    const finalData = findArr(data) || [];
+                    tableSpecs = finalData;
+                    localStorage.setItem('tableSpecs', JSON.stringify(tableSpecs));
+                    
+                    // 상태 초기화
+                    currentTableSpec = null;
+                    currentTableSearch = '';
+                    const searchInput = document.getElementById('ts-search-input');
+                    if (searchInput) searchInput.value = '';
+                    
+                    // 뷰 전환 및 렌더링
+                    switchView('view-table-spec');
+                    renderTableSpecs();
+                    renderTableSpecViewer();
+                    
+                    closeBackupHistory();
+                    showLoading(false);
+                    
+                    if (tableSpecs.length === 0) {
+                        showToast(`${dateLabel} 백업이 비어있습니다.`, '⚠️');
+                    } else {
+                        showToast(`${dateLabel} 백업(${tableSpecs.length}개) 복구 완료`, '✅');
+                    }
+                } else {
+                    throw new Error('데이터를 가져오지 못했습니다.');
+                }
+            } catch (e) {
+                showLoading(false);
+                console.error("Restore Error:", e);
+                showToast('복구 실패: ' + e.message, '❌');
             }
         }
 
@@ -6696,14 +7032,38 @@
                 if (action === 'download') {
                     const res = await fetch(url, { headers });
                     if (res.status === 404) return null;
+                    if (!res.ok) {
+                        const errJson = await res.json().catch(() => ({}));
+                        throw new Error(errJson.message || `HTTP Error ${res.status}`);
+                    }
                     const json = await res.json();
-                    const content = decodeURIComponent(escape(atob(json.content)));
+                    if (Array.isArray(json)) throw new Error('요청한 경로가 파일이 아닌 디렉토리입니다.');
+                    if (json.content === undefined) {
+                        if (json.size > 0) throw new Error('파일이 너무 커서(1MB+) 직접 가져올 수 없습니다.');
+                        throw new Error('파일 내용(content) 필드가 응답에 없습니다.');
+                    }
+                    
+                    // Base64 디코딩 시 줄바꿈 등 공백 제거
+                    const base64 = json.content.replace(/\s/g, '');
+                    if (!base64) return []; 
+                    
+                    // 현대적인 UTF-8 디코딩 방식 (TextDecoder)
+                    const binString = atob(base64);
+                    const bytes = new Uint8Array(binString.length);
+                    for (let i = 0; i < binString.length; i++) {
+                        bytes[i] = binString.charCodeAt(i);
+                    }
+                    const content = new TextDecoder().decode(bytes);
                     return JSON.parse(content);
                 } else {
                     const success = await uploadToGitHub(filePath, dataToUpload, `Update data: ${filePath}`);
                     if (success) showSyncToast();
+                    return success;
                 }
-            } catch (e) { console.error("GitHub Sync Error:", e); }
+            } catch (e) { 
+                console.error("GitHub Sync Error:", e); 
+                throw e;
+            }
         }
 
         function showToast(msg, icon = 'ℹ️') {
@@ -6789,9 +7149,14 @@
                     sha = checkJson.sha;
                 }
 
+                const jsonStr = JSON.stringify(data, null, 2);
+                const bytes = new TextEncoder().encode(jsonStr);
+                const binString = Array.from(bytes, byte => String.fromCharCode(byte)).join("");
+                const base64 = btoa(binString);
+
                 const body = {
                     message: message,
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+                    content: base64,
                     branch: ghConfig.branch
                 };
                 if (sha) body.sha = sha;
@@ -6969,6 +7334,28 @@
 
     <!-- Table Spec Preview Layer -->
     <div id="ts-preview-layer" style="display:none; z-index:2147483647 !important;"></div>
+    <!-- Sync History Modal -->
+    <div class="modal-overlay" id="ts-history-modal" style="z-index: 5100;">
+        <div class="modal-content" style="max-width:500px; padding:2rem; border-radius:1.8rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="margin:0; font-size:1.4rem; font-weight:800;">🕒 백업 기록 조회</h2>
+                <button class="modal-close" onclick="closeBackupHistory()" style="position:static; font-size:1.8rem;">&times;</button>
+            </div>
+            <p style="color:#86868b; font-size:0.9rem; margin-bottom:1.2rem;">복구할 시점의 백업 파일을 선택해 주세요.</p>
+            <div id="backup-list-container" style="max-height:400px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:5px;">
+                <!-- 백업 리스트 아이템 -->
+            </div>
+            <div style="margin-top:1.5rem; text-align:center;">
+                <button onclick="closeBackupHistory()" style="padding:10px 20px; background:#f5f5f7; border:none; border-radius:10px; font-weight:600; cursor:pointer;">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="global-loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">서버와 통신 중입니다...</div>
+    </div>
 </body>
 
 </html>
