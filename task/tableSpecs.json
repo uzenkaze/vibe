@@ -504,7 +504,7 @@
   {
     "id": "5vuuvohj9",
     "tableName": "CS_CUST_ACSH_SGT_INFO",
-    "tableComments": "고객계산서신청정보\n1.집합적 정의\n  - 회원이 요청한 혹은 회원의 요구사항을 처리한 작업이력\n2. 기능적 정의\n  - 회원요청이력(회원의 영수증/세금계산서/카달로그/온라인 영수증출력)을 정보로 제공",
+    "tableComments": "고객계산서신청정보",
     "columns": [
       {
         "id": "3ke13kwnf",
