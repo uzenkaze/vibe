@@ -6601,7 +6601,7 @@
   {
     "id": "a3mk2t4nc",
     "tableName": "CS_VOC_CLSS_CD",
-    "tableComments": "VOC분류코드\n1. 집합적 정의\n  - 콜센터에서 관리하는 고객 상담유형 코드의 집합\n2. 기능적 정의\n3. 기타",
+    "tableComments": "VOC분류코드",
     "columns": [
       {
         "id": "5rsr51xhp",
