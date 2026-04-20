@@ -1112,7 +1112,7 @@
   {
     "id": "k8u499bc9",
     "tableName": "CS_CUST_BB_INFO",
-    "tableComments": "고객게시판정보\n1. 집합적 정의\n  - 1:1 문의 내용의 집합\n2. 기능적 정의\n3. 기타",
+    "tableComments": "고객게시판정보",
     "columns": [
       {
         "id": "2fx6143hi",
