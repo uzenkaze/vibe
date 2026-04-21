@@ -31448,7 +31448,8 @@
         "defaultValue": "",
         "note": ""
       }
-    ]
+    ],
+    "isFavorite": true
   },
   {
     "id": "30a482cdl",
