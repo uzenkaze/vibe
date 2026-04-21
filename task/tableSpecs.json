@@ -97039,45 +97039,5 @@
         "note": ""
       }
     ]
-  },
-  {
-    "id": "j88uxcjc8",
-    "tableName": "STMT_AUDIT_OPTION_MAP",
-    "tableComments": "Description table for auditing option type codes.  Maps auditing option type numbers to type names",
-    "columns": [
-      {
-        "id": "alpghcmci",
-        "seq": 1,
-        "columnName": "OPTION#",
-        "comments": "Numeric auditing option type code",
-        "dataType": "NUMBER()",
-        "pk": "",
-        "nullable": "N",
-        "defaultValue": "",
-        "note": ""
-      },
-      {
-        "id": "9whg36gs4",
-        "seq": 2,
-        "columnName": "NAME",
-        "comments": "Name of the type of auditing option",
-        "dataType": "VARCHAR2(40)",
-        "pk": "",
-        "nullable": "N",
-        "defaultValue": "",
-        "note": ""
-      },
-      {
-        "id": "lmoqpdqew",
-        "seq": 3,
-        "columnName": "PROPERTY",
-        "comments": "Property flag of auditing option",
-        "dataType": "NUMBER()",
-        "pk": "",
-        "nullable": "N",
-        "defaultValue": "",
-        "note": ""
-      }
-    ]
   }
 ]
