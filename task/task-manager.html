@@ -3085,7 +3085,6 @@
                         </div>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
                             <button class="btn-ts btn-secondary" onclick="openTableBulkModal()">📥 일괄 등록</button>
-                            <button class="btn-ts btn-secondary" onclick="downloadTableSpecs()">💾 다운로드</button>
                             <button class="btn-ts btn-primary" onclick="syncTableSpecsFromServer()">🔄 서버 동기화</button>
                             <button class="btn-ts btn-secondary" style="padding: 10px 14px;" onclick="showBackupHistory()" title="백업 기록">🕒</button>
                             <button class="btn-ts btn-warning" onclick="showERDPrefixSelector()">🖼️ ERD 시각화</button>
@@ -3135,7 +3134,7 @@
                                 <div style="color:#6b6b6b; font-size:1rem;">목록에서 테이블을 클릭하여 상세 내용을 수정하거나<br>우상단의 버튼으로 새로운 테이블을 추가하세요.</div>
                             </div>
                             <div id="ts-main-view" style="display:none; flex-direction:column; height:100%;">
-                                <div style="padding:25px; border-bottom:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:20px; background:rgba(0,0,0,0.02);">
+                                <div style="padding:25px; border-bottom:1px solid rgba(0,0,0,0.06); display:flex; flex-direction:column; gap:20px; background:#f9f9fb;">
                                     <div style="display:flex; gap:20px;">
                                         <div style="flex:1;">
                                             <label style="font-size:0.75rem; color:#6b6b6b; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Physical Name (물리명)</label>
@@ -3438,12 +3437,12 @@
         }
 
         let menus = [
-            { id: 'dashboard', name: '대시보드', icon: '📊', viewId: 'view-dashboard' },
-            { id: 'task', name: '일감관리', icon: '📁', viewId: 'view-task' },
-            { id: 'manpower', name: 'Manpower', icon: '👥', viewId: 'view-manpower' },
-            { id: 'table_spec', name: '테이블 정의서', icon: '🗄️', viewId: 'view-table-spec' },
-            { id: 'news', name: '실시간 뉴스', icon: '📰', viewId: 'view-news' },
-            { id: 'settings', name: '설정', icon: '⚙️', viewId: 'view-settings' }
+            { id: 'dashboard', name: '대시보드', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`, viewId: 'view-dashboard' },
+            { id: 'task', name: '일감관리', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>`, viewId: 'view-task' },
+            { id: 'manpower', name: 'Manpower', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`, viewId: 'view-manpower' },
+            { id: 'table_spec', name: '테이블 정의서', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>`, viewId: 'view-table-spec' },
+            { id: 'news', name: '실시간 뉴스', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path><path d="M10 6h8v4h-8V6Z"></path></svg>`, viewId: 'view-news' },
+            { id: 'settings', name: '설정', icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"></path></svg>`, viewId: 'view-settings' }
         ];
 
         async function init() {
@@ -3716,13 +3715,13 @@
                 
                 const header = document.createElement('div');
                 header.className = 'ts-group-header';
-                header.style.cssText = `cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:all 0.2s; padding:12px 20px; background:linear-gradient(90deg, rgba(255, 204, 0, 0.1), transparent); border-left: 3px solid #ffcc00;`;
+                header.style.cssText = `cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:all 0.2s; padding:12px 18px; margin-bottom: 8px; background:#fffdf0; border:1px solid #ffeeba; border-radius:12px; box-shadow:0 2px 4px rgba(255,204,0,0.05);`;
                 
                 header.innerHTML = `
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:0.8rem; color:#ffcc00; transition:transform 0.3s; transform:rotate(${isCollapsed ? '-90deg' : '0deg'});">▼</span>
-                        <span style="letter-spacing:0.5px; color:#ffcc00; font-weight:900;">⭐ FAVORITES</span>
-                        <span style="font-size:0.75rem; color:#ffcc00; opacity:0.7; font-weight:normal; margin-left:5px;">(${favorites.length})</span>
+                        <span style="font-size:0.8rem; color:#d49b00; transition:transform 0.3s; transform:rotate(${isCollapsed ? '-90deg' : '0deg'});">▼</span>
+                        <span style="letter-spacing:0.5px; color:#d49b00; font-weight:900;">⭐ FAVORITES</span>
+                        <span style="font-size:0.75rem; color:#d49b00; opacity:0.8; font-weight:700; margin-left:5px;">(${favorites.length})</span>
                     </div>
                 `;
                 
@@ -3739,8 +3738,8 @@
                 // 구분선
                 const divider = document.createElement('div');
                 divider.style.height = '1px';
-                divider.style.background = 'rgba(255,255,255,0.05)';
-                divider.style.margin = '10px 0';
+                divider.style.background = 'transparent';
+                divider.style.margin = '12px 0';
                 listEl.appendChild(divider);
             }
 
@@ -3751,13 +3750,13 @@
                 // Render Group Header
                 const header = document.createElement('div');
                 header.className = 'ts-group-header';
-                header.style.cssText = `cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:all 0.2s; padding:12px 20px; background:linear-gradient(90deg, rgba(255,255,255,0.05), transparent);`;
+                header.style.cssText = `cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:all 0.2s; padding:12px 18px; margin: 12px 0 6px 0; background:#f5f5f7; border-radius:10px; color:#1d1d1f; border:1px solid rgba(0,0,0,0.03);`;
                 
                 header.innerHTML = `
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:0.8rem; color:#40a9ff; opacity:0.8; transition:transform 0.3s; transform:rotate(${isCollapsed ? '-90deg' : '0deg'});">▼</span>
-                        <span style="letter-spacing:0.5px;">${key}</span>
-                        <span style="font-size:0.75rem; color:#86868b; font-weight:normal; margin-left:5px;">(${groups[key].length})</span>
+                        <span style="font-size:0.8rem; color:#0071e3; transition:transform 0.3s; transform:rotate(${isCollapsed ? '-90deg' : '0deg'});">▼</span>
+                        <span style="letter-spacing:0.5px; font-weight:800;">${key}</span>
+                        <span style="font-size:0.75rem; color:#86868b; font-weight:600; margin-left:5px;">(${groups[key].length})</span>
                     </div>
                 `;
                 
@@ -3766,8 +3765,8 @@
                     renderTableSpecs();
                 };
                 
-                header.onmouseenter = () => header.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.08), transparent)';
-                header.onmouseleave = () => header.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.05), transparent)';
+                header.onmouseenter = () => header.style.background = '#e5e5ea';
+                header.onmouseleave = () => header.style.background = '#f5f5f7';
                 
                 listEl.appendChild(header);
                 
@@ -3972,17 +3971,22 @@
 
             const previewEl = getOrCreatePreviewLayer();
 
-            // 프리뷰 레이어 스타일 초기화 (라이트 모드 강제)
+            // 프리뷰 레이어 스타일 초기화 (라이트 모드 강제, 화면 정중앙 배치)
             previewEl.classList.remove('dark');
             previewEl.style.cssText = `
                 display: flex !important;
                 visibility: visible !important;
                 opacity: 1 !important;
                 position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
                 z-index: 2147483647 !important;
                 pointer-events: auto !important;
                 background: rgba(255, 255, 255, 0.98) !important;
                 color: #1d1d1f !important;
+                border-radius: 24px !important;
+                box-shadow: 0 40px 100px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05) !important;
             `;
 
             // 전체 컬럼 표시 로직
@@ -4023,32 +4027,20 @@
                 </div>
                 <div class="ts-preview-table-container ts-preview-body">
                     <table class="ts-preview-table">
-                        <thead style="position:sticky; top:0; z-index:1;">
-                            <tr><th style="width:30%">컬럼명</th><th style="width:35%">논리명(설명)</th><th style="width:25%">타입</th><th style="width:10%">PK</th></tr>
+                        <thead style="position:sticky; top:0; z-index:10; background:#f9f9fb;">
+                            <tr>
+                                <th style="width:30%; padding:12px 15px; background:#f9f9fb; border-bottom:2px solid rgba(0,0,0,0.05);">컬럼명</th>
+                                <th style="width:35%; padding:12px 15px; background:#f9f9fb; border-bottom:2px solid rgba(0,0,0,0.05);">논리명(설명)</th>
+                                <th style="width:25%; padding:12px 15px; background:#f9f9fb; border-bottom:2px solid rgba(0,0,0,0.05);">타입</th>
+                                <th style="width:10%; padding:12px 15px; background:#f9f9fb; border-bottom:2px solid rgba(0,0,0,0.05); text-align:center;">PK</th>
+                            </tr>
                         </thead>
                         <tbody>${rowsHtml || '<tr><td colspan="4" style="text-align:center; padding:30px; color:#c7c7cc;">등록된 컬럼이 없습니다.</td></tr>'}</tbody>
                     </table>
                 </div>
             `;
 
-            // Position calculation
-            const rect = el.getBoundingClientRect();
-            let top = rect.top;
-            let left = rect.right + 15;
-
-            const previewWidth = 700;
-            const previewHeight = 500;
-
-            if (left + previewWidth > window.innerWidth) {
-                left = rect.left - previewWidth - 15;
-            }
-            if (left < 10) left = 10;
-            if (top + previewHeight > window.innerHeight) {
-                top = Math.max(10, window.innerHeight - previewHeight - 20);
-            }
-
-            previewEl.style.top = top + 'px';
-            previewEl.style.left = left + 'px';
+            // (위치 계산 로직은 cssText의 transform: translate(-50%, -50%)로 대체되어 삭제됨)
         }
 
         function filterPreviewRows(query) {
@@ -4601,6 +4593,7 @@
 
         function selectTableSpec(id) {
             currentTableSpec = tableSpecs.find(t => t.id === id);
+            if (typeof hideTablePreview === 'function') hideTablePreview();
             renderTableSpecs();
         }
 
@@ -4747,24 +4740,6 @@
                 }
             }
             if (notify) showToast('저장되었습니다.', '✅');
-        }
-
-        function downloadTableSpecs() {
-            if (!tableSpecs || tableSpecs.length === 0) {
-                showToast('다운로드할 데이터가 없습니다.', '⚠️');
-                return;
-            }
-            const dataStr = JSON.stringify(tableSpecs, null, 4);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const dateStr = new Date().toISOString().split('T')[0];
-            a.href = url;
-            a.download = `table-specs-backup-${dateStr}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         }
 
 
@@ -4949,35 +4924,35 @@
             if (masterExists) {
                 html += `
                     <div style="margin-bottom:25px;">
-                        <div style="font-size:0.8rem; font-weight:800; color:#40a9ff; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <div style="font-size:0.8rem; font-weight:800; color:#0071e3; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
                             <span style="font-size:1.1rem;">🌐</span> Live Server Master (현재 활성 데이터)
                         </div>
-                        <div style="background:rgba(0,122,255,0.1); border:1px solid rgba(0,122,255,0.2); border-radius:1.5rem; padding:20px; display:flex; justify-content:space-between; align-items:center; position:relative; overflow:hidden;">
-                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#007aff;"></div>
+                        <div style="background:rgba(0, 113, 227, 0.05); border:1px solid rgba(0, 113, 227, 0.15); border-radius:1.5rem; padding:20px; display:flex; justify-content:space-between; align-items:center; position:relative; overflow:hidden;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#0071e3;"></div>
                             <div>
-                                <div style="font-weight:800; color:#ffffff; font-size:1.1rem;">tableSpecs.json</div>
-                                <div style="font-size:0.85rem; color:#a2a2a6; margin-top:6px; line-height:1.5;">현재 이 파일에서 실시간으로 데이터를 불러오고 있습니다.</div>
+                                <div style="font-weight:800; color:var(--text-main); font-size:1.1rem;">tableSpecs.json</div>
+                                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:6px; line-height:1.5;">현재 이 파일에서 실시간으로 데이터를 불러오고 있습니다.</div>
                             </div>
-                            <div style="background:#007aff; color:#fff; font-size:0.75rem; font-weight:900; padding:5px 12px; border-radius:2rem; box-shadow:0 0 15px rgba(0,122,255,0.4);">ACTIVE</div>
+                            <div style="background:#0071e3; color:#fff; font-size:0.75rem; font-weight:900; padding:5px 12px; border-radius:2rem; box-shadow:0 2px 8px rgba(0, 113, 227, 0.3);">ACTIVE</div>
                         </div>
                     </div>
-                    <div style="height:1px; background:rgba(255,255,255,0.08); margin-bottom:25px; margin-top:5px;"></div>
+                    <div style="height:1px; background:rgba(0,0,0,0.06); margin-bottom:25px; margin-top:5px;"></div>
                 `;
             }
 
             // 2. 백업 스냅샷 헤더
             html += `
-                <div style="font-size:0.8rem; font-weight:800; color:#aeaeb2; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
+                <div style="font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
                     Backup Snapshots (과거 시점 기록)
                 </div>
             `;
 
             if (backups.length === 0) {
                 html += `
-                    <div style="padding:45px 25px; text-align:center; background:rgba(255,255,255,0.02); border-radius:1.8rem; border:1px dashed rgba(255,255,255,0.15);">
-                        <div style="font-size:3rem; margin-bottom:20px; filter:drop-shadow(0 0 10px rgba(255,255,255,0.1));">📂</div>
-                        <div style="font-weight:800; color:#ffffff; margin-bottom:10px; font-size:1.2rem;">백업 스냅샷이 존재하지 않습니다.</div>
-                        <div style="font-size:0.9rem; color:#86868b; line-height:1.6;">
+                    <div style="padding:45px 25px; text-align:center; background:var(--bg-card); border-radius:1.8rem; border:1px dashed rgba(0,0,0,0.15);">
+                        <div style="font-size:3rem; margin-bottom:20px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.05));">📂</div>
+                        <div style="font-weight:800; color:var(--text-main); margin-bottom:10px; font-size:1.2rem;">백업 스냅샷이 존재하지 않습니다.</div>
+                        <div style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">
                             사용자가 '저장' 또는 '동기화'를 실행할 때 백업본이 자동 생성됩니다.<br>
                             현재는 서버의 <b>마스터 파일만 존재</b>하는 상태입니다.
                         </div>
@@ -4994,19 +4969,19 @@
                     
                     html += `
                         <div class="ts-table-item" onclick="loadSpecificBackup('${f.path}', '${dateStr}')" 
-                             style="justify-content:space-between; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:1.5rem; padding:18px 22px; cursor:pointer; transition:0.3s; display:flex; align-items:center; gap:15px; margin-bottom:8px;"
-                             onmouseenter="this.style.background='rgba(255,255,255,0.07)'; this.style.borderColor='rgba(255,255,255,0.15)';" onmouseleave="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)'">
+                             style="justify-content:space-between; background:var(--bg-card); border:1px solid rgba(0,0,0,0.06); border-radius:1.5rem; padding:18px 22px; cursor:pointer; transition:0.3s; display:flex; align-items:center; gap:15px; margin-bottom:8px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);"
+                             onmouseenter="this.style.background='#f9f9fb'; this.style.borderColor='rgba(0,0,0,0.1)';" onmouseleave="this.style.background='var(--bg-card)'; this.style.borderColor='rgba(0,0,0,0.06)'">
                             <div style="display:flex; align-items:center; gap:15px; flex:1; overflow:hidden;">
-                                <div style="font-size:1.6rem; background:rgba(255,255,255,0.05); width:50px; height:50px; display:flex; align-items:center; justify-content:center; border-radius:1rem;">📄</div>
+                                <div style="font-size:1.6rem; background:rgba(0,0,0,0.03); width:50px; height:50px; display:flex; align-items:center; justify-content:center; border-radius:1rem;">📄</div>
                                 <div style="overflow:hidden;">
-                                    <div style="font-weight:800; color:#ffffff; font-size:1rem; margin-bottom:4px;">${dateStr} 백업</div>
-                                    <div style="font-size:0.75rem; color:#86868b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.name}</div>
+                                    <div style="font-weight:800; color:var(--text-main); font-size:1rem; margin-bottom:4px;">${dateStr} 백업</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.name}</div>
                                 </div>
                             </div>
                             <div style="display:flex; align-items:center; gap:15px; flex-shrink:0;">
                                 <div style="text-align:right;">
-                                    <div style="font-weight:800; color:#40a9ff; font-size:0.9rem;">${sizeStr}</div>
-                                    <div style="font-size:0.7rem; color:#86868b; font-weight:600;">RESTORE &gt;</div>
+                                    <div style="font-weight:800; color:#0071e3; font-size:0.9rem;">${sizeStr}</div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">RESTORE &gt;</div>
                                 </div>
                                 <button onclick="event.stopPropagation(); deleteSpecificBackup('${f.path}', '${f.sha}', '${dateStr}')" 
                                         style="background:rgba(255,69,58,0.1); color:#ff453a; border:1px solid rgba(255,69,58,0.2); padding:6px 14px; border-radius:1rem; font-size:0.8rem; font-weight:800; cursor:pointer; transition:0.2s;"
@@ -7930,19 +7905,19 @@
 
     <!-- Table Spec Preview Layer -->
     <div id="ts-preview-layer" style="display:none; z-index:2147483647 !important;"></div>
-    <!-- Sync History Modal (Premium Dark) -->
-    <div class="modal-overlay" id="ts-history-modal" style="z-index: 5100; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px);">
-        <div class="modal-content" style="max-width:550px; padding:2.5rem; background:#1c1c1e; border:1px solid rgba(255,255,255,0.1); border-radius:2.5rem; box-shadow: 0 30px 60px rgba(0,0,0,0.5);">
+    <!-- Sync History Modal (Premium Light) -->
+    <div class="modal-overlay" id="ts-history-modal" style="z-index: 5100; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(15px);">
+        <div class="modal-content" style="max-width:550px; padding:2.5rem; background:#ffffff; border:none; border-radius:32px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                <h2 style="margin:0; font-size:1.6rem; font-weight:800; color:#ffffff; letter-spacing:-0.03em;">🕒 백업 기록 조회</h2>
-                <button onclick="closeBackupHistory()" style="background:rgba(255,255,255,0.05); border:none; color:#ffffff; font-size:1.5rem; width:40px; height:40px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.1)'" onmouseleave="this.style.background='rgba(255,255,255,0.05)'">&times;</button>
+                <h2 style="margin:0; font-size:1.6rem; font-weight:800; color:var(--primary); letter-spacing:-0.03em;">🕒 백업 기록 조회</h2>
+                <button class="modal-close" onclick="closeBackupHistory()" style="background:#f2f2f7; border:none; color:var(--primary); font-size:1.5rem; width:40px; height:40px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;" onmouseenter="this.style.background='#e5e5ea'" onmouseleave="this.style.background='#f2f2f7'">&times;</button>
             </div>
-            <p style="color:#aeaeb2; font-size:0.95rem; margin-bottom:1.5rem; font-weight:500;">서버에 저장된 마스터 데이터 및 과거 백업 기록입니다.</p>
-            <div id="backup-list-container" style="max-height:500px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding-right:8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;">
+            <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1.5rem; font-weight:500;">서버에 저장된 마스터 데이터 및 과거 백업 기록입니다.</p>
+            <div id="backup-list-container" style="max-height:500px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding-right:8px; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.1) transparent;">
                 <!-- 백업 리스트 아이템이 여기에 렌더링됨 -->
             </div>
             <div style="margin-top:2rem; text-align:center;">
-                <button onclick="closeBackupHistory()" style="padding:12px 35px; background:rgba(255,255,255,0.08); color:#ffffff; border:1px solid rgba(255,255,255,0.1); border-radius:2rem; font-weight:700; cursor:pointer; transition:0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.12)'" onmouseleave="this.style.background='rgba(255,255,255,0.08)'">닫기</button>
+                <button onclick="closeBackupHistory()" style="padding:12px 35px; background:var(--primary); color:#ffffff; border:none; border-radius:50px; font-weight:700; cursor:pointer; transition:0.2s;" onmouseenter="this.style.opacity='0.8'" onmouseleave="this.style.opacity='1'">닫기</button>
             </div>
         </div>
     </div>
