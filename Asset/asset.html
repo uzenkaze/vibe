@@ -44,12 +44,12 @@
             --scrollbar-track: transparent;
 
             /* Leo Natsume Style Variables */
-            --bg-color: #F9F9F9;
+            --bg-color: #FFFFFF;
             --glass-bg: #FFFFFF;
             --glass-border: #E5E5E5;
             --text-primary: #1C1D20;
             --text-secondary: #7F7F7F;
-            --accent-blue: #1C1D20; /* 강렬한 블랙톤으로 통일 */
+            --accent-blue: #5D6BF8; /* 강렬한 블랙톤으로 통일 */
             --accent-green: #1C1D20;
             --accent-purple: #1C1D20;
             --accent-red: #FF3B30; /* 포인트 레드 */
@@ -82,7 +82,7 @@
 
         ::-webkit-scrollbar-track {
             background: var(--scrollbar-track);
-            border-radius: 10px;
+            border-radius: 14px;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -232,7 +232,7 @@
         }
 
         .card-icon {
-            font-size: 2rem;
+            font-size: 2.5rem; letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1405,6 +1405,239 @@
                 white-space: nowrap !important;
             }
         }
+    
+        /* Landing Page Styles */
+        .landing-bg-circle {
+            position: absolute;
+            width: 120vw;
+            height: 120vw;
+            border-radius: 50%;
+            background: #F4F5FB;
+            top: -60vw;
+            left: -10vw;
+            z-index: -1;
+        }
+        .landing-bg-circle-small {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            border-radius: 50%;
+            background: #F4F5FB;
+            bottom: 10vw;
+            left: -20vw;
+            z-index: -1;
+        }
+        .landing-page {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            color: #1C1D20;
+        }
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 5%;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .landing-nav .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .landing-nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .landing-nav ul li a {
+            text-decoration: none;
+            color: #1C1D20;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .landing-nav ul li a:hover {
+            color: var(--accent-blue);
+        }
+        .btn-connect {
+            background-color: var(--accent-blue);
+            color: #FFFFFF;
+            padding: 0.75rem 2rem;
+            border-radius: 30px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .btn-connect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(93, 107, 248, 0.4);
+        }
+        .hero-section {
+            text-align: center;
+            padding: 5rem 5% 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #555;
+            margin-bottom: 2.5rem;
+            font-weight: 600;
+        }
+        .hero-btn {
+            background-color: #2D3A8C; /* Deep blue from ref */
+            color: #FFFFFF;
+            padding: 1rem 3rem;
+            border-radius: 40px;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
+        }
+        .hero-btn:hover {
+            background-color: #1C2459;
+        }
+        .hero-img {
+            margin-top: 3rem;
+            width: 100%;
+            max-width: 1000px;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .features-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8rem 10% 5rem;
+            gap: 4rem;
+        }
+        .features-text {
+            flex: 1;
+        }
+        .features-text h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #444;
+        }
+        .features-list li::before {
+            content: '✓';
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            background-color: #FFB347; /* Yellow check bg */
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+        }
+        .features-img {
+            flex: 1;
+            text-align: right;
+        }
+        .features-img img {
+            max-width: 100%;
+        }
+
+    
+        /* New Login Screen Styles */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .login-card {
+            background: #FFFFFF;
+            padding: 4rem 3.5rem;
+            border-radius: 28px;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            text-align: center;
+            border: 1px solid rgba(229, 229, 229, 0.5);
+        }
+        .login-card h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            color: #1C1D20;
+        }
+        .login-input input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #E5E5E5;
+            border-radius: 10px;
+            font-size: 1rem;
+            background-color: #F9F9F9;
+            transition: border-color 0.3s;
+        }
+        .login-input input:focus {
+            outline: none;
+            border-color: #5D6BF8;
+            background-color: #FFFFFF;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: #5D6BF8;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(93, 107, 248, 0.4);
+        }
+
     </style>
     <!-- ✅ 로그인 플래시(FOUC) 방지: DOM 렌더링 전에 세션 확인 후 화면 즉시 결정 -->
     <script>
@@ -1413,13 +1646,70 @@
                 // 이미 로그인 상태: 로그인 화면 미리 숨김 (JS 실행 전 깜빡임 완전 차단)
                 document.documentElement.style.setProperty('--login-flash-display', 'none');
             } else {
-                document.documentElement.style.setProperty('--login-flash-display', 'flex');
+                document.documentElement.style.setProperty('--login-flash-display', 'none');
             }
         })();
     </script>
 </head>
 
-<body>
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
+                document.getElementById('landingPage').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'none';
+            } else {
+                document.getElementById('landingPage').style.display = 'block';
+                document.getElementById('loginScreen').style.display = 'none';
+                
+            }
+        });
+        function showLoginScreen() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+        }
+    
+        function hideLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'block';
+        }
+    </script>
+    <body>
+
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-page" style="display: none;">
+        <div class="landing-bg-circle"></div>
+        <div class="landing-bg-circle-small"></div>
+        
+        <nav class="landing-nav">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 22H22L12 2Z" stroke="#1C1D20" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M12 10L7 20H17L12 10Z" fill="#5D6BF8"/>
+                </svg>
+                Asset Manager
+            </div>
+            <ul>
+                <li><a href="#" style="border-bottom: 2px solid var(--accent-blue); padding-bottom: 4px;">HOME</a></li>
+                <li><a href="#" onclick="showLoginScreen()">CARD</a></li>
+                <li><a href="#" onclick="showLoginScreen()">PENSION</a></li>
+                <li><a href="#" onclick="showLoginScreen()">CLOUD</a></li>
+                <li><a href="#" onclick="showLoginScreen()">DATA</a></li>
+                <li><a href="#" onclick="showLoginScreen()">MANUAL</a></li>
+            </ul>
+            
+        </nav>
+
+                <div class="hero-section" style="padding-top: 5rem; padding-bottom: 5rem;">
+            <h1 class="hero-title">Manage your assets securely,<br>embedded with your team.</h1>
+            <p class="hero-subtitle">Relentlessly productive, when and where you need them.</p>
+            <button class="hero-btn" onclick="showLoginScreen()" style="margin-bottom: 4rem;">Start</button>
+            <img src="hero_asset_management.png" alt="Team Illustration" class="hero-img">
+        </div>
+
+        
+    </div>
+
     <div class="loading-overlay" id="loadingSpinner">
         <div class="spinner"></div>
     </div>
@@ -1427,6 +1717,7 @@
     <!-- Login Screen: 초기 display는 JS가 즉시 제어 -->
     <div id="loginScreen" class="login-screen" style="display: none;">
         <div class="login-card" id="loginFormContainer">
+<button style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #7F7F7F; transition: color 0.2s;" onmouseover="this.style.color='#1C1D20'" onmouseout="this.style.color='#7F7F7F'" onclick="hideLoginScreen()">&times;</button>
             <h1>로그인</h1>
             <div id="loginError"
                 style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem;">아이디 또는 비밀번호가
@@ -1448,7 +1739,7 @@
             <div class="login-btn-container">
                 <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
                 <button class="btn btn-tool login-btn"
-                    style="margin-top: 0.75rem; border: 1px solid var(--accent-blue); color: var(--accent-blue);"
+                    style="margin-top: 0.75rem; border: 1px solid rgba(255,255,255,0.3); color: #FFFFFF;"
                     onclick="loginWithPasskey()">
                     <span style="margin-right:0.5rem;">🆔</span> 지문 / 안면 인식 로그인
                 </button>
@@ -1505,67 +1796,65 @@
     <div class="container mx-auto px-6 py-8" id="mainContainer" style="display: none;">
         
         <!-- 미니멀 내비게이션 (Leo Natsume 스타일) -->
-        <nav class="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-6">
-            <div class="flex items-center gap-6">
-                <h1 class="text-4xl md:text-5xl font-black tracking-tighter uppercase text-leo-dark">
-                    Asset<span class="text-leo-accent">.</span>
-                </h1>
-                
-                <div class="flex items-center gap-2 bg-leo-lightgray/40 rounded-full px-5 py-2">
-                    <select id="yearSelect" class="bg-transparent font-bold text-lg md:text-xl text-leo-dark focus:outline-none appearance-none cursor-pointer pr-2"></select>
-                    <span class="font-bold text-xl text-leo-gray">/</span>
-                    <select id="monthSelect" class="bg-transparent font-bold text-lg md:text-xl text-leo-dark focus:outline-none appearance-none cursor-pointer pl-2 pr-4"></select>
-                </div>
+        
+        <nav class="landing-nav" style="padding: 0 0 2rem 0; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border);">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 22H22L12 2Z" stroke="#1C1D20" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M12 10L7 20H17L12 10Z" fill="#5D6BF8"/>
+                </svg>
+                Asset Manager
+            </div>
+            
+            <div class="flex items-center gap-2 bg-leo-lightgray/40 rounded-full px-5 py-2" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+                <select id="yearSelect" class="bg-transparent font-bold text-lg md:text-xl text-leo-dark focus:outline-none appearance-none cursor-pointer pr-2"></select>
+                <span class="font-bold text-xl text-leo-gray">/</span>
+                <select id="monthSelect" class="bg-transparent font-bold text-lg md:text-xl text-leo-dark focus:outline-none appearance-none cursor-pointer pl-2 pr-4"></select>
             </div>
 
-            <div class="flex flex-wrap items-center gap-5 md:gap-8 font-semibold text-xs md:text-sm tracking-widest uppercase text-leo-gray">
-                <button class="relative group hover:text-leo-dark transition-colors" onclick="openInstallmentModal()" title="카드할부">
-                    Card
-                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-leo-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                </button>
-                <button class="relative group hover:text-leo-dark transition-colors" onclick="manualCarryOver()" title="데이터 이월/복사">
-                    Copy
-                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-leo-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                </button>
-                <button class="relative group hover:text-leo-dark transition-colors" onclick="openGitHubModal()" title="클라우드 동기화">
-                    Cloud
-                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-leo-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                </button>
-                <button class="relative group hover:text-leo-dark transition-colors" onclick="openDataManageModal()" title="데이터 관리">
-                    Data
-                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-leo-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                </button>
-                <button class="relative group hover:text-leo-dark transition-colors" onclick="openManualModal()" title="매뉴얼">
-                    Manual
-                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-leo-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                </button>
-                
-                <div class="hidden md:block w-px h-4 bg-leo-lightgray"></div>
-                
-                <button class="relative group hover:text-leo-dark transition-colors" onclick="registerPasskey()" title="패스키 설정">
-                    Passkey
-                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-leo-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                </button>
-                <button class="relative group hover:text-leo-dark transition-colors" onclick="openAccountModal()" title="사용자 정보">
-                    User
-                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-leo-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                </button>
-                <button class="hover:text-white bg-leo-dark text-white px-4 py-2 rounded-full transition-transform hover:scale-105 active:scale-95" onclick="logout()" title="로그아웃">
-                    Logout
-                </button>
+            <ul>
+                <li><a href="#" onclick="openInstallmentModal()">CARD</a></li>
+                <li><a href="#" onclick="openPensionModal()">PENSION</a></li>
+                <li><a href="#" onclick="openGitHubModal()">CLOUD</a></li>
+                <li><a href="#" onclick="openDataManageModal()">DATA</a></li>
+                <li><a href="#" onclick="openManualModal()">MANUAL</a></li>
+            </ul>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn-connect" style="background-color: transparent; color: #1C1D20; border: 1px solid #1C1D20; padding: 0.5rem 1.5rem;" onclick="registerPasskey()" title="패스키 설정">PASSKEY</button>
+                <button class="btn-connect" style="background-color: transparent; color: #1C1D20; border: 1px solid #1C1D20; padding: 0.5rem 1.5rem;" onclick="openAccountModal()">USER</button>
+                <button class="btn-connect" onclick="logout()">LOGOUT</button>
             </div>
         </nav>
 
-        <!-- Pension & Sync Bar -->
-        <div class="flex items-center justify-between bg-white rounded-full px-8 py-4 mb-16 shadow-sm border border-leo-lightgray/50 transition-transform hover:-translate-y-1">
-            <button class="flex items-center gap-3 font-bold text-leo-dark hover:text-leo-accent transition-colors" onclick="openPensionModal()" title="연금정보">
-                <span class="text-2xl">📊</span>
-                <span class="uppercase tracking-widest text-sm">Pension Info</span>
-            </button>
-            <button class="btn-save-sync flex items-center gap-3 font-bold text-leo-dark hover:text-green-500 transition-colors" onclick="manualGitHubSync()" title="실시간 저장">
-                <span class="text-2xl">💾</span>
-                <span class="uppercase tracking-widest text-sm">Save & Sync</span>
-            </button>
+
+        
+        
+        
+        <!-- Pension & Sync Actions -->
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1rem;">
+            <button class="btn-connect" style="padding: 0.5rem 1rem; font-size: 0.8rem; background-color: #F4F5FB; color: #5D6BF8;" onclick="openPensionModal()">📊 PENSION INFO</button>
+            <button class="btn-connect" style="padding: 0.5rem 1rem; font-size: 0.8rem; background-color: #E8F5E9; color: #2E7D32;" onclick="manualGitHubSync()">💾 SAVE & SYNC</button>
+        </div>
+        <!-- Summary Bar -->
+        <div class="summary-bar">
+
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '현금 + 비현금 + 부동산 + 퇴직금')" onmouseleave="hideHoverLayer()">
+                <div class="summary-label">자산</div>
+                <div class="summary-value" id="summary-income">0</div>
+            </div>
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '변동 지출 + 고정 지출 + 이번달 할부 원금')" onmouseleave="hideHoverLayer()">
+                <div class="summary-label">지출</div>
+                <div class="summary-value value-expense" id="summary-expense">0</div>
+            </div>
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '자산 - 지출')" onmouseleave="hideHoverLayer()">
+                <div class="summary-label">이번달 손익</div>
+                <div class="summary-value" id="summary-credit">0</div>
+            </div>
+            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '자산 총액 - 부채 총액(할부 포함)')" onmouseleave="hideHoverLayer()">
+                <div class="summary-label">순자산</div>
+                <div class="summary-value" id="summary-net">0</div>
+            </div>
         </div>
 
         <div class="dashboard-grid">
@@ -2078,6 +2367,8 @@
         };
         let accountsData = [];
         let isLoggedIn = false;
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'block';
 
         // --- Setup & Security Keys ---
         const MASTER_SETUP_KEY = "vibe2026";
@@ -2665,7 +2956,7 @@
             if (item.date) {
                 const p = item.date.split(/[-./ ]/);
                 if (p.length >= 2) {
-                    let y = parseInt(p[0]), m = parseInt(p[1]) + item.totalMonths;
+                    let y = parseInt(p[0]), m = parseInt(p[1]) + item.totalMonths - 1;
                     y += Math.floor((m - 1) / 12); m = (m - 1) % 12 + 1;
                     item.endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
                 }
@@ -3801,15 +4092,17 @@
             }
 
             if (accountsData.length === 0) {
-                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('loginFormContainer').style.display = 'none';
                 document.getElementById('adminCreateContainer').style.display = 'block';
                 document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('landingPage').style.display = 'block';
             } else {
-                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('loginFormContainer').style.display = 'block';
                 document.getElementById('adminCreateContainer').style.display = 'none';
                 document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('landingPage').style.display = 'block';
 
                 // 아이디 저장 로드
                 const savedId = localStorage.getItem('savedLoginId');
@@ -3887,9 +4180,8 @@
             sessionStorage.removeItem('temp_master_pw'); // 비밀번호 흔적 제거
             isLoggedIn = false;
             document.getElementById('mainContainer').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('loginFormContainer').style.display = 'block';
-            document.getElementById('adminCreateContainer').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'block';
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             alert('로그아웃 되었습니다.');
