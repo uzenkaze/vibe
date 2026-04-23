@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Management</title>
-    <link rel="icon" type="image/png" href="favicon.png?v=2">
+    <link rel="icon" type="image/png" href="favicon.png?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -1746,6 +1746,33 @@
             <div class="modal-header">
                 <span class="modal-title">카드 할부 관리</span>
                 <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <select id="installmentYearFilter" onchange="render()"
+                        style="padding: 0.4rem 2rem 0.4rem 0.8rem; font-size: 0.85rem; border-color: var(--glass-border); border-radius: 0.375rem;">
+                        <option value="">연도 (전체)</option>
+                        <option value="2024">2024년</option>
+                        <option value="2025">2025년</option>
+                        <option value="2026">2026년</option>
+                        <option value="2027">2027년</option>
+                        <option value="2028">2028년</option>
+                        <option value="2029">2029년</option>
+                        <option value="2030">2030년</option>
+                    </select>
+                    <select id="installmentMonthFilter" onchange="render()"
+                        style="padding: 0.4rem 2rem 0.4rem 0.8rem; font-size: 0.85rem; border-color: var(--glass-border); border-radius: 0.375rem;">
+                        <option value="">월 (전체)</option>
+                        <option value="01">01월</option>
+                        <option value="02">02월</option>
+                        <option value="03">03월</option>
+                        <option value="04">04월</option>
+                        <option value="05">05월</option>
+                        <option value="06">06월</option>
+                        <option value="07">07월</option>
+                        <option value="08">08월</option>
+                        <option value="09">09월</option>
+                        <option value="10">10월</option>
+                        <option value="11">11월</option>
+                        <option value="12">12월</option>
+                    </select>
                     <select id="installmentSortSelect" onchange="sortInstallments(this.value)"
                         style="padding: 0.4rem 2rem 0.4rem 0.8rem; font-size: 0.85rem; border-color: var(--glass-border); border-radius: 0.375rem;">
                         <option value="">정렬 방식 선택</option>
@@ -2769,6 +2796,15 @@
                     const tr = document.createElement('tr');
                     if (s === 'installment') {
                         calculateInstallment(item);
+
+                        const filterY = document.getElementById('installmentYearFilter')?.value;
+                        const filterM = document.getElementById('installmentMonthFilter')?.value;
+                        if (item.date) {
+                            if (filterY && !item.date.startsWith(filterY)) return;
+                            if (filterM && item.date.length >= 7 && item.date.substring(5, 7) !== filterM) return;
+                        } else if (filterY || filterM) {
+                            return;
+                        }
 
                         // 현재 조회중인 월 기준으로 다음 달(YY.MM) 계산
                         const curY = parseInt(document.getElementById('yearSelect').value);
