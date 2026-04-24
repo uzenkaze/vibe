@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100..900&family=Inter:wght@400;600;700;800;900&family=Outfit:wght@400;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -17,19 +17,18 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Outfit', 'Inter', 'Pretendard', 'sans-serif'],
+                        sans: ['Inter', 'Outfit', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
                     },
                     colors: {
-                        leo: {
-                            bg: '#F9F9F9',
+                        dyo: {
+                            bg: '#F2F2F2',
                             dark: '#1C1D20',
-                            gray: '#7F7F7F',
-                            lightgray: '#E5E5E5',
-                            accent: '#FF3B30'
+                            accent: '#5D6BF8'
                         }
                     },
                     borderRadius: {
-                        '4xl': '32px',
+                        'hero': '60px',
                     }
                 }
             }
@@ -43,23 +42,309 @@
             --scrollbar-thumb-hover: rgba(28, 29, 32, 0.4);
             --scrollbar-track: transparent;
 
-            /* Leo Natsume Style Variables */
-            --bg-color: #FFFFFF;
+            /* Light Theme (Default) */
+            --bg-color: #F2F2F2;
             --glass-bg: #FFFFFF;
             --glass-border: #E5E5E5;
             --text-primary: #1C1D20;
             --text-secondary: #7F7F7F;
-            --accent-blue: #5D6BF8; /* 강렬한 블랙톤으로 통일 */
+            --accent-blue: #5D6BF8;
             --accent-green: #1C1D20;
             --accent-purple: #1C1D20;
-            --accent-red: #FF3B30; /* 포인트 레드 */
+            --accent-red: #FF3B30;
             --section-header-bg: transparent;
             --table-header-bg: transparent;
             --item-hover: #F0F0F0;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
-            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
-            --radius-large: 32px;
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.04);
+            --radius-large: 40px;
+            /* Card & Nav */
+            --card-bg: #FFFFFF;
+            --nav-bg: #FFFFFF;
+            --input-bg: #F8F8F8;
+            --dyo-dark: #1C1D20;
+            --dyo-bg: #F2F2F2;
+        }
+
+        /* ===== DARK THEME ===== */
+        html.dark {
+            --bg-color: #0F0F12;
+            --glass-bg: #1A1A24;
+            --glass-border: #2A2A3A;
+            --text-primary: #E8E8F0;
+            --text-secondary: #9A9AB8;
+            --accent-blue: #6C7BFF;
+            --accent-green: #E8E8F0;
+            --accent-purple: #E8E8F0;
+            --accent-red: #FF4D4D;
+            --section-header-bg: rgba(255,255,255,0.03);
+            --table-header-bg: rgba(255,255,255,0.03);
+            --item-hover: rgba(255,255,255,0.05);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --card-bg: #1A1A24;
+            --nav-bg: #1A1A24;
+            --input-bg: #13131C;
+            --dyo-dark: #E8E8F0;
+            --dyo-bg: #2A2A3A;
+            --scrollbar-thumb: rgba(255,255,255,0.15);
+            --scrollbar-thumb-hover: rgba(255,255,255,0.3);
+        }
+
+        html.dark body { background-color: var(--bg-color); color: var(--text-primary); }
+        html.dark .unified-card { background: var(--card-bg) !important; border-color: var(--glass-border) !important; }
+        html.dark .summary-card { background: var(--card-bg); border-color: var(--glass-border); }
+        html.dark table { background: transparent; }
+        html.dark th { background: rgba(255,255,255,0.05) !important; color: var(--text-secondary) !important; border-color: var(--glass-border) !important; border-bottom-color: rgba(255,255,255,0.2) !important; }
+        html.dark td { border-color: var(--glass-border) !important; color: var(--text-primary) !important; }
+        html.dark input { background: transparent !important; border-color: var(--glass-border) !important; color: var(--text-primary) !important; }
+        html.dark select:not(#yearSelect):not(#monthSelect) { background: var(--input-bg); border-color: var(--glass-border); color: var(--text-primary); }
+        html.dark .modal-content { background: #1A1A24; border-color: var(--glass-border); }
+        html.dark .section-header { background: rgba(255,255,255,0.04) !important; border-color: var(--glass-border) !important; }
+        html.dark .section-footer { border-color: var(--glass-border) !important; color: var(--text-secondary) !important; opacity: 1 !important; }
+        html.dark .section-footer span { color: var(--text-primary) !important; opacity: 1 !important; }
+        html.dark nav { background: transparent; }
+        html.dark .summary-bar .summary-card .summary-label { color: var(--text-secondary); }
+        html.dark .summary-bar .summary-card .summary-value { color: var(--text-primary); }
+        html.dark #yearSelect, html.dark #monthSelect { color: var(--text-primary); }
+        html.dark .nav-year-month { background: var(--card-bg) !important; border-color: var(--glass-border) !important; }
+        html.dark .modal { background: rgba(0,0,0,0.7) !important; }
+
+        /* 다크모드: 헤더 브랜드명, 부제목 */
+        html.dark .text-dyo-dark\/60 { color: rgba(232,232,240,0.7) !important; }
+        html.dark .text-dyo-dark\/40 { color: rgba(232,232,240,0.5) !important; }
+        html.dark .text-dyo-dark\/30 { color: rgba(232,232,240,0.4) !important; }
+        html.dark .text-dyo-dark { color: var(--text-primary) !important; }
+
+        /* 다크모드: Monthly Overview 제목 */
+        html.dark h1 { color: var(--text-primary) !important; }
+        html.dark h2, html.dark h3 { color: var(--text-primary) !important; }
+
+        /* 다크모드: section title (소계 텍스트) */
+        html.dark .section-title { color: var(--text-primary) !important; }
+        html.dark .section-title::before { background: var(--text-primary) !important; }
+
+        /* 다크모드: summary label (ASSET, EXPENSE 등) */
+        html.dark .summary-label { color: var(--text-secondary) !important; opacity: 1 !important; }
+        html.dark .summary-value { color: var(--text-primary) !important; }
+
+        /* 다크모드: summary-table */
+        html.dark .summary-table th { background: rgba(255,255,255,0.05) !important; color: var(--text-primary) !important; border-color: rgba(255,255,255,0.2) !important; }
+        html.dark .summary-table td { color: var(--text-primary) !important; border-color: var(--glass-border) !important; }
+        html.dark .summary-total-row td { background: rgba(255,255,255,0.05) !important; color: var(--text-primary) !important; }
+        html.dark .summary-section-title { color: var(--text-primary) !important; border-color: var(--accent-blue) !important; }
+        html.dark .summary-grand-total { background: rgba(255,255,255,0.04) !important; color: var(--text-primary) !important; }
+
+        /* 다크모드: 입력 필드 (테이블 내) */
+        html.dark input[type="text"],
+        html.dark input[type="number"],
+        html.dark input[type="date"],
+        html.dark select { color: var(--text-primary) !important; border-bottom-color: var(--glass-border) !important; }
+        html.dark input[readonly] { color: var(--text-secondary) !important; opacity: 0.7 !important; }
+
+        /* 다크모드: section-box border */
+        html.dark .section-box { border-color: var(--glass-border) !important; }
+
+        /* 다크모드: pension bar */
+        html.dark .pension-bar { background: rgba(255,255,255,0.03) !important; border-color: var(--glass-border) !important; }
+        html.dark .btn-pension { background: rgba(255,255,255,0.07) !important; border-color: var(--glass-border) !important; color: var(--text-secondary) !important; }
+
+        /* 다크모드: pension table */
+        html.dark .pension-table th { background: rgba(255,255,255,0.05) !important; color: var(--text-secondary) !important; border-color: var(--glass-border) !important; }
+        html.dark .pension-table td { background: rgba(255,255,255,0.02) !important; border-color: var(--glass-border) !important; color: var(--text-primary) !important; }
+
+        /* 다크모드: unified-card-title border bottom */
+        html.dark .unified-card-title { border-bottom-color: var(--glass-border) !important; }
+
+        /* 다크모드: btn-add */
+        html.dark .btn-add { background: rgba(255,255,255,0.07) !important; color: var(--text-primary) !important; border-color: var(--glass-border) !important; }
+        html.dark .btn-add:hover { background: var(--text-primary) !important; color: #0F0F12 !important; }
+
+        /* 다크모드: details hover layer */
+        html.dark .details-hover-layer { background: #1A1A24 !important; border-color: var(--glass-border) !important; }
+        html.dark .details-hover-layer th { color: var(--text-secondary) !important; border-color: var(--glass-border) !important; }
+        html.dark .details-hover-layer td { color: var(--text-primary) !important; }
+        html.dark .details-hover-layer.summary-tooltip { background: #13131C !important; border-color: var(--accent-blue) !important; }
+
+        /* 다크모드: nav 브랜드 이름 */
+        html.dark nav p, html.dark nav span, html.dark nav a { color: var(--text-primary); }
+        html.dark nav .opacity-60 { opacity: 0.7 !important; }
+        html.dark .text-sm.font-medium { color: var(--text-secondary) !important; }
+
+        /* 다크모드: nav 버튼 (bg-white 햄버거/메뉴 버튼) */
+        html.dark nav button.bg-white,
+        html.dark header button.bg-white {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+        html.dark nav button.bg-white span.bg-dyo-dark,
+        html.dark header button.bg-white span.bg-dyo-dark {
+            background: var(--text-primary) !important;
+        }
+
+        /* 다크모드: 메뉴 확장 패널 (bg-white rounded-full 메뉴바) */
+        html.dark #horizontalMenu,
+        html.dark #dashboardMenu {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+
+        /* 다크모드: 메뉴 항목 링크 (text-dyo-dark/60, text-dyo-dark/40) */
+        html.dark #horizontalMenu a,
+        html.dark #dashboardMenu a {
+            color: rgba(232,232,240,0.55) !important;
+        }
+        html.dark #horizontalMenu a:hover,
+        html.dark #dashboardMenu a:hover {
+            color: var(--text-primary) !important;
+        }
+
+        /* 다크모드: 랜딩 header 아이콘 원 테두리 */
+        html.dark header .border-dyo-dark,
+        html.dark nav .border-dyo-dark {
+            border-color: var(--glass-border) !important;
+        }
+
+        /* 다크모드: Monthly Overview 제목 & 부제목 */
+        html.dark h2.font-serif { color: var(--text-primary) !important; }
+        html.dark p.text-dyo-dark\/30 { color: rgba(232,232,240,0.45) !important; }
+        html.dark .text-dyo-dark\/30 { color: rgba(232,232,240,0.45) !important; }
+        html.dark .text-dyo-dark\/40 { color: rgba(232,232,240,0.55) !important; }
+        html.dark .text-dyo-dark\/50 { color: rgba(232,232,240,0.65) !important; }
+        html.dark .text-dyo-dark\/60 { color: rgba(232,232,240,0.75) !important; }
+        html.dark .text-dyo-dark { color: var(--text-primary) !important; }
+
+        /* 다크모드: Dashboard Summary 버튼 (bg-dyo-bg) */
+        html.dark .bg-dyo-bg { background: rgba(255,255,255,0.06) !important; }
+        html.dark .bg-white { background: var(--card-bg) !important; }
+        html.dark .border-dyo-bg { border-color: var(--glass-border) !important; }
+
+        /* 다크모드: 예상연금, 저장&동기화 버튼 */
+        html.dark button.bg-white.text-dyo-dark {
+            background: rgba(255,255,255,0.07) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--glass-border) !important;
+        }
+
+        /* 다크모드: 랜딩 h1 hero quote */
+        html.dark h1.font-serif { color: var(--text-primary) !important; }
+        html.dark .text-dyo-dark\/60 { color: rgba(232,232,240,0.7) !important; }
+
+        /* 다크모드: nav 아이콘 SVG (text-dyo-dark) */
+        html.dark .text-dyo-dark svg,
+        html.dark nav svg { color: var(--text-primary) !important; }
+
+        /* 다크모드: data-modal textarea */
+        html.dark .data-modal-textarea {
+            background: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--glass-border) !important;
+        }
+
+        /* ===== 다크모드: 랜딩 페이지 전체 오버라이드 ===== */
+        html.dark #landingPage {
+            background-color: var(--bg-color) !important;
+            color: var(--text-primary) !important;
+        }
+        /* 랜딩 페이지 hero 인용문 제목 */
+        html.dark #landingPage h1 {
+            color: var(--text-primary) !important;
+        }
+        /* "— Warren Buffett" 텍스트 */
+        html.dark #landingPage p {
+            color: rgba(232,232,240,0.6) !important;
+        }
+        /* LOGIN 버튼 */
+        html.dark #landingPage button.bg-dyo-dark {
+            background: var(--text-primary) !important;
+            color: var(--bg-color) !important;
+        }
+        /* 이미지 슬라이더 오버레이 */
+        html.dark #landingPage .bg-gradient-to-t {
+            background: linear-gradient(to top, var(--bg-color), transparent) !important;
+        }
+        /* 랜딩 헤더 */
+        html.dark #landingPage header {
+            color: var(--text-primary) !important;
+        }
+        html.dark #landingPage header span {
+            color: var(--text-primary) !important;
+        }
+        /* Hans 이름 */
+        html.dark #landingPage .font-serif {
+            color: var(--text-primary) !important;
+        }
+        /* WEALTH MANAGEMENT 소제목 */
+        html.dark #landingPage .tracking-\[0\.4em\] {
+            color: rgba(232,232,240,0.35) !important;
+        }
+        /* 메뉴바 배경 */
+        html.dark #landingPage #horizontalMenu {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+        /* 메뉴 버튼 (햄버거) */
+        html.dark #landingPage header button {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+        html.dark #landingPage header button span {
+            background: var(--text-primary) !important;
+        }
+        /* 아이콘 원 테두리 */
+        html.dark #landingPage .rounded-full.border {
+            border-color: var(--glass-border) !important;
+        }
+        /* 슬라이더 배경 박스 */
+        html.dark #landingPage #heroSlider {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+
+        /* ===== 다크모드: 대시보드(mainContainer) nav 오버라이드 ===== */
+        /* 햄버거 버튼 */
+        html.dark #mainContainer nav button {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+        html.dark #mainContainer nav button span.bg-dyo-dark {
+            background: var(--text-primary) !important;
+        }
+        /* Hans 브랜드 아이콘 원 */
+        html.dark #mainContainer nav .rounded-full.border {
+            border-color: var(--glass-border) !important;
+        }
+        /* Hans 이름 */
+        html.dark #mainContainer nav .font-serif {
+            color: var(--text-primary) !important;
+        }
+        /* Wealth Management 소제목 */
+        html.dark #mainContainer nav span {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Monthly Overview 제목 */
+        html.dark #mainContainer h2.font-serif {
+            color: var(--text-primary) !important;
+        }
+        /* Track your financial trajectory */
+        html.dark #mainContainer p.tracking-widest {
+            color: rgba(232,232,240,0.4) !important;
+        }
+        /* 예상연금 버튼 */
+        html.dark #mainContainer button.bg-white {
+            background: var(--card-bg) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--glass-border) !important;
+        }
+        /* Summary 버튼 in unified-card-title */
+        html.dark #mainContainer .bg-dyo-bg {
+            background: rgba(255,255,255,0.06) !important;
+            color: rgba(232,232,240,0.55) !important;
+        }
+        html.dark #mainContainer .bg-dyo-bg:hover {
+            color: var(--text-primary) !important;
         }
 
         html {
@@ -104,81 +389,85 @@
             scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
         }
 
+        html,
         body {
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
             background-color: var(--bg-color);
+        }
+
+        body {
             color: var(--text-primary);
-            min-height: 100vh;
-            padding: 2rem;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         .container {
+            width: 100%;
             max-width: 1600px;
             margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
         .summary-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
-            margin-bottom: 2rem;
         }
 
         .summary-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-large);
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            transition: var(--transition);
-            box-shadow: none;
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            border-radius: 30px;
+            border: 1px solid var(--dyo-bg);
+            transition: all 0.4s ease;
+            cursor: help;
         }
 
         .summary-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--text-primary);
+            border-color: var(--dyo-dark);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
         .summary-label {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            font-weight: 600;
+            font-size: 0.6rem;
+            font-weight: 900;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            color: var(--dyo-dark);
+            opacity: 0.3;
+            margin-bottom: 0.5rem;
         }
 
         .summary-value {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--text-primary);
-            letter-spacing: -0.03em;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dyo-dark);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.05em;
         }
 
-        .value-income {
-            color: var(--accent-blue);
-        }
-
-        .value-expense {
-            color: var(--accent-red);
-        }
-
-        .value-credit {
-            color: var(--accent-green);
-        }
-
-        .value-net {
-            color: var(--accent-purple);
+        .summary-value.value-expense {
+            color: #FF4B4B;
         }
 
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 3rem;
+            gap: 2rem;
+            flex: 1;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
@@ -188,13 +477,28 @@
             background: #FFFFFF;
             border: none;
             border-radius: var(--radius-large);
-            padding: 3rem;
-            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.03);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
             display: flex;
             flex-direction: column;
-            gap: 2.5rem;
-            height: fit-content;
-            transition: transform 0.3s ease;
+            gap: 1.5rem;
+            transition: var(--transition);
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card-content-scrollable {
+            flex: 1;
+            padding-right: 0;
+        }
+
+        .card-content-scrollable::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-content-scrollable::-webkit-scrollbar-thumb {
+            background-color: var(--accent-blue);
+            border-radius: 10px;
         }
 
         .unified-card:hover {
@@ -210,17 +514,19 @@
         }
 
         .unified-card-title {
+            font-family: 'Playfair Display', serif;
             font-size: 1.75rem;
-            font-weight: 900;
+            font-weight: 700;
+            font-style: italic;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 3px solid var(--text-primary);
+            margin-bottom: 0;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #E5E5E5;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            text-transform: uppercase;
-            letter-spacing: -0.02em;
+            gap: 1.5rem;
+            letter-spacing: -0.03em;
         }
 
         .card-income .unified-card-title {
@@ -232,7 +538,8 @@
         }
 
         .card-icon {
-            font-size: 2.5rem; letter-spacing: -0.5px;
+            font-size: 1.75rem;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -252,41 +559,41 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: none;
         }
 
         .section-title {
-            font-size: 1.25rem;
-            font-weight: 800;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
             color: var(--text-primary);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
         }
 
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            font-size: 1.125rem;
         }
 
         th {
-            text-align: left;
-            padding: 0.8rem 0.5rem;
-            color: var(--text-primary);
-            font-weight: 800;
-            border-top: 2px solid var(--text-primary);
-            border-bottom: 2px solid var(--text-primary);
-            background: #F8FAFC;
-            font-size: 0.85rem;
+            background: #F9F9F9;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid #E5E5E5;
+            text-align: left;
         }
 
         td {
-            padding: 1.25rem 0.5rem;
-            border-bottom: 1px solid var(--glass-border);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #F0F0F0;
+            vertical-align: middle;
             color: var(--text-primary);
-            font-weight: 600;
+            font-weight: 500;
         }
 
         tr:last-child td {
@@ -298,20 +605,22 @@
         }
 
         .col-category {
-            width: 140px;
+            width: auto;
+            max-width: 140px;
         }
 
         .col-amount {
-            width: 100px;
+            width: auto;
+            max-width: 120px;
             text-align: right;
         }
 
         .col-desc {
-            width: 220px;
+            width: auto;
         }
 
         .col-actions {
-            width: 110px;
+            width: 100px;
             text-align: center;
         }
 
@@ -319,7 +628,7 @@
             background: #ffffff;
             border: 2px solid var(--glass-border);
             color: var(--text-primary);
-            padding: 0.5rem 0.5rem;
+            padding: 0.4rem 0.5rem;
             border-radius: 0.5rem;
             width: 100%;
             transition: var(--transition);
@@ -382,7 +691,7 @@
             background: #ffffff;
             border: 2px solid var(--glass-border);
             color: var(--text-primary);
-            padding: 0.5rem 2rem 0.5rem 1rem;
+            padding: 0.4rem 2rem 0.4rem 1rem;
             border-radius: 0.5rem;
             width: auto;
             cursor: pointer;
@@ -568,13 +877,190 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
+        .unified-card {
+            background: #FFFFFF;
+            border-radius: 40px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+            transition: all 0.5s ease;
+        }
+
+        .unified-card-title {
+            padding: 2rem 2rem 1rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-style: italic;
+            font-weight: 800;
+            color: var(--dyo-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-box {
+            padding: 1rem 1rem;
+            border-bottom: 1px solid var(--dyo-bg);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background: #F8F9FA;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--dyo-bg);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            font-weight: 800;
+            color: var(--dyo-dark);
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.25rem;
+            background: var(--dyo-dark);
+            border-radius: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.25rem;
+            table-layout: auto !important;
+        }
+
+        th {
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: rgba(28, 29, 32, 0.4);
+            padding: 1rem 0.5rem;
+            background: #F9F9F9;
+            border-bottom: 2px solid #333333;
+        }
+
+        td {
+            padding: 0.25rem 0.75rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            background: transparent !important;
+            border: 1px solid transparent !important;
+            border-bottom: 1px solid var(--dyo-bg) !important;
+            padding: 0.4rem 0.5rem !important;
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            color: var(--dyo-dark) !important;
+            transition: all 0.2s ease !important;
+            border-radius: 0 !important;
+        }
+
+        input:not([readonly]):hover,
+        select:hover {
+            background: rgba(0, 0, 0, 0.02) !important;
+            border-bottom-color: var(--dyo-dark) !important;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none !important;
+            border-bottom-color: var(--dyo-dark) !important;
+            border-bottom-width: 2px !important;
+            background: rgba(0, 0, 0, 0.03) !important;
+        }
+
+        input[readonly] {
+            border-bottom: none !important;
+            color: var(--dyo-dark) !important;
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .amount {
+            text-align: right !important;
+            font-family: 'Inter', sans-serif !important;
+            letter-spacing: -0.02em !important;
+        }
+
+        .section-footer {
+            margin-top: 2rem;
+            padding: 1rem 0;
+            text-align: right;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #BBBBBB;
+            border: none;
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
+            gap: 1rem;
+        }
+
+        .section-footer span {
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: #BBBBBB;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.05em;
+            line-height: 1;
+        }
+
+        .btn-add {
+            background: #FFFFFF !important;
+            color: var(--dyo-dark) !important;
+            border: 2px solid var(--dyo-dark) !important;
+            border-radius: 9999px !important;
+            padding: 0.5rem 1.25rem !important;
+            font-size: 0.7rem !important;
+            font-weight: 900 !important;
+            letter-spacing: 0.15em !important;
+            text-transform: uppercase !important;
+            cursor: pointer !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-add:hover {
+            background: var(--dyo-dark) !important;
+            color: #FFFFFF !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1.5rem;
-            border-bottom: 3px solid var(--text-primary);
+            border-bottom: 3px solid #333333;
         }
 
         .modal-title {
@@ -678,26 +1164,71 @@
             margin-bottom: 15px;
         }
 
-        .summary-table th,
-        .summary-table td {
-            padding: 10px 16px;
-            text-align: left;
-            white-space: nowrap;
-            /* 모든 데이터 한줄에 표시 (세로 찌그러짐 원천 차단) */
-            vertical-align: middle;
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2.5rem;
+            table-layout: auto;
         }
 
         .summary-table th {
-            color: var(--text-secondary);
-            font-weight: 700;
-            background: var(--table-header-bg);
-            border-bottom: 1px solid var(--glass-border);
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #1C1D20 !important;
+            border-bottom: 2px solid #333333;
+            letter-spacing: -0.01em;
+            background: #F9F9F9 !important;
+        }
+
+        .summary-table th:nth-child(1) {
+            width: 120px;
+        }
+
+        .summary-table th:nth-child(2) {
+            width: auto;
+        }
+
+        .summary-table th:nth-child(3) {
+            width: 180px;
+            text-align: right;
         }
 
         .summary-table td {
-            color: var(--text-primary);
-            font-weight: 500;
-            border-bottom: 1px solid var(--glass-border);
+            padding: 0.15rem 0.75rem;
+            border-bottom: 1px solid #F5F5F5;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #1C1D20 !important;
+            word-break: break-all;
+            line-height: 1.2;
+            transition: background 0.2s ease;
+            background: transparent !important;
+            border-right: none !important;
+        }
+
+        .summary-table tr:hover td:not(.summary-total-row td) {
+            background: rgba(0, 0, 0, 0.04) !important;
+        }
+
+        .summary-total-row td {
+            background: #F8F9FA;
+            font-weight: 800;
+            color: var(--dyo-dark);
+            border-bottom: none;
+            padding: 1.25rem 1rem;
+        }
+
+        .summary-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            font-weight: 800;
+            color: var(--dyo-dark);
+            margin: 2rem 0 1rem;
+            padding-left: 0.75rem;
+            border-left: 4px solid var(--dyo-dark);
         }
 
         .btn-tool {
@@ -722,48 +1253,46 @@
         }
 
         .modal-content {
-            background: #ffffff;
-            border-radius: var(--radius-large);
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
+            background: #FFFFFF;
+            border-radius: 40px;
+            width: 95%;
+            max-width: 1000px;
+            max-height: 85vh;
             overflow-y: auto;
             padding: 3rem;
             position: relative;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.1);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--dyo-dark);
         }
 
         .modal-content::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
+            display: none;
+            /* Chrome/Safari */
         }
 
         .section-footer {
-            padding: 1.25rem 1.5rem;
+            padding: 2rem 0;
             text-align: right;
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--dyo-dark);
+            opacity: 0.3;
+            border-top: 1px solid var(--dyo-bg);
+            margin-top: 1.5rem;
+        }
+
+        .section-footer span {
+            font-size: 1.75rem;
             font-weight: 800;
-            font-size: 1.1rem;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 2rem;
-            border-top: 3px solid var(--text-primary);
-            border-bottom-left-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .card-income .section-footer {
-            background: #ECFDF5; /* 파스텔 민트 그린 */
-            color: #065F46;
-            border-top-color: #10B981;
-        }
-
-        .card-expense .section-footer {
-            background: #FEF2F2; /* 파스텔 핑크 레드 */
-            color: #991B1B;
-            border-top-color: #EF4444;
+            color: var(--dyo-dark);
+            opacity: 1;
+            margin-left: 1.5rem;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.04em;
         }
 
         .btn-summary {
@@ -788,22 +1317,27 @@
         .summary-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
 
         .summary-table th {
-            background: #f8fafc;
-            padding: 0.75rem 1rem;
+            background: transparent;
+            padding: 1.5rem 1rem;
             text-align: left;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            border-bottom: 2px solid var(--glass-border);
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: var(--dyo-dark);
+            border-bottom: 1px solid var(--dyo-dark);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
         }
 
         .summary-table td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--glass-border);
-            font-size: 0.95rem;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--dyo-bg);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dyo-dark);
         }
 
         /* Pension & Sync Bar Styles (Refined) */
@@ -981,7 +1515,7 @@
             opacity: 0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 9999;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             pointer-events: none;
             text-align: center;
         }
@@ -990,6 +1524,7 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+
         .hidden {
             display: none;
         }
@@ -1101,64 +1636,301 @@
             }
         }
 
+        /* ===== AUTHKIT-STYLE LOGIN ===== */
         .login-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            z-index: 2000;
+            background: #0A0A10;
+            overflow: hidden;
+        }
+
+        /* Left decorative panel */
+        .login-left-panel {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            background: linear-gradient(135deg, #0D0D1A 0%, #12122A 50%, #0A0A1F 100%);
+            overflow: hidden;
+        }
+
+        .login-left-panel::before {
+            content: '';
+            position: absolute;
+            top: -200px; left: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(108,123,255,0.25) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+
+        .login-left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -150px; right: -100px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .login-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1;
+        }
+
+        .login-brand-icon {
+            width: 40px; height: 40px;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
+        }
+
+        .login-brand-name {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.03em;
+        }
+
+        .login-hero-text {
+            z-index: 1;
+            padding: 2rem 0;
+        }
+
+        .login-hero-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 4vw, 4rem);
+            font-style: italic;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .login-hero-text p {
+            color: rgba(255,255,255,0.45);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            max-width: 380px;
+        }
+
+        .login-grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+        }
+
+        .login-dots {
+            z-index: 1;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .login-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .login-dot.active { background: rgba(108,123,255,0.8); }
+
+        /* Right form panel */
+        .login-right-panel {
+            width: 440px;
+            min-width: 380px;
+            background: var(--bg-color, #F5F5F8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2.5rem;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        html.dark .login-right-panel {
+            background: #0F0F18;
         }
 
         .login-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 1rem;
-            padding: 3rem;
-            box-shadow: var(--shadow-md);
             width: 100%;
-            max-width: 400px;
-            text-align: center;
+            max-width: 360px;
+            text-align: left;
+            position: relative;
         }
 
         .login-card h1 {
-            font-size: 2rem;
-            margin-bottom: 2.5rem;
-            color: var(--text-primary);
+            font-size: 1.75rem;
             font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
         }
 
         .login-input {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .login-input-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+
+        .login-input input {
+            background: var(--glass-bg, #fff) !important;
+            border: 1.5px solid var(--glass-border, #E5E5E5) !important;
+            border-radius: 12px !important;
+            padding: 0.85rem 1rem 0.85rem 2.8rem !important;
+            font-size: 0.95rem !important;
+            font-weight: 600 !important;
+            color: var(--text-primary) !important;
+            transition: all 0.25s ease !important;
+            text-align: left !important;
+            width: 100% !important;
+        }
+
+        .login-input input:focus {
+            border-color: #6C7BFF !important;
+            box-shadow: 0 0 0 3px rgba(108,123,255,0.15) !important;
+            outline: none !important;
+            background: var(--glass-bg) !important;
+        }
+
+        .login-input label {
+            display: none;
+        }
+
+        .login-input-icon {
+            position: absolute;
+            left: 0.9rem;
+            bottom: 0.85rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.25rem 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--glass-border);
         }
 
         .login-btn-container {
             margin-top: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .login-btn {
             width: 100%;
-            padding: 0.875rem;
-            font-size: 1.1rem;
+            padding: 0.9rem 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             justify-content: center;
+            background: #1C1D20 !important;
+            color: white !important;
+            border-radius: 12px !important;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.02em;
+        }
+
+        html.dark .login-btn {
+            background: #6C7BFF !important;
+        }
+
+        .login-btn:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
         }
 
         .login-helper-text {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
             margin-bottom: 0.75rem;
             line-height: 1.5;
         }
 
         .login-footer-section {
-            padding-top: 1.5rem;
+            padding-top: 1rem;
             border-top: 1px solid var(--glass-border);
+        }
+
+        @media (max-width: 900px) {
+            .login-left-panel { display: none; }
+            .login-right-panel { width: 100%; min-width: unset; }
+        }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9000;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1.5px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
         }
 
         /* Drag & Drop Overlays */
@@ -1405,7 +2177,7 @@
                 white-space: nowrap !important;
             }
         }
-    
+
         /* Landing Page Styles */
         .landing-bg-circle {
             position: absolute;
@@ -1417,6 +2189,7 @@
             left: -10vw;
             z-index: -1;
         }
+
         .landing-bg-circle-small {
             position: absolute;
             width: 40vw;
@@ -1427,6 +2200,7 @@
             left: -20vw;
             z-index: -1;
         }
+
         .landing-page {
             position: relative;
             width: 100%;
@@ -1435,6 +2209,7 @@
             font-family: 'Inter', sans-serif;
             color: #1C1D20;
         }
+
         .landing-nav {
             display: flex;
             justify-content: space-between;
@@ -1443,6 +2218,7 @@
             font-weight: 700;
             font-size: 0.85rem;
         }
+
         .landing-nav .logo {
             font-size: 1.5rem;
             font-weight: 900;
@@ -1450,11 +2226,13 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .landing-nav ul {
             display: flex;
             gap: 2rem;
             list-style: none;
         }
+
         .landing-nav ul li a {
             text-decoration: none;
             color: #1C1D20;
@@ -1462,9 +2240,11 @@
             letter-spacing: 1px;
             transition: color 0.3s;
         }
+
         .landing-nav ul li a:hover {
             color: var(--accent-blue);
         }
+
         .btn-connect {
             background-color: var(--accent-blue);
             color: #FFFFFF;
@@ -1477,16 +2257,19 @@
             letter-spacing: 1px;
             transition: all 0.3s;
         }
+
         .btn-connect:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(93, 107, 248, 0.4);
         }
+
         .hero-section {
             text-align: center;
             padding: 5rem 5% 0;
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .hero-title {
             font-size: 3.5rem;
             font-weight: 900;
@@ -1494,14 +2277,17 @@
             margin-bottom: 1.5rem;
             letter-spacing: -1px;
         }
+
         .hero-subtitle {
             font-size: 1.25rem;
             color: #555;
             margin-bottom: 2.5rem;
             font-weight: 600;
         }
+
         .hero-btn {
-            background-color: #2D3A8C; /* Deep blue from ref */
+            background-color: #2D3A8C;
+            /* Deep blue from ref */
             color: #FFFFFF;
             padding: 1rem 3rem;
             border-radius: 40px;
@@ -1513,9 +2299,11 @@
             letter-spacing: 1.5px;
             transition: all 0.3s;
         }
+
         .hero-btn:hover {
             background-color: #1C2459;
         }
+
         .hero-img {
             margin-top: 3rem;
             width: 100%;
@@ -1524,6 +2312,7 @@
             margin-left: auto;
             margin-right: auto;
         }
+
         .features-section {
             display: flex;
             align-items: center;
@@ -1531,9 +2320,11 @@
             padding: 8rem 10% 5rem;
             gap: 4rem;
         }
+
         .features-text {
             flex: 1;
         }
+
         .features-text h2 {
             font-size: 2.5rem;
             font-weight: 900;
@@ -1541,10 +2332,12 @@
             margin-bottom: 2rem;
             letter-spacing: -0.5px;
         }
+
         .features-list {
             list-style: none;
             padding: 0;
         }
+
         .features-list li {
             display: flex;
             align-items: center;
@@ -1554,6 +2347,7 @@
             font-weight: 600;
             color: #444;
         }
+
         .features-list li::before {
             content: '✓';
             display: inline-flex;
@@ -1561,444 +2355,615 @@
             align-items: center;
             width: 24px;
             height: 24px;
-            background-color: #FFB347; /* Yellow check bg */
+            background-color: #FFB347;
+            /* Yellow check bg */
             color: white;
             border-radius: 50%;
             font-size: 14px;
         }
+
         .features-img {
             flex: 1;
             text-align: right;
         }
+
         .features-img img {
             max-width: 100%;
         }
-
-    
-        /* New Login Screen Styles */
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .login-card {
-            background: #FFFFFF;
-            padding: 4rem 3.5rem;
-            border-radius: 28px;
-            box-shadow: 0 24px 48px rgba(0,0,0,0.06);
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            text-align: center;
-            border: 1px solid rgba(229, 229, 229, 0.5);
-        }
-        .login-card h1 {
-            font-size: 2rem;
-            font-weight: 900;
-            margin-bottom: 2rem;
-            color: #1C1D20;
-        }
-        .login-input input {
-            width: 100%;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid #E5E5E5;
-            border-radius: 10px;
-            font-size: 1rem;
-            background-color: #F9F9F9;
-            transition: border-color 0.3s;
-        }
-        .login-input input:focus {
-            outline: none;
-            border-color: #5D6BF8;
-            background-color: #FFFFFF;
-        }
-        .login-btn {
-            width: 100%;
-            padding: 1rem;
-            background-color: #5D6BF8;
-            color: #FFFFFF;
-            border: none;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 1rem;
-        }
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(93, 107, 248, 0.4);
-        }
-
     </style>
     <!-- ✅ 로그인 플래시(FOUC) 방지: DOM 렌더링 전에 세션 확인 후 화면 즉시 결정 -->
     <script>
-        (function() {
-            if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
-                // 이미 로그인 상태: 로그인 화면 미리 숨김 (JS 실행 전 깜빡임 완전 차단)
-                document.documentElement.style.setProperty('--login-flash-display', 'none');
-            } else {
-                document.documentElement.style.setProperty('--login-flash-display', 'none');
-            }
-        })();
+            (function () {
+                if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
+                    // 이미 로그인 상태: 로그인 화면 미리 숨김 (JS 실행 전 깜빡임 완전 차단)
+                    document.documentElement.style.setProperty('--login-flash-display', 'none');
+                } else {
+                    document.documentElement.style.setProperty('--login-flash-display', 'none');
+                }
+            })();
     </script>
 </head>
 
 <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
-                document.getElementById('landingPage').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'none';
+    document.addEventListener("DOMContentLoaded", function () {
+        if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
             document.getElementById('landingPage').style.display = 'none';
-            } else {
-                document.getElementById('landingPage').style.display = 'block';
-                document.getElementById('loginScreen').style.display = 'none';
-                
-            }
-        });
-        function showLoginScreen() {
-            document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-        }
-    
-        function hideLoginScreen() {
             document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'none';
+        } else {
             document.getElementById('landingPage').style.display = 'block';
+            document.getElementById('loginScreen').style.display = 'none';
+
         }
-    </script>
-    <body>
+    });
+    function showLoginScreen() {
+        document.getElementById('landingPage').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        closeOverlayMenu();
+    }
 
-    <!-- Landing Page -->
-    <div id="landingPage" class="landing-page" style="display: none;">
-        <div class="landing-bg-circle"></div>
-        <div class="landing-bg-circle-small"></div>
-        
-        <nav class="landing-nav">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 22H22L12 2Z" stroke="#1C1D20" stroke-width="2" stroke-linejoin="round"/>
-                    <path d="M12 10L7 20H17L12 10Z" fill="#5D6BF8"/>
-                </svg>
-                Asset Manager
+    function hideLoginScreen() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('landingPage').style.display = 'block';
+    }
+
+    function openOverlayMenu() {
+        const overlay = document.getElementById('overlayMenu');
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.querySelector('.menu-content').classList.remove('translate-y-10');
+        }, 10);
+    }
+
+    function toggleMenu() {
+        const menu = document.getElementById('horizontalMenu');
+        const isExpanded = !menu.classList.contains('w-0');
+
+        if (isExpanded) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    }
+
+    function openMenu() {
+        const menu = document.getElementById('horizontalMenu');
+        const logoutBtn = document.getElementById('menuLogoutBtn');
+
+        const isLoggedIn = document.getElementById('mainContainer').style.display !== 'none';
+        logoutBtn.style.display = isLoggedIn ? 'block' : 'none';
+
+        menu.classList.remove('w-0', 'opacity-0', 'pointer-events-none');
+        menu.classList.add('w-[520px]', 'opacity-100', 'px-8');
+    }
+
+    function closeMenu() {
+        const menu = document.getElementById('horizontalMenu');
+        menu.classList.add('w-0', 'opacity-0', 'pointer-events-none');
+        menu.classList.remove('w-[520px]', 'opacity-100', 'px-8');
+    }
+
+    // Keep original functions for landing page buttons if needed, but redirect to new logic
+    function openOverlayMenu() { toggleMenu(); }
+    function closeOverlayMenu() { closeMenu(); }
+
+    // Hero Slider Logic
+    let currentSlide = 0;
+    function initHeroSlider() {
+        const slides = document.querySelectorAll('.hero-slide');
+        if (slides.length === 0) return;
+
+        // Initial state
+        slides.forEach((s, idx) => {
+            s.style.opacity = (idx === 0) ? '1' : '0';
+        });
+
+        setInterval(() => {
+            if (slides[currentSlide]) slides[currentSlide].style.opacity = '0';
+
+            currentSlide = (currentSlide + 1) % slides.length;
+
+            if (slides[currentSlide]) slides[currentSlide].style.opacity = '1';
+        }, 5000);
+    }
+
+    // Call init on load with a small delay for stability
+    window.addEventListener('load', () => {
+        setTimeout(initHeroSlider, 100);
+    });
+</script>
+
+<body>
+
+    <!-- Landing Page (dyotanya.com Inspired) -->
+    <div id="landingPage" class="relative min-h-screen bg-[#F2F2F2] overflow-hidden font-sans" style="display: none;">
+        <!-- Header -->
+        <header class="fixed top-0 left-0 w-full z-50 px-10 py-8 flex justify-between items-center">
+            <div class="group flex items-center gap-4 cursor-pointer" onclick="location.reload()">
+                <div
+                    class="w-10 h-10 border border-dyo-dark rounded-full flex items-center justify-center transition-all duration-500 group-hover:bg-dyo-dark overflow-hidden">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="text-dyo-dark group-hover:text-white transition-colors duration-500">
+                        <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 3V21" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
+                        <path d="M4 12H20" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
+                    </svg>
+                </div>
+                <div class="flex flex-col -space-y-1.5">
+                    <span class="font-serif text-2xl italic tracking-tighter text-dyo-dark">Hans</span>
+                    <span class="text-[8px] font-black tracking-[0.4em] text-dyo-dark/30 uppercase pl-0.5">Wealth
+                        Management</span>
+                </div>
             </div>
-            <ul>
-                <li><a href="#" style="border-bottom: 2px solid var(--accent-blue); padding-bottom: 4px;">HOME</a></li>
-                <li><a href="#" onclick="showLoginScreen()">CARD</a></li>
-                <li><a href="#" onclick="showLoginScreen()">PENSION</a></li>
-                <li><a href="#" onclick="showLoginScreen()">CLOUD</a></li>
-                <li><a href="#" onclick="showLoginScreen()">DATA</a></li>
-                <li><a href="#" onclick="showLoginScreen()">MANUAL</a></li>
-            </ul>
-            
-        </nav>
 
-                <div class="hero-section" style="padding-top: 5rem; padding-bottom: 5rem;">
-            <h1 class="hero-title">Manage your assets securely,<br>embedded with your team.</h1>
-            <p class="hero-subtitle">Relentlessly productive, when and where you need them.</p>
-            <button class="hero-btn" onclick="showLoginScreen()" style="margin-bottom: 4rem;">Start</button>
-            <img src="hero_asset_management.png" alt="Team Illustration" class="hero-img">
-        </div>
+            <div class="flex items-center gap-4">
+                <!-- Horizontal Expanding Menu -->
+                <div id="horizontalMenu"
+                    class="h-14 w-0 opacity-0 bg-white rounded-full flex items-center gap-5 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-dyo-dark">
+                    <a href="#" onclick="closeMenu()"
+                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Home</a>
+                    <a href="#" onclick="showLoginScreen(); closeMenu();"
+                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Card</a>
+                    <a href="#" onclick="showLoginScreen(); closeMenu();"
+                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Pension</a>
+                    <a href="#" onclick="showLoginScreen(); closeMenu();"
+                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Data</a>
+                    <a href="#" onclick="showLoginScreen(); closeMenu();"
+                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Manual</a>
+                    <a href="#" id="menuLogoutBtn" onclick="logout(); closeMenu();"
+                        class="text-xs font-bold tracking-widest text-red-400 hover:text-red-500 transition-colors uppercase whitespace-nowrap"
+                        style="display: none;">Logout</a>
+                </div>
 
-        
+                <button onclick="toggleMenu()"
+                    class="w-14 h-14 bg-white rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm hover:scale-105 transition-transform border border-dyo-dark shrink-0 relative z-10">
+                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
+                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <main class="relative z-10 min-h-screen flex flex-col items-center justify-center px-10 pt-20">
+            <div class="max-w-4xl text-center space-y-12">
+                <h1
+                    class="font-serif text-5xl md:text-7xl lg:text-8xl text-dyo-dark leading-[1.1] tracking-tight italic">
+                    "If you don't find a way to make money while you sleep, you will work until you die."
+                </h1>
+
+                <div class="flex flex-col items-center gap-6">
+                    <p class="text-dyo-dark/60 font-semibold tracking-widest text-sm uppercase">
+                        — Warren Buffett
+                    </p>
+
+                    <button onclick="showLoginScreen()"
+                        class="group relative px-12 py-5 bg-dyo-dark text-white rounded-full font-bold text-lg overflow-hidden transition-all hover:pr-16 active:scale-95 shadow-xl">
+                        <span class="relative z-10">LOGIN</span>
+                        <span class="absolute right-6 opacity-0 group-hover:opacity-100 transition-all">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Decoration: Image Slider -->
+            <div id="heroSlider"
+                class="mt-20 w-full max-w-6xl aspect-[21/9] bg-[#E5E7EB] rounded-hero shadow-2xl overflow-hidden border border-white/20 relative">
+                <img src="img/slide1.png"
+                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                    style="opacity: 0;" alt="Premium Assets 1">
+                <img src="img/slide2.png"
+                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                    style="opacity: 0;" alt="Premium Assets 2">
+                <img src="img/slide3.png"
+                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                    style="opacity: 0;" alt="Premium Assets 3">
+                <img src="img/slide4.png"
+                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                    style="opacity: 0;" alt="Premium Assets 4">
+                <img src="img/slide5.png"
+                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                    style="opacity: 0;" alt="Premium Assets 5">
+
+                <!-- Overlay for readability/style -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-[#F2F2F2] via-transparent to-transparent opacity-80 pointer-events-none">
+                </div>
+            </div>
+        </main>
+
     </div>
 
     <div class="loading-overlay" id="loadingSpinner">
         <div class="spinner"></div>
     </div>
 
-    <!-- Login Screen: 초기 display는 JS가 즉시 제어 -->
+    <!-- Login Screen -->
     <div id="loginScreen" class="login-screen" style="display: none;">
-        <div class="login-card" id="loginFormContainer">
-<button style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #7F7F7F; transition: color 0.2s;" onmouseover="this.style.color='#1C1D20'" onmouseout="this.style.color='#7F7F7F'" onclick="hideLoginScreen()">&times;</button>
-            <h1>로그인</h1>
-            <div id="loginError"
-                style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem;">아이디 또는 비밀번호가
-                일치하지 않습니다.</div>
-            <div class="login-input">
-                <input type="text" id="loginId" placeholder="아이디" onkeypress="if(event.key === 'Enter') attemptLogin()">
+        <!-- Left Decorative Panel -->
+        <div class="login-left-panel">
+            <div class="login-grid-bg"></div>
+            <div class="login-brand">
+                <div class="login-brand-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 3V21" stroke="white" stroke-width="0.5" stroke-dasharray="1 2"/>
+                        <path d="M4 12H20" stroke="white" stroke-width="0.5" stroke-dasharray="1 2"/>
+                    </svg>
+                </div>
+                <span class="login-brand-name">Hans Wealth</span>
             </div>
-            <div class="login-input">
-                <input type="password" id="loginPw" placeholder="비밀번호"
-                    onkeypress="if(event.key === 'Enter') attemptLogin()">
+
+            <div class="login-hero-text">
+                <h2>Manage your<br>wealth,<br><em>smarter.</em></h2>
+                <p>개인 자산과 수입·지출을 한 곳에서 체계적으로 관리하고, GitHub로 안전하게 동기화하세요.</p>
             </div>
-            <div
-                style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; margin-bottom: 1.5rem; padding-left: 0.25rem;">
-                <input type="checkbox" id="rememberId" style="width: auto; cursor: pointer;">
-                <label for="rememberId"
-                    style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; user-select: none;">아이디
-                    저장</label>
+
+            <div class="login-dots">
+                <div class="login-dot active"></div>
+                <div class="login-dot"></div>
+                <div class="login-dot"></div>
             </div>
-            <div class="login-btn-container">
-                <button class="btn btn-add login-btn" onclick="attemptLogin()">로그인</button>
-                <button class="btn btn-tool login-btn"
-                    style="margin-top: 0.75rem; border: 1px solid rgba(255,255,255,0.3); color: #FFFFFF;"
-                    onclick="loginWithPasskey()">
-                    <span style="margin-right:0.5rem;">🆔</span> 지문 / 안면 인식 로그인
+        </div>
+
+        <!-- Right Form Panel -->
+        <div class="login-right-panel">
+            <!-- Login Form -->
+            <div class="login-card" id="loginFormContainer" style="display: none;">
+                <div style="margin-bottom: 2.5rem;">
+                    <h1>로그인</h1>
+                    <p class="login-card-subtitle">계정에 로그인하여 자산 대시보드를 확인하세요.</p>
+                </div>
+
+                <div id="loginError" style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem; font-weight: 700; padding: 0.75rem 1rem; background: rgba(255,59,48,0.08); border-radius: 10px; border: 1px solid rgba(255,59,48,0.2);">
+                    아이디 또는 비밀번호가 일치하지 않습니다.
+                </div>
+
+                <div class="login-input">
+                    <span class="login-input-label">아이디</span>
+                    <div class="login-input-icon">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="loginId" placeholder="아이디를 입력하세요" onkeypress="if(event.key === 'Enter') attemptLogin()">
+                    <label></label>
+                </div>
+
+                <div class="login-input">
+                    <span class="login-input-label">비밀번호</span>
+                    <div class="login-input-icon">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <input type="password" id="loginPw" placeholder="비밀번호를 입력하세요" onkeypress="if(event.key === 'Enter') attemptLogin()">
+                    <label></label>
+                </div>
+
+                <div class="flex items-center gap-3 mb-2" style="margin-top: 0.5rem;">
+                    <div class="relative flex items-center">
+                        <input type="checkbox" id="rememberId" class="peer appearance-none w-4 h-4 border-2 rounded checked:bg-dyo-dark transition-all cursor-pointer" style="border-color: var(--glass-border);">
+                        <svg class="absolute w-2.5 h-2.5 text-white left-0.5 pointer-events-none hidden peer-checked:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="4">
+                            <path d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <label for="rememberId" style="font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; user-select: none; font-weight: 600;">아이디 저장</label>
+                </div>
+
+                <div class="login-btn-container">
+                    <button class="btn login-btn" onclick="attemptLogin()">
+                        로그인
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 0.5rem;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+
+                <button onclick="hideLoginScreen()" style="width:100%; background:none; border:none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; cursor:pointer; padding: 0.5rem; transition: color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+                    ← 홈으로 돌아가기
                 </button>
             </div>
 
-        </div>
-
-        <div class="login-card" id="adminCreateContainer" style="display: none;">
-            <h1>시작하기</h1>
-            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">이 기기에서는 등록된 계정 정보가
-                없습니다.<br>기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
-
-            <!-- Primary Option: Data Import -->
-            <div
-                style="margin-bottom: 2rem; padding: 1rem; background: rgba(0, 163, 196, 0.05); border: 1px dashed var(--accent-blue); border-radius: 0.5rem;">
-                <p style="font-size: 0.85rem; color: var(--text-primary); font-weight: 700; margin-bottom: 0.5rem;">기존
-                    데이터 복원 (권장)</p>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">JSON 파일을 이 화면에 드래그하여
-                    드롭하세요.</p>
-                <button class="btn btn-blue" style="width: 100%; font-size: 0.85rem;" onclick="openGitHubModal()">☁️
-                    GitHub에서 가져오기</button>
-            </div>
-
-            <!-- Secondary Option: New Registration (Restricted) -->
-            <div id="setupKeySection">
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">새로운 환경을 시작하시겠습니까?
-                </p>
-                <div class="login-input">
-                    <input type="password" id="setupMasterKey" placeholder="설치 마스터 키 입력"
-                        onkeypress="if(event.key === 'Enter') verifySetupKey()">
+            <!-- Initial Setup Screen -->
+            <div class="login-card" id="adminCreateContainer" style="display: none;">
+                <div style="margin-bottom: 2rem;">
+                    <h1>초기 설정</h1>
+                    <p class="login-card-subtitle">기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
                 </div>
-                <button class="btn btn-tool" style="width: 100%; justify-content: center;" onclick="verifySetupKey()">인증
-                    및 등록 시작</button>
-            </div>
 
-            <div id="adminFieldsSection"
-                style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1rem;">
-                <p style="font-size: 0.85rem; color: var(--accent-blue); font-weight: 700; margin-bottom: 1rem;">신규 관리자
-                    계정 생성</p>
-                <div class="login-input">
-                    <input type="text" id="adminName" placeholder="사용자 이름 (ex. 본인 이름)">
+                <div style="margin-bottom: 1.5rem; padding: 1.25rem; border: 1.5px dashed var(--glass-border); border-radius: 16px;">
+                    <p style="font-size: 0.7rem; font-weight: 800; letter-spacing: 0.2em; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.75rem;">기존 데이터 복원</p>
+                    <button class="btn" style="width:100%; justify-content:center; background: var(--glass-bg); border: 1.5px solid var(--glass-border); color: var(--text-primary); border-radius: 12px; padding: 0.75rem;" onclick="openGitHubModal()">☁️ Cloud에서 가져오기</button>
                 </div>
-                <div class="login-input">
-                    <input type="text" id="adminId" placeholder="아이디">
+
+                <div id="setupKeySection" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <p style="font-size: 0.7rem; font-weight: 800; letter-spacing: 0.2em; color: var(--text-secondary); text-transform: uppercase;">신규 등록</p>
+                    <div class="login-input">
+                        <span class="login-input-label">마스터 액세스 키</span>
+                        <div class="login-input-icon">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3m-3-3l-2.5-2.5"/></svg>
+                        </div>
+                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력" onkeypress="if(event.key === 'Enter') verifySetupKey()">
+                        <label></label>
+                    </div>
+                    <button class="btn login-btn" onclick="verifySetupKey()">시스템 인증</button>
                 </div>
-                <div class="login-input">
-                    <input type="password" id="adminPw" placeholder="비밀번호">
+
+                <div id="adminFieldsSection" style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="login-input">
+                        <span class="login-input-label">관리자 이름</span>
+                        <input type="text" id="adminName" placeholder="이름을 입력하세요" style="border-radius: 12px !important; padding: 0.85rem 1rem !important; border: 1.5px solid var(--glass-border) !important;">
+                    </div>
+                    <div class="login-input">
+                        <span class="login-input-label">관리자 아이디</span>
+                        <input type="text" id="adminId" placeholder="아이디" style="border-radius: 12px !important; padding: 0.85rem 1rem !important; border: 1.5px solid var(--glass-border) !important;">
+                    </div>
+                    <div class="login-input">
+                        <span class="login-input-label">비밀번호 (마스터키로 사용됨)</span>
+                        <input type="password" id="adminPw" placeholder="비밀번호" style="border-radius: 12px !important; padding: 0.85rem 1rem !important; border: 1.5px solid var(--glass-border) !important;">
+                    </div>
+                    <button class="btn login-btn" onclick="createAdminAccount()">관리자 계정 생성</button>
                 </div>
-                <button class="btn btn-add login-btn" onclick="createAdminAccount()">관리자 등록</button>
             </div>
         </div>
     </div>
 
-    <div class="container mx-auto px-6 py-8" id="mainContainer" style="display: none;">
-        
-        <!-- 미니멀 내비게이션 (Leo Natsume 스타일) -->
-        
-        <nav class="landing-nav" style="padding: 0 0 2rem 0; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border);">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 22H22L12 2Z" stroke="#1C1D20" stroke-width="2" stroke-linejoin="round"/>
-                    <path d="M12 10L7 20H17L12 10Z" fill="#5D6BF8"/>
-                </svg>
-                Asset Manager
-            </div>
-            
-            <div class="flex items-center gap-2 bg-leo-lightgray/40 rounded-full px-5 py-2" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
-                <select id="yearSelect" class="bg-transparent font-bold text-lg md:text-xl text-leo-dark focus:outline-none appearance-none cursor-pointer pr-2"></select>
-                <span class="font-bold text-xl text-leo-gray">/</span>
-                <select id="monthSelect" class="bg-transparent font-bold text-lg md:text-xl text-leo-dark focus:outline-none appearance-none cursor-pointer pl-2 pr-4"></select>
+    <!-- Theme Toggle Button -->
+    <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="테마 변경">🌙</button>
+
+
+    <div class="container" id="mainContainer" style="display: none;">
+
+        <!-- Dashboard Navigation -->
+        <nav class="flex justify-between items-center py-8 px-4">
+            <div class="group flex items-center gap-4 cursor-pointer" onclick="location.reload()">
+                <div
+                    class="w-10 h-10 border border-dyo-dark rounded-full flex items-center justify-center transition-all duration-500 group-hover:bg-dyo-dark overflow-hidden">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="text-dyo-dark group-hover:text-white transition-colors duration-500">
+                        <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 3V21" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
+                        <path d="M4 12H20" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
+                    </svg>
+                </div>
+                <div class="flex flex-col -space-y-1.5">
+                    <span class="font-serif text-2xl italic tracking-tighter text-dyo-dark">Hans</span>
+                    <span class="text-[8px] font-black tracking-[0.4em] text-dyo-dark/30 uppercase pl-0.5">Wealth
+                        Management</span>
+                </div>
             </div>
 
-            <ul>
-                <li><a href="#" onclick="openInstallmentModal()">CARD</a></li>
-                <li><a href="#" onclick="openPensionModal()">PENSION</a></li>
-                <li><a href="#" onclick="openGitHubModal()">CLOUD</a></li>
-                <li><a href="#" onclick="openDataManageModal()">DATA</a></li>
-                <li><a href="#" onclick="openManualModal()">MANUAL</a></li>
-            </ul>
-            
-            <div style="display: flex; gap: 1rem;">
-                <button class="btn-connect" style="background-color: transparent; color: #1C1D20; border: 1px solid #1C1D20; padding: 0.5rem 1.5rem;" onclick="registerPasskey()" title="패스키 설정">PASSKEY</button>
-                <button class="btn-connect" style="background-color: transparent; color: #1C1D20; border: 1px solid #1C1D20; padding: 0.5rem 1.5rem;" onclick="openAccountModal()">USER</button>
-                <button class="btn-connect" onclick="logout()">LOGOUT</button>
+            <div class="nav-year-month flex items-center gap-2 rounded-full px-4 py-2 shadow-sm border" style="background: var(--card-bg); border-color: var(--glass-border);">
+                <select id="yearSelect"
+                    style="background: transparent; border: none; outline: none; font-weight: 800; font-size: 1.1rem; color: var(--text-primary); cursor: pointer; min-width: 80px; padding-right: 0;"></select>
+                <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-secondary); opacity: 0.4;">/</span>
+                <select id="monthSelect"
+                    style="background: transparent; border: none; outline: none; font-weight: 800; font-size: 1.1rem; color: var(--text-primary); cursor: pointer; min-width: 60px; padding-right: 0;"></select>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Horizontal Expanding Menu -->
+                <div id="dashboardMenu"
+                    class="h-14 w-0 opacity-0 bg-white rounded-full flex items-center gap-4 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-dyo-dark">
+                    <a href="#" onclick="openInstallmentModal(); closeDashboardMenu();"
+                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Card</a>
+                    <a href="#" onclick="openPensionModal(); closeDashboardMenu();"
+                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Pension</a>
+                    <a href="#" onclick="openGitHubModal(); closeDashboardMenu();"
+                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Cloud</a>
+                    <a href="#" onclick="openDataManageModal(); closeDashboardMenu();"
+                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Data</a>
+                    <a href="#" onclick="openManualModal(); closeDashboardMenu();"
+                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Manual</a>
+                    <a href="#" onclick="openAccountModal(); closeDashboardMenu();"
+                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">User</a>
+                    <a href="#" onclick="logout(); closeDashboardMenu();"
+                        class="text-[10px] font-black tracking-tighter text-red-400 hover:text-red-500 transition-colors uppercase whitespace-nowrap">Logout</a>
+                </div>
+
+                <button onclick="toggleDashboardMenu()"
+                    class="w-14 h-14 bg-white rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm hover:scale-105 transition-transform border border-dyo-dark shrink-0 relative z-10">
+                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
+                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
+                    <span class="w-4 h-0.5 bg-dyo-dark self-end mr-4"></span>
+                </button>
             </div>
         </nav>
 
-
-        
-        
-        
-        <!-- Pension & Sync Actions -->
-        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1rem;">
-            <button class="btn-connect" style="padding: 0.5rem 1rem; font-size: 0.8rem; background-color: #F4F5FB; color: #5D6BF8;" onclick="openPensionModal()">📊 PENSION INFO</button>
-            <button class="btn-connect" style="padding: 0.5rem 1rem; font-size: 0.8rem; background-color: #E8F5E9; color: #2E7D32;" onclick="manualGitHubSync()">💾 SAVE & SYNC</button>
+        <!-- Dashboard Header Info -->
+        <div class="flex justify-between items-end px-4 mb-10">
+            <div class="space-y-1">
+                <h2 class="font-serif text-5xl italic text-dyo-dark">Monthly Overview</h2>
+                <p class="text-sm font-bold tracking-widest text-dyo-dark/30 uppercase">Track your financial trajectory
+                </p>
+            </div>
+            <div class="flex gap-4">
+                <button
+                    class="px-8 py-3 bg-white text-dyo-dark rounded-full text-[11px] font-black tracking-widest hover:bg-dyo-bg transition-colors border border-dyo-bg shadow-sm uppercase"
+                    onclick="openPensionModal()">📊 예상연금</button>
+                <button
+                    class="px-8 py-3 bg-[#E8F5E9] text-[#2E7D32] rounded-full text-[11px] font-black tracking-widest hover:opacity-80 transition-opacity border border-[#E8F5E9] shadow-sm uppercase"
+                    onclick="manualGitHubSync()">💾 저장 & 동기화</button>
+            </div>
         </div>
-        <!-- Summary Bar -->
-        <div class="summary-bar">
 
-            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '현금 + 비현금 + 부동산 + 퇴직금')" onmouseleave="hideHoverLayer()">
-                <div class="summary-label">자산</div>
+        <!-- Summary Bar -->
+        <div class="summary-bar px-4 mb-12">
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '현금 + 비현금 + 부동산 + 퇴직금')"
+                onmouseleave="hideHoverLayer()">
+                <div class="summary-label">Asset</div>
                 <div class="summary-value" id="summary-income">0</div>
             </div>
-            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '변동 지출 + 고정 지출 + 이번달 할부 원금')" onmouseleave="hideHoverLayer()">
-                <div class="summary-label">지출</div>
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '변동 지출 + 고정 지출 + 이번달 할부 원금')"
+                onmouseleave="hideHoverLayer()">
+                <div class="summary-label">Expense</div>
                 <div class="summary-value value-expense" id="summary-expense">0</div>
             </div>
-            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '자산 - 지출')" onmouseleave="hideHoverLayer()">
-                <div class="summary-label">이번달 손익</div>
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '자산 - 지출')"
+                onmouseleave="hideHoverLayer()">
+                <div class="summary-label">Monthly P&L</div>
                 <div class="summary-value" id="summary-credit">0</div>
             </div>
-            <div class="summary-card" onmouseenter="showSummaryTooltip(event, '자산 총액 - 부채 총액(할부 포함)')" onmouseleave="hideHoverLayer()">
-                <div class="summary-label">순자산</div>
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '자산 총액 - 부채 총액(할부 포함)')"
+                onmouseleave="hideHoverLayer()">
+                <div class="summary-label">Net Worth</div>
                 <div class="summary-value" id="summary-net">0</div>
             </div>
         </div>
 
         <div class="dashboard-grid">
             <div class="unified-card card-income">
-                <div class="unified-card-title">
-                    <span class="card-icon">💰</span>
-                    자산 및 수입
-                    <button class="btn-summary" onclick="openSummary('assets')">요약 보기</button>
+                <div class="unified-card-title justify-between">
+                    Assets & Income
+                    <button
+                        class="px-4 py-2 bg-dyo-bg text-dyo-dark/50 rounded-full text-[10px] font-black tracking-widest hover:text-dyo-dark transition-colors uppercase"
+                        onclick="openSummary('assets')">Summary</button>
                 </div>
-                <div class="section-box">
-                    <div class="section-header">
-                        <h2 class="section-title">현금성 자산</h2><button class="btn btn-add" onclick="addRow('cash')">+
-                            추가</button>
+                <div class="card-content-scrollable">
+                    <div class="section-box">
+                        <div class="section-header">
+                            <h2 class="section-title">현금성 자산</h2><button class="btn btn-add" onclick="addRow('cash')">+
+                                추가</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">분류</th>
+                                    <th style="width: 200px;">내용</th>
+                                    <th style="width: 150px;">금액</th>
+                                    <th style="width: 200px;">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-cash"></tbody>
+                        </table>
+                        <div class="section-footer">소계: <span id="total-cash">0</span></div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 130px;">분류</th>
-                                <th style="width: 300px;">내용</th>
-                                <th style="width: 220px;">금액</th>
-                                <th style="width: 300px;">비고</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-cash"></tbody>
-                    </table>
-                    <div class="section-footer">소계: <span id="total-cash">0</span></div>
-                </div>
-                <div class="section-box">
-                    <div class="section-header">
-                        <h2 class="section-title">비현금성 자산</h2><button class="btn btn-add" onclick="addRow('non-cash')">+
-                            추가</button>
+                    <div class="section-box">
+                        <div class="section-header">
+                            <h2 class="section-title">비현금성 자산</h2><button class="btn btn-add"
+                                onclick="addRow('non-cash')">+
+                                추가</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">분류</th>
+                                    <th style="width: 200px;">내용</th>
+                                    <th style="width: 150px;">금액</th>
+                                    <th style="width: 200px;">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-non-cash"></tbody>
+                        </table>
+                        <div class="section-footer">소계: <span id="total-non-cash">0</span></div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 130px;">분류</th>
-                                <th style="width: 300px;">내용</th>
-                                <th style="width: 220px;">금액</th>
-                                <th style="width: 300px;">비고</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-non-cash"></tbody>
-                    </table>
-                    <div class="section-footer">소계: <span id="total-non-cash">0</span></div>
-                </div>
-                <div class="section-box">
-                    <div class="section-header">
-                        <h2 class="section-title">수입 내역</h2><button class="btn btn-add" onclick="addRow('income')">+
-                            추가</button>
+                    <div class="section-box">
+                        <div class="section-header">
+                            <h2 class="section-title">수입 내역</h2><button class="btn btn-add" onclick="addRow('income')">+
+                                추가</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">분류</th>
+                                    <th style="width: 200px;">내용</th>
+                                    <th style="width: 150px;">금액</th>
+                                    <th style="width: 200px;">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-income"></tbody>
+                        </table>
+                        <div class="section-footer">소계: <span id="total-income">0</span></div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 130px;">분류</th>
-                                <th style="width: 300px;">내용</th>
-                                <th style="width: 220px;">금액</th>
-                                <th style="width: 300px;">비고</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-income"></tbody>
-                    </table>
-                    <div class="section-footer">소계: <span id="total-income">0</span></div>
-                </div>
-                <div class="section-box">
-                    <div class="section-header">
-                        <h2 class="section-title">부동산</h2><button class="btn btn-add" onclick="addRow('real-estate')">+
-                            추가</button>
+                    <div class="section-box">
+                        <div class="section-header">
+                            <h2 class="section-title">부동산</h2><button class="btn btn-add"
+                                onclick="addRow('real-estate')">+
+                                추가</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 130px;">분류</th>
+                                    <th style="width: 300px;">내용</th>
+                                    <th style="width: 220px;">금액</th>
+                                    <th style="width: 300px;">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-real-estate"></tbody>
+                        </table>
+                        <div class="section-footer">소계: <span id="total-real-estate">0</span></div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 130px;">분류</th>
-                                <th style="width: 300px;">내용</th>
-                                <th style="width: 220px;">금액</th>
-                                <th style="width: 300px;">비고</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-real-estate"></tbody>
-                    </table>
-                    <div class="section-footer">소계: <span id="total-real-estate">0</span></div>
                 </div>
             </div>
 
             <div class="unified-card card-expense">
-                <div class="unified-card-title">
-                    <span class="card-icon">💸</span>
-                    부채 및 지출
-                    <button class="btn-summary" onclick="openSummary('expenses')">요약 보기</button>
+                <div class="unified-card-title justify-between">
+                    Debts & Expenses
+                    <button
+                        class="px-4 py-2 bg-dyo-bg text-dyo-dark/50 rounded-full text-[10px] font-black tracking-widest hover:text-dyo-dark transition-colors uppercase"
+                        onclick="openSummary('expenses')">Summary</button>
                 </div>
-                <div class="section-box">
-                    <div class="section-header">
-                        <h2 class="section-title">부채</h2><button class="btn btn-add" onclick="addRow('debt')">+
-                            추가</button>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 200px;">분류</th>
-                                <th style="width: 350px;">내용</th>
-                                <th style="width: 280px;">원금</th>
-                                <th style="width: 140px;">이율(%)</th>
-                                <th style="width: 280px;">잔여금</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-debt"></tbody>
-                    </table>
-                    <div class="section-footer">총 부채: <span id="total-debt">0</span></div>
-                </div>
-                <div class="section-box">
-                    <div class="section-header">
-                        <h2 class="section-title">변동 지출</h2>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-tool" onclick="openExpenseChart('v-expense')">📊 그래프</button>
-                            <button class="btn btn-add" onclick="addRow('v-expense')">+ 추가</button>
+                <div class="card-content-scrollable">
+                    <div class="section-box">
+                        <div class="section-header">
+                            <h2 class="section-title">부채</h2><button class="btn btn-add" onclick="addRow('debt')">+
+                                추가</button>
                         </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">분류</th>
+                                    <th style="width: 150px;">내용</th>
+                                    <th style="width: 180px;">원금</th>
+                                    <th style="width: 70px;">이율(%)</th>
+                                    <th style="width: 220px;">잔여금</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-debt"></tbody>
+                        </table>
+                        <div class="section-footer">총 부채: <span id="total-debt">0</span></div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 180px;">분류</th>
-                                <th style="width: 220px;">금액</th>
-                                <th style="width: 630px;">비고</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-v-expense"></tbody>
-                    </table>
-                    <div class="section-footer">소계: <span id="total-v-expense">0</span></div>
-                </div>
-                <div class="section-box">
-                    <div class="section-header">
-                        <h2 class="section-title">고정 지출</h2><button class="btn btn-add" onclick="addRow('f-expense')">+
-                            추가</button>
+                    <div class="section-box">
+                        <div class="section-header">
+                            <h2 class="section-title">변동 지출</h2>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-tool" onclick="openExpenseChart('v-expense')">📊 그래프</button>
+                                <button class="btn btn-add" onclick="addRow('v-expense')">+ 추가</button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 120px;">분류</th>
+                                    <th style="width: 150px;">금액</th>
+                                    <th style="width: 400px;">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-v-expense"></tbody>
+                        </table>
+                        <div class="section-footer">소계: <span id="total-v-expense">0</span></div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 180px;">분류</th>
-                                <th style="width: 220px;">금액</th>
-                                <th style="width: 630px;">비고</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-f-expense"></tbody>
-                    </table>
-                    <div class="section-footer">소계: <span id="total-f-expense">0</span></div>
+                    <div class="section-box">
+                        <div class="section-header">
+                            <h2 class="section-title">고정 지출</h2><button class="btn btn-add"
+                                onclick="addRow('f-expense')">+
+                                추가</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 120px;">분류</th>
+                                    <th style="width: 150px;">금액</th>
+                                    <th style="width: 400px;">비고</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-f-expense"></tbody>
+                        </table>
+                        <div class="section-footer">소계: <span id="total-f-expense">0</span></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2029,69 +2994,54 @@
         </div>
     </div>
 
-    <!-- Installment Modal -->
     <div class="modal-overlay" id="installmentModal">
-        <div class="modal-content" style="max-width: 1520px;">
+        <div class="modal-content" style="max-width: 1200px;">
             <div class="modal-header">
                 <span class="modal-title">카드 할부 관리</span>
                 <div style="display: flex; gap: 0.75rem; align-items: center;">
                     <select id="installmentYearFilter" onchange="render()"
-                        style="padding: 0.4rem 2rem 0.4rem 0.8rem; font-size: 0.85rem; border-color: var(--glass-border); border-radius: 0.375rem;">
-                        <option value="">연도 (전체)</option>
-                        <option value="2024">2024년</option>
-                        <option value="2025">2025년</option>
-                        <option value="2026">2026년</option>
-                        <option value="2027">2027년</option>
-                        <option value="2028">2028년</option>
-                        <option value="2029">2029년</option>
-                        <option value="2030">2030년</option>
+                        class="bg-transparent border border-dyo-bg px-4 py-2 rounded-full text-xs font-bold">
+                        <option value="">Year (All)</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
                     </select>
                     <select id="installmentMonthFilter" onchange="render()"
-                        style="padding: 0.4rem 2rem 0.4rem 0.8rem; font-size: 0.85rem; border-color: var(--glass-border); border-radius: 0.375rem;">
-                        <option value="">월 (전체)</option>
-                        <option value="01">01월</option>
-                        <option value="02">02월</option>
-                        <option value="03">03월</option>
-                        <option value="04">04월</option>
-                        <option value="05">05월</option>
-                        <option value="06">06월</option>
-                        <option value="07">07월</option>
-                        <option value="08">08월</option>
-                        <option value="09">09월</option>
-                        <option value="10">10월</option>
-                        <option value="11">11월</option>
-                        <option value="12">12월</option>
+                        class="bg-transparent border border-dyo-bg px-4 py-2 rounded-full text-xs font-bold">
+                        <option value="">Month (All)</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
                     </select>
-                    <select id="installmentSortSelect" onchange="sortInstallments(this.value)"
-                        style="padding: 0.4rem 2rem 0.4rem 0.8rem; font-size: 0.85rem; border-color: var(--glass-border); border-radius: 0.375rem;">
-                        <option value="">정렬 방식 선택</option>
-                        <option value="date_desc">사용일 (최신순)</option>
-                        <option value="date_asc" selected>사용일 (과거순)</option>
-                        <option value="amount_desc">금액 (높은순)</option>
-                        <option value="amount_asc">금액 (낮은순)</option>
-                        <option value="endDate_asc">종료일 (가까운순)</option>
-                        <option value="endDate_desc">종료일 (먼순)</option>
-                    </select>
-                    <button class="btn btn-add" onclick="addRow('installment')">+ 추가</button>
-                    <button class="btn btn-green" style="padding: 0.35rem 1rem; font-size: 0.875rem;"
-                        onclick="saveInstallment()">저장</button>
+                    <button class="btn-add" onclick="addRow('installment')">+ Add</button>
                     <button class="btn-close" onclick="closeInstallmentModal()">&times;</button>
                 </div>
             </div>
             <div style="overflow-x: auto; margin-bottom: 1rem;">
-                <table style="font-size: 0.85rem;">
+                <table style="font-size: 0.8rem;">
                     <thead>
                         <tr>
-                            <th style="width: 110px; text-align: center;">사용일</th>
-                            <th style="width: 90px; text-align: center;">카드</th>
-                            <th style="width: 410px; text-align: center;">사용처</th>
-                            <th style="width: 170px; text-align: center;">금액</th>
-                            <th style="width: 110px; text-align: center;">회차 (현재/전체)</th>
-                            <th style="width: 120px; text-align: center;">원금</th>
-                            <th style="width: 120px; text-align: center;">수수료</th>
-                            <th style="width: 120px; text-align: center;">잔액</th>
-                            <th style="width: 110px; text-align: center;">종료</th>
-                            <th style="width: 50px;"></th>
+                            <th style="width: 100px; text-align: center;">사용일</th>
+                            <th style="width: 80px; text-align: center;">카드</th>
+                            <th style="width: 300px; text-align: center;">사용처</th>
+                            <th style="width: 140px; text-align: center;">금액</th>
+                            <th style="width: 100px; text-align: center;">회차</th>
+                            <th style="width: 110px; text-align: center;">원금</th>
+                            <th style="width: 110px; text-align: center;">수수료</th>
+                            <th style="width: 110px; text-align: center;">잔액</th>
+                            <th style="width: 90px; text-align: center;">종료</th>
+                            <th style="width: 40px;"></th>
                         </tr>
                     </thead>
                     <tbody id="tbody-installment"></tbody>
@@ -2100,7 +3050,8 @@
             <div
                 style="display: flex; justify-content: flex-end; gap: 2rem; padding: 1rem; background: #f8fafc; border-radius: 8px; font-weight: 700; font-size: 0.95rem;">
                 <div>전체 금액 합계: <span id="installment-total-amount" style="color: var(--accent-blue);">0</span>원</div>
-                <div>이번 달 납부 합계 (원금+수수료): <span id="installment-total-principal" style="color: var(--accent-purple);">0</span>원
+                <div>이번 달 납부 합계 (원금+수수료): <span id="installment-total-principal"
+                        style="color: var(--accent-purple);">0</span>원
                 </div>
                 <div>할부 총 잔액: <span id="total-installment" style="color: var(--accent-red);">0</span>원</div>
             </div>
@@ -2197,7 +3148,8 @@
                 <p>앱은 크게 <strong>상단 헤더</strong>와 <strong>자산/수입/지출 영역</strong>으로 구성됩니다.</p>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
                     <li><strong>연도 / 월 선택:</strong> 상단에서 조회할 연도와 월을 선택합니다. 월을 변경하면 해당 월의 데이터가 자동으로 불러와집니다.</li>
-                    <li><strong>요약 카드:</strong> 총 수입 · 총 지출 · 가용 잔액 · 순자산이 한눈에 표시됩니다. 카드 위에 마우스를 올리면 계산 기준 툴팁이 표시됩니다.</li>
+                    <li><strong>요약 카드:</strong> 총 수입 · 총 지출 · 가용 잔액 · 순자산이 한눈에 표시됩니다. 카드 위에 마우스를 올리면 계산 기준 툴팁이 표시됩니다.
+                    </li>
                     <li><strong>요약 보기 버튼:</strong> 각 섹션 상단의 요약 버튼을 누르면 해당 항목의 상세 요약 레이어가 팝업으로 표시됩니다.</li>
                 </ul>
 
@@ -2209,54 +3161,66 @@
                     <li><strong>Cloud (클라우드 동기화):</strong> GitHub 연동 설정 창을 엽니다.</li>
                     <li><strong>Data (데이터 관리):</strong> 데이터 백업(JSON 다운로드), 복원(JSON 붙여넣기), 월 데이터 삭제 기능을 제공합니다.</li>
                     <li><strong>Manual (매뉴얼):</strong> 현재 보고 계신 이 화면입니다.</li>
-                    <li><strong>Passkey (패스키 설정):</strong> 지문/안면인식 로그인 등록. 등록 후 다음부터는 비밀번호 없이 로그인 가능합니다.</li>
                     <li><strong>User (사용자 정보):</strong> 계정 정보를 확인하거나 수정합니다.</li>
                     <li><strong>Logout (로그아웃):</strong> 현재 로그인된 상태를 해제합니다.</li>
                 </ul>
 
                 <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">3. 자산·수입·지출 항목 입력</h3>
-                <p>각 섹션에서 <strong>[+ 추가]</strong> 버튼을 누르면 새 행이 추가됩니다. 항목 입력 후 <strong>[저장]</strong>을 클릭하거나, 상단 Pension & Sync 바의 <strong>[💾 Save & Sync]</strong>로 데이터를 보존합니다.</p>
+                <p>각 섹션에서 <strong>[+ 추가]</strong> 버튼을 누르면 새 행이 추가됩니다. 항목 입력 후 <strong>[저장]</strong>을 클릭하거나, 상단 Pension &
+                    Sync 바의 <strong>[💾 저장 & 동기화]</strong>로 데이터를 보존합니다.</p>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
                     <li>금액 칸에는 숫자만 입력하면 자동으로 콤마(,) 형식으로 변환됩니다.</li>
                     <li>내용이 긴 항목은 툴팁으로 표시될 수 있습니다.</li>
-                    <li><strong>변동/고정지출</strong>의 <strong>[상세]</strong> 버튼을 누르면 세부 항목을 분리하여 입력할 수 있습니다. (예: 식비 = 마트 + 배달 + 외식)</li>
+                    <li><strong>변동/고정지출</strong>의 <strong>[상세]</strong> 버튼을 누르면 세부 항목을 분리하여 입력할 수 있습니다. (예: 식비 = 마트 + 배달
+                        + 외식)</li>
                     <li>모바일에서도 [상세] 버튼을 탭(터치)하면 세부 입력 창이 열립니다.</li>
                 </ul>
 
                 <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. 연금 정보 및 저장 바</h3>
                 <p>화면 상단의 흰색 막대(Pension & Sync Bar)에서 연금 및 저장 관련 기능을 수행합니다.</p>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>📊 Pension Info:</strong> 예상 국민연금 정보를 입력할 수 있습니다. (세전/세후 예상 수령액, 수령 시기, 가입 기간 등 입력 시 자동 계산)</li>
-                    <li><strong>💾 Save & Sync:</strong> 현재 화면의 데이터를 로컬 스토리지와 GitHub(연동 시)에 즉시 저장하고 동기화합니다.</li>
+                    <li><strong>📊 Pension Info:</strong> 예상 국민연금 정보를 입력할 수 있습니다. (세전/세후 예상 수령액, 수령 시기, 가입 기간 등 입력 시 자동
+                        계산)</li>
+                    <li><strong>💾 저장 & 동기화:</strong> 현재 화면의 데이터를 로컬 스토리지와 GitHub(연동 시)에 즉시 저장하고 동기화합니다.</li>
                 </ul>
             </div>
 
             <!-- 탭 2: 계산 로직 -->
-            <div id="manual-calc" class="manual-tab-content" style="line-height: 1.8; color: var(--text-primary); display: none;">
+            <div id="manual-calc" class="manual-tab-content"
+                style="line-height: 1.8; color: var(--text-primary); display: none;">
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">이 앱의 핵심 목적</h3>
                 <p>매달 <strong>수입을 기준으로 지출 금액을 빼면 얼마가 남는지(또는 부족한지)</strong>를 한눈에 파악하는 것입니다.<br>
-                현금성 자산이나 부채는 현재 보유 현황만 볼 뿐, 월별 잔액 계산에는 포함되지 않습니다.</p>
+                    현금성 자산이나 부채는 현재 보유 현황만 볼 뿐, 월별 잔액 계산에는 포함되지 않습니다.</p>
 
                 <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">요약 카드 계산 공식</h3>
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 0.5rem;">
                     <thead>
                         <tr style="background: #f1f5f9;">
                             <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">항목</th>
-                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">계산 공식</th>
+                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">계산 공식
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-green);">총 수입</td>
+                            <td
+                                style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-green);">
+                                총 수입</td>
                             <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">수입 내역 금액 합계</td>
                         </tr>
                         <tr>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-red);">총 지출</td>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">변동 지출 합계 + 고정 지출 합계 + 이번달 진행 중인 할부 월 원금 합계</td>
+                            <td
+                                style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-red);">
+                                총 지출</td>
+                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">변동 지출 합계 + 고정 지출 합계 + 이번달
+                                진행 중인 할부 월 원금 합계</td>
                         </tr>
                         <tr>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-blue);">가용 잔액</td>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">총 수입 - 총 지출 (플러스: 잉여 / 마이너스: 적자)</td>
+                            <td
+                                style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-blue);">
+                                가용 잔액</td>
+                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">총 수입 - 총 지출 (플러스: 잉여 /
+                                마이너스: 적자)</td>
                         </tr>
                         <tr>
                             <td style="padding: 8px 12px; font-weight: 700; color: var(--accent-purple);">순자산</td>
@@ -2265,7 +3229,8 @@
                     </tbody>
                 </table>
 
-                <div style="margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(239,68,68,0.06); border-left: 3px solid var(--accent-red); border-radius: 4px; font-size: 0.88rem;">
+                <div
+                    style="margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(239,68,68,0.06); border-left: 3px solid var(--accent-red); border-radius: 4px; font-size: 0.88rem;">
                     ⚠️ <strong>할부 계산 주의:</strong> 종료일(endDate)이 현재 조회 월보다 이전인 만료된 할부는 총 지출 계산에서 자동으로 제외됩니다.
                 </div>
 
@@ -2280,20 +3245,61 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">현금성 자산</td><td>-</td><td>-</td><td style="color:var(--accent-green)">+자산</td></tr>
-                        <tr><td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">비현금성 자산</td><td>-</td><td>-</td><td style="color:var(--accent-green)">+자산</td></tr>
-                        <tr><td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">수입 내역</td><td style="color:var(--accent-green)">포함</td><td>-</td><td>-</td></tr>
-                        <tr><td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부동산 자산</td><td>-</td><td>-</td><td style="color:var(--accent-green)">+자산</td></tr>
-                        <tr><td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부채</td><td>-</td><td>-</td><td style="color:var(--accent-red)">-부채(잔액)</td></tr>
-                        <tr><td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">변동 지출</td><td>-</td><td style="color:var(--accent-red)">포함</td><td>-</td></tr>
-                        <tr><td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">고정 지출</td><td>-</td><td style="color:var(--accent-red)">포함</td><td>-</td></tr>
-                        <tr><td style="padding:6px 12px;">카드 할부</td><td>-</td><td style="color:var(--accent-red)">월 원금 포함(진행 중만)</td><td style="color:var(--accent-red)">-부채(잔액)</td></tr>
+                        <tr>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">현금성 자산</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-green)">+자산</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">비현금성 자산</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-green)">+자산</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">수입 내역</td>
+                            <td style="color:var(--accent-green)">포함</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부동산 자산</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-green)">+자산</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부채</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-red)">-부채(잔액)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">변동 지출</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-red)">포함</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">고정 지출</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-red)">포함</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px;">카드 할부</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-red)">월 원금 포함(진행 중만)</td>
+                            <td style="color:var(--accent-red)">-부채(잔액)</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
 
             <!-- 탭 3: 할부 관리 -->
-            <div id="manual-installment" class="manual-tab-content" style="line-height: 1.8; color: var(--text-primary); display: none;">
+            <div id="manual-installment" class="manual-tab-content"
+                style="line-height: 1.8; color: var(--text-primary); display: none;">
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. 할부 관리 열기</h3>
                 <p>상단 헤더의 <strong>[💳 Card / 할부 관리]</strong> 버튼을 클릭하여 카드 할부 관리 창을 엽니다.</p>
 
@@ -2318,9 +3324,10 @@
 
                 <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. 정렬 및 합계</h3>
                 <p>상단 정렬 드롭다운으로 사용일/금액/종료일 기준 오름/내림차순 정렬을 할 수 있습니다.<br>
-                하단에는 <strong>전체 금액 합계 / 이번달 원금 합계(진행 중) / 할부 총 잔액</strong>이 자동으로 계산됩니다.</p>
+                    하단에는 <strong>전체 금액 합계 / 이번달 원금 합계(진행 중) / 할부 총 잔액</strong>이 자동으로 계산됩니다.</p>
 
-                <div style="margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(59,130,246,0.06); border-left: 3px solid var(--accent-blue); border-radius: 4px; font-size: 0.88rem;">
+                <div
+                    style="margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(59,130,246,0.06); border-left: 3px solid var(--accent-blue); border-radius: 4px; font-size: 0.88rem;">
                     💡 이번달 원금 합계는 <strong>진행 중인 할부만</strong> 계산하며, 이 금액이 메인 화면 <strong>총 지출</strong>에 반영됩니다.
                 </div>
             </div>
@@ -2329,12 +3336,14 @@
             <div id="manual-github" class="manual-tab-content"
                 style="line-height: 1.8; color: var(--text-primary); display: none;">
                 <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. GitHub 연동의 장점</h3>
-                <p>GitHub 연동을 통해 데이터를 클라우드에 안전하게 보관하고, 여러 기기(PC, 모바일 등)에서 동일한 데이터를 동기화하여 사용할 수 있습니다. 브라우저의 로컬 스토리지가 삭제되어도 데이터가 안전하게 유지됩니다.</p>
+                <p>GitHub 연동을 통해 데이터를 클라우드에 안전하게 보관하고, 여러 기기(PC, 모바일 등)에서 동일한 데이터를 동기화하여 사용할 수 있습니다. 브라우저의 로컬 스토리지가
+                    삭제되어도 데이터가 안전하게 유지됩니다.</p>
 
                 <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">2. 연동 설정 방법</h3>
                 <p>오른쪽 상단의 <strong>[☁️ / GitHub]</strong> 버튼을 클릭하여 설정을 시작합니다.</p>
                 <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>Personal Access Token (PAT):</strong> GitHub → Settings → Developer settings → Personal access tokens 에서 발급합니다. (최소 <code>repo</code> 권한 필요)</li>
+                    <li><strong>Personal Access Token (PAT):</strong> GitHub → Settings → Developer settings → Personal
+                        access tokens 에서 발급합니다. (최소 <code>repo</code> 권한 필요)</li>
                     <li><strong>저장소 (Repository):</strong> 데이터를 저장할 저장소 이름 (예: <code>username/repo-name</code>)</li>
                     <li><strong>브랜치:</strong> 기본값은 <code>main</code>. 저장소 기본 브랜치에 맞게 수정합니다.</li>
                     <li><strong>[💾 설정 저장]</strong> 버튼을 누르면 즉시 GitHub에서 기존 데이터를 가져오려고 시도합니다.</li>
@@ -2345,11 +3354,13 @@
 
                 <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. 실시간 수동 저장</h3>
                 <p>하단 연금 바의 <strong>[💾 실시간 저장]</strong> 버튼을 누르면 현재 데이터를 로컬 스토리지와 GitHub에 즉시 저장합니다.<br>
-                저장 중에는 버튼이 ⏳로 바뀌고, 완료되면 ✅ 저장 완료로 잠시 표시됩니다.</p>
+                    저장 중에는 버튼이 ⏳로 바뀌고, 완료되면 ✅ 저장 완료로 잠시 표시됩니다.</p>
 
                 <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">5. 데이터 조회 및 복원</h3>
-                <p>GitHub 연동 모달 내 <strong>📂 GitHub 데이터 관리</strong> 섹션에서 저장된 JSON 파일 목록을 불러오고, 선택한 파일의 내용을 미리 볼 수 있습니다.</p>
-                <p>새 기기에서 시작하려면 로그인 화면의 <strong>[☁️ GitHub에서 가져오기]</strong>를 이용하거나, JSON 파일을 화면에 드래그 앤 드롭하여 복원할 수 있습니다.</p>
+                <p>GitHub 연동 모달 내 <strong>📂 GitHub 데이터 관리</strong> 섹션에서 저장된 JSON 파일 목록을 불러오고, 선택한 파일의 내용을 미리 볼 수 있습니다.
+                </p>
+                <p>새 기기에서 시작하려면 로그인 화면의 <strong>[☁️ GitHub에서 가져오기]</strong>를 이용하거나, JSON 파일을 화면에 드래그 앤 드롭하여 복원할 수 있습니다.
+                </p>
             </div>
 
             <button class="btn btn-add" style="margin-top: 2rem; width: 100%; justify-content: center;"
@@ -2367,8 +3378,8 @@
         };
         let accountsData = [];
         let isLoggedIn = false;
-            document.getElementById('mainContainer').style.display = 'none';
-            document.getElementById('landingPage').style.display = 'block';
+        document.getElementById('mainContainer').style.display = 'none';
+        document.getElementById('landingPage').style.display = 'block';
 
         // --- Setup & Security Keys ---
         const MASTER_SETUP_KEY = "vibe2026";
@@ -2432,82 +3443,6 @@
         }
         // --------------------------------
 
-        async function registerPasskey() {
-            if (!window.PublicKeyCredential) return alert("이 브라우저는 생체 인증을 지원하지 않습니다.");
-            const id = prompt("인증할 아이디를 입력하세요:");
-            const pw = prompt("해당 계정의 비밀번호를 입력하세요 (패스키 등록을 위해 필요):");
-            const account = accountsData.find(a => a.userid === id && a.password === pw);
-            if (!account) return alert("계정 정보가 일치하지 않습니다.");
-
-            try {
-                const challenge = crypto.getRandomValues(new Uint8Array(32));
-                const userID = crypto.getRandomValues(new Uint8Array(16));
-
-                const publicKeyCredentialCreationOptions = {
-                    challenge,
-                    rp: { name: "Vibe Asset Manager", id: window.location.hostname || "localhost" },
-                    user: { id: userID, name: id, displayName: id },
-                    pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
-                    authenticatorSelection: { userVerification: "required" },
-                    timeout: 60000
-                };
-
-                const credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
-                if (credential) {
-                    const passkeyData = {
-                        credentialId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
-                        encryptedPw: btoa(encodeURIComponent(pw))
-                    };
-                    localStorage.setItem(`passkey_${id}`, JSON.stringify(passkeyData));
-                    alert("Passkey가 성공적으로 등록되었습니다. 이제 지문/안면 인식으로 로그인할 수 있습니다.");
-                }
-            } catch (e) {
-                console.error("Passkey registration failed", e);
-                alert("Passkey 등록에 실패했습니다.");
-            }
-        }
-
-        async function loginWithPasskey() {
-            if (!window.PublicKeyCredential) return alert("이 브라우저는 생체 인증을 지원하지 않습니다.");
-
-            const savedId = localStorage.getItem('savedLoginId') || prompt("로그인할 아이디를 입력하세요:");
-            if (!savedId) return;
-
-            const passkeyStr = localStorage.getItem(`passkey_${savedId}`);
-            if (!passkeyStr) return alert("등록된 Passkey가 없습니다. 먼저 일반 로그인 후 등록해주세요.");
-
-            const passkeyData = JSON.parse(passkeyStr);
-
-            try {
-                const challenge = crypto.getRandomValues(new Uint8Array(32));
-                const publicKeyCredentialRequestOptions = {
-                    challenge,
-                    allowCredentials: [{
-                        id: new Uint8Array(atob(passkeyData.credentialId).split("").map(c => c.charCodeAt(0))),
-                        type: 'public-key'
-                    }],
-                    userVerification: "required",
-                    timeout: 60000
-                };
-
-                const assertion = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
-                if (assertion) {
-                    const pw = decodeURIComponent(atob(passkeyData.encryptedPw));
-                    sessionStorage.setItem('temp_master_pw', pw);
-
-                    isLoggedIn = true;
-                    sessionStorage.setItem('assetLoginSession', 'true');
-                    setCookie('assetLoginSession', 'true', 1);
-                    document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('mainContainer').style.display = 'block';
-                    loadData();
-                    console.log("[Passkey] Login successful");
-                }
-            } catch (e) {
-                console.error("Passkey login failed", e);
-                alert("생체 인증에 실패했거나 취소되었습니다.");
-            }
-        }
 
         // --- 2. Data Management Logic ---
         function openDataManageModal() {
@@ -3119,73 +4054,73 @@
                         }
 
                         tr.innerHTML = `
-                            <td><input type="date" style="width: 100%; text-align: center; font-size: 0.9rem; padding: 0.3rem;" value="${item.date}" onchange="updateValue('${s}', ${item.id}, 'date', this.value)"></td>
+                            <td><input type="date" value="${item.date}" onchange="updateValue('${s}', ${item.id}, 'date', this.value)"></td>
                             <td>
-                                <select style="padding: 0.35rem 1.5rem 0.35rem 0.6rem; font-size: 0.85rem; font-weight: 500;" onchange="updateValue('${s}', ${item.id}, 'card', this.value)">
+                                <select onchange="updateValue('${s}', ${item.id}, 'card', this.value)">
                                     <option value="국민" ${item.card === '국민' ? 'selected' : ''}>국민</option>
                                     <option value="신한" ${item.card === '신한' ? 'selected' : ''}>신한</option>
                                     <option value="롯데" ${item.card === '롯데' ? 'selected' : ''}>롯데</option>
                                     ${!['국민', '신한', '롯데'].includes(item.card) && item.card ? `<option value="${item.card}" selected>${item.card}</option>` : ''}
                                 </select>
                             </td>
-                            <td><input type="text" class="text-left" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
+                            <td><input type="text" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
                             <td>
-                                <input type="text" class="amount" style="font-size: 1.1rem; color: var(--accent-blue); width: 100%;" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')">
+                                <input type="text" class="amount" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')">
                             </td>
                             <td>
-                                <div style="display:flex; align-items:center; justify-content: center; gap:6px;">
-                                    <input type="number" min="0" max="120" style="width: 42px; padding: 0.25rem 0.1rem; text-align: center; border: 1px solid var(--glass-border); border-radius: 4px; font-size: 0.85rem; color: ${item.currentMonth === item.totalMonths ? 'var(--accent-green)' : 'var(--accent-blue)'}; font-weight: 600;" value="${item.currentMonth}" onchange="updateValue('${s}', ${item.id}, 'currentMonth', this.value)">
-                                    <span style="color:var(--text-secondary); font-weight:700;">/</span>
-                                    <input type="number" min="1" max="120" style="width: 42px; padding: 0.25rem 0.1rem; text-align: center; border: 1px solid var(--glass-border); border-radius: 4px; font-size: 0.85rem; font-weight: 600;" value="${item.totalMonths}" onchange="updateValue('${s}', ${item.id}, 'totalMonths', this.value)">
+                                <div class="flex items-center justify-center gap-2">
+                                    <input type="number" min="0" max="120" style="width: 45px !important; text-align: center !important;" value="${item.currentMonth}" onchange="updateValue('${s}', ${item.id}, 'currentMonth', this.value)">
+                                    <span class="opacity-20">/</span>
+                                    <input type="number" min="1" max="120" style="width: 45px !important; text-align: center !important;" value="${item.totalMonths}" onchange="updateValue('${s}', ${item.id}, 'totalMonths', this.value)">
                                 </div>
                             </td>
-                            <td><div class="amount" style="font-weight: 700;">${formatNumber(item.monthlyPrincipal)}</div></td>
+                            <td><div class="amount font-bold">${formatNumber(item.monthlyPrincipal)}</div></td>
                             <td>
-                                <input type="text" class="amount" style="font-weight: 700; color: var(--accent-purple); width: 100%;" 
+                                <input type="text" class="amount font-bold" style="color: var(--accent-purple) !important;" 
                                     value="${formatNumber(item.monthlyFee || 0)}" onfocus="handleAmountFocus(this)" 
                                     onblur="handleAmountBlur(this, '${s}', ${item.id}, 'monthlyFee')">
                             </td>
-                            <td><div class="amount" style="font-weight: 700; color: var(--accent-red);">${formatNumber(item.remAmount)}</div></td>
-                            <td><div style="font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; text-align: center; width: 100%;">${item.endDate}</div></td>
-                            <td style="text-align: center;">
-                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
+                            <td><div class="amount font-bold" style="color: var(--accent-red) !important;">${formatNumber(item.remAmount)}</div></td>
+                            <td><div class="text-center text-xs opacity-40 font-bold">${item.endDate}</div></td>
+                            <td class="flex justify-center">
+                                <button class="btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
                             </td>
                         `;
                     } else if (s === 'debt') {
                         tr.innerHTML = `
-                            <td><input type="text" class="text-left" style="font-size: 0.9rem;" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
-                            <td><input type="text" class="text-left" style="font-size: 0.9rem;" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
-                            <td><input type="text" class="amount" style="font-size: 0.9rem; color: var(--text-primary); font-weight: 600;" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')"></td>
-                            <td><input type="text" style="width: 100%; text-align: right; font-size: 0.9rem; font-weight: 600;" value="${parseFloat(item.rate || 0).toFixed(3)}" onblur="updateValue('${s}', ${item.id}, 'rate', parseFloat(this.value) || 0)"></td>
-                            <td style="display: flex; align-items: center; gap: 8px;">
-                                <input type="text" class="amount" style="flex: 1; font-size: 0.9rem; color: var(--accent-red); font-weight: 600;" value="${formatNumber(item.remAmount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'remAmount')">
-                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})" style="flex-shrink: 0;">&times;</button>
+                            <td><input type="text" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
+                            <td><input type="text" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
+                            <td><input type="text" class="amount font-bold" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')"></td>
+                            <td><input type="text" class="amount" value="${parseFloat(item.rate || 0).toFixed(3)}" onblur="updateValue('${s}', ${item.id}, 'rate', parseFloat(this.value) || 0)"></td>
+                            <td class="flex items-center gap-2">
+                                <input type="text" class="amount font-bold" style="color: var(--accent-red) !important;" value="${formatNumber(item.remAmount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'remAmount')">
+                                <button class="btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
                             </td>
                         `;
                     } else if (['v-expense', 'f-expense'].includes(s)) {
                         tr.innerHTML = `
-                            <td><input type="text" class="text-left" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
-                            <td><input type="text" class="amount" value="${formatNumber(item.amount)}" readonly></td>
-                            <td style="display: flex; align-items: center; gap: 8px;">
-                                <input type="text" class="text-left" style="flex: 1;" value="${item.desc}" onchange="updateValue('${s}', ${item.id}, 'desc', this.value)">
-                                <div style="display: flex; gap: 4px; flex-shrink: 0;">
-                                    <button class="btn btn-tool" 
+                            <td><input type="text" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
+                            <td><input type="text" class="amount font-bold" value="${formatNumber(item.amount)}" readonly></td>
+                            <td class="flex items-center gap-2">
+                                <input type="text" style="flex: 1;" value="${item.desc}" onchange="updateValue('${s}', ${item.id}, 'desc', this.value)">
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 border border-dyo-dark/20 rounded-full text-[9px] font-black tracking-widest hover:bg-dyo-dark hover:text-white transition-all uppercase" 
                                         onmouseenter="showHoverLayer(event, '${s}', ${item.id})" 
                                         onmouseleave="hideHoverLayer()" 
                                         onclick="openExpenseDetailModal('${s}', ${item.id})"
-                                        ontouchstart="event.preventDefault(); openExpenseDetailModal('${s}', ${item.id})">상세</button>
-                                    <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
+                                        ontouchstart="event.preventDefault(); openExpenseDetailModal('${s}', ${item.id})">Detail</button>
+                                    <button class="btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
                                 </div>
                             </td>
                         `;
                     } else {
                         tr.innerHTML = `
-                            <td><input type="text" class="text-left" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
-                            <td><input type="text" class="text-left" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
-                            <td><input type="text" class="amount" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')"></td>
-                            <td style="display: flex; align-items: center; gap: 8px;">
-                                <input type="text" class="text-left" style="flex: 1;" value="${item.desc}" onchange="updateValue('${s}', ${item.id}, 'desc', this.value)">
-                                <button class="btn btn-delete" onclick="deleteRow('${s}', ${item.id})" style="flex-shrink: 0;">&times;</button>
+                            <td><input type="text" value="${item.category}" onchange="updateValue('${s}', ${item.id}, 'category', this.value)"></td>
+                            <td><input type="text" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
+                            <td><input type="text" class="amount font-bold" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')"></td>
+                            <td class="flex items-center gap-2">
+                                <input type="text" style="flex: 1;" value="${item.desc}" onchange="updateValue('${s}', ${item.id}, 'desc', this.value)">
+                                <button class="btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
                             </td>
                         `;
                     }
@@ -3198,38 +4133,38 @@
 
         function updatePensionDisplay() {
             if (!state.pension || !state.pension.totalPeriod) return;
-            
+
             // 앱 내 선택 월이 아닌 실제 '오늘' 날짜를 기준으로 계산
             const now = new Date();
             const curY = now.getFullYear();
             const curM = now.getMonth() + 1;
             const currentDate = now;
-            
+
             const periodMatch = state.pension.totalPeriod.match(/(\d{4})[.](\d{2})\s*~\s*(\d{4})[.](\d{2})/);
             if (!periodMatch) return;
-            
+
             const startY = parseInt(periodMatch[1]), startM = parseInt(periodMatch[2]);
             const endY = parseInt(periodMatch[3]), endM = parseInt(periodMatch[4]);
-            
+
             const startDate = new Date(startY, startM - 1);
             const endDate = new Date(endY, endM - 1);
-            
+
             const totalMonths = (endY - startY) * 12 + (endM - startM);
             let paidMonths = (curY - startY) * 12 + (curM - startM) + 1; // 현재 월 포함
-            
+
             if (paidMonths < 0) paidMonths = 0;
             if (paidMonths > totalMonths) paidMonths = totalMonths;
-            
+
             const ratio = totalMonths > 0 ? paidMonths / totalMonths : 0;
-            
+
             // 최종 목표 금액 (세후 기준)
             const targetAmount = parseInt(String(state.pension.afterTax).replace(/[^0-9]/g, '')) || 0;
             const currentEstimatedAmount = Math.floor(targetAmount * ratio);
-            
+
             // 헤더 및 모달 내부 금액 업데이트
             const headerAmountEl = document.getElementById('pensionHeaderAmount');
             if (headerAmountEl) headerAmountEl.innerText = formatNumber(currentEstimatedAmount);
-            
+
             const yearlyEl = document.getElementById('pensionYearlyAmount');
             if (yearlyEl && currentEstimatedAmount > 0) {
                 yearlyEl.innerText = `(연 ${formatNumber(currentEstimatedAmount * 12)}원)`;
@@ -3238,7 +4173,7 @@
             // 총 예상 납부액 계산 (가정: 총 예상 납부액 / 총 개월수 * 현재 개월수)
             const targetTotalPaid = parseInt(String(state.pension.totalPaid).replace(/[^0-9]/g, '')) || 0;
             const currentTotalPaid = Math.floor(targetTotalPaid * ratio);
-            
+
             // 모달이 열려있을 때 입력 필드 업데이트 방지 (사용자 입력 방해 금지)
             // 단, 헤더 정보는 실시간 반영
             if (document.getElementById('pensionModal').style.display === 'flex') {
@@ -3719,7 +4654,7 @@
             const periodMatch = totalPeriod.match(/(\d{4})[.](\d{2})\s*~\s*(\d{4})[.](\d{2})/);
             let ratio = 1;
             let totalMonths = 0, paidMonths = 0;
-            
+
             if (periodMatch) {
                 const startY = parseInt(periodMatch[1]), startM = parseInt(periodMatch[2]);
                 const endY = parseInt(periodMatch[3]), endM = parseInt(periodMatch[4]);
@@ -3733,7 +4668,7 @@
             // 연금액 계산
             const targetAmount = parseInt(afterTax.replace(/[^0-9]/g, '')) || 0;
             const currentAmount = Math.floor(targetAmount * ratio);
-            
+
             document.getElementById('pensionHeaderAmount').innerText = formatNumber(currentAmount);
 
             if (startDate && /\d$/.test(startDate.trim())) {
@@ -3747,7 +4682,7 @@
             } else {
                 document.getElementById('pensionYearlyAmount').innerText = '';
             }
-            
+
             if (totalMonths > 0) {
                 document.getElementById('pensionPeriodSubtext').innerText = `총 ${totalMonths}개월 (현재 ${paidMonths}개월 납부 중)`;
             }
@@ -3768,20 +4703,20 @@
         function updatePensionPeriodSubtext() {
             const totalPeriod = document.getElementById('pensionTotalPeriod').value;
             const subtextEl = document.getElementById('pensionPeriodSubtext');
-            
+
             const periodMatch = totalPeriod.match(/(\d{4})[.](\d{2})\s*~\s*(\d{4})[.](\d{2})/);
             if (periodMatch) {
                 const startY = parseInt(periodMatch[1]), startM = parseInt(periodMatch[2]);
                 const endY = parseInt(periodMatch[3]), endM = parseInt(periodMatch[4]);
                 const totalMonths = (endY - startY) * 12 + (endM - startM);
-                
+
                 const now = new Date();
                 const curY = now.getFullYear();
                 const curM = now.getMonth() + 1;
                 let paidMonths = (curY - startY) * 12 + (curM - startM) + 1;
                 if (paidMonths < 0) paidMonths = 0;
                 if (paidMonths > totalMonths) paidMonths = totalMonths;
-                
+
                 subtextEl.innerText = `총 ${totalMonths}개월 (현재 ${paidMonths}개월 납부 중)`;
                 updatePensionHeader();
             } else {
@@ -4438,15 +5373,62 @@
             </div>
             <div class="modal-footer"
                 style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
-                <button class="btn btn-tool" onclick="closePensionModal()">취소</button>
-                <button class="btn btn-add" style="background: var(--accent-blue);"
-                    onclick="savePensionData()">저장하기</button>
+                <button class="btn btn-add" style="background: var(--accent-blue); width: 100%; justify-content: center;"
+                    onclick="savePensionData()">확인 후 닫기</button>
             </div>
         </div>
     </div>
-    
-    <!-- Toast Popup for Save & Sync -->
+
+    <!-- Toast Popup for 저장 & 동기화 -->
     <div id="toastPopup"></div>
+    <script>
+        function toggleDashboardMenu() {
+            const menu = document.getElementById('dashboardMenu');
+            const isExpanded = !menu.classList.contains('w-0');
+            if (isExpanded) closeDashboardMenu();
+            else openDashboardMenu();
+        }
+        function openDashboardMenu() {
+            const menu = document.getElementById('dashboardMenu');
+            menu.classList.remove('w-0', 'opacity-0', 'pointer-events-none');
+            menu.classList.add('w-[480px]', 'opacity-100', 'px-6');
+        }
+        function closeDashboardMenu() {
+            const menu = document.getElementById('dashboardMenu');
+            menu.classList.add('w-0', 'opacity-0', 'pointer-events-none');
+            menu.classList.remove('w-[480px]', 'opacity-100', 'px-6');
+        }
+
+        // ===== THEME TOGGLE =====
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeToggleBtn');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                if (btn) btn.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                if (btn) btn.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 저장된 테마 즉시 적용 (플리커 방지)
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
+        // DOMContentLoaded 후 테마 버튼 아이콘 동기화
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const btn = document.getElementById('themeToggleBtn');
+            if (savedTheme === 'dark' && btn) btn.textContent = '☀️';
+        });
+    </script>
 </body>
 
 </html>
