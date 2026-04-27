@@ -201,27 +201,24 @@
         }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="transition-colors duration-500 overflow-x-hidden">
+    <div class="max-w-[1400px] mx-auto px-8 w-full">
     <!-- Navigation -->
-    <nav class="flex justify-between items-center mb-12">
+    <nav class="flex justify-between items-center py-8">
         <div class="flex items-center gap-4">
-            <a href="asset.html" class="w-10 h-10 rounded-full border border-dyo-dark flex items-center justify-center hover:bg-dyo-dark hover:text-white transition-all shrink-0">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <a href="asset.html" class="flex items-center gap-4 group">
+                <div class="w-12 h-12 rounded-full border border-dyo-dark flex items-center justify-center group-hover:bg-dyo-dark group-hover:text-white transition-all shrink-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <path d="M12 3V21" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
+                        <path d="M4 12H20" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
+                    </svg>
+                </div>
+                <div class="flex flex-col -space-y-1.5">
+                    <span class="font-serif text-2xl italic tracking-tighter text-dyo-dark dark:text-white">Hans</span>
+                    <span class="text-[8px] font-black tracking-[0.4em] text-dyo-dark/30 uppercase pl-0.5">Wealth Management</span>
+                </div>
             </a>
-            <div class="flex items-center gap-2 bg-white/50 dark:bg-white/5 border border-glass-border px-4 py-2 rounded-full shadow-sm">
-                <select id="yearSelect" onchange="loadData()" class="bg-transparent border-none outline-none font-bold text-sm w-20 p-0 h-auto">
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                </select>
-                <span class="opacity-20 font-bold">/</span>
-                <select id="monthSelect" onchange="loadData()" class="bg-transparent border-none outline-none font-bold text-sm w-12 p-0 h-auto">
-                    <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option>
-                    <option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option>
-                    <option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
-                </select>
-            </div>
         </div>
         
         <div class="flex items-center gap-4">
@@ -258,15 +255,29 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto">
+    <main>
         <div class="unified-card mb-8">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-xl font-bold flex items-center gap-3">
                     <span class="w-2 h-8 bg-dyo-accent rounded-full"></span>
                     카드 할부 내역
                 </h2>
-                <div class="flex gap-3">
-                    <select id="sortSelect" onchange="sortData(this.value)" class="text-xs border border-glass-border rounded-full px-4 py-2 w-40">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 bg-white/50 dark:bg-white/5 border border-glass-border px-4 py-2 rounded-full shadow-sm">
+                        <select id="yearSelect" onchange="loadData()" class="bg-transparent border-none outline-none font-bold text-xs w-16 p-0 h-auto">
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                        <span class="opacity-20 font-bold text-xs">/</span>
+                        <select id="monthSelect" onchange="loadData()" class="bg-transparent border-none outline-none font-bold text-xs w-10 p-0 h-auto">
+                            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option>
+                            <option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option>
+                            <option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                        </select>
+                    </div>
+                    <select id="sortSelect" onchange="sortData(this.value)" class="text-xs border border-glass-border rounded-full px-4 py-2 w-32">
                         <option value="date_desc">최신순</option>
                         <option value="date_asc">과거순</option>
                         <option value="amount_desc">금액높은순</option>
@@ -508,7 +519,15 @@
             const item = state.sections.installment.find(i => i.id === id);
             if (!item) return;
 
-            if (['amount', 'rate', 'totalMonths', 'currentMonth', 'monthlyFee'].includes(field)) {
+            if (field === 'monthlyFee') {
+                const sVal = String(value).trim();
+                if (sVal.endsWith('%')) {
+                    item.rate = parseFloat(sVal.replace('%', '')) || 0;
+                } else {
+                    item.monthlyFee = parseFloat(sVal.replace(/,/g, '')) || 0;
+                    item.rate = 0;
+                }
+            } else if (['amount', 'rate', 'totalMonths', 'currentMonth'].includes(field)) {
                 item[field] = parseFloat(String(value).replace(/,/g, '')) || 0;
             } else {
                 item[field] = value;
@@ -528,6 +547,7 @@
 
             const remainingBalance = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
             if (item.rate > 0) {
+                // 잔액에 대한 수수료 (월별)
                 item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
             }
 
@@ -582,7 +602,7 @@
                             </div>
                         </td>
                         <td><div class="amount font-bold">${formatNumber(item.monthlyPrincipal)}</div></td>
-                        <td><input type="text" class="amount font-bold text-accent-blue" value="${formatNumber(item.monthlyFee)}" onblur="updateValue(${item.id}, 'monthlyFee', this.value)"></td>
+                        <td><input type="text" class="amount font-bold text-accent-blue" value="${item.rate > 0 ? item.rate + '%' : formatNumber(item.monthlyFee)}" onblur="updateValue(${item.id}, 'monthlyFee', this.value)"></td>
                         <td><div class="amount font-bold text-accent-red">${formatNumber(item.remAmount)}</div></td>
                         <td><div class="text-center text-xs opacity-50">${item.endDate}</div></td>
                         <td class="text-center">
@@ -696,5 +716,6 @@
             location.href = 'asset.html';
         }
     </script>
+    </div>
 </body>
 </html>
