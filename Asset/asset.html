@@ -264,9 +264,76 @@
             border-bottom-color: var(--glass-border) !important;
         }
 
+        html.dark select option {
+            background-color: var(--card-bg) !important;
+            color: var(--text-primary) !important;
+        }
+
         html.dark input[readonly] {
             color: var(--text-secondary) !important;
             opacity: 0.7 !important;
+        }
+
+        .installment-expired {
+            background-color: #f1f5f9;
+            opacity: 0.65;
+        }
+        .installment-highlight {
+            background-color: #fffbeb !important;
+        }
+        .installment-ending {
+            background-color: #f0fdf4 !important; /* light green */
+        }
+        .installment-footer {
+            background: #f8fafc;
+        }
+
+        html.dark .installment-expired {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            opacity: 0.5 !important;
+        }
+        html.dark .installment-highlight {
+            background-color: rgba(245, 158, 11, 0.15) !important;
+        }
+        html.dark .installment-ending {
+            background-color: rgba(34, 197, 94, 0.15) !important;
+        }
+        html.dark .installment-footer {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* 요약보기 모달 전용 표 글로벌 스타일 */
+        .summary-table {
+            width: 100% !important;
+            min-width: 100% !important;
+            table-layout: auto !important;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 12px 10px !important;
+            font-size: 0.9rem !important;
+            white-space: nowrap !important;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .summary-table th:last-child,
+        .summary-table td:last-child {
+            text-align: right;
+        }
+
+        .summary-total-row td {
+            background: #f8fafc;
+            font-weight: 700;
+        }
+
+        html.dark .summary-total-row td {
+            background: rgba(255, 255, 255, 0.04) !important;
+            color: var(--text-primary) !important;
         }
 
         /* 다크모드: section-box border */
@@ -1881,295 +1948,177 @@
             width: 100%;
             height: 100%;
             display: flex;
-            z-index: 2000;
-            background: #0A0A10;
-            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
-        /* Left decorative panel */
-        .login-left-panel {
-            flex: 1;
+        .login-screen.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Modal Container */
+        .login-modal-container {
+            width: 400px;
+            background: #0F0F16;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
             position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 3rem;
-            background: linear-gradient(135deg, #0D0D1A 0%, #12122A 50%, #0A0A1F 100%);
-            overflow: hidden;
-        }
-
-        .login-left-panel::before {
-            content: '';
-            position: absolute;
-            top: -200px;
-            left: -200px;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(108, 123, 255, 0.25) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: pulse-glow 6s ease-in-out infinite;
-        }
-
-        .login-left-panel::after {
-            content: '';
-            position: absolute;
-            bottom: -150px;
-            right: -100px;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: pulse-glow 8s ease-in-out infinite reverse;
-        }
-
-        @keyframes pulse-glow {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-        }
-
-        .login-brand {
-            display: flex;
             align-items: center;
-            gap: 0.75rem;
-            z-index: 1;
         }
 
-        .login-brand-icon {
-            width: 40px;
-            height: 40px;
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
+        .login-screen.show .login-modal-container {
+            transform: scale(1);
+        }
+
+        /* Branding in modal */
+        .login-modal-logo {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
+            border: 1px dashed rgba(255,255,255,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .login-brand-name {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.03em;
-        }
-
-        .login-hero-text {
-            z-index: 1;
-            padding: 2rem 0;
-        }
-
-        .login-hero-text h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 4vw, 4rem);
-            font-style: italic;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.04em;
-            line-height: 1.1;
             margin-bottom: 1rem;
         }
-
-        .login-hero-text p {
-            color: rgba(255, 255, 255, 0.45);
-            font-size: 1rem;
-            font-weight: 500;
-            line-height: 1.6;
-            max-width: 380px;
-        }
-
-        .login-grid-bg {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 0;
-        }
-
-        .login-dots {
-            z-index: 1;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .login-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .login-dot.active {
-            background: rgba(108, 123, 255, 0.8);
-        }
-
-        /* Right form panel */
-        .login-right-panel {
-            width: 440px;
-            min-width: 380px;
-            background: var(--bg-color, #F5F5F8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem 2.5rem;
-            position: relative;
-            overflow-y: auto;
-        }
-
-        html.dark .login-right-panel {
-            background: #0F0F18;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 360px;
-            text-align: left;
-            position: relative;
-        }
-
-        .login-card h1 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-card-subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
+        
+        .login-modal-title {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 600;
             margin-bottom: 2rem;
+            font-family: 'Inter', sans-serif;
         }
 
         .login-input {
+            width: 100%;
             margin-bottom: 1rem;
-            position: relative;
         }
-
+        
         .login-input-label {
             display: block;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 0.4rem;
-        }
-
-        .login-input input {
-            background: var(--glass-bg, #fff) !important;
-            border: 1.5px solid var(--glass-border, #E5E5E5) !important;
-            border-radius: 12px !important;
-            padding: 0.85rem 1rem 0.85rem 2.8rem !important;
-            font-size: 0.95rem !important;
-            font-weight: 600 !important;
-            color: var(--text-primary) !important;
-            transition: all 0.25s ease !important;
-            text-align: left !important;
-            width: 100% !important;
-        }
-
-        .login-input input:focus {
-            border-color: #6C7BFF !important;
-            box-shadow: 0 0 0 3px rgba(108, 123, 255, 0.15) !important;
-            outline: none !important;
-            background: var(--glass-bg) !important;
-        }
-
-        .login-input label {
-            display: none;
-        }
-
-        .login-input-icon {
-            position: absolute;
-            left: 0.9rem;
-            bottom: 0.85rem;
-            color: var(--text-secondary);
-            opacity: 0.5;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .login-divider {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin: 1.25rem 0;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
+            color: #fff;
+            font-size: 0.85rem;
             font-weight: 600;
+            margin-bottom: 0.5rem;
         }
-
-        .login-divider::before,
-        .login-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--glass-border);
+        
+        .login-input input {
+            width: 100%;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            border-radius: 12px !important;
+            padding: 0.8rem 1rem !important;
+            color: #fff !important;
+            font-size: 0.95rem !important;
+            transition: all 0.2s !important;
         }
-
-        .login-btn-container {
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
+        
+        .login-input input:focus {
+            border-color: rgba(255,255,255,0.3) !important;
+            outline: none !important;
         }
 
         .login-btn {
             width: 100%;
-            padding: 0.9rem 1rem;
-            font-size: 0.95rem;
-            font-weight: 700;
-            justify-content: center;
-            background: #1C1D20 !important;
-            color: white !important;
+            background: rgba(255,255,255,0.05) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
             border-radius: 12px !important;
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.02em;
+            padding: 0.8rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-
-        html.dark .login-btn {
-            background: #6C7BFF !important;
-        }
-
+        
         .login-btn:hover {
-            opacity: 0.88;
-            transform: translateY(-1px);
+            background: rgba(255,255,255,0.1) !important;
         }
 
-        .login-helper-text {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+        .login-divider {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .login-divider::before,
+        .login-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .login-divider::before { margin-right: 1rem; }
+        .login-divider::after { margin-left: 1rem; }
+        
+        .social-btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
             margin-bottom: 0.75rem;
-            line-height: 1.5;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .social-btn:hover {
+            background: rgba(255,255,255,0.05);
         }
 
-        .login-footer-section {
-            padding-top: 1rem;
-            border-top: 1px solid var(--glass-border);
+        .signup-text {
+            margin-top: 1.5rem;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
         }
-
-        @media (max-width: 900px) {
-            .login-left-panel {
-                display: none;
-            }
-
-            .login-right-panel {
-                width: 100%;
-                min-width: unset;
-            }
+        
+        .signup-text a {
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
         }
+        
+        .modal-corner-dot {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+        }
+        .dot-tl { top: 12px; left: 12px; }
+        .dot-tr { top: 12px; right: 12px; }
+        .dot-bl { bottom: 12px; left: 12px; }
+        .dot-br { bottom: 12px; right: 12px; }
 
         /* ===== THEME TOGGLE ===== */
         .theme-toggle-btn {
@@ -2367,39 +2316,6 @@
 
             table {
                 min-width: 500px;
-            }
-
-            /* 요약보기 모달 전용 표는 한눈에 다 들어오도록(너비 해제 및 말줄임 처리) */
-            .summary-table {
-                min-width: 100% !important;
-                table-layout: fixed;
-                /* 강제 비율 할당 및 말줄임 가능토록 설정 */
-            }
-
-            .summary-table th:nth-child(1),
-            .summary-table td:nth-child(1) {
-                width: 25%;
-            }
-
-            .summary-table th:nth-child(2),
-            .summary-table td:nth-child(2) {
-                width: 45%;
-                white-space: nowrap !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
-            }
-
-            .summary-table th:nth-child(3),
-            .summary-table td:nth-child(3) {
-                width: 30%;
-                text-align: right;
-            }
-
-            .summary-table th,
-            .summary-table td {
-                padding: 6px 4px !important;
-                font-size: 0.8rem !important;
-                white-space: nowrap !important;
             }
 
             /* 요약 카드 2단 그리드로 재배치 */
@@ -2651,23 +2567,25 @@
     document.addEventListener("DOMContentLoaded", function () {
         if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
             document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('loginScreen').classList.remove('show');
         } else {
             document.getElementById('landingPage').style.display = 'block';
-            document.getElementById('loginScreen').style.display = 'none';
-
+            document.getElementById('loginScreen').classList.remove('show');
         }
     });
     function showLoginScreen() {
-        document.getElementById('landingPage').style.display = 'none';
         document.getElementById('loginScreen').style.display = 'flex';
+        setTimeout(() => {
+            document.getElementById('loginScreen').classList.add('show');
+        }, 10);
         closeOverlayMenu();
     }
 
     function hideLoginScreen() {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('landingPage').style.display = 'block';
+        document.getElementById('loginScreen').classList.remove('show');
+        setTimeout(() => {
+            document.getElementById('loginScreen').style.display = 'none';
+        }, 300);
     }
 
     function openOverlayMenu() {
@@ -2743,7 +2661,7 @@
     <div id="landingPage" class="relative min-h-screen bg-[#F2F2F2] overflow-hidden font-sans" style="display: none;">
         <!-- Header -->
         <header class="fixed top-0 left-0 w-full z-50 px-10 py-8 flex justify-between items-center">
-            <div class="group flex items-center gap-4 cursor-pointer" onclick="location.reload()">
+            <a href="asset.html" class="flex items-center gap-4 hover:opacity-80 transition-all">
                 <div
                     class="w-10 h-10 border border-dyo-dark rounded-full flex items-center justify-center transition-all duration-500 group-hover:bg-dyo-dark overflow-hidden">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -2759,33 +2677,7 @@
                     <span class="text-[8px] font-black tracking-[0.4em] text-dyo-dark/30 uppercase pl-0.5">Wealth
                         Management</span>
                 </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <!-- Horizontal Expanding Menu -->
-                <div id="horizontalMenu"
-                    class="h-14 w-0 opacity-0 bg-white rounded-full flex items-center gap-5 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-dyo-dark">
-                    <a href="#" onclick="closeMenu()"
-                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Home</a>
-                    <a href="#" onclick="showLoginScreen(); closeMenu();"
-                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Card</a>
-                    <a href="#" onclick="showLoginScreen(); closeMenu();"
-                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Pension</a>
-                    <a href="#" onclick="showLoginScreen(); closeMenu();"
-                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Data</a>
-                    <a href="#" onclick="showLoginScreen(); closeMenu();"
-                        class="text-xs font-bold tracking-widest text-dyo-dark/60 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Manual</a>
-                    <a href="#" id="menuLogoutBtn" onclick="logout(); closeMenu();"
-                        class="text-xs font-bold tracking-widest text-red-400 hover:text-red-500 transition-colors uppercase whitespace-nowrap"
-                        style="display: none;">Logout</a>
-                </div>
-
-                <button onclick="toggleMenu()"
-                    class="w-14 h-14 bg-white rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm hover:scale-105 transition-transform border border-dyo-dark shrink-0 relative z-10">
-                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
-                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
-                </button>
-            </div>
+            </a>
         </header>
 
         <!-- Hero Section -->
@@ -2842,165 +2734,95 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen" style="display: none;">
-        <!-- Left Decorative Panel -->
-        <div class="login-left-panel">
-            <div class="login-grid-bg"></div>
-            <div class="login-brand">
-                <div class="login-brand-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                        <path d="M12 3V21" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
-                        <path d="M4 12H20" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
-                    </svg>
-                </div>
-                <span class="login-brand-name">Hans Wealth</span>
+    <div id="loginScreen" class="login-screen" style="display: none;" onclick="if(event.target === this) hideLoginScreen()">
+        <div class="login-modal-container" onclick="event.stopPropagation()">
+            <div class="modal-corner-dot dot-tl"></div>
+            <div class="modal-corner-dot dot-tr"></div>
+            <div class="modal-corner-dot dot-bl"></div>
+            <div class="modal-corner-dot dot-br"></div>
+
+            <div class="login-modal-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 3V21" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
+                    <path d="M4 12H20" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
+                </svg>
             </div>
+            <div class="login-modal-title">Sign in to SuperApp</div>
 
-            <div class="login-hero-text">
-                <h2>Manage your<br>wealth,<br><em>smarter.</em></h2>
-                <p>개인 자산과 수입·지출을 한 곳에서 체계적으로 관리하고, GitHub로 안전하게 동기화하세요.</p>
-            </div>
-
-            <div class="login-dots">
-                <div class="login-dot active"></div>
-                <div class="login-dot"></div>
-                <div class="login-dot"></div>
-            </div>
-        </div>
-
-        <!-- Right Form Panel -->
-        <div class="login-right-panel">
-            <!-- Login Form -->
-            <div class="login-card" id="loginFormContainer" style="display: none;">
-                <div style="margin-bottom: 2.5rem;">
-                    <h1>로그인</h1>
-                    <p class="login-card-subtitle">계정에 로그인하여 자산 대시보드를 확인하세요.</p>
-                </div>
-
-                <div id="loginError"
-                    style="color: var(--accent-red); margin-bottom: 1rem; display: none; font-size: 0.9rem; font-weight: 700; padding: 0.75rem 1rem; background: rgba(255,59,48,0.08); border-radius: 10px; border: 1px solid rgba(255,59,48,0.2);">
+            <div id="loginFormContainer" style="width: 100%;">
+                <div id="loginError" style="color: #ff4d4d; margin-bottom: 1rem; display: none; font-size: 0.85rem; text-align: center;">
                     아이디 또는 비밀번호가 일치하지 않습니다.
                 </div>
 
                 <div class="login-input">
-                    <span class="login-input-label">아이디</span>
-                    <div class="login-input-icon">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </div>
-                    <input type="text" id="loginId" placeholder="아이디를 입력하세요"
-                        onkeypress="if(event.key === 'Enter') attemptLogin()">
-                    <label></label>
+                    <span class="login-input-label">Email or ID</span>
+                    <input type="text" id="loginId" placeholder="Your email address or ID" onkeypress="if(event.key === 'Enter') attemptLogin()">
                 </div>
-
+                
                 <div class="login-input">
-                    <span class="login-input-label">비밀번호</span>
-                    <div class="login-input-icon">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                    </div>
-                    <input type="password" id="loginPw" placeholder="비밀번호를 입력하세요"
-                        onkeypress="if(event.key === 'Enter') attemptLogin()">
-                    <label></label>
+                    <span class="login-input-label">Password</span>
+                    <input type="password" id="loginPw" placeholder="Your password" onkeypress="if(event.key === 'Enter') attemptLogin()">
                 </div>
 
-                <div class="flex items-center gap-3 mb-2" style="margin-top: 0.5rem;">
-                    <div class="relative flex items-center">
-                        <input type="checkbox" id="rememberId"
-                            class="peer appearance-none w-4 h-4 border-2 rounded checked:bg-dyo-dark transition-all cursor-pointer"
-                            style="border-color: var(--glass-border);">
-                        <svg class="absolute w-2.5 h-2.5 text-white left-0.5 pointer-events-none hidden peer-checked:block"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="4">
-                            <path d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
-                    <label for="rememberId"
-                        style="font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; user-select: none; font-weight: 600;">아이디
-                        저장</label>
+                <div class="flex items-center gap-2 mb-4" style="margin-top: 0.5rem; display: none;">
+                    <input type="checkbox" id="rememberId" checked>
                 </div>
 
-                <div class="login-btn-container">
-                    <button class="btn login-btn" onclick="attemptLogin()">
-                        로그인
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                            style="margin-left: 0.5rem;">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-
-                <button onclick="hideLoginScreen()"
-                    style="width:100%; background:none; border:none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; cursor:pointer; padding: 0.5rem; transition: color 0.2s;"
-                    onmouseover="this.style.color='var(--text-primary)'"
-                    onmouseout="this.style.color='var(--text-secondary)'">
-                    ← 홈으로 돌아가기
+                <button class="login-btn" onclick="attemptLogin()" style="margin-top: 0.5rem;">
+                    Continue
                 </button>
+
+                <div class="login-divider">OR</div>
+
+                <button class="social-btn" onclick="mockGoogleLogin()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="signup-text text-center">
+                    Don't have an account? <a href="#" onclick="showSetupScreen()">Sign up</a>
+                </div>
             </div>
 
-            <!-- Initial Setup Screen -->
-            <div class="login-card" id="adminCreateContainer" style="display: none;">
-                <div style="margin-bottom: 2rem;">
-                    <h1>초기 설정</h1>
-                    <p class="login-card-subtitle">기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
+            <!-- Initial Setup Screen within the modal -->
+            <div id="adminCreateContainer" style="display: none; width: 100%;">
+                <div style="margin-bottom: 1.5rem;">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; text-align: center;">기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
                 </div>
 
-                <div
-                    style="margin-bottom: 1.5rem; padding: 1.25rem; border: 1.5px dashed var(--glass-border); border-radius: 16px;">
-                    <p
-                        style="font-size: 0.7rem; font-weight: 800; letter-spacing: 0.2em; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.75rem;">
-                        기존 데이터 복원</p>
-                    <button class="btn"
-                        style="width:100%; justify-content:center; background: var(--glass-bg); border: 1.5px solid var(--glass-border); color: var(--text-primary); border-radius: 12px; padding: 0.75rem;"
-                        onclick="openGitHubModal()">☁️ Cloud에서 가져오기</button>
+                <div style="margin-bottom: 1.5rem; padding: 1.25rem; border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; text-align: center;">
+                    <button class="login-btn" style="background: transparent !important;" onclick="openGitHubModal()">☁️ Cloud에서 가져오기</button>
                 </div>
 
                 <div id="setupKeySection" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <p
-                        style="font-size: 0.7rem; font-weight: 800; letter-spacing: 0.2em; color: var(--text-secondary); text-transform: uppercase;">
-                        신규 등록</p>
                     <div class="login-input">
                         <span class="login-input-label">마스터 액세스 키</span>
-                        <div class="login-input-icon">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path
-                                    d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3m-3-3l-2.5-2.5" />
-                            </svg>
-                        </div>
-                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력"
-                            onkeypress="if(event.key === 'Enter') verifySetupKey()">
-                        <label></label>
+                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력" onkeypress="if(event.key === 'Enter') verifySetupKey()">
                     </div>
-                    <button class="btn login-btn" onclick="verifySetupKey()">시스템 인증</button>
+                    <button class="login-btn" style="background: #fff !important; color: #000 !important;" onclick="verifySetupKey()">시스템 인증</button>
                 </div>
 
-                <div id="adminFieldsSection"
-                    style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <div id="adminFieldsSection" style="display: none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem; flex-direction: column; gap: 0.75rem;">
                     <div class="login-input">
-                        <span class="login-input-label">관리자 이름</span>
-                        <input type="text" id="adminName" placeholder="이름을 입력하세요"
-                            style="border-radius: 12px !important; padding: 0.85rem 1rem !important; border: 1.5px solid var(--glass-border) !important;">
+                        <input type="text" id="adminName" placeholder="관리자 이름">
                     </div>
                     <div class="login-input">
-                        <span class="login-input-label">관리자 아이디</span>
-                        <input type="text" id="adminId" placeholder="아이디"
-                            style="border-radius: 12px !important; padding: 0.85rem 1rem !important; border: 1.5px solid var(--glass-border) !important;">
+                        <input type="text" id="adminId" placeholder="관리자 아이디">
                     </div>
                     <div class="login-input">
-                        <span class="login-input-label">비밀번호 (마스터키로 사용됨)</span>
-                        <input type="password" id="adminPw" placeholder="비밀번호"
-                            style="border-radius: 12px !important; padding: 0.85rem 1rem !important; border: 1.5px solid var(--glass-border) !important;">
+                        <input type="password" id="adminPw" placeholder="비밀번호 (마스터키로 사용)">
                     </div>
-                    <button class="btn login-btn" onclick="createAdminAccount()">관리자 계정 생성</button>
+                    <button class="login-btn" style="background: #fff !important; color: #000 !important;" onclick="createAdminAccount()">계정 생성</button>
+                </div>
+                
+                <div class="signup-text text-center">
+                    Already have an account? <a href="#" onclick="showLoginOnlyScreen()">Log in</a>
                 </div>
             </div>
         </div>
@@ -3014,7 +2836,7 @@
 
         <!-- Dashboard Navigation -->
         <nav class="flex justify-between items-center py-8 px-4">
-            <div class="group flex items-center gap-4 cursor-pointer" onclick="location.reload()">
+            <a href="asset.html" class="group flex items-center gap-4 cursor-pointer">
                 <div
                     class="w-10 h-10 border border-dyo-dark rounded-full flex items-center justify-center transition-all duration-500 group-hover:bg-dyo-dark overflow-hidden">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -3030,7 +2852,7 @@
                     <span class="text-[8px] font-black tracking-[0.4em] text-dyo-dark/30 uppercase pl-0.5">Wealth
                         Management</span>
                 </div>
-            </div>
+            </a>
 
             <div class="nav-year-month flex items-center gap-2 rounded-full px-4 py-2 shadow-sm border"
                 style="background: var(--card-bg); border-color: var(--glass-border);">
@@ -3045,7 +2867,10 @@
                 <!-- Horizontal Expanding Menu -->
                 <div id="dashboardMenu"
                     class="h-14 w-0 opacity-0 bg-white rounded-full flex items-center gap-4 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-dyo-dark">
-                    <a href="#" onclick="openInstallmentModal(); closeDashboardMenu();"
+                    <a href="asset.html"
+                        class="ml-6 text-[10px] font-black tracking-tighter transition-colors uppercase whitespace-nowrap border-b-2 border-orange-500"
+                        style="color: #666666 !important;">Home</a>
+                    <a href="javascript:void(0)" onclick="location.href='installment.html?y='+document.getElementById('yearSelect').value+'&m='+document.getElementById('monthSelect').value"
                         class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Card</a>
                     <a href="#" onclick="openPensionModal(); closeDashboardMenu();"
                         class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Pension</a>
@@ -3116,7 +2941,7 @@
                 <div class="unified-card-title justify-between">
                     Assets & Income
                     <button
-                        class="px-4 py-2 bg-dyo-bg text-dyo-dark/50 rounded-full text-[10px] font-black tracking-widest hover:text-dyo-dark transition-colors uppercase"
+                        class="px-4 py-2 bg-dyo-accent text-white rounded-full text-[10px] font-black tracking-widest hover:opacity-90 transition-opacity uppercase"
                         onclick="openSummary('assets')">Summary</button>
                 </div>
                 <div class="card-content-scrollable">
@@ -3201,7 +3026,7 @@
                 <div class="unified-card-title justify-between">
                     Debts & Expenses
                     <button
-                        class="px-4 py-2 bg-dyo-bg text-dyo-dark/50 rounded-full text-[10px] font-black tracking-widest hover:text-dyo-dark transition-colors uppercase"
+                        class="px-4 py-2 bg-dyo-accent text-white rounded-full text-[10px] font-black tracking-widest hover:opacity-90 transition-opacity uppercase"
                         onclick="openSummary('expenses')">Summary</button>
                 </div>
                 <div class="card-content-scrollable">
@@ -3262,6 +3087,24 @@
                         </table>
                         <div class="section-footer">소계: <span id="total-f-expense">0</span></div>
                     </div>
+                    
+                    <!-- 카드 할부 요약 영역 -->
+                    <div class="section-box" style="border-top: 2px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="section-title">카드 할부 현황</h2>
+                            <a href="javascript:void(0)" onclick="location.href='installment.html?y='+document.getElementById('yearSelect').value+'&m='+document.getElementById('monthSelect').value" class="text-[10px] font-black tracking-widest text-dyo-accent hover:underline uppercase">Manage All →</a>
+                        </div>
+                        <div class="installment-footer" style="background: rgba(0,0,0,0.02); padding: 1.5rem; border-radius: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div>
+                                <div style="font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 0.3rem;">금월 납부 예정 (원금+수수료)</div>
+                                <div id="installment-total-principal" style="font-size: 1.25rem; font-weight: 900; color: var(--accent-blue);">0</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 0.3rem;">할부 총 잔액</div>
+                                <div id="total-installment" style="font-size: 1.25rem; font-weight: 900; color: var(--accent-red);">0</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3292,69 +3135,7 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="installmentModal">
-        <div class="modal-content" style="max-width: 1200px;">
-            <div class="modal-header">
-                <span class="modal-title">카드 할부 관리</span>
-                <div style="display: flex; gap: 0.75rem; align-items: center;">
-                    <select id="installmentYearFilter" onchange="render()"
-                        class="bg-transparent border border-dyo-bg px-4 py-2 rounded-full text-xs font-bold">
-                        <option value="">Year (All)</option>
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                        <option value="2028">2028</option>
-                    </select>
-                    <select id="installmentMonthFilter" onchange="render()"
-                        class="bg-transparent border border-dyo-bg px-4 py-2 rounded-full text-xs font-bold">
-                        <option value="">Month (All)</option>
-                        <option value="01">01</option>
-                        <option value="02">02</option>
-                        <option value="03">03</option>
-                        <option value="04">04</option>
-                        <option value="05">05</option>
-                        <option value="06">06</option>
-                        <option value="07">07</option>
-                        <option value="08">08</option>
-                        <option value="09">09</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                    </select>
-                    <button class="btn-add" onclick="addRow('installment')">+ Add</button>
-                    <button class="btn-close" onclick="closeInstallmentModal()">&times;</button>
-                </div>
-            </div>
-            <div style="overflow-x: auto; margin-bottom: 1rem;">
-                <table style="font-size: 0.8rem;">
-                    <thead>
-                        <tr>
-                            <th style="width: 100px; text-align: center;">사용일</th>
-                            <th style="width: 80px; text-align: center;">카드</th>
-                            <th style="width: 300px; text-align: center;">사용처</th>
-                            <th style="width: 140px; text-align: center;">금액</th>
-                            <th style="width: 100px; text-align: center;">회차</th>
-                            <th style="width: 110px; text-align: center;">원금</th>
-                            <th style="width: 110px; text-align: center;">수수료</th>
-                            <th style="width: 110px; text-align: center;">잔액</th>
-                            <th style="width: 90px; text-align: center;">종료</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-installment"></tbody>
-                </table>
-            </div>
-            <div
-                style="display: flex; justify-content: flex-end; gap: 2rem; padding: 1rem; background: #f8fafc; border-radius: 8px; font-weight: 700; font-size: 0.95rem;">
-                <div>전체 금액 합계: <span id="installment-total-amount" style="color: var(--accent-blue);">0</span>원</div>
-                <div>이번 달 납부 합계 (원금+수수료): <span id="installment-total-principal"
-                        style="color: var(--accent-purple);">0</span>원
-                </div>
-                <div>할부 총 잔액: <span id="total-installment" style="color: var(--accent-red);">0</span>원</div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Account Modal -->
     <div class="modal-overlay" id="accountModal">
@@ -4185,11 +3966,17 @@
             item.currentMonth = Math.max(0, Math.min(item.totalMonths, parseInt(item.currentMonth) || 0));
             item.amount = parseFloat(String(item.amount).replace(/,/g, '')) || 0;
             item.monthlyPrincipal = Math.floor(item.amount / item.totalMonths);
+            item.rate = parseFloat(item.rate) || 0;
+            // 월 수수료: (남은 잔액 * 연이율/12) / 100
+            const remainingBalance = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
+            if (item.rate > 0) {
+                item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
+            }
 
             if (item.date) {
                 const p = item.date.split(/[-./ ]/);
                 if (p.length >= 2) {
-                    let y = parseInt(p[0]), m = parseInt(p[1]) + item.totalMonths - 1;
+                    let y = parseInt(p[0]), m = parseInt(p[1]) + item.totalMonths;
                     y += Math.floor((m - 1) / 12); m = (m - 1) % 12 + 1;
                     item.endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
                 }
@@ -4197,6 +3984,8 @@
             item.remAmount = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
             return item;
         }
+
+
 
         async function sortInstallments(criterion) {
             if (!criterion) return;
@@ -4217,15 +4006,12 @@
 
             await saveData();
             render();
-
-            // 정렬 UI 초기화 (옵션) 
-            // document.getElementById('installmentSortSelect').value = ''; 
         }
 
         async function updateValue(s, id, f, v) {
             const item = state.sections[s].find(i => i.id === id);
             if (!item) return;
-            if (['amount', 'remAmount', 'totalMonths', 'currentMonth', 'monthlyFee'].includes(f)) {
+            if (['amount', 'remAmount', 'totalMonths', 'currentMonth', 'monthlyFee', 'rate'].includes(f)) {
                 item[f] = parseFloat(String(v).replace(/,/g, '')) || 0;
             } else { item[f] = v; }
 
@@ -4321,15 +4107,6 @@
                     if (s === 'installment') {
                         calculateInstallment(item);
 
-                        const filterY = document.getElementById('installmentYearFilter')?.value;
-                        const filterM = document.getElementById('installmentMonthFilter')?.value;
-                        if (item.date) {
-                            if (filterY && !item.date.startsWith(filterY)) return;
-                            if (filterM && item.date.length >= 7 && item.date.substring(5, 7) !== filterM) return;
-                        } else if (filterY || filterM) {
-                            return;
-                        }
-
                         // 현재 조회중인 월 기준으로 다음 달(YY.MM) 계산
                         const curY = parseInt(document.getElementById('yearSelect').value);
                         const curM = parseInt(document.getElementById('monthSelect').value);
@@ -4343,12 +4120,15 @@
 
                         // 종료일이 현재월보다 이전(만료)이면 회색 처리
                         if (item.endDate && item.endDate < currentEndDate) {
-                            tr.style.backgroundColor = '#f1f5f9'; // 회색 (slate-100)
-                            tr.style.opacity = '0.65';
+                            tr.classList.add('installment-expired');
+                        }
+                        // 이번 달에 종료되는 할부 건 강조 표시 (녹색)
+                        else if (item.endDate === currentEndDate) {
+                            tr.classList.add('installment-ending');
                         }
                         // 다음 달에 종료되는 할부 건 강조 표시 (노란색)
                         else if (item.endDate === targetEndDate) {
-                            tr.style.backgroundColor = '#fffbeb';
+                            tr.classList.add('installment-highlight');
                         }
 
                         tr.innerHTML = `
@@ -4366,6 +4146,9 @@
                                 <input type="text" class="amount" value="${formatNumber(item.amount)}" onfocus="handleAmountFocus(this)" onblur="handleAmountBlur(this, '${s}', ${item.id}, 'amount')">
                             </td>
                             <td>
+                                <input type="text" class="amount" style="text-align: center !important;" value="${item.rate || '0'}" onblur="updateValue('${s}', ${item.id}, 'rate', parseFloat(this.value) || 0)">
+                            </td>
+                            <td>
                                 <div class="flex items-center justify-center gap-2">
                                     <input type="number" min="0" max="120" style="width: 45px !important; text-align: center !important;" value="${item.currentMonth}" onchange="updateValue('${s}', ${item.id}, 'currentMonth', this.value)">
                                     <span class="opacity-20">/</span>
@@ -4380,6 +4163,9 @@
                             </td>
                             <td><div class="amount font-bold" style="color: var(--accent-red) !important;">${formatNumber(item.remAmount)}</div></td>
                             <td><div class="text-center text-xs opacity-40 font-bold">${item.endDate}</div></td>
+                            <td style="text-align: center;">
+                                <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold transition-all" onclick="openInstallmentDetail(${item.id})">상세</button>
+                            </td>
                             <td class="flex justify-center">
                                 <button class="btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
                             </td>
@@ -4511,7 +4297,27 @@
                     const priEl = document.getElementById('installment-total-principal');
                     const remEl = document.getElementById('total-installment');
                     if (amtEl) amtEl.innerText = formatNumber(totalAmt);
-                    if (priEl) priEl.innerText = formatNumber(activeMonthlyTotal);  // 진행 중 원금+수수료 표시
+                    if (priEl) {
+                        priEl.innerText = formatNumber(activeMonthlyTotal);  // 진행 중 원금+수수료 표시
+                        
+                        // 툴팁용 요약 데이터 생성
+                        const activeItems = state.sections[s].filter(i => i.endDate && i.endDate >= currentMonthStr);
+                        if (activeItems.length > 0) {
+                            let tooltipHtml = '<div style="font-size:11px; min-width:200px;"><table style="width:100%; border-collapse:collapse;">';
+                            tooltipHtml += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">사용처</th><th style="text-align:right;padding:4px">원금</th><th style="text-align:right;padding:4px">수수료</th></tr>';
+                            activeItems.forEach(i => {
+                                const p = parseFloat(i.monthlyPrincipal) || 0;
+                                const f = parseFloat(i.monthlyFee) || 0;
+                                tooltipHtml += `<tr><td style="padding:4px; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${i.content || '-'}</td><td style="text-align:right;padding:4px">${formatNumber(p)}</td><td style="text-align:right;padding:4px">${formatNumber(f)}</td></tr>`;
+                            });
+                            tooltipHtml += '</table></div>';
+                            priEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, tooltipHtml);
+                            priEl.parentElement.onmouseleave = () => hideHoverLayer();
+                            priEl.parentElement.style.cursor = 'help';
+                        } else {
+                            priEl.parentElement.onmouseenter = null;
+                        }
+                    }
                     if (remEl) remEl.innerText = formatNumber(rem);
                 }
             }
@@ -4601,27 +4407,7 @@
             layer.style.left = leftPos + 'px';
         }
 
-        async function openInstallmentModal() {
-            document.getElementById('installmentModal').style.display = 'flex';
-            const sortSelect = document.getElementById('installmentSortSelect');
-            if (sortSelect && sortSelect.value === '') sortSelect.value = 'date_asc';
-            if (sortSelect) await sortInstallments(sortSelect.value);
-            render();
-        }
-        function closeInstallmentModal() { document.getElementById('installmentModal').style.display = 'none'; }
 
-        async function saveInstallment() {
-            await saveData();
-
-            // GitHub 실시간 저장 (설정되어 있을 경우)
-            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
-            if (config.token && config.repo) {
-                await syncWithGitHub('upload');
-            }
-
-            closeInstallmentModal();
-            alert('카드 할부 내역이 로컬 및 GitHub 상에 성공적으로 실시간 저장되었습니다.');
-        }
 
 
 
@@ -5326,12 +5112,14 @@
 
             if (accountsData.length === 0) {
                 document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('loginScreen').classList.remove('show');
                 document.getElementById('loginFormContainer').style.display = 'none';
                 document.getElementById('adminCreateContainer').style.display = 'block';
                 document.getElementById('mainContainer').style.display = 'none';
                 document.getElementById('landingPage').style.display = 'block';
             } else {
                 document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('loginScreen').classList.remove('show');
                 document.getElementById('loginFormContainer').style.display = 'block';
                 document.getElementById('adminCreateContainer').style.display = 'none';
                 document.getElementById('mainContainer').style.display = 'none';
@@ -5398,7 +5186,10 @@
             setCookie('assetLoginSession', 'true');
             sessionStorage.setItem('assetLoginSession', 'true');
 
-            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('loginScreen').classList.remove('show');
+            setTimeout(() => document.getElementById('loginScreen').style.display = 'none', 300);
+            
             document.getElementById('mainContainer').style.display = 'block';
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
@@ -5413,11 +5204,34 @@
             sessionStorage.removeItem('temp_master_pw'); // 비밀번호 흔적 제거
             isLoggedIn = false;
             document.getElementById('mainContainer').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('loginScreen').classList.remove('show');
+            setTimeout(() => document.getElementById('loginScreen').style.display = 'none', 300);
             document.getElementById('landingPage').style.display = 'block';
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             alert('로그아웃 되었습니다.');
+        }
+
+        function mockGoogleLogin() {
+            if (accountsData.length > 0) {
+                const user = accountsData[0];
+                sessionStorage.setItem('temp_master_pw', user.password);
+                loginSuccess();
+            } else {
+                showToast('등록된 계정이 없습니다. 회원가입을 진행해주세요.');
+            }
+        }
+        
+        function showSetupScreen() {
+            document.getElementById('loginFormContainer').style.display = 'none';
+            document.getElementById('adminCreateContainer').style.display = 'flex';
+            document.querySelector('.login-modal-title').innerText = 'Set up SuperApp';
+        }
+
+        function showLoginOnlyScreen() {
+            document.getElementById('adminCreateContainer').style.display = 'none';
+            document.getElementById('loginFormContainer').style.display = 'block';
+            document.querySelector('.login-modal-title').innerText = 'Sign in to SuperApp';
         }
         // ---------------------------
 
@@ -5677,6 +5491,8 @@
             </div>
         </div>
     </div>
+
+
 
     <!-- Toast Popup for 저장 & 동기화 -->
     <div id="toastPopup"></div>

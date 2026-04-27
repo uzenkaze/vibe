@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카드 할부 관리 - Wealth Management</title>
+    <link rel="icon" type="image/png" href="favicon.png?v=3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Outfit', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        dyo: {
+                            bg: '#F2F2F2',
+                            dark: '#1C1D20',
+                            accent: '#5D6BF8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-color: #F2F2F2;
+            --glass-bg: #FFFFFF;
+            --glass-border: #E5E5E5;
+            --text-primary: #1C1D20;
+            --text-secondary: #7F7F7F;
+            --accent-blue: #5D6BF8;
+            --accent-red: #FF3B30;
+            --accent-purple: #1C1D20;
+            --radius-large: 40px;
+            --card-bg: #FFFFFF;
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        html.dark {
+            --bg-color: #0F0F12;
+            --glass-bg: #1A1A24;
+            --glass-border: #2A2A3A;
+            --text-primary: #E8E8F0;
+            --text-secondary: #9A9AB8;
+            --accent-blue: #6C7BFF;
+            --accent-red: #FF4D4D;
+            --accent-purple: #E8E8F0;
+            --card-bg: #1A1A24;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+        }
+
+        .unified-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-large);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        input, select {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid transparent;
+            width: 100%;
+            padding: 0.5rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .amount {
+            text-align: right;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-add {
+            background: var(--text-primary);
+            color: var(--bg-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .btn-delete {
+            color: var(--accent-red);
+            font-size: 1.25rem;
+            opacity: 0.3;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            opacity: 1;
+        }
+
+        .installment-expired { background-color: rgba(0,0,0,0.02); opacity: 0.6; }
+        .installment-ending { background-color: rgba(34, 197, 94, 0.05) !important; }
+        .installment-highlight { background-color: rgba(245, 158, 11, 0.05) !important; }
+
+        html.dark .installment-expired { background-color: rgba(255, 255, 255, 0.02); }
+        html.dark .installment-ending { background-color: rgba(34, 197, 94, 0.1) !important; }
+        html.dark .installment-highlight { background-color: rgba(245, 158, 11, 0.1) !important; }
+
+        /* Modal Overlays */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 10000;
+        }
+
+        .modal-content {
+            background: var(--card-bg); border-radius: 32px; padding: 2rem;
+            max-width: 500px; width: 90%; box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        }
+
+        /* Dashboard Menu Styles */
+        #dashboardMenu {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        html.dark #dashboardMenu {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+
+        #dashboardMenu a {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            color: rgba(0, 0, 0, 0.4);
+            transition: color 0.3s ease;
+        }
+
+        html.dark #dashboardMenu a {
+            color: rgba(232, 232, 240, 0.55) !important;
+        }
+
+        #dashboardMenu a:hover {
+            color: #000;
+        }
+
+        html.dark #dashboardMenu a:hover {
+            color: var(--text-primary) !important;
+        }
+
+        /* Dark mode button overrides */
+        html.dark nav button.bg-white {
+            background: var(--card-bg) !important;
+            border-color: var(--glass-border) !important;
+        }
+        html.dark nav button.bg-white span.bg-dyo-dark {
+            background: var(--text-primary) !important;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+    <!-- Navigation -->
+    <nav class="flex justify-between items-center mb-12">
+        <div class="flex items-center gap-4">
+            <a href="asset.html" class="w-10 h-10 rounded-full border border-dyo-dark flex items-center justify-center hover:bg-dyo-dark hover:text-white transition-all shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
+            <div class="flex items-center gap-2 bg-white/50 dark:bg-white/5 border border-glass-border px-4 py-2 rounded-full shadow-sm">
+                <select id="yearSelect" onchange="loadData()" class="bg-transparent border-none outline-none font-bold text-sm w-20 p-0 h-auto">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                </select>
+                <span class="opacity-20 font-bold">/</span>
+                <select id="monthSelect" onchange="loadData()" class="bg-transparent border-none outline-none font-bold text-sm w-12 p-0 h-auto">
+                    <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option>
+                    <option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option>
+                    <option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <!-- Horizontal Expanding Menu -->
+            <div id="dashboardMenu"
+                class="h-14 w-0 opacity-0 bg-white rounded-full flex items-center gap-4 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-dyo-dark">
+                <a href="asset.html"
+                    class="ml-6 text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Home</a>
+                <a href="javascript:void(0)" onclick="location.href='installment.html?y='+document.getElementById('yearSelect').value+'&m='+document.getElementById('monthSelect').value"
+                    class="text-[10px] font-black tracking-tighter transition-colors uppercase whitespace-nowrap border-b-2 border-orange-500"
+                    style="color: #666666 !important;">Card</a>
+                <a href="asset.html"
+                    class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Pension</a>
+                <a href="asset.html"
+                    class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Cloud</a>
+                <a href="asset.html"
+                    class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Data</a>
+                <a href="asset.html"
+                    class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Manual</a>
+                <a href="asset.html"
+                    class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">User</a>
+                <a href="#" onclick="logout(); closeDashboardMenu();"
+                    class="mr-6 text-[10px] font-black tracking-tighter text-red-400 hover:text-red-500 transition-colors uppercase whitespace-nowrap">Logout</a>
+            </div>
+
+            <button onclick="toggleDashboardMenu()"
+                class="w-14 h-14 bg-white rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm hover:scale-105 transition-transform border border-dyo-dark shrink-0 relative z-10">
+                <span class="w-6 h-0.5 bg-dyo-dark"></span>
+                <span class="w-6 h-0.5 bg-dyo-dark"></span>
+                <span class="w-4 h-0.5 bg-dyo-dark self-end mr-4"></span>
+            </button>
+            <button onclick="toggleTheme()" class="w-14 h-14 rounded-full border border-glass-border flex items-center justify-center text-lg bg-white/50 dark:bg-white/5" id="themeToggleBtn">🌙</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto">
+        <div class="unified-card mb-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold flex items-center gap-3">
+                    <span class="w-2 h-8 bg-dyo-accent rounded-full"></span>
+                    카드 할부 내역
+                </h2>
+                <div class="flex gap-3">
+                    <select id="sortSelect" onchange="sortData(this.value)" class="text-xs border border-glass-border rounded-full px-4 py-2 w-40">
+                        <option value="date_desc">최신순</option>
+                        <option value="date_asc">과거순</option>
+                        <option value="amount_desc">금액높은순</option>
+                    </select>
+                    <button onclick="addRow()" class="btn-add">+ 내역 추가</button>
+                    <button onclick="saveData()" class="px-6 py-2 bg-dyo-accent text-white rounded-full text-sm font-bold shadow-lg shadow-dyo-accent/20 hover:scale-105 transition-all">전체 저장</button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">사용일</th>
+                            <th style="width: 100px;">카드</th>
+                            <th>사용처</th>
+                            <th style="width: 140px;">금액</th>
+                            <th style="width: 80px;">이율(%)</th>
+                            <th style="width: 100px;">회차</th>
+                            <th style="width: 120px;">원금</th>
+                            <th style="width: 120px;">수수료</th>
+                            <th style="width: 120px;">잔액</th>
+                            <th style="width: 80px;">종료</th>
+                            <th style="width: 60px;">상세</th>
+                            <th style="width: 40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="installmentBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Footer Summary -->
+            <div class="mt-8 pt-8 border-t border-glass-border grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 dark:bg-white/5 p-6 rounded-3xl">
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">전체 결제 합계</p>
+                    <p class="text-2xl font-black" id="totalAmount">0원</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-white/5 p-6 rounded-3xl border-2 border-dyo-accent/20">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-dyo-accent mb-2">이번 달 납부 합계 (원금+수수료)</p>
+                    <p class="text-2xl font-black text-dyo-accent" id="monthlyTotal">0원</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-white/5 p-6 rounded-3xl">
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">남은 할부 총 잔액</p>
+                    <p class="text-2xl font-black text-accent-red" id="remainingTotal">0원</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detailModal" style="z-index: 20000 !important; background: rgba(0,0,0,0.8) !important;">
+        <div class="modal-content" style="max-width: 480px; background: #1C1D20; color: #FFFFFF; border-radius: 24px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header" style="padding: 1.5rem 1.5rem 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <span class="font-bold text-lg flex items-center gap-2">
+                    <button onclick="closeDetail()" class="opacity-50 hover:opacity-100">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    할부 상세 스케줄
+                </span>
+                <button onclick="closeDetail()" class="text-2xl opacity-50">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto" style="max-height: 70vh;">
+                <div class="bg-white/5 rounded-2xl p-6 mb-6">
+                    <p class="text-xs opacity-50 mb-1">총 상환 예정액</p>
+                    <p class="text-3xl font-black mb-4" id="idm-total-all">0원</p>
+                    <div class="space-y-2 text-sm opacity-70">
+                        <div class="flex justify-between"><span>원금</span><span id="idm-total-principal">0원</span></div>
+                        <div class="flex justify-between"><span>수수료</span><span id="idm-total-fee" class="text-accent-blue">0원</span></div>
+                        <div class="flex justify-between"><span>이율</span><span id="idm-fee-rate">0.00%</span></div>
+                    </div>
+                </div>
+                <div id="idm-list" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let state = { sections: { installment: [] } };
+        const CARDS = ['국민', '신한', '롯데', '현대', '삼성', '우리', '농협', '하나'];
+
+        // --- Crypto Logic (from asset.html) ---
+        async function deriveKey(password, salt) {
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey(
+                "raw", enc.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"]
+            );
+            return crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                keyMaterial, { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]
+            );
+        }
+
+        async function encryptData(dataObj, password) {
+            const text = JSON.stringify(dataObj);
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveKey(password, salt);
+            const encoded = new TextEncoder().encode(text);
+            const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, encoded);
+            const combined = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
+            combined.set(salt, 0); combined.set(iv, salt.length);
+            combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
+            return { _isEncrypted: true, payload: btoa(String.fromCharCode(...combined)) };
+        }
+
+        async function decryptData(encryptedObj, password) {
+            if (!encryptedObj || !encryptedObj._isEncrypted) return encryptedObj;
+            try {
+                const combined = new Uint8Array(atob(encryptedObj.payload).split("").map(c => c.charCodeAt(0)));
+                const salt = combined.slice(0, 16);
+                const iv = combined.slice(16, 28);
+                const ciphertext = combined.slice(28);
+                const key = await deriveKey(password, salt);
+                const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
+                return JSON.parse(new TextDecoder().decode(decrypted));
+            } catch (e) { console.error("Decryption failed:", e); return null; }
+        }
+        // -------------------------------------
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const urlParams = new URLSearchParams(window.location.search);
+            const yParam = urlParams.get('y');
+            const mParam = urlParams.get('m');
+            
+            document.getElementById('yearSelect').value = yParam || now.getFullYear();
+            document.getElementById('monthSelect').value = mParam || String(now.getMonth() + 1).padStart(2, '0');
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+            updateThemeBtn();
+            
+            loadData();
+        });
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeBtn();
+        }
+
+        function updateThemeBtn() {
+            const btn = document.getElementById('themeToggleBtn');
+            if(btn) btn.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+        }
+
+        function getYearKey() { return `assetData_${document.getElementById('yearSelect').value}`; }
+        function getMonthKey() { return document.getElementById('monthSelect').value; }
+
+        async function loadData() {
+            const yearKey = getYearKey();
+            const monthKey = getMonthKey();
+            const yearDataStr = localStorage.getItem(yearKey);
+            const password = sessionStorage.getItem('temp_master_pw');
+            
+            if (yearDataStr) {
+                let yearData = JSON.parse(yearDataStr);
+                if (yearData._isEncrypted) {
+                    if (!password) {
+                        alert('보안 암호화된 데이터입니다. 메인 페이지에서 먼저 로그인해주세요.');
+                        window.location.href = 'asset.html';
+                        return;
+                    }
+                    yearData = await decryptData(yearData, password);
+                }
+                
+                if (yearData && yearData.months && yearData.months[monthKey]) {
+                    state = yearData.months[monthKey];
+                } else {
+                    state = { sections: { installment: [] } };
+                }
+            } else {
+                state = { sections: { installment: [] } };
+            }
+            render();
+        }
+
+        async function saveData() {
+            const yearKey = getYearKey();
+            const monthKey = getMonthKey();
+            const password = sessionStorage.getItem('temp_master_pw');
+            
+            let yearDataStr = localStorage.getItem(yearKey);
+            let yearData = null;
+            
+            if (yearDataStr) {
+                const parsed = JSON.parse(yearDataStr);
+                if (parsed._isEncrypted) {
+                    yearData = await decryptData(parsed, password);
+                } else {
+                    yearData = parsed;
+                }
+            }
+            
+            yearData = yearData || { year: document.getElementById('yearSelect').value, months: {} };
+            yearData.months[monthKey] = state;
+            
+            if (password) {
+                const encrypted = await encryptData(yearData, password);
+                localStorage.setItem(yearKey, JSON.stringify(encrypted));
+            } else {
+                localStorage.setItem(yearKey, JSON.stringify(yearData));
+            }
+            updateCalculations();
+        }
+
+        function addRow() {
+            const now = new Date();
+            const item = {
+                id: Date.now(),
+                date: `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${String(now.getDate()).padStart(2, '0')}`,
+                card: '롯데',
+                content: '',
+                amount: 0,
+                rate: 0,
+                totalMonths: 1,
+                currentMonth: 1,
+                monthlyPrincipal: 0,
+                monthlyFee: 0,
+                remAmount: 0,
+                endDate: ''
+            };
+            if(!state.sections.installment) state.sections.installment = [];
+            state.sections.installment.push(item);
+            render();
+        }
+
+        function deleteRow(id) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                state.sections.installment = state.sections.installment.filter(i => i.id !== id);
+                saveData();
+                render();
+            }
+        }
+
+        function updateValue(id, field, value) {
+            const item = state.sections.installment.find(i => i.id === id);
+            if (!item) return;
+
+            if (['amount', 'rate', 'totalMonths', 'currentMonth', 'monthlyFee'].includes(field)) {
+                item[field] = parseFloat(String(value).replace(/,/g, '')) || 0;
+            } else {
+                item[field] = value;
+            }
+
+            calculateInstallment(item);
+            saveData();
+            if (field !== 'content') render();
+        }
+
+        function calculateInstallment(item) {
+            item.totalMonths = Math.max(1, parseInt(item.totalMonths) || 1);
+            item.currentMonth = Math.max(0, Math.min(item.totalMonths, parseInt(item.currentMonth) || 0));
+            item.amount = parseFloat(String(item.amount).replace(/,/g, '')) || 0;
+            item.monthlyPrincipal = Math.floor(item.amount / item.totalMonths);
+            item.rate = parseFloat(item.rate) || 0;
+
+            const remainingBalance = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
+            if (item.rate > 0) {
+                item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
+            }
+
+            if (item.date) {
+                const p = item.date.split(/[-./ ]/);
+                if (p.length >= 2) {
+                    let y = parseInt(p[0]), m = parseInt(p[1]) + item.totalMonths;
+                    y += Math.floor((m - 1) / 12); m = (m - 1) % 12 + 1;
+                    item.endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
+                }
+            }
+            item.remAmount = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
+            return item;
+        }
+
+        function formatNumber(n) {
+            return new Intl.NumberFormat('ko-KR').format(parseFloat(String(n).replace(/,/g, '')) || 0);
+        }
+
+        function render() {
+            const tbody = document.getElementById('installmentBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            const curY = document.getElementById('yearSelect').value;
+            const curM = document.getElementById('monthSelect').value;
+            const currentTag = `${curY.substring(2)}.${curM}`;
+
+            if(state.sections && state.sections.installment) {
+                state.sections.installment.forEach(item => {
+                    calculateInstallment(item);
+                    const tr = document.createElement('tr');
+                    
+                    if (item.endDate && item.endDate < currentTag) tr.classList.add('installment-expired');
+                    else if (item.endDate === currentTag) tr.classList.add('installment-ending');
+
+                    tr.innerHTML = `
+                        <td><input type="date" value="${item.date}" onchange="updateValue(${item.id}, 'date', this.value)"></td>
+                        <td>
+                            <select onchange="updateValue(${item.id}, 'card', this.value)">
+                                ${CARDS.map(c => `<option value="${c}" ${item.card === c ? 'selected' : ''}>${c}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td><input type="text" value="${item.content}" onchange="updateValue(${item.id}, 'content', this.value)"></td>
+                        <td><input type="text" class="amount font-bold" value="${formatNumber(item.amount)}" onblur="updateValue(${item.id}, 'amount', this.value)"></td>
+                        <td><input type="text" style="text-align:center" value="${item.rate || 0}" onblur="updateValue(${item.id}, 'rate', this.value)"></td>
+                        <td>
+                            <div class="flex items-center justify-center gap-1">
+                                <input type="number" style="width:40px; text-align:center" value="${item.currentMonth}" onchange="updateValue(${item.id}, 'currentMonth', this.value)">
+                                <span class="opacity-30">/</span>
+                                <input type="number" style="width:40px; text-align:center" value="${item.totalMonths}" onchange="updateValue(${item.id}, 'totalMonths', this.value)">
+                            </div>
+                        </td>
+                        <td><div class="amount font-bold">${formatNumber(item.monthlyPrincipal)}</div></td>
+                        <td><input type="text" class="amount font-bold text-accent-blue" value="${formatNumber(item.monthlyFee)}" onblur="updateValue(${item.id}, 'monthlyFee', this.value)"></td>
+                        <td><div class="amount font-bold text-accent-red">${formatNumber(item.remAmount)}</div></td>
+                        <td><div class="text-center text-xs opacity-50">${item.endDate}</div></td>
+                        <td class="text-center">
+                            <button onclick="openDetail(${item.id})" class="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-all">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            </button>
+                        </td>
+                        <td class="text-center"><button onclick="deleteRow(${item.id})" class="btn-delete">&times;</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            const data = state.sections.installment || [];
+            const curY = document.getElementById('yearSelect').value;
+            const curM = document.getElementById('monthSelect').value;
+            const currentTag = `${curY.substring(2)}.${curM}`;
+
+            const totalAmount = data.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+            const monthlyTotal = data
+                .filter(i => !i.endDate || i.endDate >= currentTag)
+                .reduce((sum, i) => sum + (parseFloat(i.monthlyPrincipal) || 0) + (parseFloat(i.monthlyFee) || 0), 0);
+            const remainingTotal = data.reduce((sum, i) => sum + (parseFloat(i.remAmount) || 0), 0);
+
+            document.getElementById('totalAmount').innerText = formatNumber(totalAmount) + '원';
+            document.getElementById('monthlyTotal').innerText = formatNumber(monthlyTotal) + '원';
+            document.getElementById('remainingTotal').innerText = formatNumber(remainingTotal) + '원';
+        }
+
+        function openDetail(id) {
+            const item = state.sections.installment.find(i => i.id === id);
+            if (!item) return;
+
+            const listEl = document.getElementById('idm-list');
+            listEl.innerHTML = '';
+
+            const principal = parseFloat(item.amount) || 0;
+            const rate = parseFloat(item.rate || 0);
+            const months = parseInt(item.totalMonths) || 1;
+            const monthlyPrincipal = Math.floor(principal / months);
+            
+            let totalFee = 0;
+            const schedule = [];
+            let baseDate = item.date ? new Date(item.date) : new Date();
+
+            for (let i = 1; i <= months; i++) {
+                const remaining = principal - (monthlyPrincipal * (i - 1));
+                const monthlyFee = rate > 0 ? Math.floor(remaining * (rate / 100) / 12) : parseFloat(item.monthlyFee || 0);
+                totalFee += monthlyFee;
+
+                const payDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + (i - 1), baseDate.getDate());
+                const dateStr = `${String(payDate.getFullYear()).substring(2)}.${String(payDate.getMonth() + 1).padStart(2, '0')}.${String(payDate.getDate()).padStart(2, '0')}`;
+
+                schedule.push({ idx: i, date: dateStr, principal: i === months ? principal - (monthlyPrincipal * (months - 1)) : monthlyPrincipal, fee: monthlyFee });
+            }
+
+            document.getElementById('idm-total-all').innerText = formatNumber(principal + totalFee) + '원';
+            document.getElementById('idm-total-principal').innerText = formatNumber(principal) + '원';
+            document.getElementById('idm-total-fee').innerText = formatNumber(totalFee) + '원';
+            document.getElementById('idm-fee-rate').innerText = rate.toFixed(2) + '%';
+
+            schedule.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'border-b border-white/5 pb-4';
+                div.innerHTML = `
+                    <div class="flex justify-between font-bold mb-2"><span>${s.idx}회차</span><span>${formatNumber(s.principal + s.fee)}원</span></div>
+                    <div class="flex justify-between text-xs opacity-50"><span>예정일 ${s.date}</span><span>원금 ${formatNumber(s.principal)} / 수수료 ${formatNumber(s.fee)}</span></div>
+                `;
+                listEl.appendChild(div);
+            });
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeDetail() { document.getElementById('detailModal').style.display = 'none'; }
+        
+        function sortData(criterion) {
+            const data = state.sections.installment;
+            if(!data) return;
+            if (criterion === 'date_desc') data.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            if (criterion === 'date_asc') data.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+            if (criterion === 'amount_desc') data.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+            render();
+        }
+
+        // --- Dashboard Menu Logic ---
+        function toggleDashboardMenu() {
+            const menu = document.getElementById('dashboardMenu');
+            const isExpanded = !menu.classList.contains('w-0');
+            if (isExpanded) closeDashboardMenu();
+            else openDashboardMenu();
+        }
+        function openDashboardMenu() {
+            const menu = document.getElementById('dashboardMenu');
+            menu.classList.remove('w-0', 'opacity-0', 'pointer-events-none');
+            menu.classList.add('w-[480px]', 'opacity-100', 'px-4');
+        }
+        function closeDashboardMenu() {
+            const menu = document.getElementById('dashboardMenu');
+            menu.classList.add('w-0', 'opacity-0', 'pointer-events-none');
+            menu.classList.remove('w-[480px]', 'opacity-100', 'px-4');
+        }
+
+        function logout() {
+            sessionStorage.removeItem('assetLoginSession');
+            sessionStorage.removeItem('temp_master_pw');
+            alert('로그아웃 되었습니다.');
+            location.href = 'asset.html';
+        }
+    </script>
+</body>
+</html>
