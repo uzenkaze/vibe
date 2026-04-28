@@ -11,11 +11,11 @@
     "dev_deploy_date": "2026-04-29",
     "deploy_date": "2026-05-07",
     "pub_content": "",
-    "remarks": "",
+    "remarks": "일반상품, 옵션상품, 리셀상품 수정\n\n[수정파일]\nProductContorller.java\ndiv.priceArea.maxBenefitPrc.jsp\ndiv.option.priceArea.maxBenefitPrc.jsp\ndiv.priceArea.resell.maxBenefitPrc.jsp",
     "start_date": "2026-04-27",
     "end_date": "2026-04-29",
     "reference": "[코너번호]\n테스트 : 9297\n운영 7194",
-    "updated_at": "2026-04-28T02:38:13.180Z"
+    "updated_at": "2026-04-28T06:34:25.351Z"
   },
   {
     "id": "1776053789127",
