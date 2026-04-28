@@ -11,9 +11,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap"
         rel="stylesheet">
+    <script src="header_loader.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -178,6 +180,29 @@
             border-color: var(--glass-border) !important;
         }
 
+        .nav-year-month select {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            padding-right: 20px !important;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right center !important;
+            border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            font-family: 'Outfit', sans-serif !important;
+            color: var(--text-primary) !important;
+        }
+
+        .nav-year-month span {
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            color: var(--text-secondary) !important;
+        }
+
+        html.dark .nav-year-month select {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right center !important;
+            border-bottom-color: rgba(255,255,255,0.1) !important;
+        }
+
         html.dark .modal {
             background: rgba(0, 0, 0, 0.7) !important;
         }
@@ -275,33 +300,44 @@
         }
 
         .installment-expired {
-            background-color: #f1f5f9;
-            opacity: 0.65;
+            background-color: rgba(128, 128, 128, 0.08) !important;
+            opacity: 0.8;
         }
+
         .installment-highlight {
             background-color: #fffbeb !important;
         }
+
         .installment-ending {
-            background-color: #f0fdf4 !important; /* light green */
+            background-color: rgba(255, 215, 0, 0.15) !important;
         }
+
         .installment-footer {
             background: #f8fafc;
         }
 
         html.dark .installment-expired {
             background-color: rgba(255, 255, 255, 0.05) !important;
-            opacity: 0.5 !important;
+            opacity: 0.6;
         }
+
         html.dark .installment-highlight {
             background-color: rgba(245, 158, 11, 0.15) !important;
         }
+
         html.dark .installment-ending {
-            background-color: rgba(34, 197, 94, 0.15) !important;
+            background-color: rgba(255, 215, 0, 0.1) !important;
         }
+
         html.dark .installment-footer {
             background: rgba(255, 255, 255, 0.05) !important;
             border: 1px solid var(--glass-border);
         }
+
+        /* End Date Colors */
+        .end-date-ending { color: var(--accent-blue) !important; font-weight: 800; }
+        .end-date-expired { color: #4B5563 !important; }
+        html.dark .end-date-expired { color: #9CA3AF !important; }
 
         /* 요약보기 모달 전용 표 글로벌 스타일 */
         .summary-table {
@@ -1962,7 +1998,7 @@
             opacity: 1;
             pointer-events: auto;
         }
-        
+
         /* Modal Container */
         .login-modal-container {
             width: 400px;
@@ -1988,13 +2024,13 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            border: 1px dashed rgba(255,255,255,0.3);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1rem;
         }
-        
+
         .login-modal-title {
             color: #fff;
             font-size: 1.25rem;
@@ -2007,7 +2043,7 @@
             width: 100%;
             margin-bottom: 1rem;
         }
-        
+
         .login-input-label {
             display: block;
             color: #fff;
@@ -2015,28 +2051,28 @@
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
-        
+
         .login-input input {
             width: 100%;
-            background: rgba(255,255,255,0.05) !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
             border-radius: 12px !important;
             padding: 0.8rem 1rem !important;
             color: #fff !important;
             font-size: 0.95rem !important;
             transition: all 0.2s !important;
         }
-        
+
         .login-input input:focus {
-            border-color: rgba(255,255,255,0.3) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
             outline: none !important;
         }
 
         .login-btn {
             width: 100%;
-            background: rgba(255,255,255,0.05) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
             color: #fff !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
             border-radius: 12px !important;
             padding: 0.8rem;
             font-size: 0.95rem;
@@ -2048,9 +2084,9 @@
             justify-content: center;
             gap: 0.5rem;
         }
-        
+
         .login-btn:hover {
-            background: rgba(255,255,255,0.1) !important;
+            background: rgba(255, 255, 255, 0.1) !important;
         }
 
         .login-divider {
@@ -2058,26 +2094,31 @@
             display: flex;
             align-items: center;
             margin: 1.5rem 0;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
             font-size: 0.8rem;
             text-transform: uppercase;
         }
-        
+
         .login-divider::before,
         .login-divider::after {
             content: "";
             flex: 1;
             height: 1px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
-        
-        .login-divider::before { margin-right: 1rem; }
-        .login-divider::after { margin-left: 1rem; }
-        
+
+        .login-divider::before {
+            margin-right: 1rem;
+        }
+
+        .login-divider::after {
+            margin-left: 1rem;
+        }
+
         .social-btn {
             width: 100%;
             background: transparent;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff;
             padding: 0.8rem;
             border-radius: 12px;
@@ -2091,34 +2132,50 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        
+
         .social-btn:hover {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .signup-text {
             margin-top: 1.5rem;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.9rem;
         }
-        
+
         .signup-text a {
             color: #fff;
             font-weight: 600;
             text-decoration: none;
         }
-        
+
         .modal-corner-dot {
             position: absolute;
             width: 2px;
             height: 2px;
-            background: rgba(255,255,255,0.5);
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
         }
-        .dot-tl { top: 12px; left: 12px; }
-        .dot-tr { top: 12px; right: 12px; }
-        .dot-bl { bottom: 12px; left: 12px; }
-        .dot-br { bottom: 12px; right: 12px; }
+
+        .dot-tl {
+            top: 12px;
+            left: 12px;
+        }
+
+        .dot-tr {
+            top: 12px;
+            right: 12px;
+        }
+
+        .dot-bl {
+            bottom: 12px;
+            left: 12px;
+        }
+
+        .dot-br {
+            bottom: 12px;
+            right: 12px;
+        }
 
         /* ===== THEME TOGGLE ===== */
         .theme-toggle-btn {
@@ -2549,6 +2606,116 @@
         .features-img img {
             max-width: 100%;
         }
+        /* Custom Calendar Styles */
+        .custom-calendar {
+            position: absolute;
+            z-index: 10000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            font-family: 'Outfit', sans-serif;
+            color: #1C1D20;
+            animation: calFadeIn 0.3s ease;
+        }
+
+        @keyframes calFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        html.dark .custom-calendar {
+            background: rgba(30, 30, 45, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #E8E8F0;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 0 5px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+        }
+
+        .calendar-day-label {
+            font-size: 0.65rem;
+            font-weight: 900;
+            opacity: 0.3;
+            text-transform: uppercase;
+            padding: 8px 0;
+            letter-spacing: 0.05em;
+        }
+
+        .calendar-date {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 10px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .calendar-date:hover {
+            background: var(--accent-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .calendar-date.today {
+            color: var(--accent-blue);
+            font-weight: 900;
+        }
+
+        .calendar-date.selected {
+            background: var(--accent-blue) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(93, 107, 248, 0.3);
+        }
+
+        .calendar-date.other-month {
+            opacity: 0.15;
+        }
+
+        .calendar-btn {
+            background: rgba(0, 0, 0, 0.03);
+            border: none;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: inherit;
+        }
+
+        html.dark .calendar-btn {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .calendar-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
     </style>
     <!-- ✅ 로그인 플래시(FOUC) 방지: DOM 렌더링 전에 세션 확인 후 화면 즉시 결정 -->
     <script>
@@ -2734,7 +2901,8 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen" style="display: none;" onclick="if(event.target === this) hideLoginScreen()">
+    <div id="loginScreen" class="login-screen" style="display: none;"
+        onclick="if(event.target === this) hideLoginScreen()">
         <div class="login-modal-container" onclick="event.stopPropagation()">
             <div class="modal-corner-dot dot-tl"></div>
             <div class="modal-corner-dot dot-tr"></div>
@@ -2743,26 +2911,30 @@
 
             <div class="login-modal-logo">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
                     <path d="M12 3V21" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
                     <path d="M4 12H20" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
                 </svg>
             </div>
-            <div class="login-modal-title">Sign in to SuperApp</div>
+            <div class="login-modal-title">Login</div>
 
             <div id="loginFormContainer" style="width: 100%;">
-                <div id="loginError" style="color: #ff4d4d; margin-bottom: 1rem; display: none; font-size: 0.85rem; text-align: center;">
+                <div id="loginError"
+                    style="color: #ff4d4d; margin-bottom: 1rem; display: none; font-size: 0.85rem; text-align: center;">
                     아이디 또는 비밀번호가 일치하지 않습니다.
                 </div>
 
                 <div class="login-input">
                     <span class="login-input-label">Email or ID</span>
-                    <input type="text" id="loginId" placeholder="Your email address or ID" onkeypress="if(event.key === 'Enter') attemptLogin()">
+                    <input type="text" id="loginId" placeholder="Your email address or ID"
+                        onkeypress="if(event.key === 'Enter') attemptLogin()">
                 </div>
-                
+
                 <div class="login-input">
                     <span class="login-input-label">Password</span>
-                    <input type="password" id="loginPw" placeholder="Your password" onkeypress="if(event.key === 'Enter') attemptLogin()">
+                    <input type="password" id="loginPw" placeholder="Your password"
+                        onkeypress="if(event.key === 'Enter') attemptLogin()">
                 </div>
 
                 <div class="flex items-center gap-2 mb-4" style="margin-top: 0.5rem; display: none;">
@@ -2773,42 +2945,33 @@
                     Continue
                 </button>
 
-                <div class="login-divider">OR</div>
-
-                <button class="social-btn" onclick="mockGoogleLogin()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                    </svg>
-                    Continue with Google
-                </button>
-
-                <div class="signup-text text-center">
-                    Don't have an account? <a href="#" onclick="showSetupScreen()">Sign up</a>
-                </div>
             </div>
 
             <!-- Initial Setup Screen within the modal -->
             <div id="adminCreateContainer" style="display: none; width: 100%;">
                 <div style="margin-bottom: 1.5rem;">
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; text-align: center;">기존 데이터를 가져오거나 시스템 초기 설정을 진행하세요.</p>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; text-align: center;">기존 데이터를 가져오거나 시스템 초기
+                        설정을 진행하세요.</p>
                 </div>
 
-                <div style="margin-bottom: 1.5rem; padding: 1.25rem; border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; text-align: center;">
-                    <button class="login-btn" style="background: transparent !important;" onclick="openGitHubModal()">☁️ Cloud에서 가져오기</button>
+                <div
+                    style="margin-bottom: 1.5rem; padding: 1.25rem; border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; text-align: center;">
+                    <button class="login-btn" style="background: transparent !important;" onclick="openGitHubModal()">☁️
+                        Cloud에서 가져오기</button>
                 </div>
 
                 <div id="setupKeySection" style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <div class="login-input">
                         <span class="login-input-label">마스터 액세스 키</span>
-                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력" onkeypress="if(event.key === 'Enter') verifySetupKey()">
+                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력"
+                            onkeypress="if(event.key === 'Enter') verifySetupKey()">
                     </div>
-                    <button class="login-btn" style="background: #fff !important; color: #000 !important;" onclick="verifySetupKey()">시스템 인증</button>
+                    <button class="login-btn" style="background: #fff !important; color: #000 !important;"
+                        onclick="verifySetupKey()">시스템 인증</button>
                 </div>
 
-                <div id="adminFieldsSection" style="display: none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem; flex-direction: column; gap: 0.75rem;">
+                <div id="adminFieldsSection"
+                    style="display: none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem; flex-direction: column; gap: 0.75rem;">
                     <div class="login-input">
                         <input type="text" id="adminName" placeholder="관리자 이름">
                     </div>
@@ -2818,12 +2981,10 @@
                     <div class="login-input">
                         <input type="password" id="adminPw" placeholder="비밀번호 (마스터키로 사용)">
                     </div>
-                    <button class="login-btn" style="background: #fff !important; color: #000 !important;" onclick="createAdminAccount()">계정 생성</button>
+                    <button class="login-btn" style="background: #fff !important; color: #000 !important;"
+                        onclick="createAdminAccount()">계정 생성</button>
                 </div>
-                
-                <div class="signup-text text-center">
-                    Already have an account? <a href="#" onclick="showLoginOnlyScreen()">Log in</a>
-                </div>
+
             </div>
         </div>
     </div>
@@ -2833,84 +2994,9 @@
 
 
     <div class="container" id="mainContainer" style="display: none;">
+        <div id="header-placeholder"></div>
 
-        <!-- Dashboard Navigation -->
-        <nav class="flex justify-between items-center py-8 px-4">
-            <a href="asset.html" class="group flex items-center gap-4 cursor-pointer">
-                <div
-                    class="w-10 h-10 border border-dyo-dark rounded-full flex items-center justify-center transition-all duration-500 group-hover:bg-dyo-dark overflow-hidden">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        class="text-dyo-dark group-hover:text-white transition-colors duration-500">
-                        <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="currentColor" stroke-width="1.5"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M12 3V21" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
-                        <path d="M4 12H20" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
-                    </svg>
-                </div>
-                <div class="flex flex-col -space-y-1.5">
-                    <span class="font-serif text-2xl italic tracking-tighter text-dyo-dark">Hans</span>
-                    <span class="text-[8px] font-black tracking-[0.4em] text-dyo-dark/30 uppercase pl-0.5">Wealth
-                        Management</span>
-                </div>
-            </a>
 
-            <div class="nav-year-month flex items-center gap-2 rounded-full px-4 py-2 shadow-sm border"
-                style="background: var(--card-bg); border-color: var(--glass-border);">
-                <select id="yearSelect"
-                    style="background: transparent; border: none; outline: none; font-weight: 800; font-size: 1.1rem; color: var(--text-primary); cursor: pointer; min-width: 80px; padding-right: 0;"></select>
-                <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-secondary); opacity: 0.4;">/</span>
-                <select id="monthSelect"
-                    style="background: transparent; border: none; outline: none; font-weight: 800; font-size: 1.1rem; color: var(--text-primary); cursor: pointer; min-width: 60px; padding-right: 0;"></select>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <!-- Horizontal Expanding Menu -->
-                <div id="dashboardMenu"
-                    class="h-14 w-0 opacity-0 bg-white rounded-full flex items-center gap-4 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-dyo-dark">
-                    <a href="asset.html"
-                        class="ml-6 text-[10px] font-black tracking-tighter transition-colors uppercase whitespace-nowrap border-b-2 border-orange-500"
-                        style="color: #666666 !important;">Home</a>
-                    <a href="javascript:void(0)" onclick="location.href='installment.html?y='+document.getElementById('yearSelect').value+'&m='+document.getElementById('monthSelect').value"
-                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Card</a>
-                    <a href="#" onclick="openPensionModal(); closeDashboardMenu();"
-                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Pension</a>
-                    <a href="#" onclick="openGitHubModal(); closeDashboardMenu();"
-                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Cloud</a>
-                    <a href="#" onclick="openDataManageModal(); closeDashboardMenu();"
-                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Data</a>
-                    <a href="#" onclick="openManualModal(); closeDashboardMenu();"
-                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">Manual</a>
-                    <a href="#" onclick="openAccountModal(); closeDashboardMenu();"
-                        class="text-[10px] font-black tracking-tighter text-dyo-dark/40 hover:text-dyo-dark transition-colors uppercase whitespace-nowrap">User</a>
-                    <a href="#" onclick="logout(); closeDashboardMenu();"
-                        class="text-[10px] font-black tracking-tighter text-red-400 hover:text-red-500 transition-colors uppercase whitespace-nowrap">Logout</a>
-                </div>
-
-                <button onclick="toggleDashboardMenu()"
-                    class="w-14 h-14 bg-white rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm hover:scale-105 transition-transform border border-dyo-dark shrink-0 relative z-10">
-                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
-                    <span class="w-6 h-0.5 bg-dyo-dark"></span>
-                    <span class="w-4 h-0.5 bg-dyo-dark self-end mr-4"></span>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Dashboard Header Info -->
-        <div class="flex justify-between items-end px-4 mb-10">
-            <div class="space-y-1">
-                <h2 class="font-serif text-5xl italic text-dyo-dark">Monthly Overview</h2>
-                <p class="text-sm font-bold tracking-widest text-dyo-dark/30 uppercase">Track your financial trajectory
-                </p>
-            </div>
-            <div class="flex gap-4">
-                <button
-                    class="px-8 py-3 bg-white text-dyo-dark rounded-full text-[11px] font-black tracking-widest hover:bg-dyo-bg transition-colors border border-dyo-bg shadow-sm uppercase"
-                    onclick="openPensionModal()">📊 예상연금</button>
-                <button
-                    class="px-8 py-3 bg-[#E8F5E9] text-[#2E7D32] rounded-full text-[11px] font-black tracking-widest hover:opacity-80 transition-opacity border border-[#E8F5E9] shadow-sm uppercase"
-                    onclick="manualGitHubSync()">💾 저장 & 동기화</button>
-            </div>
-        </div>
 
         <!-- Summary Bar -->
         <div class="summary-bar px-4 mb-12">
@@ -3087,21 +3173,32 @@
                         </table>
                         <div class="section-footer">소계: <span id="total-f-expense">0</span></div>
                     </div>
-                    
+
                     <!-- 카드 할부 요약 영역 -->
-                    <div class="section-box" style="border-top: 2px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem;">
+                    <div class="section-box"
+                        style="border-top: 2px solid var(--glass-border); padding-top: 1.5rem; margin-top: 1.5rem;">
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="section-title">카드 할부 현황</h2>
-                            <a href="javascript:void(0)" onclick="location.href='installment.html?y='+document.getElementById('yearSelect').value+'&m='+document.getElementById('monthSelect').value" class="text-[10px] font-black tracking-widest text-dyo-accent hover:underline uppercase">Manage All →</a>
+                            <a href="javascript:void(0)"
+                                onclick="location.href='installment.html?y='+document.getElementById('yearSelect').value+'&m='+document.getElementById('monthSelect').value"
+                                class="text-[10px] font-black tracking-widest text-dyo-accent hover:underline uppercase">Manage
+                                All →</a>
                         </div>
-                        <div class="installment-footer" style="background: rgba(0,0,0,0.02); padding: 1.5rem; border-radius: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="installment-footer"
+                            style="background: rgba(0,0,0,0.02); padding: 1.5rem; border-radius: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                             <div>
-                                <div style="font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 0.3rem;">금월 납부 예정 (원금+수수료)</div>
-                                <div id="installment-total-principal" style="font-size: 1.25rem; font-weight: 900; color: var(--accent-blue);">0</div>
+                                <div
+                                    style="font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 0.3rem;">
+                                    금월 납부 예정 (원금+수수료)</div>
+                                <div id="installment-total-principal"
+                                    style="font-size: 1.25rem; font-weight: 900; color: var(--accent-blue);">0</div>
                             </div>
                             <div>
-                                <div style="font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 0.3rem;">할부 총 잔액</div>
-                                <div id="total-installment" style="font-size: 1.25rem; font-weight: 900; color: var(--accent-red);">0</div>
+                                <div
+                                    style="font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 0.3rem;">
+                                    할부 총 잔액</div>
+                                <div id="total-installment"
+                                    style="font-size: 1.25rem; font-weight: 900; color: var(--accent-red);">0</div>
                             </div>
                         </div>
                     </div>
@@ -3714,13 +3811,20 @@
 
         function initSelectors() {
             const now = new Date();
+            const urlParams = new URLSearchParams(window.location.search);
+            const yParam = urlParams.get('y');
+            const mParam = urlParams.get('m');
+
             const yEl = document.getElementById('yearSelect');
             const mEl = document.getElementById('monthSelect');
-            const currentYear = now.getFullYear();
+            
+            const currentYear = yParam ? parseInt(yParam) : now.getFullYear();
+            const currentMonth = mParam ? mParam : String(now.getMonth() + 1).padStart(2, '0');
 
             yEl.innerHTML = '';
-            const startYear = 2026;
-            const endYear = Math.max(startYear, currentYear + 1);
+            const startYear = 2024;
+            // URL 파라미터로 들어온 연도가 현재 계산된 범위보다 크면 그 연도까지 표시
+            const endYear = Math.max(startYear, now.getFullYear() + 2, currentYear);
 
             for (let i = startYear; i <= endYear; i++) {
                 const opt = document.createElement('option');
@@ -3731,16 +3835,29 @@
 
             mEl.innerHTML = '';
             for (let i = 1; i <= 12; i++) {
-                const monthStr = String(i).padStart(2, '0'); // 항상 2자리 문자열로 생성
+                const monthStr = String(i).padStart(2, '0');
                 const opt = document.createElement('option');
                 opt.value = monthStr;
                 opt.textContent = i + '월';
-                if (i === now.getMonth() + 1) opt.selected = true;
+                if (monthStr === currentMonth) opt.selected = true;
                 mEl.appendChild(opt);
             }
-            yEl.onchange = loadData;
-            mEl.onchange = loadData;
-            console.log("[Init] initSelectors 완료");
+            yEl.onchange = () => { syncMenuLinks(); loadData(); };
+            mEl.onchange = () => { syncMenuLinks(); loadData(); };
+            syncMenuLinks();
+        }
+
+        function syncMenuLinks() {
+            const y = document.getElementById('yearSelect').value;
+            const m = document.getElementById('monthSelect').value;
+            const menuLinks = document.querySelectorAll('#dashboardMenu a');
+            menuLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && (href.includes('asset.html') || href.includes('installment.html'))) {
+                    const base = href.split('?')[0];
+                    link.setAttribute('onclick', `location.href='${base}?y=${y}&m=${m}'`);
+                }
+            });
         }
 
         function getYearKey() {
@@ -3787,6 +3904,11 @@
             }
 
             console.log('Saved to Year:', yearKey, 'Month:', monthKey, finalPassword ? '(Encrypted)' : '(Plain)');
+            
+            // Option B: Trigger background auto-sync to GitHub
+            if (typeof backgroundGitHubSync === 'function') {
+                backgroundGitHubSync();
+            }
         }
 
         function migrateOldData() {
@@ -4027,6 +4149,12 @@
         }
 
         function handleAmountFocus(el) { el.value = el.value.replace(/,/g, '') === '0' ? '' : el.value.replace(/,/g, ''); el.select(); }
+        function formatDateInput(el) {
+            let v = el.value.replace(/[^0-9]/g, '');
+            if (v.length > 4 && v.length <= 6) v = v.slice(0, 4) + '-' + v.slice(4);
+            else if (v.length > 6) v = v.slice(0, 4) + '-' + v.slice(4, 6) + '-' + v.slice(6, 10);
+            el.value = v;
+        }
         function handleAmountBlur(el, s, id, f) {
             let v = el.value.replace(/,/g, ''); if (v === '' || isNaN(v)) v = '0';
             updateValue(s, id, f, v); el.value = formatNumber(v);
@@ -4118,13 +4246,15 @@
                         // 현재 월 식별자 (YY.MM 포맷)
                         const currentEndDate = `${String(curY).substring(2)}.${String(curM).padStart(2, '0')}`;
 
-                        // 종료일이 현재월보다 이전(만료)이면 회색 처리
+                        let endDateClass = "";
                         if (item.endDate && item.endDate < currentEndDate) {
                             tr.classList.add('installment-expired');
+                            endDateClass = "end-date-expired";
                         }
-                        // 이번 달에 종료되는 할부 건 강조 표시 (녹색)
+                        // 이번 달에 종료되는 할부 건 강조 표시 (노란색 배경 + 파란색 텍스트)
                         else if (item.endDate === currentEndDate) {
                             tr.classList.add('installment-ending');
+                            endDateClass = "end-date-ending";
                         }
                         // 다음 달에 종료되는 할부 건 강조 표시 (노란색)
                         else if (item.endDate === targetEndDate) {
@@ -4132,7 +4262,7 @@
                         }
 
                         tr.innerHTML = `
-                            <td><input type="date" value="${item.date}" onchange="updateValue('${s}', ${item.id}, 'date', this.value)"></td>
+                            <td><input type="text" value="${item.date}" placeholder="YYYY-MM-DD" maxlength="10" onclick="openCalendar(this)" oninput="formatDateInput(this)" onchange="updateValue('${s}', ${item.id}, 'date', this.value)"></td>
                             <td>
                                 <select onchange="updateValue('${s}', ${item.id}, 'card', this.value)">
                                     <option value="국민" ${item.card === '국민' ? 'selected' : ''}>국민</option>
@@ -4162,7 +4292,7 @@
                                     onblur="handleAmountBlur(this, '${s}', ${item.id}, 'monthlyFee')">
                             </td>
                             <td><div class="amount font-bold" style="color: var(--accent-red) !important;">${formatNumber(item.remAmount)}</div></td>
-                            <td><div class="text-center text-xs opacity-40 font-bold">${item.endDate}</div></td>
+                            <td><div class="text-center font-bold ${endDateClass}">${item.endDate}</div></td>
                             <td style="text-align: center;">
                                 <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold transition-all" onclick="openInstallmentDetail(${item.id})">상세</button>
                             </td>
@@ -4299,7 +4429,7 @@
                     if (amtEl) amtEl.innerText = formatNumber(totalAmt);
                     if (priEl) {
                         priEl.innerText = formatNumber(activeMonthlyTotal);  // 진행 중 원금+수수료 표시
-                        
+
                         // 툴팁용 요약 데이터 생성
                         const activeItems = state.sections[s].filter(i => i.endDate && i.endDate >= currentMonthStr);
                         if (activeItems.length > 0) {
@@ -5179,7 +5309,7 @@
             }
         }
 
-        function loginSuccess() {
+        async function loginSuccess() {
             console.log("[Login] loginSuccess 시작");
             isLoggedIn = true;
             // Set session storage and cookie for persistence
@@ -5189,11 +5319,22 @@
             document.getElementById('landingPage').style.display = 'none';
             document.getElementById('loginScreen').classList.remove('show');
             setTimeout(() => document.getElementById('loginScreen').style.display = 'none', 300);
-            
+
             document.getElementById('mainContainer').style.display = 'block';
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             document.getElementById('loginError').style.display = 'none';
+            
+            // Load Header
+            await loadHeader({
+                title: 'Monthly Overview',
+                subtitle: 'Track your financial trajectory',
+                buttons: [
+                    { text: '📊 예상연금', class: 'px-8 py-3 bg-white text-dyo-dark dark:bg-[#1A1A24] dark:text-white rounded-full text-[11px] font-black tracking-widest hover:bg-dyo-bg transition-colors border border-dyo-bg dark:border-white/20 shadow-sm uppercase', onclick: 'openPensionModal()' },
+                    { text: '💾 저장 & 동기화', class: 'px-8 py-3 bg-[#E8F5E9] text-[#2E7D32] dark:bg-[#2E7D32] dark:text-white rounded-full text-[11px] font-black tracking-widest hover:opacity-80 transition-opacity border border-[#E8F5E9] dark:border-transparent shadow-sm uppercase', onclick: 'manualGitHubSync()' }
+                ]
+            });
+
             initSelectors();
             loadData();
         }
@@ -5212,21 +5353,7 @@
             alert('로그아웃 되었습니다.');
         }
 
-        function mockGoogleLogin() {
-            if (accountsData.length > 0) {
-                const user = accountsData[0];
-                sessionStorage.setItem('temp_master_pw', user.password);
-                loginSuccess();
-            } else {
-                showToast('등록된 계정이 없습니다. 회원가입을 진행해주세요.');
-            }
-        }
-        
-        function showSetupScreen() {
-            document.getElementById('loginFormContainer').style.display = 'none';
-            document.getElementById('adminCreateContainer').style.display = 'flex';
-            document.querySelector('.login-modal-title').innerText = 'Set up SuperApp';
-        }
+
 
         function showLoginOnlyScreen() {
             document.getElementById('adminCreateContainer').style.display = 'none';
@@ -5537,13 +5664,163 @@
             }
         })();
 
-        // DOMContentLoaded 후 테마 버튼 아이콘 동기화
+        // DOMContentLoaded 후 테마 버튼 아이콘 동기화 및 모달 처리
         document.addEventListener('DOMContentLoaded', function () {
             const savedTheme = localStorage.getItem('theme');
             const btn = document.getElementById('themeToggleBtn');
             if (savedTheme === 'dark' && btn) btn.textContent = '☀️';
+
+            // Handle cross-page modal opening
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            if (action) {
+                // Wait for initial data load
+                setTimeout(() => {
+                    if (action === 'github' && typeof openGitHubModal === 'function') openGitHubModal();
+                    else if (action === 'data' && typeof openDataManageModal === 'function') openDataManageModal();
+                    else if (action === 'manual' && typeof openManualModal === 'function') openManualModal();
+                    else if (action === 'account' && typeof openAccountModal === 'function') openAccountModal();
+                    
+                    // Clean up URL
+                    const y = urlParams.get('y') || new Date().getFullYear();
+                    const m = urlParams.get('m') || String(new Date().getMonth() + 1).padStart(2, '0');
+                    window.history.replaceState({}, document.title, window.location.pathname + "?y=" + y + "&m=" + m);
+                }, 500);
+            }
+        });
+
+        // ===== Custom Calendar Logic =====
+        let activeCalendarInput = null;
+        let calendarDate = new Date();
+
+        function openCalendar(el) {
+            if (activeCalendarInput === el) {
+                closeCalendar();
+                return;
+            }
+            activeCalendarInput = el;
+            const rect = el.getBoundingClientRect();
+            const cal = document.getElementById('customCalendar');
+            
+            // 위치 계산 (화면 밖으로 나가지 않도록 조정)
+            let top = rect.bottom + window.scrollY + 8;
+            let left = rect.left + window.scrollX;
+            
+            if (left + 300 > window.innerWidth) left = window.innerWidth - 320;
+            if (left < 10) left = 10;
+            
+            cal.style.top = top + 'px';
+            cal.style.left = left + 'px';
+            cal.style.display = 'flex';
+
+            if (el.value && /^\d{4}-\d{2}-\d{2}$/.test(el.value)) {
+                calendarDate = new Date(el.value);
+            } else {
+                calendarDate = new Date();
+            }
+            renderCalendar();
+        }
+
+        function closeCalendar() {
+            document.getElementById('customCalendar').style.display = 'none';
+            activeCalendarInput = null;
+        }
+
+        function renderCalendar() {
+            const cal = document.getElementById('customCalendar');
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+
+            const headerText = cal.querySelector('.calendar-header span');
+            headerText.innerText = `${year}년 ${month + 1}월`;
+
+            const grid = cal.querySelector('.calendar-grid');
+            grid.innerHTML = '';
+
+            ['일', '월', '화', '수', '목', '금', '토'].forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'calendar-day-label';
+                div.innerText = d;
+                grid.appendChild(div);
+            });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            const prevLastDate = new Date(year, month, 0).getDate();
+
+            for (let i = firstDay - 1; i >= 0; i--) {
+                addDateCell(year, month - 1, prevLastDate - i, true);
+            }
+
+            const today = new Date();
+            const selectedVal = activeCalendarInput ? activeCalendarInput.value : '';
+            for (let i = 1; i <= lastDate; i++) {
+                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === i;
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const isSelected = selectedVal === dateStr;
+                addDateCell(year, month, i, false, isToday, isSelected);
+            }
+
+            let nextMonthDay = 1;
+            while (grid.children.length < 49) {
+                addDateCell(year, month + 1, nextMonthDay++, true);
+            }
+        }
+
+        function addDateCell(y, m, d, otherMonth, isToday, isSelected) {
+            const cal = document.getElementById('customCalendar');
+            const grid = cal.querySelector('.calendar-grid');
+            const div = document.createElement('div');
+            div.className = 'calendar-date';
+            if (otherMonth) div.classList.add('other-month');
+            if (isToday) div.classList.add('today');
+            if (isSelected) div.classList.add('selected');
+            div.innerText = d;
+            
+            const targetDate = new Date(y, m, d);
+            const dateStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}-${String(targetDate.getDate()).padStart(2, '0')}`;
+            
+            div.onclick = (e) => {
+                e.stopPropagation();
+                if (activeCalendarInput) {
+                    activeCalendarInput.value = dateStr;
+                    const event = new Event('change', { bubbles: true });
+                    activeCalendarInput.dispatchEvent(event);
+                }
+                closeCalendar();
+            };
+            grid.appendChild(div);
+        }
+
+        function changeCalendarMonth(delta) {
+            calendarDate.setMonth(calendarDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            const cal = document.getElementById('customCalendar');
+            if (cal.style.display === 'flex' && !cal.contains(e.target) && e.target !== activeCalendarInput) {
+                closeCalendar();
+            }
         });
     </script>
+    <!-- Custom Calendar Popup -->
+    <div id="customCalendar" class="custom-calendar">
+        <div class="calendar-header">
+            <button class="calendar-btn" onclick="changeCalendarMonth(-1)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+            <span></span>
+            <button class="calendar-btn" onclick="changeCalendarMonth(1)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M9 18l6-6-6-6" />
+                </svg>
+            </button>
+        </div>
+        <div class="calendar-grid"></div>
+    </div>
 </body>
 
 </html>
