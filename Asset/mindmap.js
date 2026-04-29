@@ -7,7 +7,8 @@ const MM = {
     nodes: [], edges: [], nextId: 1,
     selected: null, selectedEdge: null, dragging: null, dragOffset: { x: 0, y: 0 },
     pan: { x: 0, y: 0 }, zoom: 1, isPanning: false, panStart: { x: 0, y: 0 },
-    bridgeMode: false, bridgeFrom: null,
+    bridgeMode: false, bridgeFrom: null, syncTimeout: null,
+    store: { version: 2, activeId: 1, nextPageId: 2, pages: [] },
     LINE_STYLES: [
         { id: 'dashed', label: '점선 ┄', dash: [6, 4] },
         { id: 'solid', label: '실선 ─', dash: [] },
@@ -38,12 +39,135 @@ const MM = {
         document.addEventListener('keydown', e => this.onKeyDown(e));
         this.canvas.addEventListener('contextmenu', e => e.preventDefault());
         this.load();
-        if (this.nodes.length === 0) {
-            this.nodes.push({ id: this.nextId++, type: 'group', label: 'Main Group', x: 0, y: 0, color: 0, memo: '' });
+        
+        // Fallback if load didn't create a page
+        if (this.store.pages.length === 0) {
+            const defaultPage = { id: 1, title: 'Main Page', nodes: [], edges: [], nextId: 2 };
+            defaultPage.nodes.push({ id: 1, type: 'group', label: 'Main Group', x: 0, y: 0, color: 0, memo: '' });
+            this.store.pages.push(defaultPage);
+            this.store.activeId = 1;
+            this.syncActivePage();
             this.save();
         }
+        
         this.selected = null;
+        this.renderSidebar();
         this.render();
+    },
+
+    syncActivePage() {
+        const page = this.store.pages.find(p => p.id === this.store.activeId);
+        if (page) {
+            this.nodes = page.nodes;
+            this.edges = page.edges;
+            this.nextId = page.nextId;
+        }
+    },
+
+    commitActivePage() {
+        const page = this.store.pages.find(p => p.id === this.store.activeId);
+        if (page) {
+            page.nodes = this.nodes;
+            page.edges = this.edges;
+            page.nextId = this.nextId;
+        }
+    },
+
+    addNewPage() {
+        this.commitActivePage();
+        const newId = this.store.nextPageId++;
+        const newPage = { id: newId, title: 'New Page', nodes: [], edges: [], nextId: 2 };
+        newPage.nodes.push({ id: 1, type: 'group', label: 'New Topic', x: 0, y: 0, color: 0, memo: '' });
+        
+        this.store.pages.push(newPage);
+        this.store.activeId = newId;
+        this.syncActivePage();
+        this.selected = null;
+        this.fitView();
+        this.save();
+        this.renderSidebar();
+        this.render();
+    },
+
+    switchPage(id) {
+        if (this.store.activeId === id) return;
+        this.commitActivePage();
+        this.store.activeId = id;
+        this.syncActivePage();
+        this.selected = null;
+        this.fitView();
+        this.save();
+        this.renderSidebar();
+        this.render();
+    },
+
+    deletePage(id) {
+        if (this.store.pages.length <= 1) {
+            alert('최소 1개의 페이지는 유지해야 합니다.');
+            return;
+        }
+        showConfirm('이 페이지를 삭제하시겠습니까?', () => {
+            this.store.pages = this.store.pages.filter(p => p.id !== id);
+            if (this.store.activeId === id) {
+                this.store.activeId = this.store.pages[0].id;
+                this.syncActivePage();
+            }
+            this.selected = null;
+            this.save();
+            this.renderSidebar();
+            this.render();
+        });
+    },
+
+    renamePage(id) {
+        const page = this.store.pages.find(p => p.id === id);
+        if (!page) return;
+        const newTitle = prompt('새 페이지 이름을 입력하세요:', page.title);
+        if (newTitle && newTitle.trim()) {
+            page.title = newTitle.trim();
+            this.save();
+            this.renderSidebar();
+        }
+    },
+
+    renderSidebar() {
+        const list = document.getElementById('pageList');
+        if (!list) return;
+        list.innerHTML = '';
+        this.store.pages.forEach(p => {
+            const isActive = p.id === this.store.activeId;
+            const item = document.createElement('div');
+            item.className = `flex justify-between items-center px-3 py-2 rounded-lg cursor-pointer transition-colors ${isActive ? 'bg-accent-blue/10 text-accent-blue font-bold' : 'hover:bg-item-hover text-text-secondary'}`;
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'flex-1 truncate text-sm';
+            titleSpan.innerText = p.title;
+            titleSpan.onclick = () => this.switchPage(p.id);
+            titleSpan.ondblclick = () => this.renamePage(p.id);
+            
+            item.appendChild(titleSpan);
+
+            // Controls
+            const ctrls = document.createElement('div');
+            ctrls.className = 'flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity';
+            if (isActive) ctrls.classList.remove('opacity-0');
+            
+            const renameBtn = document.createElement('button');
+            renameBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+            renameBtn.className = 'p-1 hover:text-text-primary transition-colors';
+            renameBtn.onclick = (e) => { e.stopPropagation(); this.renamePage(p.id); };
+            
+            const delBtn = document.createElement('button');
+            delBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>';
+            delBtn.className = 'p-1 hover:text-red-500 transition-colors';
+            delBtn.onclick = (e) => { e.stopPropagation(); this.deletePage(p.id); };
+            
+            item.classList.add('group');
+            ctrls.append(renameBtn, delBtn);
+            item.appendChild(ctrls);
+            
+            list.appendChild(item);
+        });
     },
 
     resize() {
@@ -603,22 +727,129 @@ const MM = {
         return (r * 299 + g * 587 + b * 114) / 1000 > 128;
     },
 
-    save() {
-        const data = { nodes: this.nodes, edges: this.edges, nextId: this.nextId };
-        localStorage.setItem('hans_mindmap', JSON.stringify(data));
+    async syncWithGitHub(action = 'upload') {
+        const configStr = localStorage.getItem('assetGitHubConfig');
+        if (!configStr) return null;
+        try {
+            const config = JSON.parse(configStr);
+            if (!config.token || !config.repo) return null;
+
+            const url = `https://api.github.com/repos/${config.repo}/contents/Asset/data/mindmap.json`;
+            const headers = {
+                'Authorization': `token ${config.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            };
+
+            if (action === 'download') {
+                const res = await fetch(url, { headers });
+                if (res.status === 404) return null;
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const json = await res.json();
+                const content = decodeURIComponent(escape(atob(json.content)));
+                return JSON.parse(content);
+            } else if (action === 'upload') {
+                let sha = null;
+                const getRes = await fetch(url, { headers });
+                if (getRes.ok) {
+                    const getJson = await getRes.json();
+                    sha = getJson.sha;
+                }
+
+                this.commitActivePage();
+                const contentStr = JSON.stringify(this.store, null, 2);
+                const contentEncoded = btoa(unescape(encodeURIComponent(contentStr)));
+
+                const body = {
+                    message: 'Auto-sync mindmap data from app',
+                    content: contentEncoded
+                };
+                if (sha) body.sha = sha;
+
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(body)
+                });
+
+                if (!putRes.ok) throw new Error(`HTTP error! status: ${putRes.status}`);
+                
+                if (typeof showToast === 'function') {
+                    showToast('GitHub 마인드맵 동기화 완료');
+                }
+                return true;
+            }
+        } catch (e) {
+            console.error('GitHub Sync Error:', e);
+            return null;
+        }
     },
 
-    load() {
+    save() {
+        this.commitActivePage();
+        localStorage.setItem('hans_mindmap', JSON.stringify(this.store));
+        
+        clearTimeout(this.syncTimeout);
+        this.syncTimeout = setTimeout(() => {
+            this.syncWithGitHub('upload');
+        }, 2000);
+    },
+
+    migrateData(d) {
+        if (!d) return null;
+        if (d.version === 2) return d;
+        // Migrate from v1
+        return {
+            version: 2,
+            activeId: 1,
+            nextPageId: 2,
+            pages: [
+                {
+                    id: 1,
+                    title: 'Main Page',
+                    nodes: d.nodes || [],
+                    edges: d.edges || [],
+                    nextId: d.nextId || 1
+                }
+            ]
+        };
+    },
+
+    async load() {
         try {
-            const d = JSON.parse(localStorage.getItem('hans_mindmap'));
-            if (d && d.nodes) {
-                this.nodes = d.nodes; this.edges = d.edges || []; this.nextId = d.nextId || 1;
+            const raw = localStorage.getItem('hans_mindmap');
+            if (raw) {
+                const d = this.migrateData(JSON.parse(raw));
+                if (d && d.pages) {
+                    this.store = d;
+                    this.syncActivePage();
+                }
+            }
+            this.renderSidebar();
+            this.render();
+            
+            const configStr = localStorage.getItem('assetGitHubConfig');
+            if (configStr) {
+                const config = JSON.parse(configStr);
+                if (config.token && config.repo) {
+                    const ghDataRaw = await this.syncWithGitHub('download');
+                    if (ghDataRaw) {
+                        const ghData = this.migrateData(ghDataRaw);
+                        if (ghData && ghData.pages) {
+                            this.store = ghData;
+                            this.syncActivePage();
+                            localStorage.setItem('hans_mindmap', JSON.stringify(this.store));
+                            this.renderSidebar();
+                            this.render();
+                        }
+                    }
+                }
             }
         } catch (e) { console.error('MindMap load error:', e); }
     },
 
     exportJSON() {
-        const blob = new Blob([JSON.stringify({ nodes: this.nodes, edges: this.edges, nextId: this.nextId }, null, 2)], { type: 'application/json' });
+        this.commitActivePage();
+        const blob = new Blob([JSON.stringify(this.store, null, 2)], { type: 'application/json' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
         a.download = 'mindmap_' + new Date().toISOString().slice(0, 10) + '.json';
         a.click();
@@ -628,8 +859,15 @@ const MM = {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                const d = JSON.parse(e.target.result);
-                if (d.nodes) { this.nodes = d.nodes; this.edges = d.edges || []; this.nextId = d.nextId || 1; this.save(); this.render(); }
+                const d = this.migrateData(JSON.parse(e.target.result));
+                if (d && d.pages) {
+                    this.store = d;
+                    this.syncActivePage();
+                    this.save();
+                    this.renderSidebar();
+                    this.render();
+                    this.fitView();
+                }
             } catch (err) { alert('Invalid JSON'); }
         };
         reader.readAsText(file);
@@ -709,3 +947,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.files[0]) MM.importJSON(e.target.files[0]);
     });
 });
+
+window.toggleMMSidebar = function() {
+    const sidebar = document.getElementById('mmSidebar');
+    const icon = document.getElementById('mmSidebarIcon');
+    if (!sidebar || !icon) return;
+    sidebar.classList.toggle('collapsed');
+    
+    if (sidebar.classList.contains('collapsed')) {
+        icon.innerHTML = '<polyline points="9 18 15 12 9 6"/>';
+        setTimeout(() => MM.resize(), 310);
+    } else {
+        icon.innerHTML = '<polyline points="15 18 9 12 15 6"/>';
+        setTimeout(() => MM.resize(), 310);
+    }
+};

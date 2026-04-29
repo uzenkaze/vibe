@@ -74,6 +74,10 @@ function closeDashboardMenu() {
 }
 
 function goToPage(url) {
+    if (url.includes('mindmap.html')) {
+        location.href = url;
+        return;
+    }
     const y = document.getElementById('yearSelect')?.value || new Date().getFullYear();
     const m = (document.getElementById('monthSelect')?.value || (new Date().getMonth() + 1)).toString().padStart(2, '0');
     location.href = `${url}?y=${y}&m=${m}`;

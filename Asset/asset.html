@@ -1135,31 +1135,33 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            padding: 0.6rem 1.25rem;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.75rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            border: 1.5px solid transparent;
+            border: 1px solid transparent;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.05em;
             white-space: nowrap;
             line-height: 1;
         }
 
         .btn-hans::after {
             content: '›';
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 400;
-            margin-left: 4px;
-            margin-top: -2px;
+            margin-left: 2px;
+            margin-top: -1px;
+            opacity: 0.7;
         }
 
         /* Light Mode Default */
         .btn-hans-primary {
-            background-color: #1C1D20 !important;
+            background: linear-gradient(135deg, #5D6BF8 0%, #4A58E2 100%) !important;
             color: #FFFFFF !important;
+            box-shadow: 0 2px 8px rgba(93, 107, 248, 0.2);
         }
         .btn-hans-secondary {
             background-color: #FFFFFF !important;
@@ -1170,7 +1172,7 @@
 
         /* Dark Mode Inversion */
         html.dark .btn-hans-primary {
-            background-color: #FFFFFF !important;
+            background: #FFFFFF !important;
             color: #1C1D20 !important;
         }
         html.dark .btn-hans-secondary {
@@ -3051,7 +3053,7 @@
 
         <!-- Summary Bar -->
         <div class="summary-bar px-4 mb-12">
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '현금 + 비현금 + 부동산 + 퇴직금')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '현금 + 비현금 + 퇴직금')"
                 onmouseleave="hideHoverLayer()">
                 <div class="summary-label">Asset</div>
                 <div class="summary-value" id="summary-income">0</div>
@@ -3178,24 +3180,7 @@
                         </table>
                         <div class="section-footer">소계: <span id="total-income">0</span></div>
                     </div>
-                    <div class="section-box">
-                        <div class="section-header">
-                            <h2 class="section-title">부동산</h2><button class="btn-hans btn-hans-secondary"
-                                onclick="addRow('real-estate')">추가</button>
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 130px;">분류</th>
-                                    <th style="width: 300px;">내용</th>
-                                    <th style="width: 220px;">금액</th>
-                                    <th style="width: 300px;">비고</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-real-estate"></tbody>
-                        </table>
-                        <div class="section-footer">소계: <span id="total-real-estate">0</span></div>
-                    </div>
+
                 </div>
             </div>
 
@@ -3460,7 +3445,7 @@
                         </tr>
                         <tr>
                             <td style="padding: 8px 12px; font-weight: 700; color: var(--accent-purple);">순자산</td>
-                            <td style="padding: 8px 12px;">(현금 + 비현금 + 부동산 + 퇴직금) - (부채 잔액 + 할부 잔액 합계)</td>
+                            <td style="padding: 8px 12px;">(현금 + 비현금 + 퇴직금) - (부채 잔액 + 할부 잔액 합계)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -3499,12 +3484,7 @@
                             <td>-</td>
                             <td>-</td>
                         </tr>
-                        <tr>
-                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부동산 자산</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td style="color:var(--accent-green)">+자산</td>
-                        </tr>
+
                         <tr>
                             <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부채</td>
                             <td>-</td>
@@ -3609,7 +3589,7 @@
         console.log("[Init] Main script parsing start...");
         // --- 1. Global State Variables ---
         let state = {
-            sections: { cash: [], 'non-cash': [], income: [], 'real-estate': [], retirement: [], debt: [], 'v-expense': [], 'f-expense': [], 'y-expense': [], installment: [] },
+            sections: { cash: [], 'non-cash': [], income: [], retirement: [], debt: [], 'v-expense': [], 'f-expense': [], 'y-expense': [], installment: [] },
             pension: { beforeTax: '', afterTax: '', startDate: '', totalPaid: '', totalPeriod: '' }
         };
         let accountsData = [];
@@ -3838,7 +3818,7 @@
         function getEmptyState() {
             return {
                 sections: {
-                    cash: [], 'non-cash': [], income: [], 'real-estate': [],
+                    cash: [], 'non-cash': [], income: [],
                     retirement: [], debt: [], 'v-expense': [], 'f-expense': [],
                     'y-expense': [], installment: []
                 },
@@ -4248,33 +4228,154 @@
             updateValue(s, id, f, v); el.value = formatNumber(v);
         }
 
-        function deleteMonthData() {
-            if (confirm('현재 선택된 월의 데이터를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
-                const yearVal = document.getElementById('yearSelect').value;
-                const monthVal = document.getElementById('monthSelect').value;
-
-                // 1. 통합 연도 데이터 키 처리
-                const yearKey = `assetData_${yearVal}`;
-                let yearData = localStorage.getItem(yearKey);
-                if (yearData) {
-                    yearData = JSON.parse(yearData);
-                    if (yearData.months && yearData.months[monthVal]) {
-                        delete yearData.months[monthVal];
-                        localStorage.setItem(yearKey, JSON.stringify(yearData));
+        async function copyDataToTargetMonth() {
+            const targetY = parseInt(document.getElementById('dataModalYearSelect').value);
+            const targetM = parseInt(document.getElementById('dataModalMonthSelect').value);
+            const curY = parseInt(document.getElementById('yearSelect').value);
+            const curM = parseInt(document.getElementById('monthSelect').value);
+            
+            if (targetY === curY && targetM === curM) {
+                alert('현재 연/월과 대상 연/월이 동일합니다.');
+                return;
+            }
+            
+            const targetMonthStr = String(targetM).padStart(2, '0');
+            const targetYearKey = `assetData_${targetY}`;
+            
+            let targetYearDataStr = localStorage.getItem(targetYearKey);
+            let targetYearData = targetYearDataStr ? JSON.parse(targetYearDataStr) : { year: String(targetY), months: {} };
+            
+            if (targetYearData._isEncrypted) {
+                const password = sessionStorage.getItem('temp_master_pw');
+                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                targetYearData = await decryptData(targetYearData, password);
+            }
+            
+            if (!targetYearData.months) targetYearData.months = {};
+            
+            if (targetYearData.months[targetMonthStr]) {
+                const targetState = targetYearData.months[targetMonthStr];
+                let hasData = false;
+                for (const section in targetState.sections) {
+                    if (targetState.sections[section] && targetState.sections[section].length > 0) {
+                        hasData = true; break;
                     }
                 }
-
-                // 2. 구형 개별 월 키(Legacy)까지 완벽 삭제 (마이그레이션 방지)
-                const legacyKey = `assetData_${yearVal}-${monthVal}`;
-                localStorage.removeItem(legacyKey);
-
-                // 3. 현재 상태 초기화 및 화면 갱신
-                state = getEmptyState();
-                render();
-
-                console.log(`Deleted: ${yearKey}[${monthVal}] and ${legacyKey}`);
-                alert(`${yearVal}년 ${monthVal}월 데이터가 완전히 삭제되었습니다.\n새로운 데이터를 입력하거나 파일을 불러와 주세요.`);
+                
+                if (hasData) {
+                    if (!confirm(`${targetY}년 ${targetM}월에 이미 데이터가 있습니다. 현재 화면의 데이터로 덮어쓰시겠습니까?`)) {
+                        return;
+                    }
+                }
             }
+            
+            const clonedState = JSON.parse(JSON.stringify(state));
+            targetYearData.months[targetMonthStr] = clonedState;
+            
+            if (sessionStorage.getItem('temp_master_pw')) {
+                const encrypted = await encryptData(targetYearData, sessionStorage.getItem('temp_master_pw'));
+                localStorage.setItem(targetYearKey, JSON.stringify(encrypted));
+            } else {
+                localStorage.setItem(targetYearKey, JSON.stringify(targetYearData));
+            }
+            
+            alert(`${targetY}년 ${targetM}월로 데이터 복사가 완료되었습니다.`);
+            syncWithGitHub('upload', targetYearKey, localStorage.getItem(targetYearKey));
+            closeDataManageModal();
+        }
+
+        async function importDataFromTargetMonth() {
+            const targetY = parseInt(document.getElementById('dataModalYearSelect').value);
+            const targetM = parseInt(document.getElementById('dataModalMonthSelect').value);
+            const curY = parseInt(document.getElementById('yearSelect').value);
+            const curM = parseInt(document.getElementById('monthSelect').value);
+            
+            if (targetY === curY && targetM === curM) {
+                alert('현재 연/월과 대상 연/월이 동일합니다.');
+                return;
+            }
+            
+            const targetMonthStr = String(targetM).padStart(2, '0');
+            const targetYearKey = `assetData_${targetY}`;
+            
+            let targetYearDataStr = localStorage.getItem(targetYearKey);
+            if (!targetYearDataStr) { alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return; }
+            
+            let targetYearData = JSON.parse(targetYearDataStr);
+            if (targetYearData._isEncrypted) {
+                const password = sessionStorage.getItem('temp_master_pw');
+                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                targetYearData = await decryptData(targetYearData, password);
+            }
+            
+            if (!targetYearData.months || !targetYearData.months[targetMonthStr]) {
+                alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return;
+            }
+            
+            let currentHasData = false;
+            for (const section in state.sections) {
+                if (state.sections[section] && state.sections[section].length > 0) {
+                    currentHasData = true; break;
+                }
+            }
+            
+            if (currentHasData) {
+                if (!confirm(`현재 화면(${curY}년 ${curM}월)에 이미 데이터가 있습니다. 가져온 데이터로 덮어쓰시겠습니까?`)) {
+                    return;
+                }
+            }
+            
+            const clonedState = JSON.parse(JSON.stringify(targetYearData.months[targetMonthStr]));
+            state = clonedState;
+            await saveData();
+            render();
+            alert(`${targetY}년 ${targetM}월 데이터를 성공적으로 가져왔습니다.`);
+            closeDataManageModal();
+        }
+
+        async function deleteTargetMonthData() {
+            const targetY = parseInt(document.getElementById('dataModalYearSelect').value);
+            const targetM = parseInt(document.getElementById('dataModalMonthSelect').value);
+            const curY = parseInt(document.getElementById('yearSelect').value);
+            const curM = parseInt(document.getElementById('monthSelect').value);
+            const targetMonthStr = String(targetM).padStart(2, '0');
+            const targetYearKey = `assetData_${targetY}`;
+            
+            if (!confirm(`정말 ${targetY}년 ${targetM}월 데이터를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
+            
+            let targetYearDataStr = localStorage.getItem(targetYearKey);
+            if (targetYearDataStr) {
+                let targetYearData = JSON.parse(targetYearDataStr);
+                if (targetYearData._isEncrypted) {
+                    const password = sessionStorage.getItem('temp_master_pw');
+                    if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                    targetYearData = await decryptData(targetYearData, password);
+                }
+                
+                if (targetYearData.months && targetYearData.months[targetMonthStr]) {
+                    delete targetYearData.months[targetMonthStr];
+                    
+                    if (sessionStorage.getItem('temp_master_pw')) {
+                        const encrypted = await encryptData(targetYearData, sessionStorage.getItem('temp_master_pw'));
+                        localStorage.setItem(targetYearKey, JSON.stringify(encrypted));
+                    } else {
+                        localStorage.setItem(targetYearKey, JSON.stringify(targetYearData));
+                    }
+                    
+                    syncWithGitHub('upload', targetYearKey, localStorage.getItem(targetYearKey));
+                }
+            }
+            
+            localStorage.removeItem(`assetData_${targetY}-${targetMonthStr}`);
+            
+            if (targetY === curY && targetM === curM) {
+                state = getEmptyState();
+                await saveData();
+                render();
+            }
+            
+            alert(`${targetY}년 ${targetM}월 데이터가 완전히 삭제되었습니다.`);
+            closeDataManageModal();
         }
 
         function openManualModal() {
@@ -4495,7 +4596,7 @@
                 const total = state.sections[s].reduce((sum, i) => sum + (parseFloat(['debt', 'installment'].includes(s) ? i.remAmount : i.amount) || 0), 0);
                 const el = document.getElementById(`total-${s}`);
                 if (el) el.innerText = formatNumber(total);
-                if (['cash', 'non-cash', 'real-estate', 'retirement'].includes(s)) assets += total;
+                if (['cash', 'non-cash', 'retirement'].includes(s)) assets += total;
                 if (s === 'debt' || s === 'installment') debts += total;
                 if (s === 'income') income = total;
                 if (['v-expense', 'f-expense'].includes(s)) expense += total;
@@ -4668,7 +4769,7 @@
                 'cash': '현금성 자산',
                 'non-cash': '비현금성 자산',
                 'income': '수입 내역',
-                'real-estate': '부동산',
+
                 'debt': '부채',
                 'v-expense': '변동 지출',
                 'f-expense': '고정 지출'

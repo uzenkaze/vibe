@@ -161,6 +161,26 @@
         .confirm-box .mm-modal-btns { justify-content:center; }
         #confirmOk { background:#FF3B30!important; color:#fff!important; border-color:#FF3B30!important; }
 
+        /* Button semantic colors */
+        .mm-btn-add { background:var(--accent-blue)!important; color:#fff!important; border-color:var(--accent-blue)!important; }
+        .mm-btn-add:hover { opacity:0.85; }
+
+        .mm-btn-delete { color:#FF3B30!important; border-color:rgba(255,59,48,0.4)!important; }
+        .mm-btn-delete:hover { background:#FF3B30!important; color:#fff!important; }
+
+        .mm-btn-rename { color:#34C759!important; border-color:rgba(52,199,89,0.4)!important; }
+        .mm-btn-rename:hover { background:#34C759!important; color:#fff!important; }
+
+        .mm-btn-memo { color:#FF9500!important; border-color:rgba(255,149,0,0.4)!important; }
+        .mm-btn-memo:hover { background:#FF9500!important; color:#fff!important; }
+
+        .mm-btn-color { color:#AF52DE!important; border-color:rgba(175,82,222,0.4)!important; }
+        .mm-btn-color:hover { background:#AF52DE!important; color:#fff!important; }
+
+        .mm-btn-bridge { color:#007AFF!important; border-color:rgba(0,122,255,0.4)!important; }
+        .mm-btn-bridge:hover { background:#007AFF!important; color:#fff!important; }
+        .mm-btn-bridge.active { background:#007AFF!important; color:#fff!important; }
+
         /* Active button */
         .mm-toolbar button.active { background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); }
 
@@ -179,35 +199,74 @@
         #lineStyleList { display:flex; flex-direction:column; gap:6px; }
         #lineStyleList canvas { background:transparent; }
         .item-hover { background:var(--item-hover); }
+
+        /* Sidebar layout adjustments */
+        .mm-layout { display:flex; flex:1; overflow:hidden; position:relative; }
+        .mm-sidebar {
+            width:240px; background:var(--card-bg); border-right:1px solid var(--glass-border);
+            display:flex; flex-direction:column; transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index:20;
+        }
+        .mm-sidebar.collapsed {
+            transform:translateX(-100%);
+            position:absolute; height:100%;
+        }
+        .mm-sidebar-toggle {
+            position:absolute; top:50%; right:-16px; transform:translateY(-50%);
+            width:16px; height:40px; background:var(--card-bg); border:1px solid var(--glass-border);
+            border-left:none; border-radius:0 8px 8px 0; display:flex; align-items:center; justify-content:center;
+            cursor:pointer; color:var(--text-secondary); box-shadow:2px 0 5px rgba(0,0,0,0.05);
+            z-index:21; transition:all 0.2s;
+        }
+        .mm-sidebar-toggle:hover { color:var(--accent-blue); width:20px; right:-20px; }
+        .mm-workspace { flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; }
     </style>
 </head>
 <body class="flex flex-col h-screen">
     <div id="header-placeholder"></div>
 
-    <!-- Toolbar -->
-    <div class="mm-toolbar" style="margin-bottom:12px; margin-top:-24px;">
-        <button onclick="mmAddChild()" title="하위 노드 추가 (Tab)">
+    <div class="mm-layout">
+        <!-- Sidebar -->
+        <div id="mmSidebar" class="mm-sidebar">
+            <div class="p-4 flex justify-between items-center border-b border-glass-border">
+                <h3 class="font-bold text-xs text-text-primary uppercase tracking-widest">Pages</h3>
+                <button onclick="MM.addNewPage()" class="text-accent-blue font-bold text-xl leading-none hover:scale-110 transition-transform" title="새 페이지 추가">+</button>
+            </div>
+            <div id="pageList" class="flex-1 overflow-y-auto p-2 space-y-1">
+                <!-- Page items injected here -->
+            </div>
+            
+            <div class="mm-sidebar-toggle" onclick="toggleMMSidebar()">
+                <svg id="mmSidebarIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="mm-workspace">
+            <!-- Toolbar -->
+            <div class="mm-toolbar" style="margin: 12px 1.5rem; margin-bottom: 12px;">
+        <button class="mm-btn-add" onclick="mmAddChild()" title="하위 노드 추가 (Tab)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add
         </button>
-        <button onclick="mmDelete()" title="삭제 (Delete)">
+        <button class="mm-btn-delete" onclick="mmDelete()" title="삭제 (Delete)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             Delete
         </button>
-        <button onclick="mmRename()" title="이름 변경 (F2 / 더블클릭)">
+        <button class="mm-btn-rename" onclick="mmRename()" title="이름 변경 (F2 / 더블클릭)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             Rename
         </button>
-        <button onclick="mmMemo()" title="메모">
+        <button class="mm-btn-memo" onclick="mmMemo()" title="메모">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             Memo
         </button>
-        <button onclick="mmColor()" title="노드 색상 변경">
+        <button class="mm-btn-color" onclick="mmColor()" title="노드 색상 변경">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
             Color
         </button>
         <div class="mm-sep"></div>
-        <button id="bridgeBtn" onclick="mmBridge()" title="브릿지 연결 (노드↔노드)">
+        <button id="bridgeBtn" class="mm-btn-bridge" onclick="mmBridge()" title="브릿지 연결 (노드↔노드)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
             Bridge
         </button>
@@ -244,7 +303,7 @@
     </div>
 
     <!-- Canvas -->
-    <div id="mmContainer">
+    <div id="mmContainer" style="flex:1; position:relative; overflow:hidden;">
         <canvas id="mmCanvas"></canvas>
         <input type="text" id="nodeInput">
 
@@ -263,6 +322,8 @@
             <b>Alt+드래그</b> 이동 &nbsp;|&nbsp; <b>스크롤</b> 줌 &nbsp;|&nbsp; <b>연결선 더블클릭</b> 텍스트 편집
         </div>
     </div>
+        </div> <!-- End mm-workspace -->
+    </div> <!-- End mm-layout -->
 
     <!-- Memo Modal -->
     <div id="memoModal" class="mm-modal">
