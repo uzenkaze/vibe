@@ -78,7 +78,8 @@
             color: var(--text-main);
             min-height: 100vh;
             line-height: 1.5;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             letter-spacing: -0.01em;
         }
 
@@ -117,9 +118,9 @@
         .app-wrapper {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         /* Floating Top Navigation — Marco.fyi Centered Pill */
@@ -1054,42 +1055,76 @@
             padding-top: 1rem;
         }
 
-        .btn-purple {
+        /* Hans-style Button System */
+        .btn-purple, .btn-blue {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
             background: var(--primary);
             color: #ffffff;
-            border: none;
-            padding: 0.65rem 1.4rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.88rem;
+            border: 1.5px solid var(--primary);
+            padding: 0.6rem 1.3rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.82rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            line-height: 1;
         }
-
-        .btn-purple:hover {
-            background: #333;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .btn-purple::after, .btn-blue::after {
+            content: '\203A';
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-left: 2px;
+            margin-top: -2px;
         }
-
+        .btn-purple:hover, .btn-blue:hover {
+            transform: scale(1.03) translateY(-1px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+        }
         .btn-blue {
             background: var(--primary-accent);
-            color: #ffffff;
+            border-color: var(--primary-accent);
         }
 
         .btn-mini {
-            padding: 0.4rem 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.45rem 0.9rem;
             font-size: 0.7rem;
-            border-radius: 50px;
+            font-weight: 800;
+            border-radius: 10px;
             background: var(--bg-card);
-            border: 1px solid var(--border);
+            border: 1.5px solid var(--border);
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            line-height: 1;
+            color: var(--text-main);
         }
-
+        .btn-mini::after {
+            content: '\203A';
+            font-size: 1rem;
+            font-weight: 400;
+            margin-left: 1px;
+        }
         .btn-mini:hover {
-            background: var(--bg-hover);
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .btn-mini.delete {
+            color: var(--danger);
+            border-color: rgba(255,59,48,0.2);
+        }
+        .btn-mini.delete:hover {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
         }
 
         .btn-load-more-container {
@@ -1101,26 +1136,33 @@
         }
 
         .btn-load-more {
-            padding: 0.85rem 2.5rem;
-            font-size: 0.9rem;
-            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.7rem 2rem;
+            font-size: 0.85rem;
+            font-weight: 800;
             color: var(--text-main);
             background: var(--bg-card);
-            border: 1px solid rgba(0,0,0,0.08);
-            border-radius: var(--radius-md);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
         .btn-load-more:hover {
             background: var(--primary);
-            color: #EDE8E3;
+            color: #fff;
             border-color: var(--primary);
+            transform: scale(1.03) translateY(-1px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
         }
 
         .btn-load-more.reset {
             background: var(--bg-surface);
-            border: 1px solid var(--border);
+            border: 1.5px solid var(--border);
         }
 
         .modal-overlay {
