@@ -3099,20 +3099,38 @@
                 </div>
             </div>
 
-            <div id="mainInstallmentContent" style="display: none; margin-top: 0.75rem;">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <div class="bg-gray-50 dark:bg-white/5 py-2.5 px-3 rounded-lg border border-glass-border flex flex-col justify-center">
-                        <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-0.5">금월 납부 예정 (원금+수수료)</p>
-                        <div class="flex items-baseline gap-1.5">
-                            <span id="installment-total-principal" class="text-xl font-black text-dyo-accent">0</span>
-                            <span class="text-[9px] font-black opacity-30 tracking-tighter">KRW</span>
+            <div id="mainInstallmentContent" style="display: none; margin-top: 1rem;">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- 전체 결제 원금 -->
+                    <div class="bg-gray-50 dark:bg-white/5 py-4 px-5 rounded-2xl border border-glass-border flex flex-col justify-center shadow-sm transition-all hover:shadow-md">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-dyo-dark/50 dark:text-white/50 mb-1.5">전체 결제 원금</p>
+                        <div class="flex items-baseline gap-1">
+                            <span id="installment-total-amount" class="text-2xl font-black text-dyo-dark dark:text-white tracking-tighter">0</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
                         </div>
                     </div>
-                    <div class="bg-gray-50 dark:bg-white/5 py-2.5 px-3 rounded-lg border border-glass-border flex flex-col justify-center">
-                        <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-0.5">할부 총 잔액</p>
-                        <div class="flex items-baseline gap-1.5">
-                            <span id="total-installment" class="text-xl font-black text-accent-red">0</span>
-                            <span class="text-[9px] font-black opacity-30 tracking-tighter">KRW</span>
+                    <!-- 이번 달 납부 -->
+                    <div class="bg-blue-50/50 dark:bg-blue-500/10 py-4 px-5 rounded-2xl border border-blue-100 dark:border-blue-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/40">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-blue-600/70 dark:text-blue-400/70 mb-1.5">이번 달 납부 (원금+수수료)</p>
+                        <div class="flex items-baseline gap-1">
+                            <span id="installment-total-principal" class="text-2xl font-black text-blue-600 dark:text-blue-400 tracking-tighter">0</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
+                        </div>
+                    </div>
+                    <!-- 다음 달 납부 예정 -->
+                    <div class="bg-purple-50/50 dark:bg-purple-500/10 py-4 px-5 rounded-2xl border border-purple-100 dark:border-purple-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-purple-200 dark:hover:border-purple-500/40">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-purple-600/70 dark:text-purple-400/70 mb-1.5">다음 달 납부 예정</p>
+                        <div class="flex items-baseline gap-1">
+                            <span id="installment-next-month-total" class="text-2xl font-black text-purple-600 dark:text-purple-400 tracking-tighter">0</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
+                        </div>
+                    </div>
+                    <!-- 남은 할부 총 잔액 -->
+                    <div class="bg-emerald-50/50 dark:bg-emerald-500/10 py-4 px-5 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-500/40">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70 mb-1.5">남은 할부 총 잔액</p>
+                        <div class="flex items-baseline gap-1">
+                            <span id="total-installment" class="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter">0</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
                         </div>
                     </div>
                 </div>
@@ -4612,10 +4630,35 @@
                     const rem = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.remAmount) || 0), 0);
                     expense += activeMonthlyTotal;  // 총지출에는 진행 중인 할부만
 
+                    // 다음 달 납부 예정액 계산 (다음 달에도 진행 중인 항목만)
+                    let nextY = curY;
+                    let nextM = curM + 1;
+                    if (nextM > 12) { nextM = 1; nextY++; }
+                    const nextMonthStr = `${String(nextY).substring(2)}.${String(nextM).padStart(2, '0')}`;
+
+                    const nextMonthTotal = state.sections[s]
+                        .filter(i => !i.endDate || i.endDate >= nextMonthStr)
+                        .reduce((sum, i) => {
+                            const principal = parseFloat(i.monthlyPrincipal) || 0;
+                            let nextFee = 0;
+                            if (parseFloat(i.rate) > 0) {
+                                const currentRem = (parseFloat(i.totalMonths - i.currentMonth + 1) * principal); // 이번 달 납입 전 잔액 추정
+                                const nextRem = parseFloat(i.remAmount) || 0; // 이번 달 납입 후 잔액
+                                const currentFee = parseFloat(i.monthlyFee) || 0;
+                                if (currentRem > 0) {
+                                    nextFee = Math.floor(currentFee * (nextRem / currentRem));
+                                }
+                            }
+                            return sum + principal + nextFee;
+                        }, 0);
+
                     const amtEl = document.getElementById('installment-total-amount');
                     const priEl = document.getElementById('installment-total-principal');
+                    const nxtEl = document.getElementById('installment-next-month-total');
                     const remEl = document.getElementById('total-installment');
+                    
                     if (amtEl) amtEl.innerText = formatNumber(totalAmt);
+                    if (nxtEl) nxtEl.innerText = formatNumber(nextMonthTotal);
                     if (priEl) {
                         priEl.innerText = formatNumber(activeMonthlyTotal);  // 진행 중 원금+수수료 표시
 
