@@ -1,5 +1,23 @@
 [
   {
+    "id": "1777504933870",
+    "title": "[MC,PC]AI agent 서비스 도입 개발 진행의 건",
+    "receive_date": "2026-04-30",
+    "status": "progress",
+    "work_no": "43731",
+    "task_no": "60583",
+    "product_no": "",
+    "task_content": "[44470] [Reuse] 상품상세페이지 공지 영역 개선 및 문구 추가\n전시코너 이미지배너 링크 추가 (긴배)",
+    "dev_deploy_date": "2026-04-30",
+    "deploy_date": "2026-05-06",
+    "pub_content": "",
+    "remarks": "",
+    "start_date": "2026-04-30",
+    "end_date": "2026-04-30",
+    "reference": "",
+    "updated_at": "2026-04-29T23:22:13.870Z"
+  },
+  {
     "id": "1777437371432",
     "title": "[44658] [통합고객만족팀] 게시판 진입 후 환경 개발 요청 건",
     "receive_date": "2026-04-29",
