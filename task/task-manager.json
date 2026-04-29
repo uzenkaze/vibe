@@ -27,13 +27,13 @@
     "product_no": "일반상품 - 0002629814\n모바일상품(옵션) - 0006055726",
     "task_content": "안녕하세요.\nECPD팀 김진홍입니다.\n\n수석님 안녕하세요~\n아래 업무 진행 부탁드립니다~\n\\\\ecfileserver\\2.e커머스_하이마트팀\\01.운영업무\\11.2026년운영요건\\001.운영업무\\75. [44534] 카드혜택 영역 전시연결관리 코너 생성 요청\n\n배포일정 : 5/7(목)\n\n으로 검토 및 진행 부탁드립니다~!",
     "dev_deploy_date": "2026-04-29",
-    "deploy_date": "2026-05-07",
+    "deploy_date": "2026-05-12",
     "pub_content": "",
     "remarks": "일반상품, 옵션상품, 리셀상품 수정\n\n[수정파일]\napp.cfg\nProductContorller.java\ndiv.priceArea.maxBenefitPrc.jsp\ndiv.option.priceArea.maxBenefitPrc.jsp\ndiv.priceArea.resell.maxBenefitPrc.jsp",
     "start_date": "2026-04-27",
     "end_date": "2026-04-29",
     "reference": "[코너번호]\n테스트 : 9297\n운영 7194",
-    "updated_at": "2026-04-28T06:53:53.037Z"
+    "updated_at": "2026-04-29T04:50:42.910Z"
   },
   {
     "id": "1776053789127",
