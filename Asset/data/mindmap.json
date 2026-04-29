@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "activeId": 3,
+  "activeId": 1,
   "nextPageId": 4,
   "pages": [
     {
@@ -394,6 +394,46 @@
           "color": 2,
           "memo": "",
           "customColor": null
+        },
+        {
+          "id": 5,
+          "type": "node",
+          "label": "New Node",
+          "x": -133.5,
+          "y": -77,
+          "color": 3,
+          "memo": "",
+          "customColor": null
+        },
+        {
+          "id": 6,
+          "type": "node",
+          "label": "New Node",
+          "x": -133.5,
+          "y": -32,
+          "color": 4,
+          "memo": "",
+          "customColor": null
+        },
+        {
+          "id": 7,
+          "type": "node",
+          "label": "New Node",
+          "x": -133.5,
+          "y": 13,
+          "color": 5,
+          "memo": "",
+          "customColor": null
+        },
+        {
+          "id": 8,
+          "type": "node",
+          "label": "New Node",
+          "x": -133.5,
+          "y": 58,
+          "color": 0,
+          "memo": "",
+          "customColor": null
         }
       ],
       "edges": [
@@ -414,9 +454,33 @@
           "to": 4,
           "label": "",
           "lineStyle": "dashed"
+        },
+        {
+          "from": 1,
+          "to": 5,
+          "label": "",
+          "lineStyle": "dashed"
+        },
+        {
+          "from": 1,
+          "to": 6,
+          "label": "",
+          "lineStyle": "dashed"
+        },
+        {
+          "from": 1,
+          "to": 7,
+          "label": "",
+          "lineStyle": "dashed"
+        },
+        {
+          "from": 1,
+          "to": 8,
+          "label": "",
+          "lineStyle": "dashed"
         }
       ],
-      "nextId": 5
+      "nextId": 9
     }
   ]
 }
