@@ -30,6 +30,9 @@ async function loadHeader(config) {
             } else if (currentPage.includes('installment.html')) {
                 document.getElementById('menu-card')?.classList.add('border-b-2', 'border-orange-500');
                 document.getElementById('menu-card')?.style.setProperty('color', '#666666', 'important');
+            } else if (currentPage.includes('mindmap.html')) {
+                document.getElementById('menu-mindmap')?.classList.add('border-b-2', 'border-orange-500');
+                document.getElementById('menu-mindmap')?.style.setProperty('color', '#666666', 'important');
             }
 
             // Initialize selectors if they exist in the page

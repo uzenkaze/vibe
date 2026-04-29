@@ -107,8 +107,7 @@
             border-bottom: 1px solid var(--glass-border);
         }
 
-        input,
-        table select {
+        input {
             background: transparent;
             border: none;
             border-bottom: 1px solid transparent;
@@ -119,10 +118,54 @@
             font-size: 0.85rem;
         }
 
-        input:focus,
-        table select:focus {
+        input:focus {
             outline: none;
             border-bottom-color: var(--accent-blue);
+        }
+
+        table select,
+        select:not(#yearSelect):not(#monthSelect) {
+            background: var(--input-bg);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 9999px;
+            padding: 0.5rem 1.75rem 0.5rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 11px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: auto;
+            min-width: 90px;
+            outline: none;
+        }
+
+        table select:hover,
+        select:not(#yearSelect):not(#monthSelect):hover {
+            border-color: var(--text-primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        table select:focus,
+        select:not(#yearSelect):not(#monthSelect):focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(93, 107, 248, 0.1);
+        }
+
+        html.dark select option {
+            background-color: #1A1A24 !important;
+            color: #E8E8F0 !important;
+        }
+
+        html.dark table select:hover,
+        html.dark select:not(#yearSelect):not(#monthSelect):hover {
+            border-color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .amount {
@@ -130,19 +173,67 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .btn-add {
-            background: var(--text-primary);
-            color: var(--bg-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 99px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
+        /* Unified Button System (Hans Style) */
+        .btn-hans {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            line-height: 1;
         }
 
-        .btn-add:hover {
-            opacity: 0.9;
-            transform: scale(1.05);
+        .btn-hans::after {
+            content: '›';
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-left: 4px;
+            margin-top: -2px;
+        }
+
+        /* Light Mode Default */
+        .btn-hans-primary {
+            background-color: #1C1D20 !important;
+            color: #FFFFFF !important;
+        }
+        .btn-hans-secondary {
+            background-color: #FFFFFF !important;
+            color: #1C1D20 !important;
+            border-color: #E5E5E5 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        /* Dark Mode Inversion */
+        html.dark .btn-hans-primary {
+            background-color: #FFFFFF !important;
+            color: #1C1D20 !important;
+        }
+        html.dark .btn-hans-secondary {
+            background-color: #1C1D20 !important;
+            color: #FFFFFF !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+
+        .btn-hans:hover {
+            transform: scale(1.03) translateY(-1px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        html.dark .btn-hans:hover {
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        .btn-add {
+            display: none !important;
         }
 
         .btn-delete {
@@ -266,13 +357,37 @@
         .nav-year-month select {
             appearance: none !important;
             -webkit-appearance: none !important;
-            padding-right: 20px !important;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right center !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+            padding: 6px 28px 6px 14px !important;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center !important;
+            border: 1.5px solid transparent !important;
+            border-radius: 9999px !important;
             font-size: 0.95rem !important;
-            font-weight: 700 !important;
+            font-weight: 800 !important;
             font-family: 'Outfit', sans-serif !important;
             color: var(--text-primary) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            outline: none !important;
+        }
+
+        .nav-year-month select:hover {
+            background-color: rgba(0,0,0,0.04) !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+
+        .nav-year-month select:focus {
+            border-color: var(--text-primary) !important;
+            background-color: rgba(0,0,0,0.02) !important;
+        }
+
+        html.dark .nav-year-month select:hover {
+            background-color: rgba(255,255,255,0.06) !important;
+            border-color: rgba(255,255,255,0.15) !important;
+        }
+
+        html.dark .nav-year-month select:focus {
+            border-color: #FFFFFF !important;
+            background-color: rgba(255,255,255,0.04) !important;
         }
 
         .nav-year-month span {
@@ -282,8 +397,11 @@
         }
 
         html.dark .nav-year-month select {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right center !important;
-            border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+        }
+
+        html.dark table select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
         }
 
         /* Custom Calendar Styles */
@@ -440,27 +558,28 @@
 
         <!-- Main Content -->
         <main>
-            <div class="unified-card mb-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-xl font-bold flex items-center gap-3">
-                        <span class="w-2 h-8 bg-dyo-accent rounded-full"></span>
+            <div class="unified-card mb-4" style="padding: 1.25rem 1.5rem;">
+                <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleInstallmentAccordion()">
+                    <h2 class="text-lg font-bold flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-dyo-accent rounded-full"></span>
                         카드 할부 내역
+                        <svg id="installmentAccordionIcon" class="w-5 h-5 ml-1 transition-transform duration-300 transform opacity-50" style="transform: rotate(0deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </h2>
-                    <div class="flex items-center gap-3">
-                        <select id="sortSelect" onchange="sortData(this.value)"
-                            class="text-xs border border-glass-border rounded-full px-4 py-2 w-32 dark:bg-[#1A1A24] dark:text-white">
+                    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                        <select id="sortSelect" onchange="sortData(this.value)" class="text-xs w-28 py-1.5 h-auto rounded-lg">
                             <option value="date_desc">최신순</option>
                             <option value="date_asc">과거순</option>
                             <option value="amount_desc">금액높은순</option>
                         </select>
-                        <button onclick="addRow()" class="btn-add">+ 내역 추가</button>
+                        <button onclick="addRow()" class="btn-hans btn-hans-secondary py-1.5 px-3 text-xs h-auto min-h-0">내역 추가</button>
                         <button onclick="saveData(true)"
-                            class="px-6 py-2 bg-dyo-accent text-white rounded-full text-sm font-bold shadow-lg shadow-dyo-accent/20 hover:scale-105 transition-all">저장</button>
+                            class="btn-hans btn-hans-primary py-1.5 px-3 text-xs h-auto min-h-0">저장</button>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table>
+                <div id="installmentContent" class="transition-all duration-300 overflow-hidden origin-top" style="max-height: 0px; opacity: 0; margin-top: 0;">
+                    <div class="overflow-x-auto">
+                        <table>
                         <thead>
                             <tr>
                                 <th style="width: 140px;">사용일</th>
@@ -497,8 +616,27 @@
                         <p class="text-2xl font-black text-accent-red" id="remainingTotal">0원</p>
                     </div>
                 </div>
+                </div> <!-- End of installmentContent -->
             </div>
         </main>
+
+        <script>
+            function toggleInstallmentAccordion() {
+                const content = document.getElementById('installmentContent');
+                const icon = document.getElementById('installmentAccordionIcon');
+                if (content.style.maxHeight !== '0px') {
+                    content.style.maxHeight = '0px';
+                    content.style.opacity = '0';
+                    content.style.marginTop = '0';
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.maxHeight = '2000px';
+                    content.style.opacity = '1';
+                    content.style.marginTop = '1.5rem';
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            }
+        </script>
 
         <!-- Detail Modal -->
         <div class="modal-overlay" id="detailModal"
