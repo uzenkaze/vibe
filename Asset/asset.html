@@ -3074,8 +3074,8 @@
         </div>
 
         <!-- Card Installment Overview -->
-        <div class="unified-card mb-3" style="padding: 1.5rem 1.5rem;">
-            <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleMainInstallmentAccordion()">
+        <div class="unified-card mb-3" style="padding: 1.5rem 2rem; min-height: 90px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="flex justify-between items-center cursor-pointer select-none w-full" onclick="toggleMainInstallmentAccordion()">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 bg-dyo-accent/10 rounded-lg flex items-center justify-center text-dyo-accent">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
@@ -3097,7 +3097,7 @@
                 </div>
             </div>
 
-            <div id="mainInstallmentContent" class="transition-all duration-300 overflow-hidden origin-top" style="max-height: 0px; opacity: 0; margin-top: 0;">
+            <div id="mainInstallmentContent" style="display: none; margin-top: 0.75rem;">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div class="bg-gray-50 dark:bg-white/5 py-2.5 px-3 rounded-lg border border-glass-border flex flex-col justify-center">
                         <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-0.5">금월 납부 예정 (원금+수수료)</p>
@@ -5682,15 +5682,11 @@
         function toggleMainInstallmentAccordion() {
             const content = document.getElementById('mainInstallmentContent');
             const icon = document.getElementById('mainInstallmentAccordionIcon');
-            if (content.style.maxHeight !== '0px') {
-                content.style.maxHeight = '0px';
-                content.style.opacity = '0';
-                content.style.marginTop = '0';
+            if (content.style.display !== 'none') {
+                content.style.display = 'none';
                 icon.style.transform = 'rotate(0deg)';
             } else {
-                content.style.maxHeight = '1000px';
-                content.style.opacity = '1';
-                content.style.marginTop = '0.75rem';
+                content.style.display = 'block';
                 icon.style.transform = 'rotate(180deg)';
             }
         }
