@@ -741,33 +741,51 @@
         /* Status Filter Styles */
         .status-filter-group {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
+            gap: 0.8rem;
+            margin-bottom: 2.5rem;
             flex-wrap: wrap;
         }
 
         .status-pill {
-            padding: 0.55rem 1.3rem;
-            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.6rem;
+            border-radius: 12px;
             background: var(--bg-card);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: none;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 800;
+            border: 1.5px solid var(--border);
             cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .status-pill::after {
+            content: '\203A';
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-top: -2px;
         }
 
         .status-pill.active {
             background: var(--primary);
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .status-pill:hover:not(.active) {
             background: var(--bg-hover);
-            color: var(--text-main);
+            border-color: #d1d1d6;
+            transform: translateY(-1px);
+        }
+
+        .status-pill.active:hover {
+            background: #000000;
+            transform: scale(1.02) translateY(-1px);
         }
 
         .cal-nav-btn:hover {
@@ -2794,6 +2812,26 @@
             justify-content: center;
             min-width: 280px;
             text-align: center;
+        }
+
+        /* Rainbow Highlight Animation */
+        @keyframes rainbow-border-glow {
+            0% { border-color: #ff3b30; box-shadow: 0 0 15px rgba(255, 59, 48, 0.4); }
+            14% { border-color: #ff9500; box-shadow: 0 0 15px rgba(255, 149, 0, 0.4); }
+            28% { border-color: #ffcc00; box-shadow: 0 0 15px rgba(255, 204, 0, 0.4); }
+            42% { border-color: #34c759; box-shadow: 0 0 15px rgba(52, 199, 89, 0.4); }
+            56% { border-color: #0071e3; box-shadow: 0 0 15px rgba(0, 113, 227, 0.4); }
+            70% { border-color: #5856d6; box-shadow: 0 0 15px rgba(88, 86, 214, 0.4); }
+            84% { border-color: #af52de; box-shadow: 0 0 15px rgba(175, 82, 222, 0.4); }
+            100% { border-color: #ff3b30; box-shadow: 0 0 15px rgba(255, 59, 48, 0.4); }
+        }
+
+        .rainbow-highlight {
+            animation: rainbow-border-glow 1s linear infinite !important;
+            border: 3px solid !important;
+            z-index: 100 !important;
+            transform: scale(1.02) !important;
+            transition: all 0.3s ease !important;
         }
 
         .toast-item.show {
@@ -5382,7 +5420,7 @@
             container.innerHTML = displayTasks.map(t => {
                 const statusMap = { todo: '진행전', progress: '진행중', hold: '보류', done: '완료' };
                 return `
-                    <div class="task-card-apple ${t.status}" onclick="showDetail('${t.id}')">
+                    <div class="task-card-apple ${t.status}" id="card-${t.id}" onclick="showDetail('${t.id}')">
                         <div class="card-header-info">#${t.task_no || '-'} [${t.work_no || '-'}]</div>
                         <div class="card-title" title="${t.title}">${t.title}</div>
                         <div class="card-dates">
@@ -5460,14 +5498,14 @@
                 const fullText = mainInfoText + deployText;
 
                 return `
-                    <div class="recent-task-item">
+                    <div class="recent-task-item" onclick="focusOnCard('${t.id}')" style="cursor:pointer;">
                         <div class="recent-task-info">
                             <span class="recent-task-label ${badgeClass}">${labelText}</span>
                             <div class="recent-task-meta">
                                 <span class="recent-task-title" title="${fullText}">${fullText}</span>
                             </div>
                         </div>
-                        <button class="btn-copy-action" onclick="copySpecificTask('${fullText.replace(/'/g, "\\'")}', this)" title="정보 복사">
+                        <button class="btn-copy-action" onclick="event.stopPropagation(); copySpecificTask('${fullText.replace(/'/g, "\\'")}', this)" title="정보 복사">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -5489,6 +5527,30 @@
                     btn.style.color = '';
                 }, 1500);
             });
+        }
+
+        function focusOnCard(taskId) {
+            const card = document.getElementById(`card-${taskId}`);
+            if (!card) {
+                // 카드가 현재 필터링되어 안 보일 수도 있으므로 필터를 전체로 초기화 시도
+                setStatusFilter('all');
+                setTimeout(() => {
+                    const retryCard = document.getElementById(`card-${taskId}`);
+                    if (retryCard) {
+                        doFocusAction(retryCard);
+                    }
+                }, 100);
+                return;
+            }
+            doFocusAction(card);
+        }
+
+        function doFocusAction(cardEl) {
+            cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            cardEl.classList.add('rainbow-highlight');
+            setTimeout(() => {
+                cardEl.classList.remove('rainbow-highlight');
+            }, 3000);
         }
 
         function setStatusFilter(status) {

@@ -1329,16 +1329,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            background: #F8F9FA;
-            padding: 1rem 1.5rem;
-            border-radius: 20px;
-            border: 1px solid var(--dyo-bg);
+            margin-bottom: 1.25rem;
+            background: transparent;
+            padding: 0.5rem 0.5rem;
+            border-radius: 0;
+            border: none;
         }
 
         .section-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-style: italic;
             font-weight: 800;
             color: var(--dyo-dark);
@@ -1350,10 +1350,10 @@
 
         .section-title::before {
             content: '';
-            display: inline-block;
             width: 4px;
-            height: 1.25rem;
+            height: 20px;
             background: var(--dyo-dark);
+            display: block;
             border-radius: 2px;
         }
 
@@ -4145,14 +4145,41 @@
 
         function calculateInstallment(item) {
             item.totalMonths = Math.max(1, parseInt(item.totalMonths) || 1);
-            item.currentMonth = Math.max(0, Math.min(item.totalMonths, parseInt(item.currentMonth) || 0));
+            item.currentMonth = Math.max(1, Math.min(item.totalMonths, parseInt(item.currentMonth) || 1));
             item.amount = parseFloat(String(item.amount).replace(/,/g, '')) || 0;
             item.monthlyPrincipal = Math.floor(item.amount / item.totalMonths);
             item.rate = parseFloat(item.rate) || 0;
-            // 월 수수료: (남은 잔액 * 연이율/12) / 100
-            const remainingBalance = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
+
+            if (item.repayStatus === 'full') {
+                item.remAmount = 0;
+                item.monthlyFee = 0;
+                item.monthlyPrincipal = 0;
+                item.endDate = "완납";
+                return item;
+            }
+
+            const paidPrincipal = item.monthlyPrincipal * (item.currentMonth - 1);
+            let remainingBalance = item.amount - paidPrincipal;
+
+            if (item.repayStatus === 'partial' && item.repaidAmount) {
+                remainingBalance -= parseFloat(item.repaidAmount) || 0;
+                if (remainingBalance < 0) remainingBalance = 0;
+            }
+
             if (item.rate > 0) {
-                item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
+                if (item.date) {
+                    const pDate = new Date(item.date);
+                    let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
+                    let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 1), 14);
+                    let prevBillingDate = item.currentMonth === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 2), 14);
+                    const diffTime = Math.abs(currentBillingDate - prevBillingDate);
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                    item.monthlyFee = Math.floor(remainingBalance * (item.rate / 100) * (diffDays / 365));
+                } else {
+                    item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
+                }
+            } else {
+                item.monthlyFee = 0;
             }
 
             if (item.date) {
@@ -4163,7 +4190,8 @@
                     item.endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
                 }
             }
-            item.remAmount = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
+            
+            item.remAmount = Math.max(0, ((item.totalMonths - item.currentMonth) * item.monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount)||0 : 0));
             return item;
         }
 

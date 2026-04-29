@@ -601,19 +601,36 @@
                 </div>
 
                 <!-- Footer Summary -->
-                <div class="mt-8 pt-8 border-t border-glass-border grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-gray-50 dark:bg-white/5 p-6 rounded-3xl">
-                        <p class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">전체 결제 합계</p>
-                        <p class="text-2xl font-black" id="totalAmount">0원</p>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-white/5 p-6 rounded-3xl border-2 border-dyo-accent/20">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-dyo-accent mb-2">이번 달 납부 합계
-                            (원금+수수료)</p>
-                        <p class="text-2xl font-black text-dyo-accent" id="monthlyTotal">0원</p>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-white/5 p-6 rounded-3xl">
-                        <p class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">남은 할부 총 잔액</p>
-                        <p class="text-2xl font-black text-accent-red" id="remainingTotal">0원</p>
+                <div class="mt-8 pt-8 border-t border-glass-border">
+                    <h3 class="text-lg font-bold mb-4 font-[Pretendard] flex items-center gap-2 text-dyo-dark dark:text-gray-200">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        결제 예정 금액 요약
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Total -->
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-white/5 dark:to-white/10 p-5 rounded-2xl shadow-sm border border-black/5 dark:border-white/5 flex flex-col justify-between">
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-50 mb-2">전체 결제 원금</p>
+                            <p class="text-xl font-black text-gray-800 dark:text-gray-200" id="totalAmount">0원</p>
+                        </div>
+                        
+                        <!-- This Month -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-2xl shadow-md border border-blue-200 dark:border-blue-500/30 flex flex-col justify-between relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-bl-full"></div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">이번 달 납부 (원금+수수료)</p>
+                            <p class="text-2xl font-black text-blue-700 dark:text-blue-300" id="monthlyTotal">0원</p>
+                        </div>
+                        
+                        <!-- Next Month -->
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-5 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-500/20 flex flex-col justify-between">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-2">다음 달 납부 예정</p>
+                            <p class="text-xl font-black text-purple-700 dark:text-purple-300" id="nextMonthTotal">0원</p>
+                        </div>
+                        
+                        <!-- Remaining -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 p-5 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-between">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-2">남은 할부 총 잔액</p>
+                            <p class="text-xl font-black text-emerald-700 dark:text-emerald-300" id="remainingTotal">0원</p>
+                        </div>
                     </div>
                 </div>
                 </div> <!-- End of installmentContent -->
@@ -666,6 +683,26 @@
                             <div class="flex justify-between"><span>수수료</span><span id="idm-total-fee"
                                     class="text-accent-blue font-bold">0원</span></div>
                             <div class="flex justify-between"><span>이율</span><span id="idm-fee-rate">0.00%</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Repayment UI -->
+                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-5 mb-6 border border-blue-100 dark:border-blue-800/30">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="text-sm font-bold text-blue-800 dark:text-blue-300">상환 상태</label>
+                            <select id="idm-repay-status" class="bg-white dark:bg-black/20 border border-blue-200 dark:border-blue-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-blue-900 dark:text-blue-200" onchange="handleRepayStatusChange()">
+                                <option value="active">진행중</option>
+                                <option value="partial">일부상환</option>
+                                <option value="full">전체상환 (완납)</option>
+                            </select>
+                        </div>
+                        <div id="idm-partial-input-group" class="hidden flex-col gap-2 mt-4 pt-4 border-t border-blue-200 dark:border-blue-800/50">
+                            <label class="text-xs font-bold text-blue-700 dark:text-blue-400">일부상환 누적 금액 (원)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="idm-repaid-amount" class="flex-1 bg-white dark:bg-black/20 border border-blue-200 dark:border-blue-700 rounded-lg px-3 py-2 text-right font-bold text-gray-900 dark:text-white" placeholder="예: 500,000" onblur="formatNumberInput(this)">
+                                <button onclick="applyRepayment()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors">적용</button>
+                            </div>
+                            <p class="text-[10px] text-blue-600/70 dark:text-blue-400/70 mt-1">* 입력한 금액만큼 남은 원금에서 차감되어 이후 수수료가 재계산됩니다.</p>
                         </div>
                     </div>
                     <div id="idm-list" class="space-y-4"></div>
@@ -984,37 +1021,37 @@
 
             function calculateInstallment(item) {
                 item.totalMonths = Math.max(1, parseInt(item.totalMonths) || 1);
-                // currentMonth는 최소 1 이상이어야 올바른 계산이 가능합니다.
                 item.currentMonth = Math.max(1, Math.min(item.totalMonths, parseInt(item.currentMonth) || 1));
                 item.amount = parseFloat(String(item.amount).replace(/,/g, '')) || 0;
                 item.monthlyPrincipal = Math.floor(item.amount / item.totalMonths);
                 item.rate = parseFloat(item.rate) || 0;
 
-                // 🌟 수수료 계산 핵심 로직 (사용자 요청 반영)
-                // 현재 회차의 수수료는 "이전 회차까지 납부한 원금을 뺀 남은 잔액"을 기준으로 계산합니다.
-                // 1회차: 납부 원금 0원 -> 잔액 = 전체 금액
-                // 2회차: 납부 원금 (1개월치) -> 잔액 = 전체 금액 - (1개월치 원금)
+                if (item.repayStatus === 'full') {
+                    item.remAmount = 0;
+                    item.monthlyFee = 0;
+                    item.monthlyPrincipal = 0;
+                    item.endDate = "완납";
+                    return item;
+                }
+
                 const paidPrincipal = item.monthlyPrincipal * (item.currentMonth - 1);
-                const remainingBalance = item.amount - paidPrincipal;
+                let remainingBalance = item.amount - paidPrincipal;
+
+                if (item.repayStatus === 'partial' && item.repaidAmount) {
+                    remainingBalance -= parseFloat(item.repaidAmount) || 0;
+                    if (remainingBalance < 0) remainingBalance = 0;
+                }
 
                 if (item.rate > 0) {
                     if (item.date) {
-                        // 일할 계산 방식 (한국 카드사 표준)
                         const pDate = new Date(item.date);
-                        // 기본 결제일을 14일로 가정 (사용자가 첨부한 KB페이 기준)
                         let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
-                        
-                        // 현재 회차의 결제일
                         let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 1), 14);
-                        // 이전 회차의 결제일 (1회차인 경우 구매일)
                         let prevBillingDate = item.currentMonth === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 2), 14);
-
                         const diffTime = Math.abs(currentBillingDate - prevBillingDate);
                         const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
                         item.monthlyFee = Math.floor(remainingBalance * (item.rate / 100) * (diffDays / 365));
                     } else {
-                        // 구매일이 없으면 기본 월할 계산
                         item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
                     }
                 }
@@ -1027,7 +1064,8 @@
                         item.endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
                     }
                 }
-                item.remAmount = (item.totalMonths - item.currentMonth) * item.monthlyPrincipal;
+                
+                item.remAmount = Math.max(0, ((item.totalMonths - item.currentMonth) * item.monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount)||0 : 0));
                 return item;
             }
 
@@ -1113,20 +1151,81 @@
                 const curM = document.getElementById('monthSelect').value;
                 const currentTag = `${curY.substring(2)}.${curM}`;
 
-                const totalAmount = data.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
-                const monthlyTotal = data
-                    .filter(i => !i.endDate || i.endDate >= currentTag)
-                    .reduce((sum, i) => sum + (parseFloat(i.monthlyPrincipal) || 0) + (parseFloat(i.monthlyFee) || 0), 0);
-                const remainingTotal = data.reduce((sum, i) => sum + (parseFloat(i.remAmount) || 0), 0);
+                let totalAmount = 0;
+                let monthlyTotal = 0;
+                let nextMonthTotal = 0;
+                let remainingTotal = 0;
+
+                data.forEach(item => {
+                    totalAmount += parseFloat(item.amount) || 0;
+                    
+                    const isCurrentActive = !item.endDate || item.endDate >= currentTag;
+                    if (isCurrentActive) {
+                        monthlyTotal += (parseFloat(item.monthlyPrincipal) || 0) + (parseFloat(item.monthlyFee) || 0);
+                    }
+
+                    // Calculate next month's payment based on current month + 1
+                    let nextTagY = parseInt(curY);
+                    let nextTagM = parseInt(curM) + 1;
+                    if (nextTagM > 12) {
+                        nextTagM = 1;
+                        nextTagY++;
+                    }
+                    const nextTag = `${String(nextTagY).substring(2)}.${String(nextTagM).padStart(2, '0')}`;
+                    
+                    if (!item.endDate || item.endDate >= nextTag) {
+                        let nextMonthlyFee = 0;
+                        if (item.repayStatus === 'full') {
+                            // fully paid, no next month payment
+                        } else if (item.currentMonth < item.totalMonths) {
+                            const nextMonthNum = item.currentMonth + 1;
+                            const paidPrincipalNext = item.monthlyPrincipal * (nextMonthNum - 1);
+                            let remainingBalanceNext = item.amount - paidPrincipalNext;
+                            
+                            if (item.repayStatus === 'partial' && item.repaidAmount) {
+                                remainingBalanceNext -= parseFloat(item.repaidAmount) || 0;
+                                if (remainingBalanceNext < 0) remainingBalanceNext = 0;
+                            }
+
+                            if (item.rate > 0) {
+                                if (item.date) {
+                                    const pDate = new Date(item.date);
+                                    let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
+                                    let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (nextMonthNum - 1), 14);
+                                    let prevBillingDate = nextMonthNum === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (nextMonthNum - 2), 14);
+                                    const diffTime = Math.abs(currentBillingDate - prevBillingDate);
+                                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                                    nextMonthlyFee = Math.floor(remainingBalanceNext * (item.rate / 100) * (diffDays / 365));
+                                } else {
+                                    nextMonthlyFee = Math.floor((remainingBalanceNext * item.rate / 100) / 12);
+                                }
+                            }
+                        }
+                        nextMonthTotal += (parseFloat(item.monthlyPrincipal) || 0) + nextMonthlyFee;
+                    }
+
+                    remainingTotal += parseFloat(item.remAmount) || 0;
+                });
 
                 document.getElementById('totalAmount').innerText = formatNumber(totalAmount) + '원';
                 document.getElementById('monthlyTotal').innerText = formatNumber(monthlyTotal) + '원';
+                if (document.getElementById('nextMonthTotal')) document.getElementById('nextMonthTotal').innerText = formatNumber(nextMonthTotal) + '원';
                 document.getElementById('remainingTotal').innerText = formatNumber(remainingTotal) + '원';
             }
+
+            let currentDetailId = null;
 
             function openDetail(id) {
                 const item = state.sections.installment.find(i => i.id === id);
                 if (!item) return;
+                currentDetailId = id;
+
+                // Repayment UI Initialization
+                const statusSelect = document.getElementById('idm-repay-status');
+                const repaidInput = document.getElementById('idm-repaid-amount');
+                statusSelect.value = item.repayStatus || 'active';
+                repaidInput.value = item.repaidAmount ? formatNumber(item.repaidAmount) : '';
+                handleRepayStatusChange(true);
 
                 const listEl = document.getElementById('idm-list');
                 listEl.innerHTML = '';
@@ -1140,12 +1239,28 @@
                 const schedule = [];
                 let baseDate = item.date ? new Date(item.date) : new Date();
 
-                // 기본 결제일(14일) 계산
                 let firstBillingDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 14);
 
+                if (item.repayStatus === 'full') {
+                    listEl.innerHTML = `
+                        <div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 p-8 rounded-2xl text-center font-bold text-lg border border-emerald-200 dark:border-emerald-800">
+                            🎉 완납된 할부 내역입니다.
+                        </div>
+                    `;
+                    document.getElementById('idm-total-all').innerText = '0원';
+                    document.getElementById('idm-total-principal').innerText = '0원';
+                    document.getElementById('idm-total-fee').innerText = '0원';
+                    document.getElementById('detailModal').style.display = 'flex';
+                    return;
+                }
+
                 for (let i = 1; i <= months; i++) {
-                    const remaining = principal - (monthlyPrincipal * (i - 1));
-                    
+                    let remaining = principal - (monthlyPrincipal * (i - 1));
+                    if (item.repayStatus === 'partial' && item.repaidAmount && i >= item.currentMonth) {
+                        remaining -= parseFloat(item.repaidAmount) || 0;
+                        if (remaining < 0) remaining = 0;
+                    }
+
                     let monthlyFee = 0;
                     if (rate > 0) {
                         let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (i - 1), 14);
@@ -1162,7 +1277,8 @@
                     const payDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (i - 1), 14);
                     const dateStr = `${String(payDate.getFullYear()).substring(2)}.${String(payDate.getMonth() + 1).padStart(2, '0')}.${String(payDate.getDate()).padStart(2, '0')}`;
 
-                    schedule.push({ idx: i, date: dateStr, principal: i === months ? principal - (monthlyPrincipal * (months - 1)) : monthlyPrincipal, fee: monthlyFee });
+                    let currentPrincipal = i === months ? principal - (monthlyPrincipal * (months - 1)) : monthlyPrincipal;
+                    schedule.push({ idx: i, date: dateStr, principal: currentPrincipal, fee: monthlyFee });
                 }
 
                 document.getElementById('idm-total-all').innerText = formatNumber(principal + totalFee) + '원';
@@ -1184,6 +1300,47 @@
             }
 
             function closeDetail() { document.getElementById('detailModal').style.display = 'none'; }
+
+            function handleRepayStatusChange(isInit = false) {
+                const status = document.getElementById('idm-repay-status').value;
+                const partialGroup = document.getElementById('idm-partial-input-group');
+                if (status === 'partial') {
+                    partialGroup.classList.remove('hidden');
+                    partialGroup.classList.add('flex');
+                } else {
+                    partialGroup.classList.add('hidden');
+                    partialGroup.classList.remove('flex');
+                    if (!isInit && (status === 'full' || status === 'active')) {
+                        applyRepayment();
+                    }
+                }
+            }
+
+            function formatNumberInput(el) {
+                const val = el.value.replace(/[^0-9]/g, '');
+                if (val) el.value = formatNumber(val);
+            }
+
+            async function applyRepayment() {
+                if (!currentDetailId) return;
+                const item = state.sections.installment.find(i => i.id === currentDetailId);
+                if (!item) return;
+
+                const status = document.getElementById('idm-repay-status').value;
+                const repaidVal = document.getElementById('idm-repaid-amount').value.replace(/[^0-9]/g, '');
+                
+                item.repayStatus = status;
+                if (status === 'partial') {
+                    item.repaidAmount = parseFloat(repaidVal) || 0;
+                } else {
+                    item.repaidAmount = 0;
+                }
+                
+                calculateInstallment(item);
+                await saveData();
+                render();
+                openDetail(currentDetailId);
+            }
 
             function sortData(criterion) {
                 const data = state.sections.installment;
