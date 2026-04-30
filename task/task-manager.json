@@ -3,7 +3,7 @@
     "id": "1777504933870",
     "title": "[긴배] [MC,PC]AI agent 서비스 도입 개발 진행의 건",
     "receive_date": "2026-04-30",
-    "status": "progress",
+    "status": "done",
     "work_no": "43731",
     "task_no": "60583",
     "product_no": "",
@@ -14,8 +14,8 @@
     "remarks": "",
     "start_date": "2026-04-30",
     "end_date": "2026-04-30",
-    "reference": "",
-    "updated_at": "2026-04-29T23:33:30.081Z"
+    "reference": "4/30일 오전 개발서버 배포완료",
+    "updated_at": "2026-04-30T02:13:43.537Z"
   },
   {
     "id": "1777437371432",
