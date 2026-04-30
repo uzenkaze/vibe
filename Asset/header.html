@@ -1,4 +1,4 @@
-<nav class="flex justify-between items-center py-8 px-4">
+<nav class="flex justify-between items-center py-10 px-4">
     <!-- Logo -->
     <a href="asset.html" class="group flex items-center gap-4 cursor-pointer">
         <div class="w-10 h-10 border border-[var(--text-primary)] rounded-full flex items-center justify-center transition-all duration-500 group-hover:bg-dyo-dark overflow-hidden">
@@ -13,23 +13,22 @@
     </a>
 
     <!-- Date Selector -->
-    <div class="nav-year-month flex items-center gap-2 rounded-full px-4 py-2 shadow-sm border" style="background: var(--card-bg); border-color: var(--glass-border); color: var(--text-primary);">
+    <div class="nav-year-month flex items-center gap-2 rounded-full px-5 py-2.5 shadow-sm border" style="background: var(--card-bg); border-color: var(--glass-border); color: var(--text-primary);">
         <select id="yearSelect"></select>
-        <span style="opacity: 0.3;">/</span>
+        <span style="opacity: 0.2; font-weight: 900;">/</span>
         <select id="monthSelect"></select>
     </div>
 
     <!-- Right Menu -->
     <div class="flex items-center gap-4">
-        <div id="dashboardMenu" class="h-14 w-0 opacity-0 bg-[var(--glass-bg)] rounded-full flex items-center gap-4 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-[var(--glass-border)]">
-            <a href="javascript:void(0)" onclick="goToPage('asset.html')" id="menu-home" class="ml-6 text-[10px] font-black tracking-tighter transition-colors uppercase whitespace-nowrap text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Home</a>
-            <a href="javascript:void(0)" onclick="goToPage('installment.html')" id="menu-card" class="text-[10px] font-black tracking-tighter text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Card</a>
-            <a href="javascript:void(0)" onclick="goToPage('mindmap.html')" id="menu-mindmap" class="text-[10px] font-black tracking-tighter text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">MindMap</a>
-            <a href="javascript:void(0)" onclick="openGlobalModal('github'); closeDashboardMenu();" class="text-[10px] font-black tracking-tighter text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Cloud</a>
-            <a href="javascript:void(0)" onclick="openGlobalModal('data'); closeDashboardMenu();" class="text-[10px] font-black tracking-tighter text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Data</a>
-            <a href="javascript:void(0)" onclick="openGlobalModal('manual'); closeDashboardMenu();" class="text-[10px] font-black tracking-tighter text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Manual</a>
-            <a href="javascript:void(0)" onclick="openGlobalModal('account'); closeDashboardMenu();" class="text-[10px] font-black tracking-tighter text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">User</a>
-            <a href="javascript:void(0)" onclick="globalLogout(); closeDashboardMenu();" class="mr-6 text-[10px] font-black tracking-tighter text-red-400 hover:text-red-500 transition-colors uppercase whitespace-nowrap">Logout</a>
+        <div id="dashboardMenu" class="h-14 w-0 opacity-0 bg-[var(--glass-bg)] rounded-full flex items-center gap-5 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-[var(--glass-border)]">
+            <a href="javascript:void(0)" onclick="goToPage('asset.html')" id="menu-home" class="ml-8 text-[11px] font-black tracking-widest transition-colors uppercase whitespace-nowrap text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Home</a>
+            <a href="javascript:void(0)" onclick="goToPage('installment.html')" id="menu-card" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Card</a>
+            <a href="javascript:void(0)" onclick="goToPage('mindmap.html')" id="menu-mindmap" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">MindMap</a>
+            <a href="javascript:void(0)" onclick="openGlobalModal('github'); closeDashboardMenu();" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Cloud</a>
+            <a href="javascript:void(0)" onclick="openGlobalModal('data'); closeDashboardMenu();" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Data</a>
+            <a href="javascript:void(0)" onclick="openGlobalModal('account'); closeDashboardMenu();" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">User</a>
+            <a href="javascript:void(0)" onclick="globalLogout(); closeDashboardMenu();" class="mr-8 text-[11px] font-black tracking-widest text-red-500 hover:text-red-600 transition-colors uppercase whitespace-nowrap">Logout</a>
         </div>
 
         <button onclick="toggleDashboardMenu()" class="w-14 h-14 bg-[var(--glass-bg)] rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm hover:scale-105 transition-transform border border-[var(--glass-border)] shrink-0 relative z-10">
@@ -37,15 +36,15 @@
             <span class="w-6 h-0.5 bg-[var(--text-primary)]"></span>
             <span class="w-4 h-0.5 bg-[var(--text-primary)] self-end mr-4"></span>
         </button>
-        <button onclick="toggleTheme()" class="w-14 h-14 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-lg bg-[var(--glass-bg)] shadow-sm hover:scale-105 transition-transform" id="themeToggleBtn" title="테마 변경">🌙</button>
+        <button onclick="toggleTheme()" class="w-14 h-14 rounded-full border border-[var(--glass-border)] flex items-center justify-center text-xl bg-[var(--glass-bg)] shadow-sm hover:scale-105 transition-transform" id="themeToggleBtn" title="테마 변경">🌙</button>
     </div>
 </nav>
 
 <!-- Page Header Info (Dynamic Area) -->
-<div class="flex justify-between items-end px-4 mb-10 mt-4">
-    <div class="space-y-1">
-        <h2 id="pageTitle" class="font-serif text-5xl italic text-[var(--text-primary)]">Monthly Overview</h2>
-        <p id="pageSubtitle" class="text-sm font-bold tracking-widest text-[var(--text-secondary)] uppercase">Track your financial trajectory</p>
+<div class="flex justify-between items-end px-4 mb-12 mt-6">
+    <div class="space-y-2">
+        <h2 id="pageTitle" class="text-6xl font-black tracking-tighter text-[var(--text-primary)] leading-none">Monthly Overview</h2>
+        <p id="pageSubtitle" class="text-[10px] font-black tracking-[0.3em] text-[var(--text-secondary)] uppercase">Track your financial trajectory</p>
     </div>
     <div id="headerButtons" class="flex gap-4">
         <!-- Buttons will be injected here -->

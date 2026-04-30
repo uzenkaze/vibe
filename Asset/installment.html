@@ -37,27 +37,36 @@
         :root {
             --bg-color: #F2F2F2;
             --glass-bg: #FFFFFF;
-            --glass-border: #E5E5E5;
+            --glass-border: rgba(0, 0, 0, 0.08);
             --text-primary: #1C1D20;
-            --text-secondary: #7F7F7F;
+            --text-secondary: rgba(28, 29, 32, 0.5);
             --accent-blue: #5D6BF8;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
             --accent-red: #FF3B30;
-            --accent-purple: #1C1D20;
+            --accent-neon: #e1ff00;
+            --radius-premium: 24px;
             --radius-large: 40px;
             --card-bg: #FFFFFF;
             --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 20px 50px rgba(0, 0, 0, 0.06);
         }
 
         html.dark {
             --bg-color: #0F0F12;
             --glass-bg: #1A1A24;
-            --glass-border: #2A2A3A;
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text-primary: #E8E8F0;
-            --text-secondary: #9A9AB8;
+            --text-secondary: rgba(232, 232, 240, 0.5);
             --accent-blue: #6C7BFF;
+            --accent-green: #10b981;
+            --accent-purple: #a78bfa;
             --accent-red: #FF4D4D;
-            --accent-purple: #E8E8F0;
+            --accent-neon: #e1ff00;
             --card-bg: #1A1A24;
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
 
         body {
@@ -79,11 +88,16 @@
 
         .unified-card {
             background: var(--card-bg);
-            border-radius: var(--radius-large);
+            border-radius: var(--radius-premium);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
             padding: 2rem;
             transition: var(--transition);
+        }
+
+        .unified-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
         }
 
         table {
@@ -179,53 +193,49 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            padding: 0.6rem 1.25rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 12px;
             font-weight: 800;
             font-size: 0.8rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            border: 1.5px solid transparent;
+            border: 1px solid transparent;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.08em;
             white-space: nowrap;
             line-height: 1;
         }
 
-        .btn-hans::after {
-            content: '›';
-            font-size: 1.2rem;
-            font-weight: 400;
-            margin-left: 4px;
-            margin-top: -2px;
-        }
-
-        /* Light Mode Default */
         .btn-hans-primary {
-            background-color: #1C1D20 !important;
-            color: #FFFFFF !important;
-        }
-        .btn-hans-secondary {
-            background-color: #FFFFFF !important;
-            color: #1C1D20 !important;
-            border-color: #E5E5E5 !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            background: var(--text-primary);
+            color: var(--bg-color);
         }
 
-        /* Dark Mode Inversion */
-        html.dark .btn-hans-primary {
-            background-color: #FFFFFF !important;
-            color: #1C1D20 !important;
+        .btn-hans-neon {
+            background: var(--accent-neon);
+            color: #000;
+            box-shadow: 0 10px 25px -10px rgba(225, 255, 0, 0.4);
         }
-        html.dark .btn-hans-secondary {
-            background-color: #1C1D20 !important;
-            color: #FFFFFF !important;
-            border-color: rgba(255,255,255,0.1) !important;
+
+        .btn-hans-neon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -10px rgba(225, 255, 0, 0.6);
+            background: #d4f000;
+        }
+
+        .btn-hans-secondary {
+            background: transparent;
+            border-color: var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        .btn-hans-secondary:hover {
+            background: var(--item-hover);
+            border-color: var(--text-primary);
         }
 
         .btn-hans:hover {
             transform: scale(1.03) translateY(-1px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
         }
 
         html.dark .btn-hans:hover {
@@ -287,6 +297,61 @@
         html.dark .end-date-expired {
             color: #9CA3AF !important;
         }
+
+        /* Summary Card Styles */
+        .summary-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .summary-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-value {
+            font-size: 1.85rem;
+            font-weight: 900;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            line-height: 1;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .summary-value span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            opacity: 0.5;
+        }
+
+        .summary-card.blue { border-color: rgba(93, 107, 248, 0.2); background: rgba(93, 107, 248, 0.02); }
+        .summary-card.purple { border-color: rgba(139, 92, 246, 0.2); background: rgba(139, 92, 246, 0.02); }
+        .summary-card.green { border-color: rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.02); }
+
+        html.dark .summary-card.blue { background: rgba(93, 107, 248, 0.05); }
+        html.dark .summary-card.purple { background: rgba(139, 92, 246, 0.05); }
+        html.dark .summary-card.green { background: rgba(16, 185, 129, 0.05); }
+
+        .text-accent-blue { color: var(--accent-blue) !important; }
+        .text-accent-purple { color: var(--accent-purple) !important; }
+        .text-accent-green { color: var(--accent-green) !important; }
 
         /* Modal Overlays */
         .modal-overlay {
@@ -608,28 +673,27 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Total -->
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-white/5 dark:to-white/10 p-5 rounded-2xl shadow-sm border border-black/5 dark:border-white/5 flex flex-col justify-between">
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-50 mb-2">전체 결제 원금</p>
-                            <p class="text-xl font-black text-gray-800 dark:text-gray-200" id="totalAmount">0원</p>
+                        <div class="summary-card">
+                            <p class="summary-label">전체 결제 원금</p>
+                            <p class="summary-value" id="totalAmount">0<span>원</span></p>
                         </div>
                         
                         <!-- This Month -->
-                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-2xl shadow-md border border-blue-200 dark:border-blue-500/30 flex flex-col justify-between relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-bl-full"></div>
-                            <p class="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">이번 달 납부 (원금+수수료)</p>
-                            <p class="text-2xl font-black text-blue-700 dark:text-blue-300" id="monthlyTotal">0원</p>
+                        <div class="summary-card blue">
+                            <p class="summary-label text-accent-blue">이번 달 납부 (원금+수수료)</p>
+                            <p class="summary-value text-accent-blue" id="monthlyTotal">0<span>원</span></p>
                         </div>
                         
                         <!-- Next Month -->
-                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-5 rounded-2xl shadow-sm border border-purple-100 dark:border-purple-500/20 flex flex-col justify-between">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-2">다음 달 납부 예정</p>
-                            <p class="text-xl font-black text-purple-700 dark:text-purple-300" id="nextMonthTotal">0원</p>
+                        <div class="summary-card purple">
+                            <p class="summary-label text-accent-purple">다음 달 납부 예정</p>
+                            <p class="summary-value text-accent-purple" id="nextMonthTotal">0<span>원</span></p>
                         </div>
                         
                         <!-- Remaining -->
-                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 p-5 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-between">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-2">남은 할부 총 잔액</p>
-                            <p class="text-xl font-black text-emerald-700 dark:text-emerald-300" id="remainingTotal">0원</p>
+                        <div class="summary-card green">
+                            <p class="summary-label text-accent-green">남은 할부 총 잔액</p>
+                            <p class="summary-value text-accent-green" id="remainingTotal">0<span>원</span></p>
                         </div>
                     </div>
                 </div>
@@ -1207,10 +1271,10 @@
                     remainingTotal += parseFloat(item.remAmount) || 0;
                 });
 
-                document.getElementById('totalAmount').innerText = formatNumber(totalAmount) + '원';
-                document.getElementById('monthlyTotal').innerText = formatNumber(monthlyTotal) + '원';
-                if (document.getElementById('nextMonthTotal')) document.getElementById('nextMonthTotal').innerText = formatNumber(nextMonthTotal) + '원';
-                document.getElementById('remainingTotal').innerText = formatNumber(remainingTotal) + '원';
+                document.getElementById('totalAmount').innerHTML = formatNumber(totalAmount) + '<span>원</span>';
+                document.getElementById('monthlyTotal').innerHTML = formatNumber(monthlyTotal) + '<span>원</span>';
+                if (document.getElementById('nextMonthTotal')) document.getElementById('nextMonthTotal').innerHTML = formatNumber(nextMonthTotal) + '<span>원</span>';
+                document.getElementById('remainingTotal').innerHTML = formatNumber(remainingTotal) + '<span>원</span>';
             }
 
             let currentDetailId = null;

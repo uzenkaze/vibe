@@ -47,19 +47,21 @@
             /* Light Theme (Default) */
             --bg-color: #F2F2F2;
             --glass-bg: #FFFFFF;
-            --glass-border: #E5E5E5;
+            --glass-border: rgba(0, 0, 0, 0.08);
             --text-primary: #1C1D20;
-            --text-secondary: #7F7F7F;
+            --text-secondary: rgba(28, 29, 32, 0.5);
             --accent-blue: #5D6BF8;
-            --accent-green: #1C1D20;
-            --accent-purple: #1C1D20;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
             --accent-red: #FF3B30;
+            --accent-neon: #e1ff00;
             --section-header-bg: transparent;
             --table-header-bg: transparent;
             --item-hover: #F0F0F0;
             --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.02);
-            --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 20px 50px rgba(0, 0, 0, 0.06);
+            --radius-premium: 24px;
             --radius-large: 40px;
             /* Card & Nav */
             --card-bg: #FFFFFF;
@@ -73,18 +75,19 @@
         html.dark {
             --bg-color: #0F0F12;
             --glass-bg: #1A1A24;
-            --glass-border: #2A2A3A;
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text-primary: #E8E8F0;
-            --text-secondary: #9A9AB8;
+            --text-secondary: rgba(232, 232, 240, 0.5);
             --accent-blue: #6C7BFF;
-            --accent-green: #E8E8F0;
-            --accent-purple: #E8E8F0;
+            --accent-green: #10b981;
+            --accent-purple: #a78bfa;
             --accent-red: #FF4D4D;
+            --accent-neon: #e1ff00;
             --section-header-bg: rgba(255, 255, 255, 0.03);
             --table-header-bg: rgba(255, 255, 255, 0.03);
             --item-hover: rgba(255, 255, 255, 0.05);
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 20px 50px rgba(0, 0, 0, 0.6);
             --card-bg: #1A1A24;
             --nav-bg: #1A1A24;
             --input-bg: #13131C;
@@ -600,6 +603,149 @@
             color: var(--text-primary) !important;
         }
 
+        /* 신규 랜딩 페이지 디자인 스타일 */
+        .landing-bg-text-container {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+
+        .landing-bg-text {
+            font-size: 40vw;
+            font-weight: 900;
+            line-height: 0.7;
+            letter-spacing: -0.06em;
+            fill: none;
+            stroke-width: 1.5;
+            stroke: currentColor;
+            opacity: 0.12;
+            transform: translate(5%, 15%);
+        }
+
+        .colorful-stroke {
+            stroke-dasharray: 5000;
+            stroke-dashoffset: 5000;
+            animation: strokeDraw 4s cubic-bezier(0.4, 0, 0.2, 1) forwards, 
+                       strokeColor 12s linear infinite 4s;
+        }
+
+        @keyframes strokeDraw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes strokeColor {
+            0% { stroke: #5D6BF8; }
+            33% { stroke: #FF3B30; }
+            66% { stroke: #10b981; }
+            100% { stroke: #5D6BF8; }
+        }
+
+        .landing-content-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10vh 4rem 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+        }
+
+        .landing-top-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .landing-label {
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .landing-subtitle {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            opacity: 0.7;
+        }
+
+        .landing-main-quote {
+            font-size: clamp(2.5rem, 6.5vw, 6.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            max-width: 1200px;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .landing-bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4rem;
+            margin-top: 6rem;
+        }
+
+        .landing-info-card {
+            grid-column: span 4;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .landing-info-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+
+        .landing-info-desc {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            opacity: 0.6;
+            font-weight: 500;
+        }
+
+        .landing-login-btn {
+            background: #e1ff00;
+            color: #000;
+            padding: 1.25rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px -10px rgba(225, 255, 0, 0.4);
+        }
+
+        .landing-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px -10px rgba(225, 255, 0, 0.5);
+            background: #d4f000;
+        }
+
+        @media (max-width: 1024px) {
+            .landing-bottom-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .landing-info-card {
+                grid-column: span 12;
+            }
+        }
+
         /* "— Warren Buffett" 텍스트 */
         html.dark #landingPage p {
             color: rgba(232, 232, 240, 0.6) !important;
@@ -787,45 +933,49 @@
 
         .summary-bar {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 1.5rem;
+            margin-bottom: 4rem;
         }
 
         .summary-card {
-            background: #FFFFFF;
-            padding: 1.5rem 2rem;
-            border-radius: 30px;
-            border: 1px solid var(--dyo-bg);
-            transition: all 0.4s ease;
+            background: var(--card-bg);
+            padding: 1.75rem 2rem;
+            border-radius: var(--radius-premium);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
             cursor: help;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         .summary-card:hover {
-            border-color: var(--dyo-dark);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-color: var(--accent-blue);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
         }
 
         .summary-label {
-            font-size: 0.6rem;
+            font-size: 0.75rem;
             font-weight: 900;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: var(--dyo-dark);
-            opacity: 0.3;
-            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
         }
 
         .summary-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--dyo-dark);
-            font-family: 'Inter', sans-serif;
-            letter-spacing: -0.05em;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.06em;
+            line-height: 1;
         }
 
         .summary-value.value-expense {
-            color: #FF4B4B;
+            color: var(--accent-red);
         }
 
         .dashboard-grid {
@@ -993,15 +1143,21 @@
         }
 
         input {
-            background: #ffffff;
-            border: 2px solid var(--glass-border);
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
             color: var(--text-primary);
-            padding: 0.4rem 0.5rem;
-            border-radius: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 12px;
             width: 100%;
             transition: var(--transition);
-            font-size: 0.9rem !important;
-            font-weight: 600;
+            font-size: 0.85rem !important;
+            font-weight: 700;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(93, 107, 248, 0.1);
         }
 
         .btn-header-tool {
@@ -1056,22 +1212,26 @@
         }
 
         select:not(#yearSelect):not(#monthSelect) {
-            background: #ffffff;
-            border: 1.5px solid var(--glass-border);
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
             color: var(--text-primary);
-            padding: 0.5rem 2.5rem 0.5rem 1.25rem;
-            border-radius: 9999px;
+            padding: 0.6rem 2.5rem 0.6rem 1rem;
+            border-radius: 12px;
             width: auto;
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 800;
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231C1D20' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            transition: var(--transition);
             outline: none;
+        }
+
+        html.dark select:not(#yearSelect):not(#monthSelect) {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
         select:not(#yearSelect):not(#monthSelect):hover {
@@ -1135,8 +1295,6 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            padding: 0.5rem 1.2rem;
-            border-radius: 10px;
             font-weight: 700;
             font-size: 0.75rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1303,23 +1461,31 @@
         }
 
         .unified-card {
-            background: #FFFFFF;
-            border-radius: 40px;
-            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--radius-premium);
+            margin-bottom: 2.5rem;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
-            transition: all 0.5s ease;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+        }
+
+        .unified-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
         }
 
         .unified-card-title {
-            padding: 2rem 2rem 1rem;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            font-style: italic;
-            font-weight: 800;
-            color: var(--dyo-dark);
+            padding: 0 0 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
+            letter-spacing: -0.04em;
+            border-bottom: 2px solid var(--glass-border);
+            margin-bottom: 2rem;
         }
 
         .section-box {
@@ -1331,20 +1497,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
             background: transparent;
-            padding: 0.5rem 0.5rem;
-            border-radius: 0;
-            border: none;
+            padding: 0;
         }
 
         .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            font-style: italic;
-            font-weight: 800;
-            color: var(--dyo-dark);
-            letter-spacing: -0.02em;
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -1352,11 +1514,12 @@
 
         .section-title::before {
             content: '';
-            width: 4px;
-            height: 20px;
-            background: var(--dyo-dark);
+            width: 6px;
+            height: 6px;
+            background: var(--accent-neon);
             display: block;
-            border-radius: 2px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-neon);
         }
 
         table {
@@ -1483,17 +1646,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 3px solid #333333;
+            margin-bottom: 2.5rem;
         }
 
         .modal-title {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 900;
             color: var(--text-primary);
-            text-transform: uppercase;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.04em;
         }
 
         .action-cell {
@@ -1597,14 +1757,15 @@
         }
 
         .summary-table th {
-            padding: 0.5rem 0.75rem;
+            padding: 1.25rem 1rem;
             text-align: left;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            color: #1C1D20 !important;
-            border-bottom: 2px solid #333333;
-            letter-spacing: -0.01em;
-            background: #F9F9F9 !important;
+            font-size: 0.75rem !important;
+            font-weight: 900 !important;
+            color: var(--text-secondary) !important;
+            border-bottom: 2px solid var(--glass-border);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: var(--item-hover) !important;
         }
 
         .summary-table th:nth-child(1) {
@@ -1638,20 +1799,30 @@
         }
 
         .summary-total-row td {
-            background: #F8F9FA;
-            font-weight: 800;
-            color: var(--dyo-dark);
+            background: var(--item-hover) !important;
+            font-weight: 900;
+            color: var(--text-primary);
             border-bottom: none;
-            padding: 1.25rem 1rem;
+            padding: 1.5rem 1rem;
         }
 
         .summary-section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            font-style: italic;
-            font-weight: 800;
-            color: var(--dyo-dark);
-            margin: 2rem 0 1rem;
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin: 3rem 0 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .summary-section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--accent-neon);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--accent-neon);
         }
 
         .btn-tool {
@@ -1676,8 +1847,8 @@
         }
 
         .modal-content {
-            background: #FFFFFF;
-            border-radius: 40px;
+            background: var(--card-bg);
+            border-radius: 32px;
             width: 95%;
             max-width: 1000px;
             max-height: 85vh;
@@ -2313,6 +2484,27 @@
             margin-top: 1rem;
         }
 
+        .btn-close {
+            background: var(--item-hover);
+            border: none;
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .btn-close:hover {
+            background: var(--accent-red);
+            color: white;
+            transform: rotate(90deg);
+        }
+
         .data-modal-btn-group {
             display: flex;
             gap: 10px;
@@ -2882,75 +3074,57 @@
 
 <body>
 
-    <!-- Landing Page (dyotanya.com Inspired) -->
+    <!-- Landing Page (Redesigned) -->
     <div id="landingPage" class="relative min-h-screen bg-[#F2F2F2] overflow-hidden font-sans" style="display: none;">
-        <!-- Header -->
-        <header class="fixed top-0 left-0 w-full z-50 px-10 py-8 flex justify-between items-center">
-            <a href="asset.html" class="flex items-center gap-4 hover:opacity-80 transition-all">
-                <div
-                    class="w-10 h-10 border border-dyo-dark rounded-full flex items-center justify-center transition-all duration-500 group-hover:bg-dyo-dark overflow-hidden">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        class="text-dyo-dark group-hover:text-white transition-colors duration-500">
-                        <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="currentColor" stroke-width="1.5"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M12 3V21" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
-                        <path d="M4 12H20" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 2" />
-                    </svg>
-                </div>
-                <div class="flex flex-col -space-y-1.5">
-                    <span class="font-serif text-2xl italic tracking-tighter text-dyo-dark">Hans</span>
-                    <span class="text-[8px] font-black tracking-[0.4em] text-dyo-dark/30 uppercase pl-0.5">Wealth
-                        Management</span>
-                </div>
-            </a>
-        </header>
+        
+        <!-- Background Large Text with Colorful Stroke -->
+        <div class="landing-bg-text-container">
+            <svg viewBox="0 0 1000 400" class="landing-bg-text">
+                <text x="50%" y="100%" text-anchor="middle" class="colorful-stroke">ASSET</text>
+            </svg>
+        </div>
 
-        <!-- Hero Section -->
-        <main class="relative z-10 min-h-screen flex flex-col items-center justify-center px-10 pt-20">
-            <div class="max-w-4xl text-center space-y-12">
-                <h1
-                    class="font-serif text-5xl md:text-7xl lg:text-8xl text-dyo-dark leading-[1.1] tracking-tight italic">
-                    "If you don't find a way to make money while you sleep, you will work until you die."
-                </h1>
 
-                <div class="flex flex-col items-center gap-6">
-                    <p class="text-dyo-dark/60 font-semibold tracking-widest text-sm uppercase">
-                        — Warren Buffett
-                    </p>
 
-                    <button onclick="showLoginScreen()"
-                        class="btn-hans btn-hans-primary" style="padding: 1.25rem 3rem; font-size: 1.1rem; border-radius: 20px;">
+        <div class="landing-content-wrapper">
+            <!-- Top Section -->
+            <div class="landing-top-section">
+                <div class="flex justify-between items-start">
+                    <div class="space-y-4">
+                        <p class="landing-label">INTELLIGENT</p>
+                        <p class="landing-subtitle">Wealth Management Platform</p>
+                    </div>
+                    
+                    <button onclick="showLoginScreen()" class="landing-login-btn group">
                         LOGIN
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
                     </button>
                 </div>
+
+                <h1 class="landing-main-quote">
+                    "If you don't find a way to make money while you sleep, you will work until you die."
+                </h1>
             </div>
 
-            <!-- Bottom Decoration: Image Slider -->
-            <div id="heroSlider"
-                class="mt-20 w-full max-w-6xl aspect-[21/9] bg-[#E5E7EB] rounded-hero shadow-2xl overflow-hidden border border-white/20 relative">
-                <img src="img/slide1.png"
-                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-                    style="opacity: 0;" alt="Premium Assets 1">
-                <img src="img/slide2.png"
-                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-                    style="opacity: 0;" alt="Premium Assets 2">
-                <img src="img/slide3.png"
-                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-                    style="opacity: 0;" alt="Premium Assets 3">
-                <img src="img/slide4.png"
-                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-                    style="opacity: 0;" alt="Premium Assets 4">
-                <img src="img/slide5.png"
-                    class="hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-                    style="opacity: 0;" alt="Premium Assets 5">
-
-                <!-- Overlay for readability/style -->
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-[#F2F2F2] via-transparent to-transparent opacity-80 pointer-events-none">
+            <!-- Bottom Section -->
+            <div class="landing-bottom-grid">
+                <div class="landing-info-card">
+                    <p class="landing-info-title">Security & Scale</p>
+                    <p class="landing-info-desc">
+                        Programmatically manage your assets, move funds, and monitor growth with bank-grade encryption.
+                    </p>
+                </div>
+                <div class="landing-info-card">
+                    <p class="landing-info-title">Reliable Infrastructure</p>
+                    <p class="landing-info-desc">
+                        Built on top of deep financial integrations to provide a seamless wealth management experience.
+                    </p>
                 </div>
             </div>
-        </main>
-
+        </div>
     </div>
 
     <div class="loading-overlay" id="loadingSpinner">

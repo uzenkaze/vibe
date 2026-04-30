@@ -137,10 +137,10 @@ const MM = {
         this.store.pages.forEach(p => {
             const isActive = p.id === this.store.activeId;
             const item = document.createElement('div');
-            item.className = `flex justify-between items-center px-3 py-2 rounded-lg cursor-pointer transition-colors ${isActive ? 'bg-accent-blue/10 text-accent-blue font-bold' : 'hover:bg-item-hover text-text-secondary'}`;
+            item.className = `flex justify-between items-center px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 ${isActive ? 'bg-[var(--accent-blue)] text-white shadow-lg shadow-blue-500/30 translate-x-1' : 'hover:bg-item-hover text-text-secondary hover:text-text-primary hover:translate-x-1'}`;
             
             const titleSpan = document.createElement('span');
-            titleSpan.className = 'flex-1 truncate text-sm';
+            titleSpan.className = 'flex-1 truncate text-sm font-bold tracking-tight';
             titleSpan.innerText = p.title;
             titleSpan.onclick = () => this.switchPage(p.id);
             titleSpan.ondblclick = () => this.renamePage(p.id);
@@ -149,17 +149,17 @@ const MM = {
 
             // Controls
             const ctrls = document.createElement('div');
-            ctrls.className = 'flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity';
+            ctrls.className = 'flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2';
             if (isActive) ctrls.classList.remove('opacity-0');
             
             const renameBtn = document.createElement('button');
-            renameBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-            renameBtn.className = 'p-1 hover:text-text-primary transition-colors';
+            renameBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+            renameBtn.className = `p-1.5 rounded-md transition-all ${isActive ? 'hover:bg-white/20' : 'hover:bg-accent-blue/10 hover:text-accent-blue'}`;
             renameBtn.onclick = (e) => { e.stopPropagation(); this.renamePage(p.id); };
             
             const delBtn = document.createElement('button');
-            delBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>';
-            delBtn.className = 'p-1 hover:text-red-500 transition-colors';
+            delBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>';
+            delBtn.className = `p-1.5 rounded-md transition-all ${isActive ? 'hover:bg-red-500/20' : 'hover:bg-red-500/10 hover:text-red-500'}`;
             delBtn.onclick = (e) => { e.stopPropagation(); this.deletePage(p.id); };
             
             item.classList.add('group');
