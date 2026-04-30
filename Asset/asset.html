@@ -1294,49 +1294,63 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 16px;
             font-weight: 700;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: 1px solid transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: -0.01em;
             white-space: nowrap;
             line-height: 1;
         }
 
         .btn-hans::after {
-            content: '›';
-            font-size: 1.1rem;
-            font-weight: 400;
-            margin-left: 2px;
-            margin-top: -1px;
-            opacity: 0.7;
+            content: '';
+            width: 14px;
+            height: 14px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.9;
+            margin-top: 1px;
         }
 
-        /* Light Mode Default */
+        /* Dark Theme Primary (Matches Image) */
         .btn-hans-primary {
-            background: linear-gradient(135deg, #5D6BF8 0%, #4A58E2 100%) !important;
+            background: #1C1D20 !important;
             color: #FFFFFF !important;
-            box-shadow: 0 2px 8px rgba(93, 107, 248, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+        
         .btn-hans-secondary {
             background-color: #FFFFFF !important;
             color: #1C1D20 !important;
             border-color: #E5E5E5 !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
         }
 
-        /* Dark Mode Inversion */
+        .btn-hans-secondary::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+
+        /* Inverted for Dark Mode */
         html.dark .btn-hans-primary {
             background: #FFFFFF !important;
             color: #1C1D20 !important;
         }
+        html.dark .btn-hans-primary::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+
         html.dark .btn-hans-secondary {
             background-color: #1C1D20 !important;
             color: #FFFFFF !important;
             border-color: rgba(255,255,255,0.1) !important;
+        }
+        html.dark .btn-hans-secondary::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
         .btn-hans:hover {
@@ -3463,8 +3477,8 @@
             </table>
             <button class="btn-hans btn-hans-secondary" style="margin-top: 1rem;" onclick="addExpenseDetailRow()">상세 추가</button>
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
-                <button class="btn-hans btn-hans-secondary" onclick="closeExpenseDetailModal()">취소</button>
-                <button class="btn-hans btn-hans-primary" onclick="saveExpenseDetailModal()">저장</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="closeExpenseDetailModal()">취소</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="saveExpenseDetailModal()">저장</button>
             </div>
         </div>
     </div>
@@ -3517,7 +3531,7 @@
                 </div>
             </div>
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
-                <button class="btn-hans btn-hans-secondary" onclick="closeExpenseChart()">닫기</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="closeExpenseChart()">닫기</button>
             </div>
         </div>
     </div>
@@ -3533,7 +3547,7 @@
                 <!-- Content will be injected by JavaScript -->
             </div>
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
-                <button class="btn-hans btn-hans-secondary" onclick="closeSummaryModal()">닫기</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="closeSummaryModal()">닫기</button>
             </div>
         </div>
     </div>
@@ -3855,54 +3869,44 @@
         // --- 2. Data Management Logic ---
         function openDataManageModal() {
             document.getElementById('dataManageModal').style.display = 'flex';
-            const yearVal = document.getElementById('yearSelect')?.value || '연도';
-            const yearText = document.querySelector('#dataManageModal .modal-body p');
-            if (yearText) yearText.innerText = `현재 연도(${yearVal}년)의 데이터를 관리합니다.`;
+            
+            // 연/월 선택기 초기화
+            const yearSelect = document.getElementById('dataModalYearSelect');
+            const monthSelect = document.getElementById('dataModalMonthSelect');
+            if (yearSelect && monthSelect) {
+                const curY = document.getElementById('yearSelect').value;
+                const curM = document.getElementById('monthSelect').value;
+                
+                // 기존 연도 선택기 복사
+                yearSelect.innerHTML = document.getElementById('yearSelect').innerHTML;
+                monthSelect.innerHTML = document.getElementById('monthSelect').innerHTML;
+                
+                yearSelect.value = curY;
+                monthSelect.value = curM;
+            }
 
             // 드래그 앤 드롭 이벤트 초기화 (한 번만 설정)
             const textarea = document.getElementById('importJsonText');
             if (textarea && !textarea.dataset.dropBound) {
-                // 상위 모달에서도 드래그 이벤트를 막아줘야 텍스트 영역으로 원활하게 버블링됨
                 const modalBody = textarea.closest('.modal-body');
                 if (modalBody) {
                     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                         modalBody.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
                     });
                 }
-
-                textarea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    textarea.classList.add('drag-over');
-                });
-                textarea.addEventListener('dragleave', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    textarea.classList.remove('drag-over');
-                });
+                textarea.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); textarea.classList.add('drag-over'); });
+                textarea.addEventListener('dragleave', (e) => { e.preventDefault(); e.stopPropagation(); textarea.classList.remove('drag-over'); });
                 textarea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    e.preventDefault(); e.stopPropagation();
                     textarea.classList.remove('drag-over');
-
                     const files = e.dataTransfer.files;
                     if (files && files.length > 0) {
                         const file = files[0];
                         if (file.name.toLowerCase().endsWith('.json')) {
                             const reader = new FileReader();
-                            reader.onload = (ev) => {
-                                textarea.value = ev.target.result;
-                                console.log("[D&D] File content read successfully.");
-                                alert('JSON 파일의 내용을 읽어왔습니다.');
-                            };
-                            reader.onerror = (err) => {
-                                console.error("[D&D] File read error:", err);
-                                alert('파일을 읽는 중 오류가 발생했습니다.');
-                            };
+                            reader.onload = (ev) => { textarea.value = ev.target.result; alert('JSON 파일의 내용을 읽어왔습니다.'); };
                             reader.readAsText(file);
-                        } else {
-                            alert('JSON 확장자(.json) 파일만 가능합니다.');
-                        }
+                        } else { alert('JSON 확장자(.json) 파일만 가능합니다.'); }
                     }
                 });
                 textarea.dataset.dropBound = "true";
@@ -4427,7 +4431,7 @@
             const curM = parseInt(document.getElementById('monthSelect').value);
             
             if (targetY === curY && targetM === curM) {
-                alert('현재 연/월과 대상 연/월이 동일합니다.');
+                alert('현재 화면과 대상 연/월이 동일합니다.');
                 return;
             }
             
@@ -4446,19 +4450,7 @@
             if (!targetYearData.months) targetYearData.months = {};
             
             if (targetYearData.months[targetMonthStr]) {
-                const targetState = targetYearData.months[targetMonthStr];
-                let hasData = false;
-                for (const section in targetState.sections) {
-                    if (targetState.sections[section] && targetState.sections[section].length > 0) {
-                        hasData = true; break;
-                    }
-                }
-                
-                if (hasData) {
-                    if (!confirm(`${targetY}년 ${targetM}월에 이미 데이터가 있습니다. 현재 화면의 데이터로 덮어쓰시겠습니까?`)) {
-                        return;
-                    }
-                }
+                if (!confirm(`${targetY}년 ${targetM}월에 이미 데이터가 있습니다. 현재 화면의 데이터로 덮어쓰시겠습니까?`)) return;
             }
             
             const clonedState = JSON.parse(JSON.stringify(state));
@@ -4473,7 +4465,60 @@
             
             alert(`${targetY}년 ${targetM}월로 데이터 복사가 완료되었습니다.`);
             syncWithGitHub('upload', targetYearKey, localStorage.getItem(targetYearKey));
-            closeDataManageModal();
+        }
+
+        async function copySelectedMonthToNext() {
+            const targetY = parseInt(document.getElementById('dataModalYearSelect').value);
+            const targetM = parseInt(document.getElementById('dataModalMonthSelect').value);
+            const targetMonthStr = String(targetM).padStart(2, '0');
+            const targetYearKey = `assetData_${targetY}`;
+            
+            let targetYearDataStr = localStorage.getItem(targetYearKey);
+            if (!targetYearDataStr) { alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return; }
+            
+            let targetYearData = JSON.parse(targetYearDataStr);
+            if (targetYearData._isEncrypted) {
+                const password = sessionStorage.getItem('temp_master_pw');
+                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                targetYearData = await decryptData(targetYearData, password);
+            }
+            
+            if (!targetYearData.months || !targetYearData.months[targetMonthStr]) {
+                alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return;
+            }
+            
+            // 다음 달 계산
+            let nextY = targetY;
+            let nextM = targetM + 1;
+            if (nextM > 12) { nextM = 1; nextY++; }
+            const nextMonthStr = String(nextM).padStart(2, '0');
+            const nextYearKey = `assetData_${nextY}`;
+            
+            let nextYearDataStr = localStorage.getItem(nextYearKey);
+            let nextYearData = nextYearDataStr ? JSON.parse(nextYearDataStr) : { year: String(nextY), months: {} };
+            
+            if (nextYearData._isEncrypted) {
+                const password = sessionStorage.getItem('temp_master_pw');
+                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                nextYearData = await decryptData(nextYearData, password);
+            }
+            
+            if (!nextYearData.months) nextYearData.months = {};
+            if (nextYearData.months[nextMonthStr]) {
+                if (!confirm(`${nextY}년 ${nextM}월에 이미 데이터가 있습니다. ${targetY}년 ${targetM}월 데이터로 덮어쓰시겠습니까?`)) return;
+            }
+            
+            nextYearData.months[nextMonthStr] = JSON.parse(JSON.stringify(targetYearData.months[targetMonthStr]));
+            
+            if (sessionStorage.getItem('temp_master_pw')) {
+                const encrypted = await encryptData(nextYearData, sessionStorage.getItem('temp_master_pw'));
+                localStorage.setItem(nextYearKey, JSON.stringify(encrypted));
+            } else {
+                localStorage.setItem(nextYearKey, JSON.stringify(nextYearData));
+            }
+            
+            alert(`${targetY}년 ${targetM}월 데이터를 ${nextY}년 ${nextM}월로 성공적으로 복사했습니다.`);
+            syncWithGitHub('upload', nextYearKey, localStorage.getItem(nextYearKey));
         }
 
         async function importDataFromTargetMonth() {
@@ -5833,35 +5878,62 @@
 
     <!-- 데이터 관리 모달 -->
     <div class="modal-overlay" id="dataManageModal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <span class="modal-title">⚙️ 데이터 관리 (백업 및 복구)</span>
-                <button class="btn-close" onclick="closeDataManageModal()">&times;</button>
+        <div class="modal-content" style="max-width: 600px; padding: 0; overflow: hidden; border-radius: 32px;">
+            <div class="modal-header" style="padding: 2rem 2rem 1rem; border: none;">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-dyo-dark dark:bg-white/10 rounded-xl flex items-center justify-center text-xl">⚙️</div>
+                    <span class="modal-title text-2xl font-black tracking-tighter">데이터 관리 (백업 및 복구)</span>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors" onclick="closeDataManageModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
             </div>
-            <div class="modal-body">
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                    현재 연도의 데이터를 관리합니다.
-                </p>
-                <div class="data-modal-btn-group flex gap-3">
-                    <button class="btn-hans btn-hans-secondary flex-1" onclick="downloadData()">파일 다운로드</button>
-                    <button class="btn-hans btn-hans-secondary flex-1" onclick="copyDataToClipboard()">JSON 복사</button>
+            
+            <div class="modal-body" style="padding: 0 2rem 2rem;">
+                <!-- Section: Backup & Export -->
+                <div class="mb-8">
+                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-4">Backup & Export</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="btn-hans btn-hans-secondary py-4" onclick="downloadData()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            파일 다운로드
+                        </button>
+                        <button class="btn-hans btn-hans-secondary py-4" onclick="copyDataToClipboard()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            JSON 복사
+                        </button>
+                    </div>
                 </div>
-                <div style="margin-top: 1rem;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">데이터 가져오기 (JSON 붙여넣기)</label>
-                    <textarea id="importJsonText" class="data-modal-textarea" rows="10"
-                        placeholder='여기에 JSON 데이터를 붙여넣으세요...'></textarea>
+
+                <!-- Section: Monthly Operations -->
+                <div class="mb-8 p-6 bg-gray-50 dark:bg-white/5 rounded-2xl border border-dashed border-gray-200 dark:border-white/10">
+                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-4">Monthly Operations</h4>
+                    <div class="flex items-center gap-3 mb-5">
+                        <select id="dataModalYearSelect" class="flex-1 h-12 rounded-xl border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 font-bold px-4"></select>
+                        <select id="dataModalMonthSelect" class="w-24 h-12 rounded-xl border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 font-bold px-4"></select>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button class="btn-hans btn-hans-primary w-full py-4" onclick="copySelectedMonthToNext()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            선택 월 데이터를 다음 달로 복사
+                        </button>
+                        <button class="btn-hans btn-hans-secondary w-full py-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onclick="deleteTargetMonthData()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+                            선택 월 데이터 전체 삭제
+                        </button>
+                    </div>
                 </div>
-                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--glass-border);">
-                    <p style="font-size: 0.8rem; color: var(--accent-red); margin-bottom: 0.5rem; font-weight: 600;">⚠️
-                        위험구역</p>
-                    <button class="btn-hans btn-hans-secondary w-full" style="border-color: #ff4d4d !important; color: #ff4d4d !important;"
-                        onclick="deleteMonthData()">현재 월 데이터 전체 삭제</button>
+
+                <!-- Section: Import -->
+                <div>
+                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-3">Import Data</h4>
+                    <textarea id="importJsonText" class="data-modal-textarea w-full p-4 rounded-2xl bg-white dark:bg-black/20 border-gray-200 dark:border-white/10 text-xs font-mono" rows="4" placeholder='JSON 데이터를 여기에 붙여넣거나 파일을 드래그하세요...'></textarea>
                 </div>
             </div>
-            <div class="modal-footer"
-                style="padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn-hans btn-hans-secondary" onclick="closeDataManageModal()">닫기</button>
-                <button class="btn-hans btn-hans-primary" onclick="importDataFromText()">가져오기 적용</button>
+            
+            <div class="modal-footer" style="padding: 1.5rem 2rem; background: gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3">
+                <button class="btn-hans btn-hans-primary px-10" onclick="closeDataManageModal()">닫기</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="importDataFromText()">가져오기 적용</button>
             </div>
         </div>
     </div>
@@ -6014,7 +6086,7 @@
             </div>
             <div class="modal-footer"
                 style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
-                <button class="btn-hans btn-hans-primary w-full"
+                <button class="btn-hans btn-hans-primary px-10"
                     onclick="savePensionData()">확인 후 닫기</button>
             </div>
         </div>

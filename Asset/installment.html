@@ -192,54 +192,63 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.8rem;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.85rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: 1px solid transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: -0.01em;
             white-space: nowrap;
             line-height: 1;
         }
 
+        .btn-hans::after {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.9;
+            margin-top: 1px;
+        }
+
+        /* Dark Theme Primary (Matches Image) */
         .btn-hans-primary {
-            background: var(--text-primary);
-            color: var(--bg-color);
+            background: #1C1D20 !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
-        .btn-hans-neon {
-            background: var(--accent-neon);
-            color: #000;
-            box-shadow: 0 10px 25px -10px rgba(225, 255, 0, 0.4);
-        }
-
-        .btn-hans-neon:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px -10px rgba(225, 255, 0, 0.6);
-            background: #d4f000;
-        }
-
+        
         .btn-hans-secondary {
-            background: transparent;
-            border-color: var(--glass-border);
-            color: var(--text-primary);
+            background-color: #FFFFFF !important;
+            color: #1C1D20 !important;
+            border-color: #E5E5E5 !important;
         }
 
-        .btn-hans-secondary:hover {
-            background: var(--item-hover);
-            border-color: var(--text-primary);
+        .btn-hans-secondary::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
-        .btn-hans:hover {
-            transform: scale(1.03) translateY(-1px);
+        /* Inverted for Dark Mode */
+        html.dark .btn-hans-primary {
+            background: #FFFFFF !important;
+            color: #1C1D20 !important;
+        }
+        html.dark .btn-hans-primary::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
-        html.dark .btn-hans:hover {
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        html.dark .btn-hans-secondary {
+            background-color: #1C1D20 !important;
+            color: #FFFFFF !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        html.dark .btn-hans-secondary::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
         .btn-add {

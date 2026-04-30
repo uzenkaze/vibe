@@ -21,14 +21,14 @@
 
     <!-- Right Menu -->
     <div class="flex items-center gap-4">
-        <div id="dashboardMenu" class="h-14 w-0 opacity-0 bg-[var(--glass-bg)] rounded-full flex items-center gap-5 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-[var(--glass-border)]">
-            <a href="javascript:void(0)" onclick="goToPage('asset.html')" id="menu-home" class="ml-8 text-[11px] font-black tracking-widest transition-colors uppercase whitespace-nowrap text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Home</a>
+        <div id="dashboardMenu" class="h-14 w-0 opacity-0 bg-[var(--glass-bg)] rounded-full flex items-center gap-4 overflow-hidden transition-all duration-500 pointer-events-none shadow-sm border border-[var(--glass-border)]">
+            <a href="javascript:void(0)" onclick="goToPage('asset.html')" id="menu-home" class="ml-4 text-[11px] font-black tracking-widest transition-colors uppercase whitespace-nowrap text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Home</a>
             <a href="javascript:void(0)" onclick="goToPage('installment.html')" id="menu-card" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Card</a>
             <a href="javascript:void(0)" onclick="goToPage('mindmap.html')" id="menu-mindmap" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">MindMap</a>
             <a href="javascript:void(0)" onclick="openGlobalModal('github'); closeDashboardMenu();" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Cloud</a>
             <a href="javascript:void(0)" onclick="openGlobalModal('data'); closeDashboardMenu();" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">Data</a>
             <a href="javascript:void(0)" onclick="openGlobalModal('account'); closeDashboardMenu();" class="text-[11px] font-black tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase whitespace-nowrap">User</a>
-            <a href="javascript:void(0)" onclick="globalLogout(); closeDashboardMenu();" class="mr-8 text-[11px] font-black tracking-widest text-red-500 hover:text-red-600 transition-colors uppercase whitespace-nowrap">Logout</a>
+            <a href="javascript:void(0)" onclick="globalLogout(); closeDashboardMenu();" class="mr-4 text-[11px] font-black tracking-widest text-red-500 hover:text-red-600 transition-colors uppercase whitespace-nowrap">Logout</a>
         </div>
 
         <button onclick="toggleDashboardMenu()" class="w-14 h-14 bg-[var(--glass-bg)] rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm hover:scale-105 transition-transform border border-[var(--glass-border)] shrink-0 relative z-10">

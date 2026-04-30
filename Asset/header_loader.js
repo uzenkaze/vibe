@@ -59,7 +59,7 @@ function toggleDashboardMenu() {
         menu.style.width = 'auto';
         menu.style.opacity = '1';
         menu.style.pointerEvents = 'auto';
-        menu.style.padding = '0 1.5rem';
+        menu.style.padding = '0 0.5rem';
     }
 }
 
