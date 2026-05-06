@@ -363,7 +363,9 @@
           "x": -444.97472188400604,
           "y": -160.76638630461383,
           "color": 0,
-          "memo": ""
+          "memo": "",
+          "_w": 140,
+          "_h": 60
         },
         {
           "id": 2,
@@ -373,7 +375,9 @@
           "y": -325.5953778948756,
           "color": 1,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 356.2897033691406,
+          "_h": 56
         },
         {
           "id": 3,
@@ -383,7 +387,9 @@
           "y": -167,
           "color": 2,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 4,
@@ -393,7 +399,9 @@
           "y": -122,
           "color": 2,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 5,
@@ -403,7 +411,9 @@
           "y": -77,
           "color": 3,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 6,
@@ -413,7 +423,9 @@
           "y": -32,
           "color": 4,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 7,
@@ -423,7 +435,9 @@
           "y": 13,
           "color": 5,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 8,
@@ -433,7 +447,9 @@
           "y": 58,
           "color": 0,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 9,
@@ -443,7 +459,9 @@
           "y": 113.96981345332873,
           "color": 1,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         }
       ],
       "edges": [
