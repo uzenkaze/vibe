@@ -206,23 +206,23 @@
         }
 
         .nav-year-month select:hover {
-            background-color: rgba(0,0,0,0.04) !important;
-            border-color: rgba(0,0,0,0.08) !important;
+            background-color: rgba(0, 0, 0, 0.04) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
         }
 
         .nav-year-month select:focus {
             border-color: var(--text-primary) !important;
-            background-color: rgba(0,0,0,0.02) !important;
+            background-color: rgba(0, 0, 0, 0.02) !important;
         }
 
         html.dark .nav-year-month select:hover {
-            background-color: rgba(255,255,255,0.06) !important;
-            border-color: rgba(255,255,255,0.15) !important;
+            background-color: rgba(255, 255, 255, 0.06) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
         }
 
         html.dark .nav-year-month select:focus {
             border-color: #FFFFFF !important;
-            background-color: rgba(255,255,255,0.04) !important;
+            background-color: rgba(255, 255, 255, 0.04) !important;
         }
 
         .nav-year-month span {
@@ -366,9 +366,18 @@
         }
 
         /* End Date Colors */
-        .end-date-ending { color: var(--accent-blue) !important; font-weight: 800; }
-        .end-date-expired { color: #4B5563 !important; }
-        html.dark .end-date-expired { color: #9CA3AF !important; }
+        .end-date-ending {
+            color: var(--accent-blue) !important;
+            font-weight: 800;
+        }
+
+        .end-date-expired {
+            color: #4B5563 !important;
+        }
+
+        html.dark .end-date-expired {
+            color: #9CA3AF !important;
+        }
 
         /* 요약보기 모달 전용 표 글로벌 스타일 */
         .summary-table {
@@ -630,19 +639,32 @@
         .colorful-stroke {
             stroke-dasharray: 5000;
             stroke-dashoffset: 5000;
-            animation: strokeDraw 4s cubic-bezier(0.4, 0, 0.2, 1) forwards, 
-                       strokeColor 12s linear infinite 4s;
+            animation: strokeDraw 4s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+                strokeColor 12s linear infinite 4s;
         }
 
         @keyframes strokeDraw {
-            to { stroke-dashoffset: 0; }
+            to {
+                stroke-dashoffset: 0;
+            }
         }
 
         @keyframes strokeColor {
-            0% { stroke: #5D6BF8; }
-            33% { stroke: #FF3B30; }
-            66% { stroke: #10b981; }
-            100% { stroke: #5D6BF8; }
+            0% {
+                stroke: #5D6BF8;
+            }
+
+            33% {
+                stroke: #FF3B30;
+            }
+
+            66% {
+                stroke: #10b981;
+            }
+
+            100% {
+                stroke: #5D6BF8;
+            }
         }
 
         .landing-content-wrapper {
@@ -741,6 +763,7 @@
                 grid-template-columns: 1fr;
                 gap: 2.5rem;
             }
+
             .landing-info-card {
                 grid-column: span 12;
             }
@@ -933,49 +956,70 @@
 
         .summary-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
-            margin-bottom: 4rem;
+            margin-bottom: 2.5rem;
+            margin-top: -0.5rem;
         }
 
         .summary-card {
-            background: var(--card-bg);
-            padding: 1.75rem 2rem;
-            border-radius: var(--radius-premium);
-            border: 1px solid var(--glass-border);
-            transition: var(--transition);
-            cursor: help;
-            box-shadow: var(--shadow-sm);
+            background: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 2rem 2.25rem;
+            border-radius: 24px;
+            text-align: left;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.03);
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        html.dark .summary-card {
+            background: rgba(30, 30, 30, 0.95);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
         }
 
         .summary-card:hover {
-            border-color: var(--accent-blue);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        html.dark .summary-card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .summary-label {
-            font-size: 0.75rem;
-            font-weight: 900;
+            font-size: 0.8rem;
+            font-weight: 800;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: var(--text-secondary);
+            color: #9CA3AF;
             margin-bottom: 0.75rem;
         }
 
+        html.dark .summary-label {
+            color: #6B7280;
+        }
+
         .summary-value {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 900;
-            color: var(--text-primary);
-            letter-spacing: -0.06em;
+            color: #1C1D20;
+            letter-spacing: -0.04em;
             line-height: 1;
+            font-family: 'Montserrat', 'Pretendard', sans-serif;
+        }
+
+        html.dark .summary-value {
+            color: #FFFFFF;
         }
 
         .summary-value.value-expense {
-            color: var(--accent-red);
+            color: #FF3B30 !important;
         }
 
         .dashboard-grid {
@@ -1236,12 +1280,12 @@
 
         select:not(#yearSelect):not(#monthSelect):hover {
             border-color: var(--text-primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         html.dark select:not(#yearSelect):not(#monthSelect):hover {
             border-color: #FFFFFF;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         select:not(#yearSelect):not(#monthSelect):focus {
@@ -1324,7 +1368,7 @@
             color: #FFFFFF !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        
+
         .btn-hans-secondary {
             background-color: #FFFFFF !important;
             color: #1C1D20 !important;
@@ -1340,6 +1384,7 @@
             background: #FFFFFF !important;
             color: #1C1D20 !important;
         }
+
         html.dark .btn-hans-primary::after {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
         }
@@ -1347,23 +1392,25 @@
         html.dark .btn-hans-secondary {
             background-color: #1C1D20 !important;
             color: #FFFFFF !important;
-            border-color: rgba(255,255,255,0.1) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
         }
+
         html.dark .btn-hans-secondary::after {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
         .btn-hans:hover {
             transform: scale(1.03) translateY(-1px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
         html.dark .btn-hans:hover {
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
         }
 
         .btn-add {
-            display: none !important; /* Replaced by btn-hans */
+            display: none !important;
+            /* Replaced by btn-hans */
         }
 
         .btn-add {
@@ -2870,6 +2917,7 @@
         .features-img img {
             max-width: 100%;
         }
+
         /* Custom Calendar Styles */
         .custom-calendar {
             position: absolute;
@@ -2891,8 +2939,15 @@
         }
 
         @keyframes calFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         html.dark .custom-calendar {
@@ -2930,11 +2985,33 @@
         .calendar-date {
             font-size: 0.85rem;
             font-weight: 600;
-            padding: 10px 0;
+            padding: 4px 0;
+            height: 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
+        }
+
+        .calendar-date.holiday-text-color {
+            color: var(--accent-red);
+        }
+
+        .holiday-name {
+            font-size: 0.55rem;
+            color: var(--accent-red);
+            font-weight: 400;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 90%;
+            text-align: center;
+            line-height: 1;
         }
 
         .calendar-date:hover {
@@ -2980,6 +3057,176 @@
             background: var(--accent-blue);
             color: white;
         }
+
+        .floating-calc-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            z-index: 9999;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--accent-blue);
+        }
+
+        .floating-calc-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(93, 107, 248, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        html.dark .floating-calc-btn {
+            background: rgba(30, 30, 30, 0.9);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calculator-layer {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            transform-origin: bottom right;
+            animation: calcPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes calcPop {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        html.dark .calculator-layer {
+            background: rgba(28, 29, 32, 0.95);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calc-display {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            text-align: right;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            user-select: none;
+        }
+
+        html.dark .calc-display {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .calc-formula {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            min-height: 20px;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        .calc-current {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            word-break: break-all;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.02);
+            color: var(--text-primary);
+            user-select: none;
+        }
+
+        .calc-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
+            transform: scale(1.05);
+        }
+
+        .calc-btn.op {
+            background: rgba(93, 107, 248, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .calc-btn.op:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .calc-btn.equal {
+            background: #1C1D20;
+            color: white;
+            grid-column: span 2;
+        }
+
+        html.dark .calc-btn.equal {
+            background: #FFFFFF;
+            color: #1C1D20;
+        }
+
+        .calc-btn.clear {
+            color: var(--accent-red);
+            background: rgba(255, 59, 48, 0.05);
+        }
+
+        html.dark .calc-btn {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        html.dark .calc-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px 15px 5px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .calc-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
     </style>
     <!-- ✅ 로그인 플래시(FOUC) 방지: DOM 렌더링 전에 세션 확인 후 화면 즉시 결정 -->
     <script>
@@ -3006,6 +3253,9 @@
         }
     });
     function showLoginScreen() {
+        if (typeof loadAccounts === 'function') {
+            loadAccounts();
+        }
         document.getElementById('loginScreen').style.display = 'flex';
         setTimeout(() => {
             document.getElementById('loginScreen').classList.add('show');
@@ -3091,7 +3341,7 @@
 
     <!-- Landing Page (Redesigned) -->
     <div id="landingPage" class="relative min-h-screen bg-[#F2F2F2] overflow-hidden font-sans" style="display: none;">
-        
+
         <!-- Background Large Text with Colorful Stroke -->
         <div class="landing-bg-text-container">
             <svg viewBox="0 0 1000 400" class="landing-bg-text">
@@ -3109,10 +3359,12 @@
                         <p class="landing-label">INTELLIGENT</p>
                         <p class="landing-subtitle">Wealth Management Platform</p>
                     </div>
-                    
+
                     <button onclick="showLoginScreen()" class="landing-login-btn group">
                         LOGIN
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                            class="transition-transform group-hover:translate-x-1">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
@@ -3149,7 +3401,8 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen" style="display: none;"
         onclick="if(event.target === this) hideLoginScreen()">
-        <div class="login-modal-container" onclick="event.stopPropagation()" style="max-width:440px; overflow-y:auto; max-height:92vh;">
+        <div class="login-modal-container" onclick="event.stopPropagation()"
+            style="max-width:440px; overflow-y:auto; max-height:92vh;">
             <div class="modal-corner-dot dot-tl"></div>
             <div class="modal-corner-dot dot-tr"></div>
             <div class="modal-corner-dot dot-bl"></div>
@@ -3157,46 +3410,61 @@
 
             <div class="login-modal-logo">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
                     <path d="M12 3V21" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
                     <path d="M4 12H20" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
                 </svg>
             </div>
 
             <!-- 탭 스위처 (로그인/회원가입) - 계정이 있을 때만 표시 -->
-            <div id="loginTabSwitcher" style="display:none; gap:4px; width:100%; margin-bottom:1.5rem; background:rgba(255,255,255,0.06); border-radius:14px; padding:4px;">
-                <button id="tabSignIn" onclick="switchLoginTab('signin')" style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:rgba(255,255,255,0.12); color:#fff; font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">로그인</button>
-                <button id="tabSignUp" onclick="switchLoginTab('signup')" style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:transparent; color:rgba(255,255,255,0.4); font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">회원가입</button>
+            <div id="loginTabSwitcher"
+                style="display:none; gap:4px; width:100%; margin-bottom:1.5rem; background:rgba(255,255,255,0.06); border-radius:14px; padding:4px;">
+                <button id="tabSignIn" onclick="switchLoginTab('signin')"
+                    style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:rgba(255,255,255,0.12); color:#fff; font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">로그인</button>
+                <button id="tabSignUp" onclick="switchLoginTab('signup')"
+                    style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:transparent; color:rgba(255,255,255,0.4); font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">회원가입</button>
             </div>
 
             <!-- [A] 로그인 폼 -->
             <div id="loginFormContainer" style="width:100%;">
-                <div id="loginError" style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;"></div>
+                <div id="loginError"
+                    style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;">
+                </div>
                 <div class="login-input">
                     <span class="login-input-label">아이디</span>
-                    <input type="text" id="loginId" placeholder="아이디 입력" onkeypress="if(event.key==='Enter') attemptLogin()">
+                    <input type="text" id="loginId" placeholder="아이디 입력"
+                        onkeypress="if(event.key==='Enter') attemptLogin()">
                 </div>
                 <div class="login-input">
                     <span class="login-input-label">비밀번호</span>
-                    <input type="password" id="loginPw" placeholder="비밀번호 입력" onkeypress="if(event.key==='Enter') attemptLogin()">
+                    <input type="password" id="loginPw" placeholder="비밀번호 입력"
+                        onkeypress="if(event.key==='Enter') attemptLogin()">
                 </div>
                 <div id="loginOTPContainer" class="login-input" style="display:none; margin-top:0.75rem;">
                     <span class="login-input-label">TOTP 인증 코드 (스마트폰 앱)</span>
-                    <input type="text" id="loginOTP" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;" onkeypress="if(event.key==='Enter') attemptLogin()">
+                    <input type="text" id="loginOTP" placeholder="000000" maxlength="6" inputmode="numeric"
+                        style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;"
+                        onkeypress="if(event.key==='Enter') attemptLogin()">
                 </div>
                 <div style="margin-top:0.5rem; display:none;">
                     <input type="checkbox" id="rememberId" checked>
                 </div>
-                <button class="btn-hans btn-hans-primary" onclick="attemptLogin()" style="width:100%; margin-top:1rem; padding:1rem;">로그인</button>
+                <button class="btn-hans btn-hans-primary" onclick="attemptLogin()"
+                    style="width:100%; margin-top:1rem; padding:1rem;">로그인</button>
             </div>
 
             <!-- [B] 회원가입 폼 -->
             <div id="signupContainer" style="display:none; width:100%;">
-                <div id="signupError" style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;"></div>
+                <div id="signupError"
+                    style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;">
+                </div>
 
                 <!-- Step 1: 기본 정보 -->
                 <div id="signupStep1">
-                    <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:1rem; letter-spacing:0.05em;">STEP 1 / 2 — 기본 정보 입력</p>
+                    <p
+                        style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:1rem; letter-spacing:0.05em;">
+                        STEP 1 / 2 — 기본 정보 입력</p>
                     <div class="login-input">
                         <span class="login-input-label">이름</span>
                         <input type="text" id="signupName" placeholder="실명 입력">
@@ -3213,25 +3481,36 @@
                         <span class="login-input-label">비밀번호 확인</span>
                         <input type="password" id="signupPwConfirm" placeholder="비밀번호 재입력">
                     </div>
-                    <button class="btn-hans btn-hans-primary" onclick="goToSignupStep2()" style="width:100%; margin-top:1rem; padding:1rem;">다음 → 본인인증 (TOTP)</button>
+                    <button class="btn-hans btn-hans-primary" onclick="goToSignupStep2()"
+                        style="width:100%; margin-top:1rem; padding:1rem;">다음 → 본인인증 (TOTP)</button>
                 </div>
 
                 <!-- Step 2: TOTP 본인인증 -->
                 <div id="signupStep2" style="display:none; text-align:center;">
-                    <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:0.75rem; letter-spacing:0.05em;">STEP 2 / 2 — 본인인증</p>
+                    <p
+                        style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:0.75rem; letter-spacing:0.05em;">
+                        STEP 2 / 2 — 본인인증</p>
                     <p style="color:rgba(255,255,255,0.7); font-size:0.82rem; margin-bottom:1rem; line-height:1.7;">
-                        📱 <strong style="color:#fff;">Google Authenticator</strong> 또는 <strong style="color:#fff;">Authy</strong> 앱으로<br>아래 QR코드를 스캔 후 6자리 코드를 입력하세요.
+                        📱 <strong style="color:#fff;">Google Authenticator</strong> 또는 <strong
+                            style="color:#fff;">Authy</strong> 앱으로<br>아래 QR코드를 스캔 후 6자리 코드를 입력하세요.
                     </p>
-                    <div style="margin:0 auto 0.75rem; width:170px; height:170px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <div
+                        style="margin:0 auto 0.75rem; width:170px; height:170px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                         <div id="signupQrImg"></div>
                     </div>
-                    <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;" id="signupSecretDisplay"></p>
+                    <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;"
+                        id="signupSecretDisplay"></p>
                     <div class="login-input" style="margin-top:0.75rem;">
                         <span class="login-input-label">인증 코드 6자리</span>
-                        <input type="text" id="signupOTPCode" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:0.4em; font-size:1.4rem; font-weight:700;" onkeypress="if(event.key==='Enter') verifySignupOTP()">
+                        <input type="text" id="signupOTPCode" placeholder="000000" maxlength="6" inputmode="numeric"
+                            style="text-align:center; letter-spacing:0.4em; font-size:1.4rem; font-weight:700;"
+                            onkeypress="if(event.key==='Enter') verifySignupOTP()">
                     </div>
-                    <button class="btn-hans btn-hans-primary" onclick="verifySignupOTP()" style="width:100%; margin-top:0.75rem; padding:1rem;">인증 완료 → 계정 생성</button>
-                    <button onclick="backToSignupStep1()" style="background:transparent; border:none; color:rgba(255,255,255,0.35); font-size:0.8rem; margin-top:0.5rem; cursor:pointer; width:100%; padding:0.4rem;">← 이전으로</button>
+                    <button class="btn-hans btn-hans-primary" onclick="verifySignupOTP()"
+                        style="width:100%; margin-top:0.75rem; padding:1rem;">인증 완료 → 계정 생성</button>
+                    <button onclick="backToSignupStep1()"
+                        style="background:transparent; border:none; color:rgba(255,255,255,0.35); font-size:0.8rem; margin-top:0.5rem; cursor:pointer; width:100%; padding:0.4rem;">←
+                        이전으로</button>
                 </div>
             </div>
 
@@ -3239,46 +3518,64 @@
             <div id="pendingContainer" style="display:none; width:100%; text-align:center; padding:1rem 0;">
                 <div style="font-size:3rem; margin-bottom:1rem;">⏳</div>
                 <p style="color:#fff; font-size:1.05rem; font-weight:700; margin-bottom:0.5rem;">승인 대기 중</p>
-                <p style="color:rgba(255,255,255,0.55); font-size:0.85rem; line-height:1.7;">계정이 생성되었습니다.<br>관리자 승인 후 로그인이 가능합니다.</p>
-                <button onclick="hideLoginScreen()" style="margin-top:1.5rem; background:transparent; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.7); padding:0.75rem 2rem; border-radius:12px; cursor:pointer; font-size:0.9rem; font-weight:600;">닫기</button>
+                <p style="color:rgba(255,255,255,0.55); font-size:0.85rem; line-height:1.7;">계정이 생성되었습니다.<br>관리자 승인 후
+                    로그인이 가능합니다.</p>
+                <button onclick="hideLoginScreen()"
+                    style="margin-top:1.5rem; background:transparent; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.7); padding:0.75rem 2rem; border-radius:12px; cursor:pointer; font-size:0.9rem; font-weight:600;">닫기</button>
             </div>
 
             <!-- [D] 최초 관리자 설정 (계정 없을 때) -->
             <div id="adminCreateContainer" style="display:none; width:100%;">
-                <p style="color:rgba(255,255,255,0.6); font-size:0.85rem; text-align:center; margin-bottom:1.25rem; line-height:1.6;">최초 관리자 계정 설정<br><span style="font-size:0.75rem; opacity:0.6;">기존 데이터가 있으면 Cloud에서 먼저 불러오세요.</span></p>
-                <div style="margin-bottom:1rem; padding:0.9rem; border:1px dashed rgba(255,255,255,0.15); border-radius:12px; text-align:center;">
-                    <button class="login-btn" style="background:transparent !important;" onclick="openGitHubModal()">☁️ Cloud에서 가져오기</button>
+                <p
+                    style="color:rgba(255,255,255,0.6); font-size:0.85rem; text-align:center; margin-bottom:1.25rem; line-height:1.6;">
+                    최초 관리자 계정 설정<br><span style="font-size:0.75rem; opacity:0.6;">기존 데이터가 있으면 Cloud에서 먼저 불러오세요.</span>
+                </p>
+                <div
+                    style="margin-bottom:1rem; padding:0.9rem; border:1px dashed rgba(255,255,255,0.15); border-radius:12px; text-align:center;">
+                    <button class="login-btn" style="background:transparent !important;" onclick="openGitHubModal()">☁️
+                        Cloud에서 가져오기</button>
                 </div>
 
                 <!-- 마스터키 인증 -->
                 <div id="setupKeySection" style="display:flex; flex-direction:column; gap:0.75rem;">
                     <div class="login-input">
                         <span class="login-input-label">시스템 마스터 키</span>
-                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력" onkeypress="if(event.key==='Enter') verifySetupKey()">
+                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력"
+                            onkeypress="if(event.key==='Enter') verifySetupKey()">
                     </div>
-                    <button class="login-btn" style="background:#fff !important; color:#000 !important;" onclick="verifySetupKey()">시스템 인증</button>
+                    <button class="login-btn" style="background:#fff !important; color:#000 !important;"
+                        onclick="verifySetupKey()">시스템 인증</button>
                 </div>
 
                 <!-- 관리자 기본 정보 -->
-                <div id="adminFieldsSection" style="display:none; border-top:1px solid rgba(255,255,255,0.1); padding-top:1.25rem; margin-top:1.25rem; flex-direction:column; gap:0.75rem;">
+                <div id="adminFieldsSection"
+                    style="display:none; border-top:1px solid rgba(255,255,255,0.1); padding-top:1.25rem; margin-top:1.25rem; flex-direction:column; gap:0.75rem;">
                     <div id="adminStep1">
                         <div class="login-input"><input type="text" id="adminName" placeholder="관리자 이름"></div>
                         <div class="login-input"><input type="text" id="adminId" placeholder="관리자 아이디"></div>
                         <div class="login-input"><input type="password" id="adminPw" placeholder="비밀번호 (6자 이상)"></div>
-                        <button class="btn-hans btn-hans-primary" onclick="goToAdminTOTP()" style="width:100%; padding:1rem; margin-top:0.5rem;">다음 → 본인인증 (TOTP)</button>
+                        <button class="btn-hans btn-hans-primary" onclick="goToAdminTOTP()"
+                            style="width:100%; padding:1rem; margin-top:0.5rem;">다음 → 본인인증 (TOTP)</button>
                     </div>
                     <!-- 관리자 TOTP 설정 -->
                     <div id="adminStep2" style="display:none; text-align:center;">
-                        <p style="color:rgba(255,255,255,0.7); font-size:0.82rem; margin-bottom:0.75rem; line-height:1.6;">📱 Google Authenticator 앱으로 QR 스캔 후 코드 입력</p>
-                        <div style="margin:0 auto 0.5rem; width:150px; height:150px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                        <p
+                            style="color:rgba(255,255,255,0.7); font-size:0.82rem; margin-bottom:0.75rem; line-height:1.6;">
+                            📱 Google Authenticator 앱으로 QR 스캔 후 코드 입력</p>
+                        <div
+                            style="margin:0 auto 0.5rem; width:150px; height:150px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                             <div id="adminQrImg"></div>
                         </div>
-                        <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;" id="adminSecretDisplay"></p>
+                        <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;"
+                            id="adminSecretDisplay"></p>
                         <div class="login-input" style="margin-top:0.75rem;">
                             <span class="login-input-label">인증 코드 6자리</span>
-                            <input type="text" id="adminOTPCode" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;" onkeypress="if(event.key==='Enter') createAdminAccount()">
+                            <input type="text" id="adminOTPCode" placeholder="000000" maxlength="6" inputmode="numeric"
+                                style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;"
+                                onkeypress="if(event.key==='Enter') createAdminAccount()">
                         </div>
-                        <button class="btn-hans btn-hans-secondary" onclick="createAdminAccount()" style="width:100%; padding:1rem; margin-top:0.5rem;">관리자 계정 생성 완료</button>
+                        <button class="btn-hans btn-hans-secondary" onclick="createAdminAccount()"
+                            style="width:100%; padding:1rem; margin-top:0.5rem;">관리자 계정 생성 완료</button>
                     </div>
                 </div>
             </div>
@@ -3292,45 +3589,58 @@
 
         <!-- Summary Bar -->
         <div class="summary-bar px-4 mb-12">
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '현금 + 비현금 + 퇴직금')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '이번 달 총 수입')"
                 onmouseleave="hideHoverLayer()">
-                <div class="summary-label">Asset</div>
+                <div class="summary-label">MONTHLY INCOME</div>
                 <div class="summary-value" id="summary-income">0</div>
             </div>
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '변동 지출 + 고정 지출 + 이번달 할부 원금')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '고정 지출 + 변동 지출 + 이번달 할부 청구액')"
                 onmouseleave="hideHoverLayer()">
-                <div class="summary-label">Expense</div>
+                <div class="summary-label">EXPENSE</div>
                 <div class="summary-value value-expense" id="summary-expense">0</div>
             </div>
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '자산 - 지출')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '수입 - 지출')"
                 onmouseleave="hideHoverLayer()">
-                <div class="summary-label">Monthly P&L</div>
+                <div class="summary-label">MONTHLY P&L</div>
                 <div class="summary-value" id="summary-credit">0</div>
             </div>
             <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '자산 총액 - 부채 총액(할부 포함)')"
                 onmouseleave="hideHoverLayer()">
-                <div class="summary-label">Net Worth</div>
+                <div class="summary-label">NET WORTH</div>
                 <div class="summary-value" id="summary-net">0</div>
             </div>
         </div>
 
         <!-- Card Installment Overview -->
-        <div class="unified-card mb-3" style="padding: 1.5rem 2rem; min-height: 90px; display: flex; flex-direction: column; justify-content: center;">
-            <div class="flex justify-between items-center cursor-pointer select-none w-full" onclick="toggleMainInstallmentAccordion()">
+        <div class="unified-card mb-3"
+            style="padding: 1.5rem 2rem; min-height: 90px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="flex justify-between items-center cursor-pointer select-none w-full"
+                onclick="toggleMainInstallmentAccordion()">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 bg-dyo-accent/10 rounded-lg flex items-center justify-center text-dyo-accent">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
                     </div>
                     <div>
                         <h2 class="text-sm font-bold text-dyo-dark dark:text-white tracking-tight flex items-center">
                             카드 할부 현황
-                            <svg id="mainInstallmentAccordionIcon" class="w-3.5 h-3.5 ml-1 transition-transform duration-300 transform opacity-50" style="transform: rotate(0deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg id="mainInstallmentAccordionIcon"
+                                class="w-3.5 h-3.5 ml-1 transition-transform duration-300 transform opacity-50"
+                                style="transform: rotate(0deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
                         </h2>
-                        <p class="text-[8px] font-bold text-dyo-dark/40 dark:text-white/40 uppercase tracking-widest mt-0">Card Installment Overview</p>
+                        <p
+                            class="text-[8px] font-bold text-dyo-dark/40 dark:text-white/40 uppercase tracking-widest mt-0">
+                            Card Installment Overview</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2" onclick="event.stopPropagation()">
-                    <button 
+                    <button
                         onclick="location.href='installment.html?y='+document.getElementById('yearSelect').value+'&m='+document.getElementById('monthSelect').value"
                         class="btn-hans btn-hans-secondary py-1 px-2 text-[10px] h-auto min-h-0">
                         Manage Details
@@ -3341,34 +3651,50 @@
             <div id="mainInstallmentContent" style="display: none; margin-top: 1rem;">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- 전체 결제 원금 -->
-                    <div class="bg-gray-50 dark:bg-white/5 py-4 px-5 rounded-2xl border border-glass-border flex flex-col justify-center shadow-sm transition-all hover:shadow-md">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-dyo-dark/50 dark:text-white/50 mb-1.5">전체 결제 원금</p>
+                    <div
+                        class="bg-gray-50 dark:bg-white/5 py-4 px-5 rounded-2xl border border-glass-border flex flex-col justify-center shadow-sm transition-all hover:shadow-md">
+                        <p
+                            class="text-[10px] font-bold uppercase tracking-widest text-dyo-dark/50 dark:text-white/50 mb-1.5">
+                            전체 결제 원금</p>
                         <div class="flex items-baseline gap-1">
-                            <span id="installment-total-amount" class="text-2xl font-black text-dyo-dark dark:text-white tracking-tighter">0</span>
+                            <span id="installment-total-amount"
+                                class="text-2xl font-black text-dyo-dark dark:text-white tracking-tighter">0</span>
                             <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
                         </div>
                     </div>
                     <!-- 이번 달 납부 -->
-                    <div class="bg-blue-50/50 dark:bg-blue-500/10 py-4 px-5 rounded-2xl border border-blue-100 dark:border-blue-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/40">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-blue-600/70 dark:text-blue-400/70 mb-1.5">이번 달 납부 (원금+수수료)</p>
+                    <div
+                        class="bg-blue-50/50 dark:bg-blue-500/10 py-4 px-5 rounded-2xl border border-blue-100 dark:border-blue-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/40">
+                        <p
+                            class="text-[10px] font-bold uppercase tracking-widest text-blue-600/70 dark:text-blue-400/70 mb-1.5">
+                            이번 달 납부 (원금+수수료)</p>
                         <div class="flex items-baseline gap-1">
-                            <span id="installment-total-principal" class="text-2xl font-black text-blue-600 dark:text-blue-400 tracking-tighter">0</span>
+                            <span id="installment-total-principal"
+                                class="text-2xl font-black text-blue-600 dark:text-blue-400 tracking-tighter">0</span>
                             <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
                         </div>
                     </div>
                     <!-- 다음 달 납부 예정 -->
-                    <div class="bg-purple-50/50 dark:bg-purple-500/10 py-4 px-5 rounded-2xl border border-purple-100 dark:border-purple-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-purple-200 dark:hover:border-purple-500/40">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-purple-600/70 dark:text-purple-400/70 mb-1.5">다음 달 납부 예정</p>
+                    <div
+                        class="bg-purple-50/50 dark:bg-purple-500/10 py-4 px-5 rounded-2xl border border-purple-100 dark:border-purple-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-purple-200 dark:hover:border-purple-500/40">
+                        <p
+                            class="text-[10px] font-bold uppercase tracking-widest text-purple-600/70 dark:text-purple-400/70 mb-1.5">
+                            다음 달 납부 예정</p>
                         <div class="flex items-baseline gap-1">
-                            <span id="installment-next-month-total" class="text-2xl font-black text-purple-600 dark:text-purple-400 tracking-tighter">0</span>
+                            <span id="installment-next-month-total"
+                                class="text-2xl font-black text-purple-600 dark:text-purple-400 tracking-tighter">0</span>
                             <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
                         </div>
                     </div>
                     <!-- 남은 할부 총 잔액 -->
-                    <div class="bg-emerald-50/50 dark:bg-emerald-500/10 py-4 px-5 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-500/40">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70 mb-1.5">남은 할부 총 잔액</p>
+                    <div
+                        class="bg-emerald-50/50 dark:bg-emerald-500/10 py-4 px-5 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-500/40">
+                        <p
+                            class="text-[10px] font-bold uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70 mb-1.5">
+                            남은 할부 총 잔액</p>
                         <div class="flex items-baseline gap-1">
-                            <span id="total-installment" class="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter">0</span>
+                            <span id="total-installment"
+                                class="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter">0</span>
                             <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
                         </div>
                     </div>
@@ -3380,14 +3706,13 @@
             <div class="unified-card card-income">
                 <div class="unified-card-title justify-between">
                     Assets & Income
-                    <button
-                        class="btn-hans btn-hans-primary"
-                        onclick="openSummary('assets')">Summary</button>
+                    <button class="btn-hans btn-hans-primary" onclick="openSummary('assets')">Summary</button>
                 </div>
                 <div class="card-content-scrollable">
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">현금성 자산</h2><button class="btn-hans btn-hans-secondary" onclick="addRow('cash')">추가</button>
+                            <h2 class="section-title">현금성 자산</h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('cash')">추가</button>
                         </div>
                         <table>
                             <thead>
@@ -3422,7 +3747,8 @@
                     </div>
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">수입 내역</h2><button class="btn-hans btn-hans-secondary" onclick="addRow('income')">추가</button>
+                            <h2 class="section-title">수입 내역</h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('income')">추가</button>
                         </div>
                         <table>
                             <thead>
@@ -3444,14 +3770,13 @@
             <div class="unified-card card-expense">
                 <div class="unified-card-title justify-between">
                     Debts & Expenses
-                    <button
-                        class="btn-hans btn-hans-primary"
-                        onclick="openSummary('expenses')">Summary</button>
+                    <button class="btn-hans btn-hans-primary" onclick="openSummary('expenses')">Summary</button>
                 </div>
                 <div class="card-content-scrollable">
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">부채</h2><button class="btn-hans btn-hans-secondary" onclick="addRow('debt')">추가</button>
+                            <h2 class="section-title">부채</h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('debt')">추가</button>
                         </div>
                         <table>
                             <thead>
@@ -3526,7 +3851,8 @@
                 </thead>
                 <tbody id="tbody-expense-details"></tbody>
             </table>
-            <button class="btn-hans btn-hans-secondary" style="margin-top: 1rem;" onclick="addExpenseDetailRow()">상세 추가</button>
+            <button class="btn-hans btn-hans-secondary" style="margin-top: 1rem;" onclick="addExpenseDetailRow()">상세
+                추가</button>
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
                 <button class="btn-hans btn-hans-primary px-10" onclick="closeExpenseDetailModal()">취소</button>
                 <button class="btn-hans btn-hans-primary px-10" onclick="saveExpenseDetailModal()">저장</button>
@@ -3614,9 +3940,11 @@
 
             <!-- Tab Navigation -->
             <div class="manual-tabs flex gap-2 mb-6">
-                <button class="btn-hans btn-hans-secondary active" onclick="switchManualTab('usage', this)">기본 사용법</button>
+                <button class="btn-hans btn-hans-secondary active" onclick="switchManualTab('usage', this)">기본
+                    사용법</button>
                 <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('calc', this)">계산 로직</button>
-                <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('installment', this)">할부 관리</button>
+                <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('installment', this)">할부
+                    관리</button>
                 <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('github', this)">GitHub 연동</button>
             </div>
 
@@ -3920,18 +4248,18 @@
         // --- 2. Data Management Logic ---
         function openDataManageModal() {
             document.getElementById('dataManageModal').style.display = 'flex';
-            
+
             // 연/월 선택기 초기화
             const yearSelect = document.getElementById('dataModalYearSelect');
             const monthSelect = document.getElementById('dataModalMonthSelect');
             if (yearSelect && monthSelect) {
                 const curY = document.getElementById('yearSelect').value;
                 const curM = document.getElementById('monthSelect').value;
-                
+
                 // 기존 연도 선택기 복사
                 yearSelect.innerHTML = document.getElementById('yearSelect').innerHTML;
                 monthSelect.innerHTML = document.getElementById('monthSelect').innerHTML;
-                
+
                 yearSelect.value = curY;
                 monthSelect.value = curM;
             }
@@ -4104,7 +4432,7 @@
 
             const yEl = document.getElementById('yearSelect');
             const mEl = document.getElementById('monthSelect');
-            
+
             const currentYear = yParam ? parseInt(yParam) : now.getFullYear();
             const currentMonth = mParam ? mParam : String(now.getMonth() + 1).padStart(2, '0');
 
@@ -4191,7 +4519,7 @@
             }
 
             console.log('Saved to Year:', yearKey, 'Month:', monthKey, finalPassword ? '(Encrypted)' : '(Plain)');
-            
+
             // Option B: Trigger background auto-sync to GitHub
             if (typeof backgroundGitHubSync === 'function') {
                 backgroundGitHubSync();
@@ -4417,8 +4745,8 @@
                     item.endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
                 }
             }
-            
-            item.remAmount = Math.max(0, ((item.totalMonths - item.currentMonth) * item.monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount)||0 : 0));
+
+            item.remAmount = Math.max(0, ((item.totalMonths - item.currentMonth) * item.monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount) || 0 : 0));
             return item;
         }
 
@@ -4480,40 +4808,40 @@
             const targetM = parseInt(document.getElementById('dataModalMonthSelect').value);
             const curY = parseInt(document.getElementById('yearSelect').value);
             const curM = parseInt(document.getElementById('monthSelect').value);
-            
+
             if (targetY === curY && targetM === curM) {
                 alert('현재 화면과 대상 연/월이 동일합니다.');
                 return;
             }
-            
+
             const targetMonthStr = String(targetM).padStart(2, '0');
             const targetYearKey = `assetData_${targetY}`;
-            
+
             let targetYearDataStr = localStorage.getItem(targetYearKey);
             let targetYearData = targetYearDataStr ? JSON.parse(targetYearDataStr) : { year: String(targetY), months: {} };
-            
+
             if (targetYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
                 if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
                 targetYearData = await decryptData(targetYearData, password);
             }
-            
+
             if (!targetYearData.months) targetYearData.months = {};
-            
+
             if (targetYearData.months[targetMonthStr]) {
                 if (!confirm(`${targetY}년 ${targetM}월에 이미 데이터가 있습니다. 현재 화면의 데이터로 덮어쓰시겠습니까?`)) return;
             }
-            
+
             const clonedState = JSON.parse(JSON.stringify(state));
             targetYearData.months[targetMonthStr] = clonedState;
-            
+
             if (sessionStorage.getItem('temp_master_pw')) {
                 const encrypted = await encryptData(targetYearData, sessionStorage.getItem('temp_master_pw'));
                 localStorage.setItem(targetYearKey, JSON.stringify(encrypted));
             } else {
                 localStorage.setItem(targetYearKey, JSON.stringify(targetYearData));
             }
-            
+
             alert(`${targetY}년 ${targetM}월로 데이터 복사가 완료되었습니다.`);
             syncWithGitHub('upload', targetYearKey, localStorage.getItem(targetYearKey));
         }
@@ -4523,51 +4851,51 @@
             const targetM = parseInt(document.getElementById('dataModalMonthSelect').value);
             const targetMonthStr = String(targetM).padStart(2, '0');
             const targetYearKey = `assetData_${targetY}`;
-            
+
             let targetYearDataStr = localStorage.getItem(targetYearKey);
             if (!targetYearDataStr) { alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return; }
-            
+
             let targetYearData = JSON.parse(targetYearDataStr);
             if (targetYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
                 if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
                 targetYearData = await decryptData(targetYearData, password);
             }
-            
+
             if (!targetYearData.months || !targetYearData.months[targetMonthStr]) {
                 alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return;
             }
-            
+
             // 다음 달 계산
             let nextY = targetY;
             let nextM = targetM + 1;
             if (nextM > 12) { nextM = 1; nextY++; }
             const nextMonthStr = String(nextM).padStart(2, '0');
             const nextYearKey = `assetData_${nextY}`;
-            
+
             let nextYearDataStr = localStorage.getItem(nextYearKey);
             let nextYearData = nextYearDataStr ? JSON.parse(nextYearDataStr) : { year: String(nextY), months: {} };
-            
+
             if (nextYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
                 if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
                 nextYearData = await decryptData(nextYearData, password);
             }
-            
+
             if (!nextYearData.months) nextYearData.months = {};
             if (nextYearData.months[nextMonthStr]) {
                 if (!confirm(`${nextY}년 ${nextM}월에 이미 데이터가 있습니다. ${targetY}년 ${targetM}월 데이터로 덮어쓰시겠습니까?`)) return;
             }
-            
+
             nextYearData.months[nextMonthStr] = JSON.parse(JSON.stringify(targetYearData.months[targetMonthStr]));
-            
+
             if (sessionStorage.getItem('temp_master_pw')) {
                 const encrypted = await encryptData(nextYearData, sessionStorage.getItem('temp_master_pw'));
                 localStorage.setItem(nextYearKey, JSON.stringify(encrypted));
             } else {
                 localStorage.setItem(nextYearKey, JSON.stringify(nextYearData));
             }
-            
+
             alert(`${targetY}년 ${targetM}월 데이터를 ${nextY}년 ${nextM}월로 성공적으로 복사했습니다.`);
             syncWithGitHub('upload', nextYearKey, localStorage.getItem(nextYearKey));
         }
@@ -4577,42 +4905,42 @@
             const targetM = parseInt(document.getElementById('dataModalMonthSelect').value);
             const curY = parseInt(document.getElementById('yearSelect').value);
             const curM = parseInt(document.getElementById('monthSelect').value);
-            
+
             if (targetY === curY && targetM === curM) {
                 alert('현재 연/월과 대상 연/월이 동일합니다.');
                 return;
             }
-            
+
             const targetMonthStr = String(targetM).padStart(2, '0');
             const targetYearKey = `assetData_${targetY}`;
-            
+
             let targetYearDataStr = localStorage.getItem(targetYearKey);
             if (!targetYearDataStr) { alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return; }
-            
+
             let targetYearData = JSON.parse(targetYearDataStr);
             if (targetYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
                 if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
                 targetYearData = await decryptData(targetYearData, password);
             }
-            
+
             if (!targetYearData.months || !targetYearData.months[targetMonthStr]) {
                 alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return;
             }
-            
+
             let currentHasData = false;
             for (const section in state.sections) {
                 if (state.sections[section] && state.sections[section].length > 0) {
                     currentHasData = true; break;
                 }
             }
-            
+
             if (currentHasData) {
                 if (!confirm(`현재 화면(${curY}년 ${curM}월)에 이미 데이터가 있습니다. 가져온 데이터로 덮어쓰시겠습니까?`)) {
                     return;
                 }
             }
-            
+
             const clonedState = JSON.parse(JSON.stringify(targetYearData.months[targetMonthStr]));
             state = clonedState;
             await saveData();
@@ -4628,9 +4956,9 @@
             const curM = parseInt(document.getElementById('monthSelect').value);
             const targetMonthStr = String(targetM).padStart(2, '0');
             const targetYearKey = `assetData_${targetY}`;
-            
+
             if (!confirm(`정말 ${targetY}년 ${targetM}월 데이터를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
-            
+
             let targetYearDataStr = localStorage.getItem(targetYearKey);
             if (targetYearDataStr) {
                 let targetYearData = JSON.parse(targetYearDataStr);
@@ -4639,29 +4967,29 @@
                     if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
                     targetYearData = await decryptData(targetYearData, password);
                 }
-                
+
                 if (targetYearData.months && targetYearData.months[targetMonthStr]) {
                     delete targetYearData.months[targetMonthStr];
-                    
+
                     if (sessionStorage.getItem('temp_master_pw')) {
                         const encrypted = await encryptData(targetYearData, sessionStorage.getItem('temp_master_pw'));
                         localStorage.setItem(targetYearKey, JSON.stringify(encrypted));
                     } else {
                         localStorage.setItem(targetYearKey, JSON.stringify(targetYearData));
                     }
-                    
+
                     syncWithGitHub('upload', targetYearKey, localStorage.getItem(targetYearKey));
                 }
             }
-            
+
             localStorage.removeItem(`assetData_${targetY}-${targetMonthStr}`);
-            
+
             if (targetY === curY && targetM === curM) {
                 state = getEmptyState();
                 await saveData();
                 render();
             }
-            
+
             alert(`${targetY}년 ${targetM}월 데이터가 완전히 삭제되었습니다.`);
             closeDataManageModal();
         }
@@ -4926,7 +5254,7 @@
                     const priEl = document.getElementById('installment-total-principal');
                     const nxtEl = document.getElementById('installment-next-month-total');
                     const remEl = document.getElementById('total-installment');
-                    
+
                     if (amtEl) amtEl.innerText = formatNumber(totalAmt);
                     if (nxtEl) nxtEl.innerText = formatNumber(nextMonthTotal);
                     if (priEl) {
@@ -4953,10 +5281,76 @@
                     if (remEl) remEl.innerText = formatNumber(rem);
                 }
             }
-            document.getElementById('summary-income').innerText = formatNumber(income);
-            document.getElementById('summary-expense').innerText = formatNumber(expense);
-            document.getElementById('summary-credit').innerText = formatNumber(income - expense);
-            document.getElementById('summary-net').innerText = formatNumber(assets - debts);
+            // Build tooltips for Summary Cards
+            const incEl = document.getElementById('summary-income');
+            const expEl = document.getElementById('summary-expense');
+            const pnlEl = document.getElementById('summary-credit');
+            const netEl = document.getElementById('summary-net');
+
+            if (incEl) {
+                incEl.innerText = formatNumber(income);
+                let html = '<div style="font-size:11px; min-width:200px;"><table style="width:100%; border-collapse:collapse;">';
+                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">분류</th><th style="text-align:right;padding:4px">금액</th></tr>';
+                if (state.sections['income'] && state.sections['income'].length > 0) {
+                    state.sections['income'].forEach(i => {
+                        html += `<tr><td style="padding:4px; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${i.category || i.content || '-'}</td><td style="text-align:right;padding:4px">${formatNumber(i.amount)}</td></tr>`;
+                    });
+                } else {
+                     html += `<tr><td colspan="2" style="text-align:center;padding:4px;opacity:0.5;">내역 없음</td></tr>`;
+                }
+                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">총합</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(income)}</td></tr></table></div>`;
+                incEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
+                incEl.parentElement.style.cursor = 'help';
+            }
+
+            if (expEl) {
+                expEl.innerText = formatNumber(expense);
+                let html = '<div style="font-size:11px; min-width:240px;"><table style="width:100%; border-collapse:collapse;">';
+                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">분류</th><th style="text-align:right;padding:4px">금액</th></tr>';
+                let fTotal = state.sections['f-expense'] ? state.sections['f-expense'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
+                let vTotal = state.sections['v-expense'] ? state.sections['v-expense'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
+                let instTotal = state.sections['installment'] ? state.sections['installment'].filter(i => !i.endDate || i.endDate >= currentMonthStr).reduce((sum, i) => sum + (parseFloat(i.monthlyPrincipal)||0) + (parseFloat(i.monthlyFee)||0), 0) : 0;
+                html += `<tr><td style="padding:4px;">고정 지출</td><td style="text-align:right;padding:4px">${formatNumber(fTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">변동 지출</td><td style="text-align:right;padding:4px">${formatNumber(vTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">할부 청구액</td><td style="text-align:right;padding:4px">${formatNumber(instTotal)}</td></tr>`;
+                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">총합</td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(expense)}</td></tr></table></div>`;
+                expEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
+                expEl.parentElement.style.cursor = 'help';
+            }
+
+            if (pnlEl) {
+                pnlEl.innerText = formatNumber(income - expense);
+                let html = '<div style="font-size:11px; min-width:200px;"><table style="width:100%; border-collapse:collapse;">';
+                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">항목</th><th style="text-align:right;padding:4px">금액</th></tr>';
+                html += `<tr><td style="padding:4px;">월 수입</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(income)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">월 지출</td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(expense)}</td></tr>`;
+                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">순수익</td><td style="text-align:right;padding:4px;">${formatNumber(income - expense)}</td></tr></table></div>`;
+                pnlEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
+                pnlEl.parentElement.style.cursor = 'help';
+            }
+
+            if (netEl) {
+                netEl.innerText = formatNumber(assets - debts);
+                let html = '<div style="font-size:11px; min-width:240px;"><table style="width:100%; border-collapse:collapse;">';
+                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">항목</th><th style="text-align:right;padding:4px">금액</th></tr>';
+                let cTotal = state.sections['cash'] ? state.sections['cash'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
+                let ncTotal = state.sections['non-cash'] ? state.sections['non-cash'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
+                let rTotal = state.sections['retirement'] ? state.sections['retirement'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
+                let dTotal = state.sections['debt'] ? state.sections['debt'].reduce((sum, i) => sum + (parseFloat(i.remAmount)||0), 0) : 0;
+                let iTotal = state.sections['installment'] ? state.sections['installment'].reduce((sum, i) => sum + (parseFloat(i.remAmount)||0), 0) : 0;
+                let tAssets = cTotal + ncTotal + rTotal;
+                let tDebts = dTotal + iTotal;
+                html += `<tr><td style="padding:4px;">총 자산</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(tAssets)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 현금성 자산</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(cTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 비현금성 자산</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(ncTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 퇴직금</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(rTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">총 부채</td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(tDebts)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 대출 잔액</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(dTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 할부 잔액</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(iTotal)}</td></tr>`;
+                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">순자산</td><td style="text-align:right;padding:4px;">${formatNumber(assets - debts)}</td></tr></table></div>`;
+                netEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
+                netEl.parentElement.style.cursor = 'help';
+            }
         }
 
 
@@ -5159,6 +5553,20 @@
         function loadAccounts() {
             const data = localStorage.getItem('assetManagerAccounts');
             accountsData = data ? JSON.parse(data) : [];
+            
+            // 데이터 마이그레이션: 기존에 생성된 첫 번째 계정(관리자)의 권한이 누락된 경우 복구
+            if (accountsData.length > 0) {
+                let needsSave = false;
+                if (accountsData[0].role !== 'admin') {
+                    accountsData[0].role = 'admin';
+                    needsSave = true;
+                }
+                if (!accountsData[0].approved) {
+                    accountsData[0].approved = true;
+                    needsSave = true;
+                }
+                if (needsSave) saveAccounts();
+            }
         }
 
         function saveAccounts() {
@@ -5181,22 +5589,22 @@
             tbody.innerHTML = '';
             accountsData.forEach((acc, idx) => {
                 const tr = document.createElement('tr');
-                
+
                 // 가입일시 포맷팅
                 let dateStr = '-';
-                if(acc.createdAt) {
+                if (acc.createdAt) {
                     const d = new Date(acc.createdAt);
-                    dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+                    dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
                 }
 
                 // 권한 배지
-                let roleBadge = acc.role === 'admin' 
+                let roleBadge = acc.role === 'admin'
                     ? '<span style="background:rgba(255,59,48,0.1); color:#ff3b30; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">관리자</span>'
                     : '<span style="background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:2px 8px; border-radius:12px; font-size:0.75rem;">일반</span>';
 
                 // 상태 배지
                 let statusBadge = '';
-                if(acc.approved) {
+                if (acc.approved) {
                     statusBadge = '<span style="color:#10b981; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>승인됨</span>';
                 } else {
                     statusBadge = '<span style="color:#f59e0b; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;"></span>승인 대기</span>';
@@ -5204,7 +5612,7 @@
 
                 // 관리 버튼 (승인/반려/삭제)
                 let actionBtns = '';
-                if(acc.role === 'admin') {
+                if (acc.role === 'admin') {
                     actionBtns = `<span style="color:rgba(255,255,255,0.3); font-size:0.8rem;">관리 불가</span>`;
                 } else if (!acc.approved) {
                     actionBtns = `
@@ -5758,7 +6166,7 @@
             let hex = "";
             for (let i = 0; i < base32.length; i++) {
                 const val = base32chars.indexOf(base32.charAt(i).toUpperCase());
-                if(val === -1) continue;
+                if (val === -1) continue;
                 bits += val.toString(2).padStart(5, '0');
             }
             for (let i = 0; i + 4 <= bits.length; i += 4) {
@@ -5770,7 +6178,7 @@
 
         async function getTOTPCode(secret) {
             const keyHex = base32ToHex(secret);
-            if(keyHex.length % 2 !== 0) return null;
+            if (keyHex.length % 2 !== 0) return null;
             const keyBytes = new Uint8Array(keyHex.length / 2);
             for (let i = 0; i < keyHex.length; i += 2) {
                 keyBytes[i / 2] = parseInt(keyHex.substr(i, 2), 16);
@@ -5801,7 +6209,7 @@
             document.getElementById('signupContainer').style.display = tab === 'signup' ? 'block' : 'none';
             document.getElementById('pendingContainer').style.display = 'none';
             document.getElementById('adminCreateContainer').style.display = 'none';
-            
+
             const btnSignIn = document.getElementById('tabSignIn');
             const btnSignUp = document.getElementById('tabSignUp');
             if (tab === 'signin') {
@@ -5824,18 +6232,18 @@
             const id = document.getElementById('signupUserId').value.trim();
             const pw = document.getElementById('signupPw').value.trim();
             const pw2 = document.getElementById('signupPwConfirm').value.trim();
-            
-            if(!name || !id || !pw) { alert('모든 정보를 입력해주세요.'); return; }
-            if(pw !== pw2) { alert('비밀번호가 일치하지 않습니다.'); return; }
-            if(accountsData.some(a => a.userid === id)) { alert('이미 존재하는 아이디입니다.'); return; }
+
+            if (!name || !id || !pw) { alert('모든 정보를 입력해주세요.'); return; }
+            if (pw !== pw2) { alert('비밀번호가 일치하지 않습니다.'); return; }
+            if (accountsData.some(a => a.userid === id)) { alert('이미 존재하는 아이디입니다.'); return; }
 
             tempSignupSecret = generateTOTPSecret();
             document.getElementById('signupSecretDisplay').innerText = "복구 키: " + tempSignupSecret;
             document.getElementById('signupQrImg').innerHTML = '';
-            
+
             // Google Authenticator URI Format
             const uri = `otpauth://totp/WealthManager:${id}?secret=${tempSignupSecret}&issuer=WealthManager`;
-            new QRCode(document.getElementById('signupQrImg'), { text: uri, width: 160, height: 160, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+            new QRCode(document.getElementById('signupQrImg'), { text: uri, width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
 
             document.getElementById('signupStep1').style.display = 'none';
             document.getElementById('signupStep2').style.display = 'block';
@@ -5848,10 +6256,10 @@
 
         async function verifySignupOTP() {
             const inputOtp = document.getElementById('signupOTPCode').value.trim();
-            if(!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
+            if (!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
 
             const expectedOtp = await getTOTPCode(tempSignupSecret);
-            if(inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다. 다시 시도해주세요.'); return; }
+            if (inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다. 다시 시도해주세요.'); return; }
 
             // 계정 생성
             accountsData.push({
@@ -5868,7 +6276,7 @@
 
             document.getElementById('signupStep2').style.display = 'none';
             document.getElementById('pendingContainer').style.display = 'block';
-            
+
             // 폼 초기화
             document.getElementById('signupName').value = '';
             document.getElementById('signupUserId').value = '';
@@ -5883,15 +6291,15 @@
             const name = document.getElementById('adminName').value.trim();
             const id = document.getElementById('adminId').value.trim();
             const pw = document.getElementById('adminPw').value.trim();
-            
-            if(!name || !id || !pw) { alert('모든 항목을 입력해주세요.'); return; }
+
+            if (!name || !id || !pw) { alert('모든 항목을 입력해주세요.'); return; }
 
             tempAdminSecret = generateTOTPSecret();
             document.getElementById('adminSecretDisplay').innerText = "복구 키: " + tempAdminSecret;
             document.getElementById('adminQrImg').innerHTML = '';
-            
+
             const uri = `otpauth://totp/WealthManagerAdmin:${id}?secret=${tempAdminSecret}&issuer=WealthManager`;
-            new QRCode(document.getElementById('adminQrImg'), { text: uri, width: 140, height: 140, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+            new QRCode(document.getElementById('adminQrImg'), { text: uri, width: 140, height: 140, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
 
             document.getElementById('adminStep1').style.display = 'none';
             document.getElementById('adminStep2').style.display = 'block';
@@ -5899,17 +6307,17 @@
 
         async function createAdminAccount() {
             const inputOtp = document.getElementById('adminOTPCode').value.trim();
-            if(!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
+            if (!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
 
             const expectedOtp = await getTOTPCode(tempAdminSecret);
-            if(inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다.'); return; }
+            if (inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다.'); return; }
 
             const name = document.getElementById('adminName').value.trim();
             const id = document.getElementById('adminId').value.trim();
             const pw = document.getElementById('adminPw').value.trim();
 
             accountsData = [{
-                site: name, userid: id, password: pw, remarks: '최초 관리자', 
+                site: name, userid: id, password: pw, remarks: '최초 관리자',
                 totpSecret: tempAdminSecret, role: 'admin', approved: true, createdAt: new Date().toISOString()
             }];
             saveAccounts();
@@ -6010,7 +6418,9 @@
                 return;
             }
 
-            if (!user.approved && user.role !== 'admin') {
+            const isAdmin = user.role === 'admin' || accountsData.indexOf(user) === 0;
+
+            if (!user.approved && !isAdmin) {
                 document.getElementById('loginFormContainer').style.display = 'none';
                 document.getElementById('loginTabSwitcher').style.display = 'none';
                 document.getElementById('pendingContainer').style.display = 'block';
@@ -6018,19 +6428,19 @@
             }
 
             if (user.totpSecret) {
-                if(otpContainer.style.display === 'none') {
+                if (otpContainer.style.display === 'none') {
                     otpContainer.style.display = 'block';
                     document.getElementById('loginError').style.display = 'none';
                     document.getElementById('loginOTP').focus();
                     return;
                 } else {
-                    if(!otpInput || otpInput.length !== 6) {
+                    if (!otpInput || otpInput.length !== 6) {
                         document.getElementById('loginError').style.display = 'block';
                         document.getElementById('loginError').innerText = '6자리 인증 코드를 입력해주세요.';
                         return;
                     }
                     const expectedOtp = await getTOTPCode(user.totpSecret);
-                    if(otpInput !== expectedOtp) {
+                    if (otpInput !== expectedOtp) {
                         document.getElementById('loginError').style.display = 'block';
                         document.getElementById('loginError').innerText = '인증 코드가 일치하지 않습니다.';
                         return;
@@ -6045,11 +6455,11 @@
             } else {
                 localStorage.removeItem('savedLoginId');
             }
-            
+
             // Reset OTP container
             otpContainer.style.display = 'none';
             document.getElementById('loginOTP').value = '';
-            
+
             loginSuccess();
         }
 
@@ -6068,7 +6478,7 @@
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             document.getElementById('loginError').style.display = 'none';
-            
+
             // Load Header
             await loadHeader({
                 title: 'Monthly Overview',
@@ -6174,44 +6584,72 @@
         <div class="modal-content" style="max-width: 600px; padding: 0; overflow: hidden; border-radius: 32px;">
             <div class="modal-header" style="padding: 2rem 2rem 1rem; border: none;">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-dyo-dark dark:bg-white/10 rounded-xl flex items-center justify-center text-xl">⚙️</div>
+                    <div
+                        class="w-10 h-10 bg-dyo-dark dark:bg-white/10 rounded-xl flex items-center justify-center text-xl">
+                        ⚙️</div>
                     <span class="modal-title text-2xl font-black tracking-tighter">데이터 관리 (백업 및 복구)</span>
                 </div>
-                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors" onclick="closeDataManageModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                <button
+                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                    onclick="closeDataManageModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
-            
+
             <div class="modal-body" style="padding: 0 2rem 2rem;">
                 <!-- Section: Backup & Export -->
                 <div class="mb-8">
-                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-4">Backup & Export</h4>
+                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-4">
+                        Backup & Export</h4>
                     <div class="grid grid-cols-2 gap-3">
                         <button class="btn-hans btn-hans-secondary py-4" onclick="downloadData()">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" class="mr-2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                            </svg>
                             파일 다운로드
                         </button>
                         <button class="btn-hans btn-hans-secondary py-4" onclick="copyDataToClipboard()">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" class="mr-2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
                             JSON 복사
                         </button>
                     </div>
                 </div>
 
                 <!-- Section: Monthly Operations -->
-                <div class="mb-8 p-6 bg-gray-50 dark:bg-white/5 rounded-2xl border border-dashed border-gray-200 dark:border-white/10">
-                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-4">Monthly Operations</h4>
+                <div
+                    class="mb-8 p-6 bg-gray-50 dark:bg-white/5 rounded-2xl border border-dashed border-gray-200 dark:border-white/10">
+                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-4">
+                        Monthly Operations</h4>
                     <div class="flex items-center gap-3 mb-5">
-                        <select id="dataModalYearSelect" class="flex-1 h-12 rounded-xl border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 font-bold px-4"></select>
-                        <select id="dataModalMonthSelect" class="w-24 h-12 rounded-xl border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 font-bold px-4"></select>
+                        <select id="dataModalYearSelect"
+                            class="flex-1 h-12 rounded-xl border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 font-bold px-4"></select>
+                        <select id="dataModalMonthSelect"
+                            class="w-24 h-12 rounded-xl border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 font-bold px-4"></select>
                     </div>
                     <div class="flex flex-col gap-2">
                         <button class="btn-hans btn-hans-primary w-full py-4" onclick="copySelectedMonthToNext()">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" class="mr-2">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
                             선택 월 데이터를 다음 달로 복사
                         </button>
-                        <button class="btn-hans btn-hans-secondary w-full py-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20" onclick="deleteTargetMonthData()">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mr-2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+                        <button
+                            class="btn-hans btn-hans-secondary w-full py-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            onclick="deleteTargetMonthData()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" class="mr-2">
+                                <path
+                                    d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
+                            </svg>
                             선택 월 데이터 전체 삭제
                         </button>
                     </div>
@@ -6219,12 +6657,16 @@
 
                 <!-- Section: Import -->
                 <div>
-                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-3">Import Data</h4>
-                    <textarea id="importJsonText" class="data-modal-textarea w-full p-4 rounded-2xl bg-white dark:bg-black/20 border-gray-200 dark:border-white/10 text-xs font-mono" rows="4" placeholder='JSON 데이터를 여기에 붙여넣거나 파일을 드래그하세요...'></textarea>
+                    <h4 class="text-[10px] font-black tracking-[0.2em] text-[var(--text-secondary)] uppercase mb-3">
+                        Import Data</h4>
+                    <textarea id="importJsonText"
+                        class="data-modal-textarea w-full p-4 rounded-2xl bg-white dark:bg-black/20 border-gray-200 dark:border-white/10 text-xs font-mono"
+                        rows="4" placeholder='JSON 데이터를 여기에 붙여넣거나 파일을 드래그하세요...'></textarea>
                 </div>
             </div>
-            
-            <div class="modal-footer" style="padding: 1.5rem 2rem; background: gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3">
+
+            <div class="modal-footer"
+                style="padding: 1.5rem 2rem; background: gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3">
                 <button class="btn-hans btn-hans-primary px-10" onclick="closeDataManageModal()">닫기</button>
                 <button class="btn-hans btn-hans-primary px-10" onclick="importDataFromText()">가져오기 적용</button>
             </div>
@@ -6379,8 +6821,7 @@
             </div>
             <div class="modal-footer"
                 style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
-                <button class="btn-hans btn-hans-primary px-10"
-                    onclick="savePensionData()">확인 후 닫기</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="savePensionData()">확인 후 닫기</button>
             </div>
         </div>
     </div>
@@ -6458,7 +6899,7 @@
                     else if (action === 'data' && typeof openDataManageModal === 'function') openDataManageModal();
                     else if (action === 'manual' && typeof openManualModal === 'function') openManualModal();
                     else if (action === 'account' && typeof openAccountModal === 'function') openAccountModal();
-                    
+
                     // Clean up URL
                     const y = urlParams.get('y') || new Date().getFullYear();
                     const m = urlParams.get('m') || String(new Date().getMonth() + 1).padStart(2, '0');
@@ -6479,14 +6920,14 @@
             activeCalendarInput = el;
             const rect = el.getBoundingClientRect();
             const cal = document.getElementById('customCalendar');
-            
+
             // 위치 계산 (화면 밖으로 나가지 않도록 조정)
             let top = rect.bottom + window.scrollY + 8;
             let left = rect.left + window.scrollX;
-            
+
             if (left + 300 > window.innerWidth) left = window.innerWidth - 320;
             if (left < 10) left = 10;
-            
+
             cal.style.top = top + 'px';
             cal.style.left = left + 'px';
             cal.style.display = 'flex';
@@ -6545,6 +6986,23 @@
             }
         }
 
+        const KOREAN_HOLIDAYS = {
+            '01-01': '신정', '03-01': '삼일절', '05-05': '어린이날', '06-06': '현충일',
+            '08-15': '광복절', '10-03': '개천절', '10-09': '한글날', '12-25': '성탄절',
+            '2024-02-09': '설날 연휴', '2024-02-10': '설날', '2024-02-11': '설날 연휴', '2024-02-12': '대체휴일',
+            '2024-04-10': '총선', '2024-05-06': '대체휴일', '2024-05-15': '부처님오신날',
+            '2024-09-16': '추석 연휴', '2024-09-17': '추석', '2024-09-18': '추석 연휴',
+            '2025-01-28': '설날 연휴', '2025-01-29': '설날', '2025-01-30': '설날 연휴',
+            '2025-03-03': '대체휴일', '2025-05-05': '부처님오신날', '2025-05-06': '대체휴일',
+            '2025-10-05': '추석 연휴', '2025-10-06': '추석', '2025-10-07': '추석 연휴', '2025-10-08': '대체휴일',
+            '2026-02-16': '설날 연휴', '2026-02-17': '설날', '2026-02-18': '설날 연휴',
+            '2026-05-24': '부처님오신날', '2026-05-25': '대체휴일', '2026-06-03': '지방선거',
+            '2026-09-24': '추석 연휴', '2026-09-25': '추석', '2026-09-26': '추석 연휴', '2026-09-28': '대체휴일',
+            '2027-02-06': '설날 연휴', '2027-02-07': '설날', '2027-02-08': '설날 연휴', '2027-02-09': '대체휴일',
+            '2027-03-03': '대선', '2027-05-13': '부처님오신날',
+            '2027-09-14': '추석 연휴', '2027-09-15': '추석', '2027-09-16': '추석 연휴'
+        };
+
         function addDateCell(y, m, d, otherMonth, isToday, isSelected) {
             const cal = document.getElementById('customCalendar');
             const grid = cal.querySelector('.calendar-grid');
@@ -6553,11 +7011,22 @@
             if (otherMonth) div.classList.add('other-month');
             if (isToday) div.classList.add('today');
             if (isSelected) div.classList.add('selected');
-            div.innerText = d;
             
             const targetDate = new Date(y, m, d);
             const dateStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}-${String(targetDate.getDate()).padStart(2, '0')}`;
+            const monthDayStr = `${String(targetDate.getMonth() + 1).padStart(2, '0')}-${String(targetDate.getDate()).padStart(2, '0')}`;
             
+            const holidayName = KOREAN_HOLIDAYS[dateStr] || KOREAN_HOLIDAYS[monthDayStr];
+            
+            let htmlContent = `<span>${d}</span>`;
+            if (holidayName) {
+                div.classList.add('holiday-text-color');
+                htmlContent += `<span class="holiday-name" title="${holidayName}">${holidayName}</span>`;
+            } else if (targetDate.getDay() === 0) { // Sunday
+                div.classList.add('holiday-text-color');
+            }
+            div.innerHTML = htmlContent;
+
             div.onclick = (e) => {
                 e.stopPropagation();
                 if (activeCalendarInput) {
@@ -6581,7 +7050,222 @@
                 closeCalendar();
             }
         });
+
+        // --- Calculator Logic ---
+        let calcState = { current: '0', formula: '', isNewNumber: true, operator: null, prevValue: null };
+
+        function toggleCalculator() {
+            const layer = document.getElementById('calculatorLayer');
+            const isVisible = layer.style.display === 'flex';
+            layer.style.display = isVisible ? 'none' : 'flex';
+            if (!isVisible) {
+                calcClear();
+                initCalcDraggable();
+            }
+        }
+
+        function calcNum(n) {
+            if (calcState.isNewNumber) {
+                calcState.current = n === '00' ? '0' : n;
+                calcState.isNewNumber = false;
+            } else {
+                if (n === '.' && calcState.current.includes('.')) return;
+                calcState.current += n;
+            }
+            updateCalcDisplay();
+        }
+
+        function calcOp(op) {
+            const val = parseFloat(calcState.current.replace(/,/g, ''));
+            if (calcState.prevValue !== null && !calcState.isNewNumber) {
+                calcResult();
+                calcState.prevValue = parseFloat(calcState.current.replace(/,/g, ''));
+            } else {
+                calcState.prevValue = val;
+            }
+            calcState.operator = op;
+            calcState.formula = `${calcState.prevValue} ${op.replace('*', '×').replace('/', '÷')} `;
+            calcState.isNewNumber = true;
+            updateCalcDisplay();
+        }
+
+        function calcResult() {
+            if (calcState.operator === null || calcState.isNewNumber) return;
+            const currentVal = parseFloat(calcState.current.replace(/,/g, ''));
+            let result = 0;
+            switch (calcState.operator) {
+                case '+': result = calcState.prevValue + currentVal; break;
+                case '-': result = calcState.prevValue - currentVal; break;
+                case '*': result = calcState.prevValue * currentVal; break;
+                case '/': result = calcState.prevValue / currentVal; break;
+            }
+            calcState.formula += `${currentVal} =`;
+            calcState.current = String(Math.round(result * 100) / 100);
+            calcState.prevValue = null;
+            calcState.operator = null;
+            calcState.isNewNumber = true;
+            updateCalcDisplay();
+        }
+
+        function calcClear() {
+            calcState = { current: '0', formula: '', isNewNumber: true, operator: null, prevValue: null };
+            updateCalcDisplay();
+        }
+
+        function calcDelete() {
+            if (calcState.isNewNumber) return;
+            calcState.current = calcState.current.slice(0, -1);
+            if (calcState.current === '' || calcState.current === '-') calcState.current = '0';
+            updateCalcDisplay();
+        }
+
+        function updateCalcDisplay() {
+            const display = document.getElementById('calcDisplay');
+            const formula = document.getElementById('calcFormula');
+            
+            const parts = calcState.current.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            display.innerText = parts.join('.');
+            formula.innerText = calcState.formula;
+
+            if (display.innerText.length > 12) display.style.fontSize = '1.3rem';
+            else if (display.innerText.length > 9) display.style.fontSize = '1.5rem';
+            else display.style.fontSize = '1.8rem';
+        }
+
+        function initCalcDraggable() {
+            const layer = document.getElementById('calculatorLayer');
+            const header = document.getElementById('calcHeader');
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+            header.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                layer.style.top = (layer.offsetTop - pos2) + "px";
+                layer.style.left = (layer.offsetLeft - pos1) + "px";
+                layer.style.bottom = 'auto';
+                layer.style.right = 'auto';
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        // --- Calculator Keyboard Support ---
+        document.addEventListener('keydown', function(e) {
+            const layer = document.getElementById('calculatorLayer');
+            if (!layer || layer.style.display !== 'flex') return;
+
+            const key = e.key;
+            if (/^[0-9]$/.test(key)) {
+                calcNum(key);
+            } else if (key === '.') {
+                calcNum('.');
+            } else if (key === '+' || key === '-') {
+                calcOp(key);
+            } else if (key === '*' || key.toLowerCase() === 'x') {
+                calcOp('*');
+            } else if (key === '/') {
+                e.preventDefault(); // prevent quick search in some browsers
+                calcOp('/');
+            } else if (key === 'Enter' || key === '=') {
+                e.preventDefault();
+                calcResult();
+            } else if (key === 'Backspace') {
+                calcDelete();
+            } else if (key.toLowerCase() === 'c') {
+                calcClear();
+            } else if (key === 'Escape') {
+                toggleCalculator();
+            }
+        });
     </script>
+    
+    <!-- Floating Calculator -->
+    <div class="floating-calc-btn" onclick="toggleCalculator()" title="계산기 열기">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+            <line x1="8" y1="6" x2="16" y2="6"></line>
+            <line x1="16" y1="14" x2="16" y2="18"></line>
+            <path d="M16 10h.01"></path>
+            <path d="M12 10h.01"></path>
+            <path d="M8 10h.01"></path>
+            <path d="M12 14h.01"></path>
+            <path d="M8 14h.01"></path>
+            <path d="M12 18h.01"></path>
+            <path d="M8 18h.01"></path>
+        </svg>
+    </div>
+
+    <div class="calculator-layer" id="calculatorLayer">
+        <div class="calc-header" id="calcHeader">
+            <div class="calc-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                </svg>
+                Calculator
+            </div>
+            <button onclick="toggleCalculator()" class="opacity-50 hover:opacity-100 transition-opacity">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="calc-display">
+            <div class="calc-formula" id="calcFormula"></div>
+            <div class="calc-current" id="calcDisplay">0</div>
+        </div>
+        <div class="calc-grid">
+            <div class="calc-btn clear" onclick="calcClear()">C</div>
+            <div class="calc-btn op" onclick="calcOp('/')">÷</div>
+            <div class="calc-btn op" onclick="calcOp('*')">×</div>
+            <div class="calc-btn op" onclick="calcDelete()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                    <line x1="18" y1="9" x2="12" y2="15"></line>
+                    <line x1="12" y1="9" x2="18" y2="15"></line>
+                </svg>
+            </div>
+            
+            <div class="calc-btn" onclick="calcNum('7')">7</div>
+            <div class="calc-btn" onclick="calcNum('8')">8</div>
+            <div class="calc-btn" onclick="calcNum('9')">9</div>
+            <div class="calc-btn op" onclick="calcOp('-')">-</div>
+            
+            <div class="calc-btn" onclick="calcNum('4')">4</div>
+            <div class="calc-btn" onclick="calcNum('5')">5</div>
+            <div class="calc-btn" onclick="calcNum('6')">6</div>
+            <div class="calc-btn op" onclick="calcOp('+')">+</div>
+            
+            <div class="calc-btn" onclick="calcNum('1')">1</div>
+            <div class="calc-btn" onclick="calcNum('2')">2</div>
+            <div class="calc-btn" onclick="calcNum('3')">3</div>
+            <div class="calc-btn op" onclick="calcNum('00')">00</div>
+            
+            <div class="calc-btn" onclick="calcNum('0')">0</div>
+            <div class="calc-btn" onclick="calcNum('.')">.</div>
+            <div class="calc-btn equal" onclick="calcResult()">=</div>
+        </div>
+    </div>
+
     <!-- Custom Calendar Popup -->
     <div id="customCalendar" class="custom-calendar">
         <div class="calendar-header">

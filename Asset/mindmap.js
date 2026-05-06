@@ -194,8 +194,8 @@ const MM = {
     getNodeAt(wx, wy) {
         for (let i = this.nodes.length - 1; i >= 0; i--) {
             const n = this.nodes[i];
-            const hw = (n.type === 'group' ? this.GROUP_W : this.NODE_W) / 2;
-            const hh = (n.type === 'group' ? this.GROUP_H : this.NODE_H) / 2;
+            const hw = (n._w || (n.type === 'group' ? this.GROUP_W : this.NODE_W)) / 2;
+            const hh = (n._h || (n.type === 'group' ? this.GROUP_H : this.NODE_H)) / 2;
             if (wx >= n.x - hw && wx <= n.x + hw && wy >= n.y - hh && wy <= n.y + hh) return n;
         }
         return null;
@@ -536,6 +536,18 @@ const MM = {
         if (!this.ctx) return;
         const c = this.ctx;
         const r = this.canvas.getBoundingClientRect();
+        
+        // Pre-calculate node dimensions to prevent edge jumping
+        this.nodes.forEach(n => {
+            const isGroup = n.type === 'group';
+            const isRoot = !this.edges.some(e => e.to === n.id);
+            c.font = isRoot ? 'bold 14px Outfit, sans-serif' : 'bold 13px Outfit, sans-serif';
+            let maxW = 0;
+            n.label.split('\n').forEach(l => { maxW = Math.max(maxW, c.measureText(l).width); });
+            n._w = Math.max(isGroup ? this.GROUP_W : this.NODE_W, maxW + 40);
+            n._h = isGroup ? this.GROUP_H : this.NODE_H;
+        });
+
         c.clearRect(0, 0, r.width, r.height);
         c.save();
         c.translate(this.pan.x, this.pan.y);
@@ -572,10 +584,10 @@ const MM = {
         if (!from || !to) return;
         const dark = this.isDark();
         const isSel = this.selectedEdge && this.selectedEdge.from === edge.from && this.selectedEdge.to === edge.to;
-        const fw = (from.type === 'group' ? this.GROUP_W : this.NODE_W) / 2;
-        const fh = (from.type === 'group' ? this.GROUP_H : this.NODE_H) / 2;
-        const tw = (to.type === 'group' ? this.GROUP_W : this.NODE_W) / 2;
-        const th = (to.type === 'group' ? this.GROUP_H : this.NODE_H) / 2;
+        const fw = (from._w || (from.type === 'group' ? this.GROUP_W : this.NODE_W)) / 2;
+        const fh = (from._h || (from.type === 'group' ? this.GROUP_H : this.NODE_H)) / 2;
+        const tw = (to._w || (to.type === 'group' ? this.GROUP_W : this.NODE_W)) / 2;
+        const th = (to._h || (to.type === 'group' ? this.GROUP_H : this.NODE_H)) / 2;
 
         // Smart edge points based on relative position
         let x1, y1, x2, y2;
@@ -651,8 +663,8 @@ const MM = {
     drawNode(c, node) {
         const dark = this.isDark();
         const isGroup = node.type === 'group';
-        const w = isGroup ? this.GROUP_W : this.NODE_W;
-        const h = isGroup ? this.GROUP_H : this.NODE_H;
+        const w = node._w || (isGroup ? this.GROUP_W : this.NODE_W);
+        const h = node._h || (isGroup ? this.GROUP_H : this.NODE_H);
         const x = node.x - w / 2, y = node.y - h / 2;
         const r = isGroup ? 14 : 12;
         const isSel = this.selected && this.selected.id === node.id;
