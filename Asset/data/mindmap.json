@@ -434,6 +434,16 @@
           "color": 0,
           "memo": "",
           "customColor": null
+        },
+        {
+          "id": 9,
+          "type": "node",
+          "label": "New Node",
+          "x": -397.4611362207226,
+          "y": 113.96981345332873,
+          "color": 1,
+          "memo": "",
+          "customColor": null
         }
       ],
       "edges": [
@@ -478,9 +488,15 @@
           "to": 8,
           "label": "",
           "lineStyle": "dashed"
+        },
+        {
+          "from": 1,
+          "to": 9,
+          "label": "",
+          "lineStyle": "dashed"
         }
       ],
-      "nextId": 9
+      "nextId": 10
     }
   ]
 }
