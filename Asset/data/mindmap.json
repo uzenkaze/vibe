@@ -199,10 +199,10 @@
           "id": 13,
           "type": "node",
           "label": "New Node",
-          "x": -1738.359684693869,
-          "y": -1347.9521788831987,
+          "x": -1713.2840268737343,
+          "y": -1329.3884758944075,
           "color": 3,
-          "memo": "",
+          "memo": "Memo add",
           "customColor": null,
           "renderLines": [
             {
@@ -360,20 +360,24 @@
           "id": 1,
           "type": "group",
           "label": "New Topic",
-          "x": -393.5,
-          "y": -167,
+          "x": -444.97472188400604,
+          "y": -160.76638630461383,
           "color": 0,
-          "memo": ""
+          "memo": "",
+          "_w": 140,
+          "_h": 60
         },
         {
           "id": 2,
           "type": "node",
-          "label": "New Node",
-          "x": -133.5,
-          "y": -167,
+          "label": "텍스트를 길게 입력할 수 있는데 몇글자가 입력되는지",
+          "x": -148.55652321786792,
+          "y": -325.5953778948756,
           "color": 1,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 317.9397277832031,
+          "_h": 56
         },
         {
           "id": 3,
@@ -383,7 +387,9 @@
           "y": -167,
           "color": 2,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 4,
@@ -393,7 +399,9 @@
           "y": -122,
           "color": 2,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 5,
@@ -403,7 +411,9 @@
           "y": -77,
           "color": 3,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 6,
@@ -413,7 +423,9 @@
           "y": -32,
           "color": 4,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 7,
@@ -423,7 +435,9 @@
           "y": 13,
           "color": 5,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         },
         {
           "id": 8,
@@ -433,7 +447,21 @@
           "y": 58,
           "color": 0,
           "memo": "",
-          "customColor": null
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
+        },
+        {
+          "id": 9,
+          "type": "node",
+          "label": "New Node",
+          "x": -397.4611362207226,
+          "y": 113.96981345332873,
+          "color": 1,
+          "memo": "",
+          "customColor": null,
+          "_w": 160,
+          "_h": 56
         }
       ],
       "edges": [
@@ -478,9 +506,15 @@
           "to": 8,
           "label": "",
           "lineStyle": "dashed"
+        },
+        {
+          "from": 1,
+          "to": 9,
+          "label": "",
+          "lineStyle": "dashed"
         }
       ],
-      "nextId": 9
+      "nextId": 10
     }
   ]
 }
