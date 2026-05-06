@@ -623,6 +623,177 @@
         html.dark .toast-popup {
             background: var(--accent-blue);
         }
+
+        /* Floating Calculator */
+        .floating-calc-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            z-index: 9999;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--accent-blue);
+        }
+
+        .floating-calc-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(93, 107, 248, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        html.dark .floating-calc-btn {
+            background: rgba(30, 30, 30, 0.9);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calculator-layer {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            transform-origin: bottom right;
+            animation: calcPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes calcPop {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        html.dark .calculator-layer {
+            background: rgba(28, 29, 32, 0.95);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calc-display {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            text-align: right;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            user-select: none;
+        }
+
+        html.dark .calc-display {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .calc-formula {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            min-height: 20px;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        .calc-current {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            word-break: break-all;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.02);
+            color: var(--text-primary);
+            user-select: none;
+        }
+
+        .calc-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
+            transform: scale(1.05);
+        }
+
+        .calc-btn.op {
+            background: rgba(93, 107, 248, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .calc-btn.op:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .calc-btn.equal {
+            background: #1C1D20;
+            color: white;
+            grid-column: span 2;
+        }
+
+        html.dark .calc-btn.equal {
+            background: #FFFFFF;
+            color: #1C1D20;
+        }
+
+        .calc-btn.clear {
+            color: var(--accent-red);
+            background: rgba(255, 59, 48, 0.05);
+        }
+
+        html.dark .calc-btn {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        html.dark .calc-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px 15px 5px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .calc-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
     </style>
 </head>
 
@@ -784,6 +955,159 @@
         </div>
 
         <script>
+            // --- Calculator Logic ---
+            let calcState = {
+                current: '0',
+                formula: '',
+                isNewNumber: true,
+                operator: null,
+                prevValue: null
+            };
+
+            function toggleCalculator() {
+                const layer = document.getElementById('calculatorLayer');
+                const isVisible = layer.style.display === 'flex';
+                layer.style.display = isVisible ? 'none' : 'flex';
+                if (!isVisible) {
+                    calcClear();
+                    initCalcDraggable();
+                }
+            }
+
+            function calcNum(n) {
+                if (calcState.isNewNumber) {
+                    calcState.current = n === '00' ? '0' : n;
+                    calcState.isNewNumber = false;
+                } else {
+                    if (n === '.' && calcState.current.includes('.')) return;
+                    calcState.current += n;
+                }
+                updateCalcDisplay();
+            }
+
+            function calcOp(op) {
+                const val = parseFloat(calcState.current.replace(/,/g, ''));
+                if (calcState.prevValue !== null && !calcState.isNewNumber) {
+                    calcResult();
+                    calcState.prevValue = parseFloat(calcState.current.replace(/,/g, ''));
+                } else {
+                    calcState.prevValue = val;
+                }
+                calcState.operator = op;
+                calcState.formula = `${calcState.prevValue} ${op.replace('*', '×').replace('/', '÷')} `;
+                calcState.isNewNumber = true;
+                updateCalcDisplay();
+            }
+
+            function calcResult() {
+                if (calcState.operator === null || calcState.isNewNumber) return;
+                const currentVal = parseFloat(calcState.current.replace(/,/g, ''));
+                let result = 0;
+                switch (calcState.operator) {
+                    case '+': result = calcState.prevValue + currentVal; break;
+                    case '-': result = calcState.prevValue - currentVal; break;
+                    case '*': result = calcState.prevValue * currentVal; break;
+                    case '/': result = calcState.prevValue / currentVal; break;
+                }
+                calcState.formula += `${currentVal} =`;
+                calcState.current = String(Math.round(result * 100) / 100);
+                calcState.prevValue = null;
+                calcState.operator = null;
+                calcState.isNewNumber = true;
+                updateCalcDisplay();
+            }
+
+            function calcClear() {
+                calcState = { current: '0', formula: '', isNewNumber: true, operator: null, prevValue: null };
+                updateCalcDisplay();
+            }
+
+            function calcDelete() {
+                if (calcState.isNewNumber) return;
+                calcState.current = calcState.current.slice(0, -1);
+                if (calcState.current === '' || calcState.current === '-') calcState.current = '0';
+                updateCalcDisplay();
+            }
+
+            function updateCalcDisplay() {
+                const display = document.getElementById('calcDisplay');
+                const formula = document.getElementById('calcFormula');
+                
+                const parts = calcState.current.split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                display.innerText = parts.join('.');
+                formula.innerText = calcState.formula;
+
+                if (display.innerText.length > 12) display.style.fontSize = '1.3rem';
+                else if (display.innerText.length > 9) display.style.fontSize = '1.5rem';
+                else display.style.fontSize = '1.8rem';
+            }
+
+            function initCalcDraggable() {
+                const layer = document.getElementById('calculatorLayer');
+                const header = document.getElementById('calcHeader');
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+                header.onmousedown = dragMouseDown;
+
+                function dragMouseDown(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = closeDragElement;
+                    document.onmousemove = elementDrag;
+                }
+
+                function elementDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    layer.style.top = (layer.offsetTop - pos2) + "px";
+                    layer.style.left = (layer.offsetLeft - pos1) + "px";
+                    layer.style.bottom = 'auto';
+                    layer.style.right = 'auto';
+                }
+
+                function closeDragElement() {
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                }
+            }
+
+            // --- Calculator Keyboard Support ---
+            document.addEventListener('keydown', function(e) {
+                const layer = document.getElementById('calculatorLayer');
+                if (!layer || layer.style.display !== 'flex') return;
+
+                const key = e.key;
+                if (/^[0-9]$/.test(key)) {
+                    calcNum(key);
+                } else if (key === '.') {
+                    calcNum('.');
+                } else if (key === '+' || key === '-') {
+                    calcOp(key);
+                } else if (key === '*' || key.toLowerCase() === 'x') {
+                    calcOp('*');
+                } else if (key === '/') {
+                    e.preventDefault(); // prevent quick search in some browsers
+                    calcOp('/');
+                } else if (key === 'Enter' || key === '=') {
+                    e.preventDefault();
+                    calcResult();
+                } else if (key === 'Backspace') {
+                    calcDelete();
+                } else if (key.toLowerCase() === 'c') {
+                    calcClear();
+                } else if (key === 'Escape') {
+                    toggleCalculator();
+                }
+            });
+
+
             let state = { sections: { installment: [] } };
             let isSaving = false;
             const CARDS = ['국민', '신한', '롯데', '현대', '삼성', '우리', '농협', '하나'];
@@ -1580,6 +1904,74 @@
             <div class="calendar-grid"></div>
         </div>
         <div id="toastPopup" class="toast-popup"></div>
+
+        <!-- Floating Calculator -->
+        <div class="floating-calc-btn" onclick="toggleCalculator()" title="계산기 열기">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                <line x1="8" y1="6" x2="16" y2="6"></line>
+                <line x1="16" y1="14" x2="16" y2="18"></line>
+                <path d="M16 10h.01"></path>
+                <path d="M12 10h.01"></path>
+                <path d="M8 10h.01"></path>
+                <path d="M12 14h.01"></path>
+                <path d="M8 14h.01"></path>
+                <path d="M12 18h.01"></path>
+                <path d="M8 18h.01"></path>
+            </svg>
+        </div>
+
+        <div class="calculator-layer" id="calculatorLayer">
+            <div class="calc-header" id="calcHeader">
+                <div class="calc-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                    </svg>
+                    Calculator
+                </div>
+                <button onclick="toggleCalculator()" class="opacity-50 hover:opacity-100 transition-opacity">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="calc-display">
+                <div class="calc-formula" id="calcFormula"></div>
+                <div class="calc-current" id="calcDisplay">0</div>
+            </div>
+            <div class="calc-grid">
+                <div class="calc-btn clear" onclick="calcClear()">C</div>
+                <div class="calc-btn op" onclick="calcOp('/')">÷</div>
+                <div class="calc-btn op" onclick="calcOp('*')">×</div>
+                <div class="calc-btn op" onclick="calcDelete()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                        <line x1="18" y1="9" x2="12" y2="15"></line>
+                        <line x1="12" y1="9" x2="18" y2="15"></line>
+                    </svg>
+                </div>
+                
+                <div class="calc-btn" onclick="calcNum('7')">7</div>
+                <div class="calc-btn" onclick="calcNum('8')">8</div>
+                <div class="calc-btn" onclick="calcNum('9')">9</div>
+                <div class="calc-btn op" onclick="calcOp('-')">-</div>
+                
+                <div class="calc-btn" onclick="calcNum('4')">4</div>
+                <div class="calc-btn" onclick="calcNum('5')">5</div>
+                <div class="calc-btn" onclick="calcNum('6')">6</div>
+                <div class="calc-btn op" onclick="calcOp('+')">+</div>
+                
+                <div class="calc-btn" onclick="calcNum('1')">1</div>
+                <div class="calc-btn" onclick="calcNum('2')">2</div>
+                <div class="calc-btn" onclick="calcNum('3')">3</div>
+                <div class="calc-btn op" onclick="calcNum('00')">00</div>
+                
+                <div class="calc-btn" onclick="calcNum('0')">0</div>
+                <div class="calc-btn" onclick="calcNum('.')">.</div>
+                <div class="calc-btn equal" onclick="calcResult()">=</div>
+            </div>
+        </div>
         
         <!-- Initialization Script -->
         <script>
