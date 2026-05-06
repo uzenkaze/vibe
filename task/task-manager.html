@@ -1055,13 +1055,18 @@
         }
 
         .card-title {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 800;
-            margin-bottom: 1rem;
-            white-space: nowrap;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+            padding-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
             letter-spacing: -0.02em;
+            word-break: break-word;
         }
 
         .card-footer {
@@ -5419,15 +5424,49 @@
             const displayTasks = filtered.slice(0, visibleCount);
             container.innerHTML = displayTasks.map(t => {
                 const statusMap = { todo: '진행전', progress: '진행중', hold: '보류', done: '완료' };
+                
+                // 배포 상태 계산 로직
+                const today = new Date().toISOString().split('T')[0];
+                let devDate = (t.dev_deploy_date || '').split('(')[0].trim();
+                let prodDate = (t.deploy_date || '').split('(')[0].trim();
+                
+                let devStatus = '개발배포전';
+                if (devDate && devDate < today) devStatus = '개발배포완료';
+                
+                let prodStatus = '운영배포전';
+                if (prodDate && prodDate < today) prodStatus = '운영배포완료';
+
+                let devStr = devStatus === '개발배포완료' ? '배포완료' : '배포전';
+                let prodStr = prodStatus === '운영배포완료' ? '배포완료' : '배포전';
+
                 return `
                     <div class="task-card-apple ${t.status}" id="card-${t.id}" onclick="showDetail('${t.id}')">
                         <div class="card-header-info">#${t.task_no || '-'} [${t.work_no || '-'}]</div>
                         <div class="card-title" title="${t.title}">${t.title}</div>
                         <div class="card-dates">
-                            <span>📅 접수: ${(t.receive_date || '-').split('(')[0].trim()}</span>
-                            <span>🚀 배포: ${(t.deploy_date || '-').split('(')[0].trim()}</span>
+                            <span>💻 개발배포: ${(t.dev_deploy_date || '-').split('(')[0].trim()}</span>
+                            <span>🚀 운영배포: ${(t.deploy_date || '-').split('(')[0].trim()}</span>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-deploy-status" style="display: flex; align-items: center; gap: 6px; margin-top: 10px;">
+                            <div style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; background: ${devStatus === '개발배포완료' ? 'rgba(52, 199, 89, 0.1)' : 'rgba(142, 142, 147, 0.08)'}; color: ${devStatus === '개발배포완료' ? '#34c759' : '#8e8e93'}; border: 1px solid ${devStatus === '개발배포완료' ? 'rgba(52, 199, 89, 0.2)' : 'transparent'}; letter-spacing: -0.02em;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    ${devStatus === '개발배포완료' ? '<polyline points="20 6 9 17 4 12"></polyline>' : '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>'}
+                                </svg>
+                                개발(${devStr})
+                            </div>
+                            
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d1d6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+
+                            <div style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; background: ${prodStatus === '운영배포완료' ? 'rgba(0, 113, 227, 0.1)' : 'rgba(142, 142, 147, 0.08)'}; color: ${prodStatus === '운영배포완료' ? '#0071e3' : '#8e8e93'}; border: 1px solid ${prodStatus === '운영배포완료' ? 'rgba(0, 113, 227, 0.2)' : 'transparent'}; letter-spacing: -0.02em;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    ${prodStatus === '운영배포완료' ? '<polyline points="20 6 9 17 4 12"></polyline>' : '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>'}
+                                </svg>
+                                운영(${prodStr})
+                            </div>
+                        </div>
+                        <div class="card-footer" style="margin-top: 14px;">
                             <div class="card-badge ${t.status}">${statusMap[t.status] || t.status}</div>
                             <div class="card-actions">
                                  <button class="btn-mini" onclick="event.stopPropagation(); openModal('${t.id}')">수정</button>

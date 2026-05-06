@@ -2992,6 +2992,7 @@
                 }
             })();
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <script>
@@ -3148,7 +3149,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen" style="display: none;"
         onclick="if(event.target === this) hideLoginScreen()">
-        <div class="login-modal-container" onclick="event.stopPropagation()">
+        <div class="login-modal-container" onclick="event.stopPropagation()" style="max-width:440px; overflow-y:auto; max-height:92vh;">
             <div class="modal-corner-dot dot-tl"></div>
             <div class="modal-corner-dot dot-tr"></div>
             <div class="modal-corner-dot dot-bl"></div>
@@ -3156,80 +3157,130 @@
 
             <div class="login-modal-logo">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                    <path d="M12 3L20 12L12 21L4 12L12 3Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M12 3V21" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
                     <path d="M4 12H20" stroke="white" stroke-width="0.5" stroke-dasharray="1 2" />
                 </svg>
             </div>
-            <div class="login-modal-title">Login</div>
 
-            <div id="loginFormContainer" style="width: 100%;">
-                <div id="loginError"
-                    style="color: #ff4d4d; margin-bottom: 1rem; display: none; font-size: 0.85rem; text-align: center;">
-                    아이디 또는 비밀번호가 일치하지 않습니다.
-                </div>
-
-                <div class="login-input">
-                    <span class="login-input-label">Email or ID</span>
-                    <input type="text" id="loginId" placeholder="Your email address or ID"
-                        onkeypress="if(event.key === 'Enter') attemptLogin()">
-                </div>
-
-                <div class="login-input">
-                    <span class="login-input-label">Password</span>
-                    <input type="password" id="loginPw" placeholder="Your password"
-                        onkeypress="if(event.key === 'Enter') attemptLogin()">
-                </div>
-
-                <div class="flex items-center gap-2 mb-4" style="margin-top: 0.5rem; display: none;">
-                    <input type="checkbox" id="rememberId" checked>
-                </div>
-
-                <button class="btn-hans btn-hans-primary" onclick="attemptLogin()" style="width: 100%; margin-top: 1rem; padding: 1rem;">
-                    Continue
-                </button>
-
+            <!-- 탭 스위처 (로그인/회원가입) - 계정이 있을 때만 표시 -->
+            <div id="loginTabSwitcher" style="display:none; gap:4px; width:100%; margin-bottom:1.5rem; background:rgba(255,255,255,0.06); border-radius:14px; padding:4px;">
+                <button id="tabSignIn" onclick="switchLoginTab('signin')" style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:rgba(255,255,255,0.12); color:#fff; font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">로그인</button>
+                <button id="tabSignUp" onclick="switchLoginTab('signup')" style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:transparent; color:rgba(255,255,255,0.4); font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">회원가입</button>
             </div>
 
-            <!-- Initial Setup Screen within the modal -->
-            <div id="adminCreateContainer" style="display: none; width: 100%;">
-                <div style="margin-bottom: 1.5rem;">
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; text-align: center;">기존 데이터를 가져오거나 시스템 초기
-                        설정을 진행하세요.</p>
+            <!-- [A] 로그인 폼 -->
+            <div id="loginFormContainer" style="width:100%;">
+                <div id="loginError" style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;"></div>
+                <div class="login-input">
+                    <span class="login-input-label">아이디</span>
+                    <input type="text" id="loginId" placeholder="아이디 입력" onkeypress="if(event.key==='Enter') attemptLogin()">
+                </div>
+                <div class="login-input">
+                    <span class="login-input-label">비밀번호</span>
+                    <input type="password" id="loginPw" placeholder="비밀번호 입력" onkeypress="if(event.key==='Enter') attemptLogin()">
+                </div>
+                <div id="loginOTPContainer" class="login-input" style="display:none; margin-top:0.75rem;">
+                    <span class="login-input-label">TOTP 인증 코드 (스마트폰 앱)</span>
+                    <input type="text" id="loginOTP" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;" onkeypress="if(event.key==='Enter') attemptLogin()">
+                </div>
+                <div style="margin-top:0.5rem; display:none;">
+                    <input type="checkbox" id="rememberId" checked>
+                </div>
+                <button class="btn-hans btn-hans-primary" onclick="attemptLogin()" style="width:100%; margin-top:1rem; padding:1rem;">로그인</button>
+            </div>
+
+            <!-- [B] 회원가입 폼 -->
+            <div id="signupContainer" style="display:none; width:100%;">
+                <div id="signupError" style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;"></div>
+
+                <!-- Step 1: 기본 정보 -->
+                <div id="signupStep1">
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:1rem; letter-spacing:0.05em;">STEP 1 / 2 — 기본 정보 입력</p>
+                    <div class="login-input">
+                        <span class="login-input-label">이름</span>
+                        <input type="text" id="signupName" placeholder="실명 입력">
+                    </div>
+                    <div class="login-input">
+                        <span class="login-input-label">아이디</span>
+                        <input type="text" id="signupUserId" placeholder="사용할 아이디 (영문+숫자)">
+                    </div>
+                    <div class="login-input">
+                        <span class="login-input-label">비밀번호</span>
+                        <input type="password" id="signupPw" placeholder="비밀번호 (6자 이상)">
+                    </div>
+                    <div class="login-input">
+                        <span class="login-input-label">비밀번호 확인</span>
+                        <input type="password" id="signupPwConfirm" placeholder="비밀번호 재입력">
+                    </div>
+                    <button class="btn-hans btn-hans-primary" onclick="goToSignupStep2()" style="width:100%; margin-top:1rem; padding:1rem;">다음 → 본인인증 (TOTP)</button>
                 </div>
 
-                <div
-                    style="margin-bottom: 1.5rem; padding: 1.25rem; border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; text-align: center;">
-                    <button class="login-btn" style="background: transparent !important;" onclick="openGitHubModal()">☁️
-                        Cloud에서 가져오기</button>
+                <!-- Step 2: TOTP 본인인증 -->
+                <div id="signupStep2" style="display:none; text-align:center;">
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:0.75rem; letter-spacing:0.05em;">STEP 2 / 2 — 본인인증</p>
+                    <p style="color:rgba(255,255,255,0.7); font-size:0.82rem; margin-bottom:1rem; line-height:1.7;">
+                        📱 <strong style="color:#fff;">Google Authenticator</strong> 또는 <strong style="color:#fff;">Authy</strong> 앱으로<br>아래 QR코드를 스캔 후 6자리 코드를 입력하세요.
+                    </p>
+                    <div style="margin:0 auto 0.75rem; width:170px; height:170px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                        <div id="signupQrImg"></div>
+                    </div>
+                    <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;" id="signupSecretDisplay"></p>
+                    <div class="login-input" style="margin-top:0.75rem;">
+                        <span class="login-input-label">인증 코드 6자리</span>
+                        <input type="text" id="signupOTPCode" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:0.4em; font-size:1.4rem; font-weight:700;" onkeypress="if(event.key==='Enter') verifySignupOTP()">
+                    </div>
+                    <button class="btn-hans btn-hans-primary" onclick="verifySignupOTP()" style="width:100%; margin-top:0.75rem; padding:1rem;">인증 완료 → 계정 생성</button>
+                    <button onclick="backToSignupStep1()" style="background:transparent; border:none; color:rgba(255,255,255,0.35); font-size:0.8rem; margin-top:0.5rem; cursor:pointer; width:100%; padding:0.4rem;">← 이전으로</button>
+                </div>
+            </div>
+
+            <!-- [C] 승인 대기 화면 -->
+            <div id="pendingContainer" style="display:none; width:100%; text-align:center; padding:1rem 0;">
+                <div style="font-size:3rem; margin-bottom:1rem;">⏳</div>
+                <p style="color:#fff; font-size:1.05rem; font-weight:700; margin-bottom:0.5rem;">승인 대기 중</p>
+                <p style="color:rgba(255,255,255,0.55); font-size:0.85rem; line-height:1.7;">계정이 생성되었습니다.<br>관리자 승인 후 로그인이 가능합니다.</p>
+                <button onclick="hideLoginScreen()" style="margin-top:1.5rem; background:transparent; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.7); padding:0.75rem 2rem; border-radius:12px; cursor:pointer; font-size:0.9rem; font-weight:600;">닫기</button>
+            </div>
+
+            <!-- [D] 최초 관리자 설정 (계정 없을 때) -->
+            <div id="adminCreateContainer" style="display:none; width:100%;">
+                <p style="color:rgba(255,255,255,0.6); font-size:0.85rem; text-align:center; margin-bottom:1.25rem; line-height:1.6;">최초 관리자 계정 설정<br><span style="font-size:0.75rem; opacity:0.6;">기존 데이터가 있으면 Cloud에서 먼저 불러오세요.</span></p>
+                <div style="margin-bottom:1rem; padding:0.9rem; border:1px dashed rgba(255,255,255,0.15); border-radius:12px; text-align:center;">
+                    <button class="login-btn" style="background:transparent !important;" onclick="openGitHubModal()">☁️ Cloud에서 가져오기</button>
                 </div>
 
-                <div id="setupKeySection" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- 마스터키 인증 -->
+                <div id="setupKeySection" style="display:flex; flex-direction:column; gap:0.75rem;">
                     <div class="login-input">
-                        <span class="login-input-label">마스터 액세스 키</span>
-                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력"
-                            onkeypress="if(event.key === 'Enter') verifySetupKey()">
+                        <span class="login-input-label">시스템 마스터 키</span>
+                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력" onkeypress="if(event.key==='Enter') verifySetupKey()">
                     </div>
-                    <button class="login-btn" style="background: #fff !important; color: #000 !important;"
-                        onclick="verifySetupKey()">시스템 인증</button>
+                    <button class="login-btn" style="background:#fff !important; color:#000 !important;" onclick="verifySetupKey()">시스템 인증</button>
                 </div>
 
-                <div id="adminFieldsSection"
-                    style="display: none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem; flex-direction: column; gap: 0.75rem;">
-                    <div class="login-input">
-                        <input type="text" id="adminName" placeholder="관리자 이름">
+                <!-- 관리자 기본 정보 -->
+                <div id="adminFieldsSection" style="display:none; border-top:1px solid rgba(255,255,255,0.1); padding-top:1.25rem; margin-top:1.25rem; flex-direction:column; gap:0.75rem;">
+                    <div id="adminStep1">
+                        <div class="login-input"><input type="text" id="adminName" placeholder="관리자 이름"></div>
+                        <div class="login-input"><input type="text" id="adminId" placeholder="관리자 아이디"></div>
+                        <div class="login-input"><input type="password" id="adminPw" placeholder="비밀번호 (6자 이상)"></div>
+                        <button class="btn-hans btn-hans-primary" onclick="goToAdminTOTP()" style="width:100%; padding:1rem; margin-top:0.5rem;">다음 → 본인인증 (TOTP)</button>
                     </div>
-                    <div class="login-input">
-                        <input type="text" id="adminId" placeholder="관리자 아이디">
+                    <!-- 관리자 TOTP 설정 -->
+                    <div id="adminStep2" style="display:none; text-align:center;">
+                        <p style="color:rgba(255,255,255,0.7); font-size:0.82rem; margin-bottom:0.75rem; line-height:1.6;">📱 Google Authenticator 앱으로 QR 스캔 후 코드 입력</p>
+                        <div style="margin:0 auto 0.5rem; width:150px; height:150px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                            <div id="adminQrImg"></div>
+                        </div>
+                        <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;" id="adminSecretDisplay"></p>
+                        <div class="login-input" style="margin-top:0.75rem;">
+                            <span class="login-input-label">인증 코드 6자리</span>
+                            <input type="text" id="adminOTPCode" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;" onkeypress="if(event.key==='Enter') createAdminAccount()">
+                        </div>
+                        <button class="btn-hans btn-hans-secondary" onclick="createAdminAccount()" style="width:100%; padding:1rem; margin-top:0.5rem;">관리자 계정 생성 완료</button>
                     </div>
-                    <div class="login-input">
-                        <input type="password" id="adminPw" placeholder="비밀번호 (마스터키로 사용)">
-                    </div>
-                    <button class="btn-hans btn-hans-secondary" style="width: 100%;"
-                        onclick="createAdminAccount()">계정 생성</button>
                 </div>
-
             </div>
         </div>
     </div>
@@ -3485,13 +3536,12 @@
 
 
 
-    <!-- Account Modal -->
+    <!-- Account Modal (Admin Approval View) -->
     <div class="modal-overlay" id="accountModal">
         <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
-                <span class="modal-title">계정 등록 및 관리</span>
+                <span class="modal-title">계정 등록 및 관리 (관리자 전용)</span>
                 <div style="display: flex; gap: 0.75rem; align-items: center;">
-                    <button class="btn-hans btn-hans-secondary" onclick="addAccountRow()">계정 추가</button>
                     <button class="btn-close" onclick="closeAccountModal()">&times;</button>
                 </div>
             </div>
@@ -3499,18 +3549,19 @@
                 <table style="font-size: 0.9rem;">
                     <thead>
                         <tr>
-                            <th style="width: 200px;">사용자 이름</th>
-                            <th style="width: 200px;">아이디 (ID)</th>
-                            <th style="width: 200px;">비밀번호 (PW)</th>
-                            <th style="width: 250px;">비고</th>
+                            <th style="width: 150px;">이름</th>
+                            <th style="width: 150px;">아이디 (ID)</th>
+                            <th style="width: 120px;">권한</th>
+                            <th style="width: 150px;">가입일시</th>
+                            <th style="width: 150px;">상태</th>
+                            <th style="width: 180px;">관리</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-accounts"></tbody>
                 </table>
             </div>
             <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.85rem; color: var(--text-secondary);">해당 데이터는 브라우저 내부(localStorage)에 안전하게 별도
-                    보관됩니다.</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">계정 정보는 GitHub 저장소에 암호화되어 백업됩니다.</span>
             </div>
         </div>
     </div>
@@ -5130,27 +5181,73 @@
             tbody.innerHTML = '';
             accountsData.forEach((acc, idx) => {
                 const tr = document.createElement('tr');
+                
+                // 가입일시 포맷팅
+                let dateStr = '-';
+                if(acc.createdAt) {
+                    const d = new Date(acc.createdAt);
+                    dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+                }
+
+                // 권한 배지
+                let roleBadge = acc.role === 'admin' 
+                    ? '<span style="background:rgba(255,59,48,0.1); color:#ff3b30; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">관리자</span>'
+                    : '<span style="background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:2px 8px; border-radius:12px; font-size:0.75rem;">일반</span>';
+
+                // 상태 배지
+                let statusBadge = '';
+                if(acc.approved) {
+                    statusBadge = '<span style="color:#10b981; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>승인됨</span>';
+                } else {
+                    statusBadge = '<span style="color:#f59e0b; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;"></span>승인 대기</span>';
+                }
+
+                // 관리 버튼 (승인/반려/삭제)
+                let actionBtns = '';
+                if(acc.role === 'admin') {
+                    actionBtns = `<span style="color:rgba(255,255,255,0.3); font-size:0.8rem;">관리 불가</span>`;
+                } else if (!acc.approved) {
+                    actionBtns = `
+                        <button onclick="approveUser(${idx})" style="background:#10b981; color:#fff; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600;">승인</button>
+                        <button onclick="rejectUser(${idx})" style="background:rgba(255,59,48,0.1); color:#ff3b30; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin-left:4px;">거절</button>
+                    `;
+                } else {
+                    actionBtns = `
+                        <button onclick="deleteAccountRow(${idx})" style="background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem;">삭제</button>
+                    `;
+                }
+
                 tr.innerHTML = `
-                    <td><input type="text" value="${acc.site || ''}" onchange="accountsData[${idx}].site = this.value; saveAccounts();" placeholder="ex) Google"></td>
-                    <td><input type="text" value="${acc.userid || ''}" onchange="accountsData[${idx}].userid = this.value; saveAccounts();"></td>
-                    <td><input type="text" value="${acc.password || ''}" onchange="accountsData[${idx}].password = this.value; saveAccounts();"></td>
-                    <td style="display: flex; align-items: center; gap: 8px;">
-                        <input type="text" style="flex: 1;" value="${acc.remarks || ''}" onchange="accountsData[${idx}].remarks = this.value; saveAccounts();">
-                        <button class="btn btn-delete" onclick="deleteAccountRow(${idx})">&times;</button>
-                    </td>
+                    <td><div style="font-weight:600;">${acc.site || '-'}</div></td>
+                    <td><div style="color:rgba(255,255,255,0.7);">${acc.userid || '-'}</div></td>
+                    <td>${roleBadge}</td>
+                    <td><div style="font-size:0.8rem; color:rgba(255,255,255,0.5);">${dateStr}</div></td>
+                    <td>${statusBadge}</td>
+                    <td><div style="display:flex; align-items:center; gap:4px;">${actionBtns}</div></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function addAccountRow() {
-            accountsData.push({ site: '', userid: '', password: '', remarks: '' });
-            saveAccounts();
-            renderAccounts();
+        function approveUser(idx) {
+            if (confirm(`'${accountsData[idx].site}' 사용자의 로그인을 승인하시겠습니까?`)) {
+                accountsData[idx].approved = true;
+                accountsData[idx].remarks = '승인 완료';
+                saveAccounts();
+                renderAccounts();
+            }
+        }
+
+        function rejectUser(idx) {
+            if (confirm(`'${accountsData[idx].site}' 사용자의 가입을 거절(삭제)하시겠습니까?`)) {
+                accountsData.splice(idx, 1);
+                saveAccounts();
+                renderAccounts();
+            }
         }
 
         function deleteAccountRow(idx) {
-            if (confirm('해당 계정 정보를 삭제하시겠습니까?')) {
+            if (confirm('해당 계정을 영구적으로 삭제하시겠습니까? (삭제 후 복구 불가)')) {
                 accountsData.splice(idx, 1);
                 saveAccounts();
                 renderAccounts();
@@ -5643,6 +5740,187 @@
             return null;
         }
 
+        // --- TOTP Logic ---
+        function generateTOTPSecret() {
+            const array = new Uint8Array(10);
+            crypto.getRandomValues(array);
+            const base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            let secret = "";
+            for (let i = 0; i < array.length; i++) {
+                secret += base32chars[array[i] % 32];
+            }
+            return secret;
+        }
+
+        function base32ToHex(base32) {
+            const base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            let bits = "";
+            let hex = "";
+            for (let i = 0; i < base32.length; i++) {
+                const val = base32chars.indexOf(base32.charAt(i).toUpperCase());
+                if(val === -1) continue;
+                bits += val.toString(2).padStart(5, '0');
+            }
+            for (let i = 0; i + 4 <= bits.length; i += 4) {
+                const chunk = bits.substr(i, 4);
+                hex += parseInt(chunk, 2).toString(16);
+            }
+            return hex;
+        }
+
+        async function getTOTPCode(secret) {
+            const keyHex = base32ToHex(secret);
+            if(keyHex.length % 2 !== 0) return null;
+            const keyBytes = new Uint8Array(keyHex.length / 2);
+            for (let i = 0; i < keyHex.length; i += 2) {
+                keyBytes[i / 2] = parseInt(keyHex.substr(i, 2), 16);
+            }
+            const epoch = Math.round(new Date().getTime() / 1000.0);
+            const time = Math.floor(epoch / 30);
+            let timeHex = time.toString(16).padStart(16, '0');
+            const timeBytes = new Uint8Array(8);
+            for (let i = 0; i < 8; i++) {
+                timeBytes[i] = parseInt(timeHex.substr(i * 2, 2), 16);
+            }
+            const key = await crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]);
+            const signature = await crypto.subtle.sign("HMAC", key, timeBytes);
+            const hmac = new Uint8Array(signature);
+            const offset = hmac[hmac.length - 1] & 0x0f;
+            const binary =
+                ((hmac[offset] & 0x7f) << 24) |
+                ((hmac[offset + 1] & 0xff) << 16) |
+                ((hmac[offset + 2] & 0xff) << 8) |
+                (hmac[offset + 3] & 0xff);
+            const otp = binary % 1000000;
+            return otp.toString().padStart(6, '0');
+        }
+
+        // --- Login UI Handlers ---
+        function switchLoginTab(tab) {
+            document.getElementById('loginFormContainer').style.display = tab === 'signin' ? 'block' : 'none';
+            document.getElementById('signupContainer').style.display = tab === 'signup' ? 'block' : 'none';
+            document.getElementById('pendingContainer').style.display = 'none';
+            document.getElementById('adminCreateContainer').style.display = 'none';
+            
+            const btnSignIn = document.getElementById('tabSignIn');
+            const btnSignUp = document.getElementById('tabSignUp');
+            if (tab === 'signin') {
+                btnSignIn.style.background = 'rgba(255,255,255,0.12)';
+                btnSignIn.style.color = '#fff';
+                btnSignUp.style.background = 'transparent';
+                btnSignUp.style.color = 'rgba(255,255,255,0.4)';
+            } else {
+                btnSignUp.style.background = 'rgba(255,255,255,0.12)';
+                btnSignUp.style.color = '#fff';
+                btnSignIn.style.background = 'transparent';
+                btnSignIn.style.color = 'rgba(255,255,255,0.4)';
+            }
+        }
+
+        let tempSignupSecret = '';
+
+        function goToSignupStep2() {
+            const name = document.getElementById('signupName').value.trim();
+            const id = document.getElementById('signupUserId').value.trim();
+            const pw = document.getElementById('signupPw').value.trim();
+            const pw2 = document.getElementById('signupPwConfirm').value.trim();
+            
+            if(!name || !id || !pw) { alert('모든 정보를 입력해주세요.'); return; }
+            if(pw !== pw2) { alert('비밀번호가 일치하지 않습니다.'); return; }
+            if(accountsData.some(a => a.userid === id)) { alert('이미 존재하는 아이디입니다.'); return; }
+
+            tempSignupSecret = generateTOTPSecret();
+            document.getElementById('signupSecretDisplay').innerText = "복구 키: " + tempSignupSecret;
+            document.getElementById('signupQrImg').innerHTML = '';
+            
+            // Google Authenticator URI Format
+            const uri = `otpauth://totp/WealthManager:${id}?secret=${tempSignupSecret}&issuer=WealthManager`;
+            new QRCode(document.getElementById('signupQrImg'), { text: uri, width: 160, height: 160, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+
+            document.getElementById('signupStep1').style.display = 'none';
+            document.getElementById('signupStep2').style.display = 'block';
+        }
+
+        function backToSignupStep1() {
+            document.getElementById('signupStep1').style.display = 'block';
+            document.getElementById('signupStep2').style.display = 'none';
+        }
+
+        async function verifySignupOTP() {
+            const inputOtp = document.getElementById('signupOTPCode').value.trim();
+            if(!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
+
+            const expectedOtp = await getTOTPCode(tempSignupSecret);
+            if(inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다. 다시 시도해주세요.'); return; }
+
+            // 계정 생성
+            accountsData.push({
+                site: document.getElementById('signupName').value.trim(),
+                userid: document.getElementById('signupUserId').value.trim(),
+                password: document.getElementById('signupPw').value.trim(),
+                remarks: '가입 승인 대기중',
+                totpSecret: tempSignupSecret,
+                role: 'user',
+                approved: false,
+                createdAt: new Date().toISOString()
+            });
+            saveAccounts();
+
+            document.getElementById('signupStep2').style.display = 'none';
+            document.getElementById('pendingContainer').style.display = 'block';
+            
+            // 폼 초기화
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupUserId').value = '';
+            document.getElementById('signupPw').value = '';
+            document.getElementById('signupPwConfirm').value = '';
+            document.getElementById('signupOTPCode').value = '';
+        }
+
+        let tempAdminSecret = '';
+
+        function goToAdminTOTP() {
+            const name = document.getElementById('adminName').value.trim();
+            const id = document.getElementById('adminId').value.trim();
+            const pw = document.getElementById('adminPw').value.trim();
+            
+            if(!name || !id || !pw) { alert('모든 항목을 입력해주세요.'); return; }
+
+            tempAdminSecret = generateTOTPSecret();
+            document.getElementById('adminSecretDisplay').innerText = "복구 키: " + tempAdminSecret;
+            document.getElementById('adminQrImg').innerHTML = '';
+            
+            const uri = `otpauth://totp/WealthManagerAdmin:${id}?secret=${tempAdminSecret}&issuer=WealthManager`;
+            new QRCode(document.getElementById('adminQrImg'), { text: uri, width: 140, height: 140, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+
+            document.getElementById('adminStep1').style.display = 'none';
+            document.getElementById('adminStep2').style.display = 'block';
+        }
+
+        async function createAdminAccount() {
+            const inputOtp = document.getElementById('adminOTPCode').value.trim();
+            if(!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
+
+            const expectedOtp = await getTOTPCode(tempAdminSecret);
+            if(inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다.'); return; }
+
+            const name = document.getElementById('adminName').value.trim();
+            const id = document.getElementById('adminId').value.trim();
+            const pw = document.getElementById('adminPw').value.trim();
+
+            accountsData = [{
+                site: name, userid: id, password: pw, remarks: '최초 관리자', 
+                totpSecret: tempAdminSecret, role: 'admin', approved: true, createdAt: new Date().toISOString()
+            }];
+            saveAccounts();
+
+            // 세션용 임시 비밀번호 저장
+            sessionStorage.setItem('temp_master_pw', pw);
+
+            alert('관리자 계정이 생성되었습니다. 해당 계정으로 로그인합니다.');
+            loginSuccess();
+        }
+
         function checkLoginState() {
             console.log("[Login] checkLoginState 시작");
             loadAccounts();
@@ -5681,12 +5959,10 @@
                 adminContainer.dataset.dropBound = "true";
             }
 
-            // Check session storage (must have temp_master_pw for encrypted data)
             if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
                 loginSuccess();
                 return;
             } else {
-                // If session is invalid or password missing, clear everything and force login
                 sessionStorage.removeItem('assetLoginSession');
                 setCookie('assetLoginSession', '', -1);
             }
@@ -5694,19 +5970,21 @@
             if (accountsData.length === 0) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('loginScreen').classList.remove('show');
+                document.getElementById('loginTabSwitcher').style.display = 'none';
                 document.getElementById('loginFormContainer').style.display = 'none';
+                document.getElementById('signupContainer').style.display = 'none';
                 document.getElementById('adminCreateContainer').style.display = 'block';
                 document.getElementById('mainContainer').style.display = 'none';
                 document.getElementById('landingPage').style.display = 'block';
             } else {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('loginScreen').classList.remove('show');
-                document.getElementById('loginFormContainer').style.display = 'block';
+                document.getElementById('loginTabSwitcher').style.display = 'flex';
+                switchLoginTab('signin');
                 document.getElementById('adminCreateContainer').style.display = 'none';
                 document.getElementById('mainContainer').style.display = 'none';
                 document.getElementById('landingPage').style.display = 'block';
 
-                // 아이디 저장 로드
                 const savedId = localStorage.getItem('savedLoginId');
                 if (savedId) {
                     document.getElementById('loginId').value = savedId;
@@ -5718,46 +5996,61 @@
             }
         }
 
-        function createAdminAccount() {
-            const name = document.getElementById('adminName').value.trim();
-            const id = document.getElementById('adminId').value.trim();
-            const pw = document.getElementById('adminPw').value.trim();
-
-            if (!name || !id || !pw) {
-                alert('모든 항목을 입력해주세요.');
-                return;
-            }
-
-            accountsData = [{ site: name, userid: id, password: pw, remarks: '최초 관리자' }];
-            saveAccounts();
-
-            // 세션용 임시 비밀번호 저장
-            sessionStorage.setItem('temp_master_pw', pw);
-
-            alert('관리자 계정이 생성되었습니다. 해당 계정으로 로그인합니다.');
-            loginSuccess();
-        }
-
         async function attemptLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
+            const otpInput = document.getElementById('loginOTP').value.trim();
+            const otpContainer = document.getElementById('loginOTPContainer');
 
             const user = accountsData.find(a => a.userid === id && a.password === pw);
 
-            if (user) {
-                // 세션용 임시 비밀번호 저장 (메모리상에만 존재)
-                sessionStorage.setItem('temp_master_pw', pw);
-
-                // 아이디 저장 처리
-                if (document.getElementById('rememberId').checked) {
-                    localStorage.setItem('savedLoginId', id);
-                } else {
-                    localStorage.removeItem('savedLoginId');
-                }
-                loginSuccess();
-            } else {
+            if (!user) {
                 document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginError').innerText = '아이디 또는 비밀번호가 일치하지 않습니다.';
+                return;
             }
+
+            if (!user.approved && user.role !== 'admin') {
+                document.getElementById('loginFormContainer').style.display = 'none';
+                document.getElementById('loginTabSwitcher').style.display = 'none';
+                document.getElementById('pendingContainer').style.display = 'block';
+                return;
+            }
+
+            if (user.totpSecret) {
+                if(otpContainer.style.display === 'none') {
+                    otpContainer.style.display = 'block';
+                    document.getElementById('loginError').style.display = 'none';
+                    document.getElementById('loginOTP').focus();
+                    return;
+                } else {
+                    if(!otpInput || otpInput.length !== 6) {
+                        document.getElementById('loginError').style.display = 'block';
+                        document.getElementById('loginError').innerText = '6자리 인증 코드를 입력해주세요.';
+                        return;
+                    }
+                    const expectedOtp = await getTOTPCode(user.totpSecret);
+                    if(otpInput !== expectedOtp) {
+                        document.getElementById('loginError').style.display = 'block';
+                        document.getElementById('loginError').innerText = '인증 코드가 일치하지 않습니다.';
+                        return;
+                    }
+                }
+            }
+
+            // Login successful
+            sessionStorage.setItem('temp_master_pw', pw);
+            if (document.getElementById('rememberId').checked) {
+                localStorage.setItem('savedLoginId', id);
+            } else {
+                localStorage.removeItem('savedLoginId');
+            }
+            
+            // Reset OTP container
+            otpContainer.style.display = 'none';
+            document.getElementById('loginOTP').value = '';
+            
+            loginSuccess();
         }
 
         async function loginSuccess() {
