@@ -28,5 +28,20 @@
       "order": 2
     }
   ],
-  "articles": []
+  "articles": [
+    {
+      "categoryId": "cat_mow9okx0_33dne",
+      "title": "[유용한앱] Good Guardians",
+      "content": "https://r1.community.samsung.com/t5/%EA%B0%A4%EB%9F%AD%EC%8B%9C-s/%EC%9C%A0%EC%9A%A9%ED%95%9C%EC%95%B1-good-guardians-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0/td-p/20324818",
+      "references": [],
+      "tags": [
+        "Good Guardians",
+        "최적화앱"
+      ],
+      "isPinned": false,
+      "id": "art_mow9qlwh_acc41",
+      "createdAt": "2026-05-08T02:01:01.793Z",
+      "updatedAt": "2026-05-08T02:01:01.793Z"
+    }
+  ]
 }
