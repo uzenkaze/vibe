@@ -1,13 +1,22 @@
 {
   "categories": [
     {
+      "name": "VIBE",
+      "description": "vibe Coding",
+      "icon": "💻",
+      "color": "#06b6d4",
+      "id": "cat_mowala9k_gu7w8",
+      "createdAt": "2026-05-08T02:24:53.048Z",
+      "order": 0
+    },
+    {
       "name": "React",
       "description": "",
       "icon": "💻",
       "color": "#22c55e",
       "id": "cat_mow9dca1_q2anq",
       "createdAt": "2026-05-08T01:50:42.793Z",
-      "order": 0
+      "order": 1
     },
     {
       "name": "AI",
@@ -16,7 +25,7 @@
       "color": "#8b5cf6",
       "id": "cat_mow9cwul_5q7uw",
       "createdAt": "2026-05-08T01:50:22.797Z",
-      "order": 1
+      "order": 2
     },
     {
       "name": "Galaxy",
@@ -25,15 +34,6 @@
       "color": "#a855f7",
       "id": "cat_mow9okx0_33dne",
       "createdAt": "2026-05-08T01:59:27.204Z",
-      "order": 2
-    },
-    {
-      "name": "VIBE",
-      "description": "vibe Coding",
-      "icon": "💻",
-      "color": "#06b6d4",
-      "id": "cat_mowala9k_gu7w8",
-      "createdAt": "2026-05-08T02:24:53.048Z",
       "order": 3
     }
   ],
