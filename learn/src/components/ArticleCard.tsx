@@ -28,10 +28,23 @@ export default function ArticleCard({ article, showCategory = false }: ArticleCa
 
   const timeAgo = getTimeAgo(article.updatedAt);
   const preview = article.content
-    .replace(/#{1,6}\s/g, '')
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/`([^`]+)`/g, '$1')
+    .replace(/<[^>]+>/g, '') // 모든 HTML 태그 제거
+    .replace(/@@[^:]+:([^@]+)@@/g, '$1') // @@color:text@@ -> text
+    .replace(/==([^=]+)==/g, '$1') // ==highlight== -> highlight
+    .replace(/\+\+([^+]+)\+\+/g, '$1') // ++underline++ -> underline
+    .replace(/\[[ xX]\]/g, '') // [ ] or [x] 체크박스 제거
+    .replace(/#{1,6}\s/g, '') // # 헤더 제거
+    .replace(/\*\*(.+?)\*\*/g, '$1') // **bold** -> bold
+    .replace(/__(.+?)__/g, '$1') // __italic__ -> italic
+    .replace(/~~(.+?)~~/g, '$1') // ~~strikethrough~~ -> strikethrough
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [link](url) -> link
+    .replace(/`([^`]+)`/g, '$1') // `code` -> code
+    .replace(/^\s*>\s*/gm, '') // 인용구 기호(>) 제거
+    .replace(/^\s*[-*+]\s+/gm, '') // 리스트 기호(-, *, +) 제거
+    .replace(/^-{3,}|^\*{3,}|^_{3,}/gm, '') // 구분선(---, ***, ___) 제거
+    .replace(/\n+/g, ' ') // 줄바꿈을 공백으로 변환
+    .replace(/\s+/g, ' ') // 연속된 공백 하나로 통합
+    .trim()
     .slice(0, 120);
 
   const handleColorChange = (e: React.MouseEvent, color: string) => {

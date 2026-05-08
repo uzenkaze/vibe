@@ -7,9 +7,44 @@ import ArticleCard from '../components/ArticleCard';
 import CategoryModal from '../components/CategoryModal';
 
 export default function HomePage() {
-  const { data, addCategory } = useStore();
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const { data, addCategory, reorderCategories } = useStore();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const recentArticles = getRecentArticles(data, 6);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // 커스텀 드래그 이미지 설정 (선택사항)
+    const ghost = e.currentTarget.cloneNode(true) as HTMLElement;
+    ghost.style.opacity = '0.5';
+    ghost.style.position = 'absolute';
+    ghost.style.top = '-1000px';
+    document.body.appendChild(ghost);
+    e.dataTransfer.setDragImage(ghost, 0, 0);
+    setTimeout(() => document.body.removeChild(ghost), 0);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    setDragOverIndex(null);
+    const sourceIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    
+    if (sourceIndex === targetIndex) return;
+
+    const sortedCats = [...data.categories].sort((a, b) => a.order - b.order);
+    const [movedItem] = sortedCats.splice(sourceIndex, 1);
+    sortedCats.splice(targetIndex, 0, movedItem);
+
+    const reordered = sortedCats.map((cat, i) => ({ ...cat, order: i }));
+    reorderCategories(reordered);
+  };
 
   const totalArticles = data.articles.length;
   const totalCategories = data.categories.length;
@@ -78,8 +113,18 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-children">
             {data.categories
               .sort((a, b) => a.order - b.order)
-              .map(cat => (
-                <CategoryCard key={cat.id} category={cat} />
+              .map((cat, index) => (
+                <div
+                  key={cat.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragLeave={() => setDragOverIndex(null)}
+                  onDrop={(e) => handleDrop(e, index)}
+                  className={`transition-all duration-200 ${dragOverIndex === index ? 'scale-105 ring-2 ring-accent ring-offset-4 ring-offset-bg-primary' : ''}`}
+                >
+                  <CategoryCard category={cat} />
+                </div>
               ))}
           </div>
         )}

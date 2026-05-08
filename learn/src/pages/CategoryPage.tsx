@@ -61,7 +61,18 @@ export default function CategoryPage() {
             </div>
             <div>
               <h1 className="text-2xl font-black text-text-primary">{category.name}</h1>
-              <p className="text-sm text-text-muted mt-0.5">{category.description || '설명 없음'} · {articles.length}개 아티클</p>
+              <p className="text-sm text-text-muted mt-0.5">
+                {(category.description || '설명 없음')
+                  .replace(/<[^>]+>/g, '')
+                  .replace(/@@[^:]+:([^@]+)@@/g, '$1')
+                  .replace(/==([^=]+)==/g, '$1')
+                  .replace(/\+\+([^+]+)\+\+/g, '$1')
+                  .replace(/#{1,6}\s/gm, '')
+                  .replace(/^\s*>\s*/gm, '')
+                  .replace(/\n+/g, ' ')
+                  .replace(/\s+/g, ' ')
+                  .trim()} · {articles.length}개 아티클
+              </p>
             </div>
           </div>
 

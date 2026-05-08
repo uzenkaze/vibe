@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import type { AppData, Category, Article, GitHubConfig, DataSource } from '../types';
-import { loadData, saveData, createCategory, updateCategory, deleteCategory, createArticle, updateArticle, deleteArticle } from '../services/storage';
+import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle } from '../services/storage';
 import { getGitHubConfig, saveGitHubConfig, downloadFromGitHub, uploadToGitHub } from '../services/github';
 
 interface StoreContextType {
@@ -11,6 +11,7 @@ interface StoreContextType {
   addCategory: (input: Omit<Category, 'id' | 'createdAt' | 'order'>) => void;
   editCategory: (id: string, updates: Partial<Category>) => void;
   removeCategory: (id: string) => void;
+  reorderCategories: (categories: Category[]) => void;
   // Article actions
   addArticle: (input: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>) => void;
   editArticle: (id: string, updates: Partial<Article>) => void;
@@ -87,6 +88,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     showToast('카테고리가 삭제되었습니다');
   }, [data, persistAndSync, showToast]);
 
+  const reorderCategories = useCallback((categories: Category[]) => {
+    const newData = updateCategories(data, categories);
+    persistAndSync(newData);
+  }, [data, persistAndSync]);
+
   // Article actions
   const addArticle = useCallback((input: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newData = createArticle(data, input);
@@ -154,7 +160,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   return (
     <StoreContext.Provider value={{
       data, dataSource, ghConfig,
-      addCategory, editCategory, removeCategory,
+      addCategory, editCategory, removeCategory, reorderCategories,
       addArticle, editArticle, removeArticle,
       updateGhConfig, syncDown, syncUp,
       toast, showToast,

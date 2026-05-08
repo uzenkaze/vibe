@@ -46,6 +46,10 @@ export function deleteCategory(data: AppData, id: string): AppData {
   };
 }
 
+export function updateCategories(data: AppData, categories: Category[]): AppData {
+  return { ...data, categories };
+}
+
 // Article CRUD
 export function createArticle(data: AppData, input: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>): AppData {
   const now = new Date().toISOString();
