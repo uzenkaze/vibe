@@ -26,6 +26,15 @@
       "id": "cat_mow9okx0_33dne",
       "createdAt": "2026-05-08T01:59:27.204Z",
       "order": 2
+    },
+    {
+      "name": "VIBE",
+      "description": "vibe Coding",
+      "icon": "💻",
+      "color": "#06b6d4",
+      "id": "cat_mowala9k_gu7w8",
+      "createdAt": "2026-05-08T02:24:53.048Z",
+      "order": 3
     }
   ],
   "articles": [
