@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+@theme {
+  /* === Dark Mode Default === */
+  --color-bg-primary:    #0f1117;   /* 짙은 slate-blue */
+  --color-bg-secondary:  #1a1d27;   /* 카드보다 한 단계 어두운 영역 */
+  --color-bg-card:       #20232f;   /* 카드 배경 */
+  --color-bg-hover:      #2a2e3e;   /* 호버 상태 */
+  --color-bg-elevated:   #252836;   /* 팝업/에디터 배경 */
+  --color-border:        #3a3f55;   /* 기본 테두리 */
+  --color-border-light:  #525875;   /* 호버 테두리 */
+
+  /* 텍스트: 고대비 */
+  --color-text-primary:   #f0f2ff;  /* 거의 흰색, 살짝 청색 */
+  --color-text-secondary: #c8ccde;  /* 연한 slate */
+  --color-text-muted:     #8b90a8;  /* 중간 회색 */
+
+  /* 카드 전용 (항상 밝게) */
+  --color-card-bg:             #ffffff;
+  --color-card-hover:          #f3f4f6;
+  --color-card-text-primary:   #111827;
+  --color-card-text-muted:     #4b5563;
+
+  /* 액센트 */
+  --color-accent:       #a78bfa;   /* vivid violet */
+  --color-accent-hover: #c4b5fd;
+  --color-accent-cyan:  #22d3ee;
+  --color-accent-green: #4ade80;
+  --color-accent-amber: #fcd34d;
+  --color-accent-rose:  #fda4af;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+:root {
+  --scrollbar-thumb: rgba(160,165,200,0.2);
+  --scrollbar-thumb-hover: rgba(160,165,200,0.35);
+  --shimmer-bg: rgba(255,255,255,0.07);
+  --glass-bg: rgba(20, 22, 35, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.12);
+}
+
+:root.light {
+  --color-bg-primary:    #f5f6fa;
+  --color-bg-secondary:  #eef0f6;
+  --color-bg-card:       #ffffff;
+  --color-bg-hover:      #e5e7eb;
+  --color-bg-elevated:   #ffffff;
+  --color-border:        #dde1ec;
+  --color-border-light:  #c8cdd8;
+  --color-text-primary:  #111827;
+  --color-text-secondary:#374151;
+  --color-text-muted:    #6b7280;
+
+  /* 카드 전용 */
+  --color-card-bg:             #ffffff;
+  --color-card-hover:          #f3f4f6;
+  --color-card-text-primary:   #111827;
+  --color-card-text-muted:     #6b7280;
+
+  --scrollbar-thumb: rgba(0,0,0,0.12);
+  --scrollbar-thumb-hover: rgba(0,0,0,0.22);
+  --shimmer-bg: rgba(0,0,0,0.04);
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(0, 0, 0, 0.08);
+}
+
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg-primary text-text-primary font-sans antialiased transition-colors duration-300;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+}
+
+/* Markdown Rendered Content */
+.markdown-body {
+  @apply text-text-secondary leading-[1.8];
+}
+.markdown-body h1 {
+  @apply text-2xl font-bold mt-8 mb-4 text-text-primary pb-3 border-b border-border;
+}
+.markdown-body h2 {
+  @apply text-xl font-bold mt-6 mb-3 text-text-primary pb-2 border-b border-border;
+}
+.markdown-body h3 { @apply text-lg font-semibold mt-5 mb-2 text-text-primary; }
+.markdown-body h4 { @apply text-base font-semibold mt-4 mb-1 text-text-primary; }
+.markdown-body p  { @apply mb-4 text-text-secondary leading-[1.85]; }
+.markdown-body ul {
+  @apply list-disc mb-4 space-y-1.5 pl-5 text-text-secondary;
+}
+.markdown-body ol {
+  @apply list-decimal mb-4 space-y-1.5 pl-5 text-text-secondary;
+}
+.markdown-body li { @apply leading-relaxed text-text-secondary; }
+.markdown-body a  { @apply text-accent hover:text-accent-hover underline underline-offset-2 transition-colors; }
+.markdown-body blockquote {
+  @apply border-l-4 border-accent pl-4 py-2 my-4 rounded-r-lg text-text-muted italic bg-bg-elevated;
+}
+.markdown-body code {
+  @apply bg-bg-elevated px-1.5 py-0.5 rounded text-sm font-mono text-accent-cyan;
+}
+.markdown-body pre {
+  @apply bg-bg-secondary rounded-xl p-4 my-4 overflow-x-auto border border-border;
+}
+.markdown-body pre code {
+  @apply bg-transparent p-0 text-text-secondary;
+}
+.markdown-body hr {
+  @apply border-border my-6;
+}
+.markdown-body hr.dashed { @apply border-dashed; }
+.markdown-body hr.dotted { @apply border-dotted border-b-4 border-t-0; }
+.markdown-body strong { @apply font-bold text-text-primary; }
+.markdown-body em     { @apply italic text-text-secondary; }
+.markdown-body mark {
+  @apply bg-accent-amber/25 text-accent-amber px-1 rounded font-medium;
+}
+.markdown-body u {
+  @apply underline decoration-accent decoration-2 underline-offset-4;
+}
+.markdown-body input[type="checkbox"] {
+  @apply mr-2 w-4 h-4 rounded accent-accent align-middle;
+}
+.markdown-body img {
+  @apply rounded-xl max-w-full my-4 shadow-lg;
+}
+
+/* HTML inline tags 다크모드 보정 */
+.markdown-body span { color: inherit; }
+.markdown-body div  { color: inherit; }
+
+/* 웹에서 복사한 HTML의 인라인 배경/텍스트색 강제 제거 (다크모드 가독성) */
+.markdown-body *:not(pre):not(code):not(mark):not(a) {
+  background-color: transparent !important;
+}
+.markdown-body p,
+.markdown-body li,
+.markdown-body td,
+.markdown-body th,
+.markdown-body div:not(.og-link-preview *) {
+  color: inherit !important;
+}
+/* span에 color 인라인 스타일이 있는 경우(@@color:text@@ 등)는 유지 */
+.markdown-body span[style*="color"] {
+  color: revert !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, var(--shimmer-bg) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Stagger children */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(n+9) { animation-delay: 0.45s; }
+
+/* Glass effect */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
