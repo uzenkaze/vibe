@@ -4179,8 +4179,23 @@
         };
         let accountsData = [];
         let isLoggedIn = false;
-        document.getElementById('mainContainer').style.display = 'none';
-        document.getElementById('landingPage').style.display = 'block';
+
+        // --- Account Persistence ---
+        function loadAccounts() {
+            const data = localStorage.getItem('assetAccounts');
+            if (data) {
+                try {
+                    accountsData = JSON.parse(data);
+                } catch (e) {
+                    console.error("Failed to parse accounts:", e);
+                    accountsData = [];
+                }
+            }
+        }
+
+        function saveAccounts() {
+            localStorage.setItem('assetAccounts', JSON.stringify(accountsData));
+        }
 
         // --- Setup & Security Keys ---
         const MASTER_SETUP_KEY = "vibe2026";
@@ -5955,6 +5970,69 @@
             }
         }
 
+        function openGitHubModal() {
+            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+            document.getElementById('ghToken').value = config.token || '';
+            document.getElementById('ghRepo').value = config.repo || '';
+            document.getElementById('ghBranch').value = config.branch || 'main';
+            document.getElementById('ghAutoSync').checked = config.autoSync !== false;
+            
+            document.getElementById('gitHubModal').style.display = 'flex';
+            fetchGitHubFileList();
+        }
+
+        async function fetchGitHubFileList() {
+            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+            const select = document.getElementById('ghFileList');
+            if (!config.token || !config.repo) {
+                select.innerHTML = '<option value="">설정이 필요합니다.</option>';
+                return;
+            }
+
+            try {
+                const url = `https://api.github.com/repos/${config.repo}/contents/Asset/data?ref=${config.branch}`;
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `token ${config.token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (res.ok) {
+                    const files = await res.json();
+                    const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+                    select.innerHTML = jsonFiles.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
+                    if (jsonFiles.length === 0) select.innerHTML = '<option value="">데이터 없음</option>';
+                } else {
+                    select.innerHTML = '<option value="">목록 로드 실패</option>';
+                }
+            } catch (e) {
+                select.innerHTML = '<option value="">네트워크 오류</option>';
+            }
+        }
+
+        async function viewGitHubData() {
+            const fileName = document.getElementById('ghFileList').value;
+            if (!fileName) return;
+
+            const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+            const preview = document.getElementById('ghDataPreview');
+            preview.style.display = 'block';
+            preview.innerText = '로딩 중...';
+
+            try {
+                const url = `https://api.github.com/repos/${config.repo}/contents/Asset/data/${fileName}?ref=${config.branch}`;
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `token ${config.token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (res.ok) {
+                    const json = await res.json();
+                    const content = decodeURIComponent(escape(atob(json.content)));
+                    preview.innerText = content;
+                } else {
+                    preview.innerText = '데이터를 가져오지 못했습니다.';
+                }
+            } catch (e) {
+                preview.innerText = '오류 발생: ' + e.message;
+            }
+        }
+
         function closeGitHubModal() {
             document.getElementById('gitHubModal').style.display = 'none';
         }
@@ -5980,44 +6058,10 @@
             };
             if (config.token && !config.repo) { alert('저장소 정보를 입력해주세요.'); return; }
             localStorage.setItem('assetGitHubConfig', JSON.stringify(config));
-
-            // 설정 저장 즉시 데이터 동기화 시도
-            try {
-                const yearKey = getYearKey();
-                const downloadedData = await syncWithGitHub('download');
-                if (downloadedData) {
-                    localStorage.setItem(yearKey, JSON.stringify(downloadedData));
-
-                    // 만약 현재 로그인 전이라면 (초기 설정 중일 때)
-                    if (!isLoggedIn) {
-                        const pw = prompt("가져온 데이터를 해독하기 위한 마스터 비밀번호를 입력해주세요:");
-                        if (pw) {
-                            // 복호화 테스트 및 계정 복구를 포함하는 loadData 호출
-                            sessionStorage.setItem('temp_master_pw', pw);
-                            await loadData();
-
-                            // loadData 내부에서 accountsData가 복구되었다면 로그인 성공 처리
-                            if (accountsData.length > 0) {
-                                alert('GitHub 설정이 저장되었으며, 데이터를 성공적으로 가져왔습니다.');
-                                loginSuccess();
-                            } else {
-                                alert('데이터는 가져왔으나 등록된 계정 정보를 찾을 수 없습니다. 신규 등록을 진행해주세요.');
-                            }
-                        }
-                    } else {
-                        // 이미 로그인 된 상태라면 그냥 로드
-                        await loadData();
-                        alert('GitHub 설정이 저장되었으며, 최신 데이터를 성공적으로 가져왔습니다.');
-                    }
-                } else {
-                    alert('GitHub 설정이 저장되었습니다. (가져올 데이터가 없음)');
-                }
-            } catch (e) {
-                console.error("Initial sync after config save failed:", e);
-                alert('GitHub 설정이 저장되었습니다. (데이터 로드 중 오류 발생)');
-            }
-
+            
+            showToast('GitHub 설정이 저장되었습니다.');
             closeGitHubModal();
+            loadData();
         }
 
         async function syncWithGitHub(action = 'upload') {
@@ -6665,10 +6709,9 @@
                 </div>
             </div>
 
-            <div class="modal-footer"
-                style="padding: 1.5rem 2rem; background: gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3">
-                <button class="btn-hans btn-hans-primary px-10" onclick="closeDataManageModal()">닫기</button>
-                <button class="btn-hans btn-hans-primary px-10" onclick="importDataFromText()">가져오기 적용</button>
+            <div class="modal-footer px-8 py-6 bg-gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3 rounded-b-3xl">
+                <button class="btn-hans btn-hans-secondary px-8" onclick="closeDataManageModal()">닫기</button>
+                <button class="btn-hans btn-hans-primary px-8" onclick="importDataFromText()">가져오기 적용</button>
             </div>
         </div>
     </div>
@@ -6691,7 +6734,7 @@
                         <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">GitHub
                             토큰 (PAT)</label>
                         <div style="position: relative; display: flex; align-items: center;">
-                            <input type="password" id="ghToken" class="data-modal-textarea"
+                            <input type="password" id="ghToken" class="pension-input"
                                 style="height: 38px; padding: 0 40px 0 12px; width: 100%;"
                                 placeholder="ghp_xxxxxxxxxxxx">
                             <button type="button" onclick="togglePatVisibility()"
@@ -7196,6 +7239,51 @@
                 toggleCalculator();
             }
         });
+        // --- Modal Control Helpers ---
+        function openPensionModal() {
+            const p = state.pension || {};
+            document.getElementById('pensionBeforeTax').value = p.beforeTax || '';
+            document.getElementById('pensionAfterTax').value = p.afterTax || '';
+            document.getElementById('pensionStartDate').value = p.startDate || '';
+            document.getElementById('pensionTotalPaid').value = p.totalPaid || '';
+            document.getElementById('pensionTotalPeriod').value = p.totalPeriod || '';
+            
+            document.getElementById('pensionModal').style.display = 'flex';
+            updatePensionHeader();
+            updatePensionPeriodSubtext();
+        }
+
+        function closePensionModal() {
+            document.getElementById('pensionModal').style.display = 'none';
+        }
+
+        function openAccountModal() {
+            // Account modal logic can be implemented here if needed
+            alert('계정 관리 모달은 준비 중입니다.');
+        }
+
+        function openManualModal() {
+            document.getElementById('manualModal').style.display = 'flex';
+            // Reset to first tab
+            const firstTabBtn = document.querySelector('.manual-tab-btn');
+            if (firstTabBtn) firstTabBtn.click();
+        }
+
+        function closeManualModal() {
+            document.getElementById('manualModal').style.display = 'none';
+        }
+
+        function switchManualTab(tabId, btn) {
+            document.querySelectorAll('.manual-tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.manual-tab-btn').forEach(b => {
+                b.classList.remove('bg-dyo-accent', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-600', 'dark:bg-white/5', 'dark:text-white/40');
+            });
+            
+            document.getElementById('manual-' + tabId).style.display = 'block';
+            btn.classList.remove('bg-gray-100', 'text-gray-600', 'dark:bg-white/5', 'dark:text-white/40');
+            btn.classList.add('bg-dyo-accent', 'text-white');
+        }
     </script>
     
     <!-- Floating Calculator -->
