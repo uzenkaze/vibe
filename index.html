@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding Portal</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap');
+        
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1e2e, #11111b);
+            color: #cdd6f4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .heading-font { font-family: 'Outfit', sans-serif; }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #89dceb, #cba6f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bg-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(137, 220, 235, 0.1) 0%, rgba(137, 220, 235, 0) 70%);
+            z-index: -1;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="bg-blob" style="top: -100px; right: -100px;"></div>
+    <div class="bg-blob" style="bottom: -100px; left: -100px; background: radial-gradient(circle, rgba(203, 166, 247, 0.1) 0%, rgba(203, 166, 247, 0) 70%);"></div>
+
+    <div class="max-w-4xl w-full">
+        <header class="text-center mb-16">
+            <h1 class="heading-font text-5xl md:text-6xl font-extrabold mb-4 tracking-tight">
+                <span class="gradient-text">Vibe</span> Projects
+            </h1>
+            <p class="text-gray-400 text-lg max-w-xl mx-auto">
+                모든 개인 프로젝트와 학습 결과물을 한곳에서 관리하는 포털입니다.
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Asset Manager -->
+            <a href="Asset/asset.html" class="glass-card p-8 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-blue-500/20 rounded-xl">
+                        <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">Launch &rarr;</span>
+                </div>
+                <h3 class="heading-font text-2xl font-bold mb-2">Asset Manager</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    자산 및 카드 할부 내역을 체계적으로 관리하는 서비스입니다.
+                </p>
+            </a>
+
+            <!-- Task Manager -->
+            <a href="task/task-manager.html" class="glass-card p-8 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-purple-500/20 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">Launch &rarr;</span>
+                </div>
+                <h3 class="heading-font text-2xl font-bold mb-2">Task Manager</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    일정 관리 및 마인드맵 기능을 제공하는 생산성 도구입니다.
+                </p>
+            </a>
+
+            <!-- Learn App (React/Vite) -->
+            <a href="learn/" class="glass-card p-8 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-cyan-500/20 rounded-xl">
+                        <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">Launch &rarr;</span>
+                </div>
+                <h3 class="heading-font text-2xl font-bold mb-2">Learn App</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    React와 Vite를 활용한 최신 웹 기술 학습용 애플리케이션입니다.
+                </p>
+            </a>
+
+            <!-- Hobby -->
+            <a href="hobby/" class="glass-card p-8 group">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-pink-500/20 rounded-xl">
+                        <svg class="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-pink-400 opacity-0 group-hover:opacity-100 transition-opacity">Launch &rarr;</span>
+                </div>
+                <h3 class="heading-font text-2xl font-bold mb-2">Hobby Labs</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    다양한 실험적인 기능과 취미 활동 결과물을 모아둔 공간입니다.
+                </p>
+            </a>
+        </div>
+
+        <footer class="mt-20 text-center text-gray-500 text-sm">
+            &copy; 2026 Vibe Coding Labs. All rights reserved.
+        </footer>
+    </div>
+</body>
+</html>
