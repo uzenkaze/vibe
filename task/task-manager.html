@@ -1127,11 +1127,31 @@
             border-left: 3px solid var(--text-muted);
         }
 
+
         .task-card-apple.done {
             border-left: 3px solid var(--success);
         }
 
-        /* Very light green */
+        /* Rainbow Border Animation for Pending Deployment */
+        @keyframes rainbow-border {
+            0% { border-color: #ff3b30; box-shadow: 0 4px 15px rgba(255, 59, 48, 0.2); }
+            20% { border-color: #ff9500; box-shadow: 0 4px 15px rgba(255, 149, 0, 0.2); }
+            40% { border-color: #ffcc00; box-shadow: 0 4px 15px rgba(255, 204, 0, 0.2); }
+            60% { border-color: #34c759; box-shadow: 0 4px 15px rgba(52, 199, 89, 0.2); }
+            80% { border-color: #0071e3; box-shadow: 0 4px 15px rgba(0, 113, 227, 0.2); }
+            100% { border-color: #ff3b30; box-shadow: 0 4px 15px rgba(255, 59, 48, 0.2); }
+        }
+
+        .task-card-apple.pending-deploy {
+            border: 3px solid #ff3b30;
+            animation: rainbow-border 4s linear infinite;
+        }
+
+        .rainbow-highlight {
+            animation: rainbow-border 1s linear infinite !important;
+            transform: scale(1.02);
+            z-index: 100;
+        }
 
         .task-card-apple:hover {
             box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
@@ -5712,8 +5732,10 @@
                 let devStr = devStatus === '개발배포완료' ? '배포완료' : '배포전';
                 let prodStr = prodStatus === '운영배포완료' ? '배포완료' : '배포전';
 
+                const isPendingDeploy = prodStatus === '운영배포전';
+
                 return `
-                    <div class="task-card-apple ${t.status}" id="card-${t.id}" onclick="showDetail('${t.id}')">
+                    <div class="task-card-apple ${t.status} ${isPendingDeploy ? 'pending-deploy' : ''}" id="card-${t.id}" onclick="showDetail('${t.id}')">
                         <div class="card-header-info">#${t.task_no || '-'} [${t.work_no || '-'}]</div>
                         <div class="card-title" title="${t.title}">${t.title}</div>
                         <div class="card-dates">
