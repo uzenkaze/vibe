@@ -15,12 +15,15 @@ New-Item -ItemType Directory -Path $deployDir | Out-Null
 Write-Host "> 'learn' 프로젝트 빌드 중..." -ForegroundColor Yellow
 Set-Location learn
 npm run build
+# 빌드 결과물에서 불필요한 .git 폴더 제거 (GitHub Pages 간섭 방지)
+if (Test-Path "dist/.git") { Remove-Item -Recurse -Force "dist/.git" }
 Set-Location ..
 
 # 3. 'learn' 빌드 결과물 복사
 Write-Host "> 'learn' 빌드 결과물 복사 중..."
+if (Test-Path "$deployDir/learn") { Remove-Item -Recurse -Force "$deployDir/learn" }
 New-Item -ItemType Directory -Path "$deployDir/learn" | Out-Null
-Copy-Item -Path "learn/dist/*" -Destination "$deployDir/learn" -Recurse
+Copy-Item -Path "learn/dist/*" -Destination "$deployDir/learn" -Recurse -Force
 
 # 4. 기타 정적 폴더 복사 (Asset, task, hobby 등)
 $staticFolders = @("Asset", "task", "hobby", "livetv-app", "vibe-hybrid-app")
