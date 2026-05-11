@@ -96,6 +96,17 @@
       "createdAt": "2026-05-11T04:02:02.383Z",
       "updatedAt": "2026-05-11T04:08:50.535Z",
       "color": "#a855f7"
+    },
+    {
+      "categoryId": "cat_mowala9k_gu7w8",
+      "title": "Antigravity",
+      "content": "",
+      "references": [],
+      "tags": [],
+      "isPinned": false,
+      "id": "art_mp0ptud1_sffg6",
+      "createdAt": "2026-05-11T04:42:31.285Z",
+      "updatedAt": "2026-05-11T04:42:31.285Z"
     }
   ]
 }
