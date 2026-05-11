@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, BookOpen, FolderOpen, Sparkles } from 'lucide-react';
+import { Plus, BookOpen, FolderOpen, Sparkles, Database, FileText, Terminal } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import { getRecentArticles } from '../services/storage';
 import CategoryCard from '../components/CategoryCard';
@@ -398,6 +398,270 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ── AI Chat Quick Access ── */}
+      <section className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-5">
+          <div
+            className="w-7 h-7 rounded-xl flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-bold text-text-primary">AI 채팅 바로가기</h2>
+          <span
+            className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+            style={{ background: 'rgba(139,92,246,0.12)', color: '#8b5cf6' }}
+          >
+            NEW
+          </span>
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+          {/* ── Gemini ── */}
+          <a
+            href="https://gemini.google.com/app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(66,133,244,0.08), rgba(52,168,83,0.06))',
+              border: '1px solid rgba(66,133,244,0.20)',
+              boxShadow: '0 4px 20px rgba(66,133,244,0.08)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(66,133,244,0.22)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(66,133,244,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(66,133,244,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(66,133,244,0.20)'; }}
+          >
+            {/* Gemini logo */}
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335)', padding: '2px' }}
+            >
+              <div className="w-full h-full rounded-[10px] bg-white dark:bg-[#1a1a2e] flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 192 192" fill="none">
+                  <path d="M96 16C96 16 60 80 16 96C60 112 96 176 96 176C96 176 132 112 176 96C132 80 96 16 96 16Z" fill="url(#geminiGrad)" />
+                  <defs>
+                    <linearGradient id="geminiGrad" x1="16" y1="16" x2="176" y2="176" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#4285f4" />
+                      <stop offset="0.5" stopColor="#34a853" />
+                      <stop offset="1" stopColor="#fbbc05" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">Gemini</div>
+              <div className="text-xs text-text-muted mt-0.5">Google AI</div>
+            </div>
+          </a>
+
+          {/* ── ChatGPT ── */}
+          <a
+            href="https://chatgpt.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(16,163,127,0.08), rgba(10,132,100,0.06))',
+              border: '1px solid rgba(16,163,127,0.20)',
+              boxShadow: '0 4px 20px rgba(16,163,127,0.08)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(16,163,127,0.22)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(16,163,127,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(16,163,127,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(16,163,127,0.20)'; }}
+          >
+            {/* ChatGPT logo */}
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #10a37f, #0a8463)' }}
+            >
+              <svg width="22" height="22" viewBox="0 0 41 41" fill="none">
+                <path d="M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835 9.964 9.964 0 0 0-6.211-2.614 10.079 10.079 0 0 0-9.614 6.977 9.967 9.967 0 0 0-6.664 4.834 10.08 10.08 0 0 0 1.24 11.817 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 6.212 2.614 10.079 10.079 0 0 0 9.617-6.981 9.967 9.967 0 0 0 6.663-4.834 10.079 10.079 0 0 0-1.243-11.814zM22.498 37.886a7.474 7.474 0 0 1-4.799-1.735c.061-.033.168-.091.237-.134l7.964-4.6a1.294 1.294 0 0 0 .655-1.134V19.054l3.366 1.944a.12.12 0 0 1 .066.092v9.299a7.505 7.505 0 0 1-7.49 7.496zM6.392 31.006a7.471 7.471 0 0 1-.894-5.023c.06.036.162.099.237.141l7.964 4.6a1.297 1.297 0 0 0 1.308 0l9.724-5.614v3.888a.12.12 0 0 1-.048.103l-8.051 4.649a7.504 7.504 0 0 1-10.24-2.744zM4.297 13.62A7.469 7.469 0 0 1 8.2 10.333c0 .068-.004.19-.004.274v9.201a1.294 1.294 0 0 0 .654 1.132l9.723 5.614-3.366 1.944a.12.12 0 0 1-.114.012L7.044 23.86a7.504 7.504 0 0 1-2.747-10.24zm27.658 6.437l-9.724-5.615 3.367-1.943a.121.121 0 0 1 .114-.012l8.048 4.648a7.498 7.498 0 0 1-1.158 13.528v-9.476a1.293 1.293 0 0 0-.647-1.13zm3.35-5.043c-.059-.037-.162-.099-.236-.141l-7.965-4.6a1.298 1.298 0 0 0-1.308 0l-9.723 5.614v-3.888a.12.12 0 0 1 .048-.103l8.05-4.645a7.497 7.497 0 0 1 11.135 7.763zm-21.063 6.929l-3.367-1.944a.12.12 0 0 1-.065-.092v-9.299a7.497 7.497 0 0 1 12.293-5.756 6.94 6.94 0 0 0-.236.134l-7.965 4.6a1.294 1.294 0 0 0-.654 1.132l-.006 11.225zm1.829-3.943l4.33-2.501 4.332 2.5v4.998l-4.331 2.5-4.331-2.5V18z" fill="white" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">ChatGPT</div>
+              <div className="text-xs text-text-muted mt-0.5">OpenAI</div>
+            </div>
+          </a>
+
+          {/* ── Claude ── */}
+          <a
+            href="https://claude.ai/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(210,139,89,0.08), rgba(193,110,55,0.06))',
+              border: '1px solid rgba(210,139,89,0.20)',
+              boxShadow: '0 4px 20px rgba(210,139,89,0.08)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(210,139,89,0.25)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(210,139,89,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(210,139,89,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(210,139,89,0.20)'; }}
+          >
+            {/* Claude logo */}
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #d28b59, #c16e37)' }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                <path d="M11.999 1.5C6.2 1.5 1.5 6.2 1.5 12s4.7 10.5 10.499 10.5S22.5 17.8 22.5 12 17.8 1.5 12 1.5zm-.86 14.993l-1.23-3.454H6.92l-1.23 3.454H4.22l3.958-10.986h1.574l3.958 10.986h-1.572zm6.292 0l-1.23-3.454h-2.99l-1.23 3.454h-1.47l3.958-10.986h1.574l3.958 10.986H17.43zM9.6 9.067L8.12 13.26h2.958L9.6 9.067zm6.293 0l-1.48 4.193h2.958L15.893 9.067z"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">Claude</div>
+              <div className="text-xs text-text-muted mt-0.5">Anthropic</div>
+            </div>
+          </a>
+
+          {/* ── Cursor AI ── */}
+          <a
+            href="https://www.cursor.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0,0,0,0.08), rgba(50,50,50,0.06))',
+              border: '1px solid rgba(0,0,0,0.15)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.15)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,0,0,0.3)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,0,0,0.15)'; }}
+          >
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #111, #333)' }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">Cursor AI</div>
+              <div className="text-xs text-text-muted mt-0.5">Next Gen Editor</div>
+            </div>
+          </a>
+
+          {/* ── Copilot ── */}
+          <a
+            href="https://copilot.microsoft.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0,102,214,0.08), rgba(0,120,212,0.06))',
+              border: '1px solid rgba(0,102,214,0.20)',
+              boxShadow: '0 4px 20px rgba(0,102,214,0.08)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(0,102,214,0.22)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,102,214,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(0,102,214,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,102,214,0.20)'; }}
+          >
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #0066d6, #0078d4)' }}
+            >
+              <Database size={20} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">Copilot</div>
+              <div className="text-xs text-text-muted mt-0.5">MS & GitHub AI</div>
+            </div>
+          </a>
+
+          {/* ── Claude Code ── */}
+          <a
+            href="https://www.anthropic.com/claude"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(165,125,100,0.08), rgba(145,105,80,0.06))',
+              border: '1px solid rgba(165,125,100,0.20)',
+              boxShadow: '0 4px 20px rgba(165,125,100,0.08)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(165,125,100,0.22)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(165,125,100,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(165,125,100,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(165,125,100,0.20)'; }}
+          >
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #a57d64, #916950)' }}
+            >
+              <FileText size={20} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">Claude Code</div>
+              <div className="text-xs text-text-muted mt-0.5">Developer CLI</div>
+            </div>
+          </a>
+
+          {/* ── Gemini Code ── */}
+          <a
+            href="https://aistudio.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(66,133,244,0.08), rgba(167,139,250,0.06))',
+              border: '1px solid rgba(66,133,244,0.20)',
+              boxShadow: '0 4px 20px rgba(66,133,244,0.08)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(66,133,244,0.22)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(66,133,244,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(66,133,244,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(66,133,244,0.20)'; }}
+          >
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #4285f4, #a78bfa)' }}
+            >
+              <Sparkles size={20} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">Gemini Code</div>
+              <div className="text-xs text-text-muted mt-0.5">AI Studio</div>
+            </div>
+          </a>
+
+          {/* ── Codex CLI ── */}
+          <a
+            href="https://github.com/openai/codex"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(20,20,20,0.08), rgba(0,0,0,0.06))',
+              border: '1px solid rgba(0,0,0,0.15)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.15)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,0,0,0.3)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,0,0,0.15)'; }}
+          >
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #222, #000)' }}
+            >
+              <Terminal size={20} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">Codex CLI</div>
+              <div className="text-xs text-text-muted mt-0.5">Terminal Agent</div>
+            </div>
+          </a>
+
+        </div>
+
+      </section>
 
       {/* Category Modal */}
       <CategoryModal
