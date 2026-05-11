@@ -14,67 +14,104 @@ export default function Layout() {
     { to: '/settings', icon: Settings, label: '설정', end: false },
   ];
 
+  const syncColor =
+    dataSource === 'github' ? '#10b981' :
+      dataSource === 'syncing' ? '#f59e0b' :
+        '#94a3b8';
+  const syncBg =
+    dataSource === 'github' ? 'rgba(16,185,129,0.12)' :
+      dataSource === 'syncing' ? 'rgba(245,158,11,0.12)' :
+        'rgba(148,163,184,0.10)';
+  const syncLabel =
+    dataSource === 'github' ? 'GitHub' :
+      dataSource === 'syncing' ? 'Syncing…' :
+        'Local';
+
   return (
     <div className="min-h-screen bg-bg-primary">
-      {/* Top Navigation */}
+
+      {/* ── Top Navigation ── */}
       <header className="sticky top-0 z-[1000] w-full">
-        <div className="flex items-center justify-center pt-4 pb-2 px-4">
-          <nav className="glass rounded-full px-2 py-1.5 flex items-center gap-1 shadow-2xl shadow-black/20">
-            {/* Logo */}
-            <NavLink to="/" className="flex items-center gap-2 px-4 py-2 mr-1">
-              <div className="w-6 h-6 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)' }}>
+        <div className="flex items-center justify-center pt-3 pb-2 px-4">
+          <nav
+            className="flex items-center gap-1 px-2 py-1.5 shadow-2xl"
+            style={{
+              background: 'var(--glass-bg)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: '999px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.06) inset',
+            }}
+          >
+            {/* ── Logo ── */}
+            <NavLink to="/" className="flex items-center gap-2 px-3 py-1.5 rounded-full mr-1 transition-all hover:bg-white/5">
+              <div
+                className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)', boxShadow: '0 4px 12px rgba(139,92,246,0.4)' }}
+              >
                 <BookOpen size={13} className="text-white" />
               </div>
-              <span className="text-sm font-black tracking-tight gradient-text hidden sm:inline">LearnVault</span>
+              <span
+                className="text-sm font-black tracking-tight hidden sm:inline"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+              >
+                Han's Knowledge
+              </span>
             </NavLink>
 
-            {/* Nav Items */}
+            {/* ── Nav Items ── */}
             {navItems.map(item => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
-                    isActive
-                      ? 'bg-white/10 text-white shadow-sm'
-                      : 'text-text-muted hover:text-text-primary hover:bg-white/5'
+                  `relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${isActive
+                    ? 'text-white'
+                    : 'text-text-muted hover:text-text-primary hover:bg-white/5'
                   }`
                 }
+                style={({ isActive }) => isActive ? {
+                  background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                  boxShadow: '0 4px 14px rgba(139,92,246,0.4)',
+                } : {}}
               >
-                <item.icon size={14} />
+                <item.icon size={13} />
                 <span className="hidden sm:inline">{item.label}</span>
               </NavLink>
             ))}
 
-            {/* Separator */}
-            <div className="w-px h-5 bg-border mx-1" />
+            {/* ── Separator ── */}
+            <div className="w-px h-5 mx-1" style={{ background: 'var(--glass-border)' }} />
 
-            {/* Search */}
+            {/* ── Search ── */}
             <div className="hidden md:block">
               <SearchBar />
             </div>
 
-            {/* Data source badge */}
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${
-              dataSource === 'github'
-                ? 'bg-emerald-500/10 text-emerald-400'
-                : dataSource === 'syncing'
-                ? 'bg-amber-500/10 text-amber-400 animate-pulse'
-                : 'bg-text-muted/10 text-text-muted'
-            }`}>
+            {/* ── Separator ── */}
+            <div className="w-px h-5 mx-1" style={{ background: 'var(--glass-border)' }} />
+
+            {/* ── Data source badge ── */}
+            <div
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${dataSource === 'syncing' ? 'animate-pulse' : ''}`}
+              style={{ background: syncBg, color: syncColor }}
+            >
               <Database size={10} />
-              <span>{dataSource === 'github' ? 'GitHub' : dataSource === 'syncing' ? 'Syncing' : 'Local'}</span>
+              <span className="hidden sm:inline">{syncLabel}</span>
             </div>
 
-            {/* Theme Toggle */}
+            {/* ── Theme Toggle ── */}
             <button
               onClick={toggleTheme}
-              className="p-2 ml-1 rounded-full text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+              className="p-2 ml-0.5 rounded-full transition-all hover:scale-110"
+              style={{ color: 'var(--color-text-muted)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(139,92,246,0.12)'; (e.currentTarget as HTMLButtonElement).style.color = '#8b5cf6'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-muted)'; }}
               title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
             >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
           </nav>
         </div>
@@ -86,7 +123,7 @@ export default function Layout() {
       </header>
 
       {/* Page Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-20" key={location.pathname}>
+      <main className="w-[92%] max-w-[1100px] mx-auto pb-20" key={location.pathname}>
         <Outlet />
       </main>
 

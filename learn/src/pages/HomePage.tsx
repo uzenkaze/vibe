@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, BookOpen, FolderOpen, Sparkles, ChevronRight, Library } from 'lucide-react';
+import { Plus, BookOpen, FolderOpen, Sparkles } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import { getRecentArticles } from '../services/storage';
 import CategoryCard from '../components/CategoryCard';
@@ -18,7 +18,7 @@ export default function HomePage() {
   const handleDragStart = (e: React.DragEvent, index: number) => {
     e.dataTransfer.setData('text/plain', index.toString());
     e.dataTransfer.effectAllowed = 'move';
-    
+
     const ghost = e.currentTarget.cloneNode(true) as HTMLElement;
     ghost.style.opacity = '0.5';
     ghost.style.position = 'absolute';
@@ -37,7 +37,7 @@ export default function HomePage() {
     e.preventDefault();
     setDragOverIndex(null);
     const sourceIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-    
+
     if (sourceIndex === targetIndex) return;
 
     const sortedCats = [...data.categories].sort((a, b) => a.order - b.order);
@@ -71,9 +71,9 @@ export default function HomePage() {
   // Fallback items if empty
   const displayItems = stackItems.length > 0 ? stackItems : [
     { id: '1', title: 'Knowledge Base', type: 'Category', icon: '📚', color: '#6366f1' },
-    { id: '2', title: 'Development',    type: 'Category', icon: '💻', color: '#8b5cf6' },
-    { id: '3', title: 'Design',         type: 'Category', icon: '🎨', color: '#a855f7' },
-    { id: '4', title: 'Architecture',   type: 'Category', icon: '🏗️', color: '#ec4899' },
+    { id: '2', title: 'Development', type: 'Category', icon: '💻', color: '#8b5cf6' },
+    { id: '3', title: 'Design', type: 'Category', icon: '🎨', color: '#a855f7' },
+    { id: '4', title: 'Architecture', type: 'Category', icon: '🏗️', color: '#ec4899' },
   ];
 
 
@@ -86,36 +86,68 @@ export default function HomePage() {
 
         {/* Left Side: Hero Text */}
         <div className="flex-1 space-y-6 text-center lg:text-left z-10 w-full">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-semibold mb-2">
-            <Library size={16} />
-            <span>LearnVault Hub</span>
+          {/* ── Badge ── */}
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase mb-2"
+            style={{
+              background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(6,182,212,0.10))',
+              border: '1px solid rgba(139,92,246,0.30)',
+              color: '#a78bfa',
+              letterSpacing: '0.10em',
+            }}
+          >
+            <Sparkles size={12} style={{ color: '#06b6d4' }} />
+            <span>Your Personal Knowledge OS</span>
           </div>
-          
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15]">
-            <span className="text-text-primary">배움과 지식을</span><br />
-            <span className="gradient-text">체계적으로 정리</span>
-          </h1>
-          
-          <p className="text-base sm:text-lg text-text-muted max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-            산재된 정보들을 한곳에 모으고, 필요할 때 빠르게 찾아보세요. <br className="hidden sm:block" />
-            당신만의 완벽한 지식 보관소를 지금 구축하세요.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-            <button 
-              onClick={() => setShowCategoryModal(true)}
-              className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-text-primary text-bg-primary font-bold hover:scale-105 transition-transform shadow-lg shadow-text-primary/20 w-full sm:w-auto justify-center"
+
+          {/* ── Heading ── */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12]">
+            <span className="text-text-primary">Organize one's</span><br />
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 40%, #06b6d4 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
             >
-              카테고리 생성 <ChevronRight size={18} />
+              learning and knowledge.
+            </span>
+          </h1>
+
+          {/* ── Subtext ── */}
+          <p className="text-base sm:text-lg text-text-muted max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+            Turn scattered notes into a structured knowledge base.<br className="hidden sm:block" />
+            Search instantly. Learn deliberately. Own your growth.
+          </p>
+
+          {/* ── CTA Buttons ── */}
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-4">
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              className="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold hover:scale-105 transition-all w-full sm:w-auto justify-center"
+              style={{
+                background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                color: '#fff',
+                boxShadow: '0 8px 24px rgba(139,92,246,0.4)',
+              }}
+            >
+              <Plus size={16} /> New Category
             </button>
             <button
               onClick={() => navigate('/docs')}
-              className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-transparent border-2 border-border text-text-primary font-bold hover:bg-bg-elevated hover:border-text-muted transition-colors w-full sm:w-auto justify-center"
+              className="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold transition-all w-full sm:w-auto justify-center"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: 'var(--color-text-primary)',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(139,92,246,0.10)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(139,92,246,0.30)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)'; }}
             >
-              문서 보기
+              <BookOpen size={15} /> Browse Docs
             </button>
           </div>
-          
+
           {/* Stats — vivid pill cards */}
           <div className="flex justify-center lg:justify-start gap-3 pt-8 flex-wrap">
             {/* 카테고리 */}
@@ -136,7 +168,7 @@ export default function HomePage() {
                   <div className="w-5 h-5 rounded-full flex items-center justify-center"
                     style={{ background: 'rgba(255,255,255,0.25)' }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
@@ -165,7 +197,7 @@ export default function HomePage() {
                   <div className="w-5 h-5 rounded-full flex items-center justify-center"
                     style={{ background: 'rgba(255,255,255,0.25)' }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
@@ -318,36 +350,36 @@ export default function HomePage() {
             </button>
           </div>
 
-        {totalCategories === 0 ? (
-          <div className="text-center py-16 rounded-2xl border border-dashed border-border">
-            <FolderOpen size={40} className="text-text-muted mx-auto mb-3" />
-            <p className="text-sm text-text-muted mb-4">아직 카테고리가 없습니다</p>
-            <button
-              onClick={() => setShowCategoryModal(true)}
-              className="px-5 py-2.5 rounded-xl text-sm font-bold bg-accent hover:bg-accent-hover text-white transition-all"
-            >
-              첫 카테고리 만들기
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 stagger-children">
-            {data.categories
-              .sort((a, b) => a.order - b.order)
-              .map((cat, index) => (
-                <div
-                  key={cat.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDragLeave={() => setDragOverIndex(null)}
-                  onDrop={(e) => handleDrop(e, index)}
-                  className={`transition-all duration-200 ${dragOverIndex === index ? 'scale-105 ring-2 ring-accent ring-offset-4 ring-offset-bg-primary' : ''}`}
-                >
-                  <CategoryCard category={cat} />
-                </div>
-              ))}
-          </div>
-        )}
+          {totalCategories === 0 ? (
+            <div className="text-center py-16 rounded-2xl border border-dashed border-border">
+              <FolderOpen size={40} className="text-text-muted mx-auto mb-3" />
+              <p className="text-sm text-text-muted mb-4">아직 카테고리가 없습니다</p>
+              <button
+                onClick={() => setShowCategoryModal(true)}
+                className="px-5 py-2.5 rounded-xl text-sm font-bold bg-accent hover:bg-accent-hover text-white transition-all"
+              >
+                첫 카테고리 만들기
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 stagger-children">
+              {data.categories
+                .sort((a, b) => a.order - b.order)
+                .map((cat, index) => (
+                  <div
+                    key={cat.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDragLeave={() => setDragOverIndex(null)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    className={`transition-all duration-200 ${dragOverIndex === index ? 'scale-105 ring-2 ring-accent ring-offset-4 ring-offset-bg-primary' : ''}`}
+                  >
+                    <CategoryCard category={cat} />
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       </section>
 
