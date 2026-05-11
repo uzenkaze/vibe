@@ -117,12 +117,6 @@
       "createdAt": "2026-05-11T06:35:05.371Z"
     },
     {
-      "id": "memo_mp0tvbpa_zsjv4",
-      "content": "ㅎㅎㅎ",
-      "color": "#ffedd5",
-      "createdAt": "2026-05-11T06:35:38.878Z"
-    },
-    {
       "id": "memo_mp0tv5bl_0g2yz",
       "content": "ㄷㄷㄷ",
       "color": "#dbeafe",
@@ -145,6 +139,14 @@
       "content": "ㅁㅁㅁ",
       "color": "#fee2e2",
       "createdAt": "2026-05-11T06:35:14.043Z"
+    }
+  ],
+  "trash": [
+    {
+      "id": "memo_mp0tvbpa_zsjv4",
+      "content": "ㅎㅎㅎ",
+      "color": "#ffedd5",
+      "createdAt": "2026-05-11T06:35:38.878Z"
     }
   ]
 }
