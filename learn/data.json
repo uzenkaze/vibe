@@ -83,6 +83,17 @@
       "id": "art_mowjl0p9_elfwt",
       "createdAt": "2026-05-08T06:36:37.197Z",
       "updatedAt": "2026-05-08T07:02:48.968Z"
+    },
+    {
+      "categoryId": "cat_mp0khcjz_c2six",
+      "title": "학습참고영상",
+      "content": "https://www.youtube.com/playlist?list=PLjTjiGdGPyO2dztRNgMvqQxyFyiFTkCpW",
+      "references": [],
+      "tags": [],
+      "isPinned": false,
+      "id": "art_mp0khr8w_y54bm",
+      "createdAt": "2026-05-11T02:13:09.296Z",
+      "updatedAt": "2026-05-11T02:13:09.296Z"
     }
   ]
 }
