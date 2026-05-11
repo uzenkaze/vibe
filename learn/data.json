@@ -135,16 +135,16 @@
       "createdAt": "2026-05-11T06:35:34.700Z"
     },
     {
-      "id": "memo_mp0tusjf_41k67",
-      "content": "ㅁㅁㅁ",
-      "color": "#fee2e2",
-      "createdAt": "2026-05-11T06:35:14.043Z"
-    },
-    {
       "id": "memo_mp0tv1nf_prmr8",
       "content": "메모",
       "color": "#dcfce7",
       "createdAt": "2026-05-11T06:35:25.851Z"
+    },
+    {
+      "id": "memo_mp0tusjf_41k67",
+      "content": "ㅁㅁㅁ",
+      "color": "#fee2e2",
+      "createdAt": "2026-05-11T06:35:14.043Z"
     }
   ]
 }
