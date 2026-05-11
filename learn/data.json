@@ -117,12 +117,6 @@
       "createdAt": "2026-05-11T06:35:05.371Z"
     },
     {
-      "id": "memo_mp0tv5bl_0g2yz",
-      "content": "ㄷㄷㄷ",
-      "color": "#dbeafe",
-      "createdAt": "2026-05-11T06:35:30.609Z"
-    },
-    {
       "id": "memo_mp0tv8h8_04pyk",
       "content": "ㅇㅇㅇ",
       "color": "#f3e8ff",
@@ -142,6 +136,12 @@
     }
   ],
   "trash": [
+    {
+      "id": "memo_mp0tv5bl_0g2yz",
+      "content": "ㄷㄷㄷ",
+      "color": "#dbeafe",
+      "createdAt": "2026-05-11T06:35:30.609Z"
+    },
     {
       "id": "memo_mp0tvbpa_zsjv4",
       "content": "메모를 삭제하면 휴지통으로 이동하며 복구가능해요",
