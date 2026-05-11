@@ -111,6 +111,12 @@
   ],
   "memos": [
     {
+      "id": "memo_mp0tvbpa_zsjv4",
+      "content": "ㅎㅎㅎ",
+      "color": "#ffedd5",
+      "createdAt": "2026-05-11T06:35:38.878Z"
+    },
+    {
       "id": "memo_mp0tuluj_x531p",
       "content": "생각나면 적어",
       "color": "#fef9c3",
@@ -141,12 +147,5 @@
       "createdAt": "2026-05-11T06:35:14.043Z"
     }
   ],
-  "trash": [
-    {
-      "id": "memo_mp0tvbpa_zsjv4",
-      "content": "ㅎㅎㅎ",
-      "color": "#ffedd5",
-      "createdAt": "2026-05-11T06:35:38.878Z"
-    }
-  ]
+  "trash": []
 }
