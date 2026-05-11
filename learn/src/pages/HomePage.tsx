@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, BookOpen, FolderOpen, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, BookOpen, FolderOpen, Sparkles, ChevronRight, Library } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import { getRecentArticles } from '../services/storage';
 import CategoryCard from '../components/CategoryCard';
@@ -7,7 +8,9 @@ import ArticleCard from '../components/ArticleCard';
 import CategoryModal from '../components/CategoryModal';
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const { data, addCategory, reorderCategories } = useStore();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const recentArticles = getRecentArticles(data, 6);
@@ -16,7 +19,6 @@ export default function HomePage() {
     e.dataTransfer.setData('text/plain', index.toString());
     e.dataTransfer.effectAllowed = 'move';
     
-    // 커스텀 드래그 이미지 설정 (선택사항)
     const ghost = e.currentTarget.cloneNode(true) as HTMLElement;
     ghost.style.opacity = '0.5';
     ghost.style.position = 'absolute';
@@ -49,54 +51,272 @@ export default function HomePage() {
   const totalArticles = data.articles.length;
   const totalCategories = data.categories.length;
 
+  // Gradients for stacked cards matching the attached image vibe
+  const cardGradients = [
+    'from-[#1e293b] to-[#0f172a]', // Slate dark
+    'from-[#312e81] to-[#1e1b4b]', // Indigo dark
+    'from-[#4c1d95] to-[#2e1065]', // Violet dark
+    'from-[#701a75] to-[#4a044e]', // Fuchsia dark
+    'from-[#be185d] to-[#831843]', // Pink dark
+    'from-[#e11d48] to-[#881337]', // Rose dark
+    'from-[#f43f5e] to-[#9f1239]', // Rose bright
+  ];
+
+  // 카테고리만 히어로 스택에 표시
+  const stackItems = data.categories
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 6)
+    .map(c => ({ id: c.id, title: c.name, type: 'Category', icon: c.icon, color: c.color }));
+
+  // Fallback items if empty
+  const displayItems = stackItems.length > 0 ? stackItems : [
+    { id: '1', title: 'Knowledge Base', type: 'Category', icon: '📚', color: '#6366f1' },
+    { id: '2', title: 'Development',    type: 'Category', icon: '💻', color: '#8b5cf6' },
+    { id: '3', title: 'Design',         type: 'Category', icon: '🎨', color: '#a855f7' },
+    { id: '4', title: 'Architecture',   type: 'Category', icon: '🏗️', color: '#ec4899' },
+  ];
+
+
   return (
-    <div className="py-8 space-y-12">
-      {/* Hero Section */}
-      <section className="text-center py-12 animate-fade-in">
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-3xl bg-accent/10 flex items-center justify-center">
-            <BookOpen size={28} className="text-accent" />
+    <div className="pb-16 space-y-16">
+      {/* Hero Section (2-Column Layout) */}
+      <section className="relative pt-12 lg:pt-20 pb-12 flex flex-col lg:flex-row items-center gap-16 lg:gap-8 animate-fade-in overflow-hidden">
+        {/* Background glow effect */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-accent/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
+        {/* Left Side: Hero Text */}
+        <div className="flex-1 space-y-6 text-center lg:text-left z-10 w-full">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-semibold mb-2">
+            <Library size={16} />
+            <span>LearnVault Hub</span>
+          </div>
+          
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15]">
+            <span className="text-text-primary">배움과 지식을</span><br />
+            <span className="gradient-text">체계적으로 정리</span>
+          </h1>
+          
+          <p className="text-base sm:text-lg text-text-muted max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+            산재된 정보들을 한곳에 모으고, 필요할 때 빠르게 찾아보세요. <br className="hidden sm:block" />
+            당신만의 완벽한 지식 보관소를 지금 구축하세요.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+            <button 
+              onClick={() => setShowCategoryModal(true)}
+              className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-text-primary text-bg-primary font-bold hover:scale-105 transition-transform shadow-lg shadow-text-primary/20 w-full sm:w-auto justify-center"
+            >
+              카테고리 생성 <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={() => navigate('/docs')}
+              className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-transparent border-2 border-border text-text-primary font-bold hover:bg-bg-elevated hover:border-text-muted transition-colors w-full sm:w-auto justify-center"
+            >
+              문서 보기
+            </button>
+          </div>
+          
+          {/* Stats — vivid pill cards */}
+          <div className="flex justify-center lg:justify-start gap-3 pt-8 flex-wrap">
+            {/* 카테고리 */}
+            <div
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl min-w-[150px] relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 8px 24px rgba(99,102,241,0.4)' }}
+            >
+              {/* Gloss */}
+              <div className="absolute inset-0 pointer-events-none rounded-2xl"
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
+                style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}>
+                🗂️
+              </div>
+              <div className="flex-1 relative z-10">
+                <div className="flex items-center justify-between">
+                  <span className="text-white text-xs font-bold">카테고리</span>
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(255,255,255,0.25)' }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <span className="text-white/80 text-xl font-black block leading-tight">{totalCategories}</span>
+                {/* Progress bar */}
+                <div className="mt-1.5 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <div className="h-1 rounded-full" style={{ width: `${Math.min(100, totalCategories * 10)}%`, background: 'rgba(255,255,255,0.7)' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* 아티클 */}
+            <div
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl min-w-[150px] relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', boxShadow: '0 8px 24px rgba(6,182,212,0.4)' }}
+            >
+              <div className="absolute inset-0 pointer-events-none rounded-2xl"
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
+                style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}>
+                📄
+              </div>
+              <div className="flex-1 relative z-10">
+                <div className="flex items-center justify-between">
+                  <span className="text-white text-xs font-bold">아티클</span>
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(255,255,255,0.25)' }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <span className="text-white/80 text-xl font-black block leading-tight">{totalArticles}</span>
+                <div className="mt-1.5 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <div className="h-1 rounded-full" style={{ width: `${Math.min(100, totalArticles * 5)}%`, background: 'rgba(255,255,255,0.7)' }} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-3">
-          <span className="gradient-text">Learn</span>Vault
-        </h1>
-        <p className="text-text-muted text-sm sm:text-base max-w-md mx-auto leading-relaxed">
-          배움과 지식을 체계적으로 정리하고, 필요할 때 빠르게 찾아보세요.
-        </p>
 
-        {/* Stats */}
-        <div className="flex justify-center gap-8 mt-8">
-          {[
-            { label: '카테고리', value: totalCategories, icon: FolderOpen },
-            { label: '아티클', value: totalArticles, icon: BookOpen },
-          ].map(stat => (
-            <div key={stat.label} className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <stat.icon size={14} className="text-accent" />
-                <span className="text-2xl font-black text-text-primary">{stat.value}</span>
-              </div>
-              <span className="text-xs text-text-muted font-semibold uppercase tracking-wider">{stat.label}</span>
-            </div>
-          ))}
+
+        {/* Right Side: Stacked Cards Animation */}
+        <div className="flex-1 flex justify-center items-center w-full min-h-[440px] z-10" style={{ perspective: '1400px' }}>
+          <div
+            className="relative"
+            style={{
+              width: '360px',
+              height: '400px',
+              transformStyle: 'preserve-3d',
+              transform: 'rotateX(52deg) rotateZ(-44deg)',
+              transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            {/* Base platform */}
+            <div style={{
+              position: 'absolute',
+              inset: '-40px',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '36px',
+              background: 'rgba(255,255,255,0.03)',
+              backdropFilter: 'blur(8px)',
+              transform: 'translateZ(-10px)',
+            }} />
+
+            {/* Cards */}
+            {displayItems.map((item, visualIndex) => {
+              const total = displayItems.length;
+              const spreadStep = 48;
+              const tx = (total - 1 - visualIndex) * -spreadStep * 0.6;
+              const ty = (total - 1 - visualIndex) * spreadStep * 0.6;
+              const tz = visualIndex * 12;
+              const isHovered = hoveredCard === visualIndex;
+              const hoverTz = 260;
+              const hoverTx = tx - 20;
+              const hoverTy = ty + 10;
+
+              // 카테고리 고유 색상 사용
+              const cardColor = (item as { color?: string }).color || cardGradients[visualIndex % cardGradients.length];
+              const hasOwnColor = !!(item as { color?: string }).color;
+              const cardIcon = (item as { icon?: string }).icon;
+
+              return (
+                <div
+                  key={item.id + visualIndex}
+                  onMouseEnter={() => setHoveredCard(visualIndex)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  onClick={() => navigate(`/category/${item.id}`)}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    zIndex: isHovered ? 100 : visualIndex + 5,
+                    background: hasOwnColor
+                      ? `linear-gradient(145deg, ${cardColor} 0%, ${cardColor}bb 100%)`
+                      : undefined,
+                    transform: isHovered
+                      ? `translate3d(${hoverTx}px, ${hoverTy}px, ${hoverTz}px) rotateX(-52deg) rotateZ(44deg) scale(1.1)`
+                      : `translate3d(${tx}px, ${ty}px, ${tz}px)`,
+                    transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease',
+                    boxShadow: isHovered
+                      ? `0 40px 80px ${hasOwnColor ? cardColor + '80' : 'rgba(0,0,0,0.5)'}, 0 0 0 1px rgba(255,255,255,0.15)`
+                      : '-8px 8px 24px rgba(0,0,0,0.25)',
+                    filter: isHovered ? 'brightness(1.15)' : 'none',
+                  }}
+                  className={`${!hasOwnColor ? `bg-gradient-to-br ${cardColor}` : ''} border border-white/10 flex flex-col justify-between p-5 sm:p-6 overflow-hidden`}
+                >
+                  {/* Sheen overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-transparent pointer-events-none rounded-[20px]" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none rounded-[20px]" />
+                  {/* Decorative circle */}
+                  <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-20 pointer-events-none"
+                    style={{ background: 'rgba(255,255,255,0.5)' }} />
+
+                  {/* Top row: index number */}
+                  <div className="w-full flex justify-between items-start z-10 relative">
+                    <div className="flex gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-white/30" />
+                      <div className="w-2 h-2 rounded-full bg-white/20" />
+                    </div>
+                    <span className="text-white/30 text-[10px] font-mono font-bold tracking-widest">
+                      {String(visualIndex + 1).padStart(2, '0')}
+                    </span>
+                  </div>
+
+                  {/* Bottom row: icon + title */}
+                  <div className="z-10 relative">
+                    {cardIcon && (
+                      <span className="text-2xl mb-1.5 block" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>
+                        {cardIcon}
+                      </span>
+                    )}
+                    <div className="text-white/60 text-[10px] font-bold uppercase tracking-[0.15em] mb-0.5">
+                      Category
+                    </div>
+                    <div className="text-white text-xl sm:text-2xl font-black leading-tight tracking-tight"
+                      style={{ textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                      {item.title}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
       {/* Categories Section */}
       <section className="animate-slide-up">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Sparkles size={16} className="text-accent" />
-            <h2 className="text-lg font-bold text-text-primary">카테고리</h2>
+        {/* Section container with light card-like panel */}
+        <div
+          className="rounded-3xl p-8"
+          style={{
+            background: 'rgba(248, 249, 255, 0.6)',
+            border: '1px solid rgba(0,0,0,0.05)',
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-xl flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #a78bfa, #06b6d4)' }}>
+                <Sparkles size={14} className="text-white" />
+              </div>
+              <h2 className="text-base font-bold" style={{ color: '#111827' }}>전체 카테고리</h2>
+            </div>
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, #ede9fe, #e0f2fe)',
+                color: '#7c3aed',
+                border: '1px solid rgba(139,92,246,0.15)',
+              }}
+            >
+              <Plus size={13} />
+              새 카테고리
+            </button>
           </div>
-          <button
-            onClick={() => setShowCategoryModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-accent/10 text-accent hover:bg-accent/20 transition-all"
-          >
-            <Plus size={14} />
-            새 카테고리
-          </button>
-        </div>
 
         {totalCategories === 0 ? (
           <div className="text-center py-16 rounded-2xl border border-dashed border-border">
@@ -110,7 +330,7 @@ export default function HomePage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 stagger-children">
             {data.categories
               .sort((a, b) => a.order - b.order)
               .map((cat, index) => (
@@ -128,6 +348,7 @@ export default function HomePage() {
               ))}
           </div>
         )}
+        </div>
       </section>
 
       {/* Recent Articles */}

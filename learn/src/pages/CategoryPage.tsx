@@ -1,11 +1,24 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Settings, Trash2, Search } from 'lucide-react';
+import { ArrowLeft, Plus, Settings, Trash2, Search, FileText } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import { getCategoryById, getArticlesByCategory } from '../services/storage';
 import ArticleCard from '../components/ArticleCard';
 import ArticleEditor from '../components/ArticleEditor';
 import CategoryModal from '../components/CategoryModal';
+
+function darken(hex: string, amount = 0.25): string {
+  const m = hex.replace('#', '').match(/.{2}/g);
+  if (!m) return hex;
+  return '#' + m.map(v => Math.max(0, Math.round(parseInt(v, 16) * (1 - amount))).toString(16).padStart(2, '0')).join('');
+}
+
+function getTextColor(hex: string): 'white' | 'dark' {
+  const m = hex.replace('#', '').match(/.{2}/g);
+  if (!m) return 'white';
+  const [r, g, b] = m.map(v => parseInt(v, 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 ? 'dark' : 'white';
+}
 
 export default function CategoryPage() {
   const { id } = useParams<{ id: string }>();
@@ -45,47 +58,91 @@ export default function CategoryPage() {
     }
   };
 
+  const textMode = getTextColor(category.color);
+  const isLight = textMode === 'dark';
+  const textPrimary = isLight ? '#111827' : '#ffffff';
+  const textMuted = isLight ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.72)';
+
   return (
     <div className="py-8 space-y-8">
-      {/* Header */}
-      <div className="animate-fade-in">
-        <button onClick={() => navigate('/')} className="flex items-center gap-2 text-xs text-text-muted hover:text-text-primary transition-colors mb-6">
-          <ArrowLeft size={14} />
-          <span>홈으로</span>
-        </button>
+      {/* Back button */}
+      <button
+        onClick={() => navigate('/')}
+        className="flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-text-primary transition-colors animate-fade-in"
+      >
+        <ArrowLeft size={14} />
+        <span>홈으로</span>
+      </button>
 
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl" style={{ backgroundColor: `${category.color}15` }}>
+      {/* ── Hero Banner ── */}
+      <div
+        className="relative rounded-3xl overflow-hidden animate-fade-in"
+        style={{
+          background: `linear-gradient(145deg, ${category.color} 0%, ${darken(category.color, 0.22)} 100%)`,
+          boxShadow: `0 12px 40px ${darken(category.color, 0.1)}60`,
+        }}
+      >
+        {/* Gloss */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 55%, rgba(0,0,0,0.08) 100%)' }} />
+        {/* Decorative circles */}
+        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-15 pointer-events-none"
+          style={{ background: 'rgba(255,255,255,0.6)' }} />
+        <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10 pointer-events-none"
+          style={{ background: 'rgba(255,255,255,0.5)' }} />
+
+        <div className="relative p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          {/* Left: icon + info */}
+          <div className="flex items-center gap-5">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0"
+              style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}
+            >
               {category.icon}
             </div>
             <div>
-              <h1 className="text-2xl font-black text-text-primary">{category.name}</h1>
-              <p className="text-sm text-text-muted mt-0.5">
-                {(category.description || '설명 없음')
-                  .replace(/<[^>]+>/g, '')
-                  .replace(/@@[^:]+:([^@]+)@@/g, '$1')
-                  .replace(/==([^=]+)==/g, '$1')
-                  .replace(/\+\+([^+]+)\+\+/g, '$1')
-                  .replace(/#{1,6}\s/gm, '')
-                  .replace(/^\s*>\s*/gm, '')
-                  .replace(/\n+/g, ' ')
-                  .replace(/\s+/g, ' ')
-                  .trim()} · {articles.length}개 아티클
+              <h1 className="text-2xl font-black tracking-tight" style={{ color: textPrimary }}>
+                {category.name}
+              </h1>
+              <p className="text-sm mt-1" style={{ color: textMuted }}>
+                {(category.description || '설명 없음').replace(/<[^>]+>/g, '').replace(/\n+/g, ' ').trim().slice(0, 80)}
               </p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <FileText size={11} style={{ color: textMuted }} />
+                <span className="text-xs font-bold" style={{ color: textMuted }}>
+                  {articles.length}개 아티클
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button onClick={() => setShowCategoryEdit(true)} className="p-2.5 rounded-xl border border-border hover:bg-bg-hover transition-colors text-text-muted hover:text-text-primary">
+          {/* Right: actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => setShowCategoryEdit(true)}
+              className="p-2.5 rounded-xl transition-colors"
+              style={{ background: 'rgba(255,255,255,0.15)', color: textPrimary }}
+              title="카테고리 수정"
+            >
               <Settings size={16} />
             </button>
-            <button onClick={handleDeleteCategory} className="p-2.5 rounded-xl border border-border hover:bg-accent-rose/10 hover:border-accent-rose/30 transition-colors text-text-muted hover:text-accent-rose">
+            <button
+              onClick={handleDeleteCategory}
+              className="p-2.5 rounded-xl transition-colors hover:bg-red-500/30"
+              style={{ background: 'rgba(255,255,255,0.15)', color: textPrimary }}
+              title="카테고리 삭제"
+            >
               <Trash2 size={16} />
             </button>
             <button
               onClick={() => setShowEditor(true)}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold bg-accent hover:bg-accent-hover text-white transition-all shadow-lg shadow-accent/20"
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.25)',
+                backdropFilter: 'blur(8px)',
+                color: textPrimary,
+                border: '1px solid rgba(255,255,255,0.3)',
+              }}
             >
               <Plus size={14} />
               새 아티클
@@ -95,30 +152,33 @@ export default function CategoryPage() {
       </div>
 
       {/* Search */}
-      <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        <div className="relative">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="이 카테고리에서 검색..."
-            className="w-full bg-bg-secondary border border-border rounded-2xl pl-11 pr-4 py-3 text-sm text-text-primary outline-none focus:border-accent/40 transition-colors"
-          />
-        </div>
+      <div className="relative animate-fade-in">
+        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="이 카테고리에서 검색..."
+          className="w-full bg-bg-elevated border border-border rounded-2xl pl-11 pr-4 py-3 text-sm text-text-primary outline-none focus:border-accent/40 transition-colors"
+          style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+        />
       </div>
 
       {/* Articles Grid */}
       {articles.length === 0 ? (
-        <div className="text-center py-16 rounded-2xl border border-dashed border-border animate-fade-in">
-          <p className="text-3xl mb-3">{category.icon}</p>
+        <div className="text-center py-20 rounded-3xl" style={{ border: '1px dashed var(--color-border)' }}>
+          <span className="text-5xl block mb-4">{category.icon}</span>
           <p className="text-sm text-text-muted mb-4">
             {searchQuery ? '검색 결과가 없습니다' : '아직 아티클이 없습니다'}
           </p>
           {!searchQuery && (
             <button
               onClick={() => setShowEditor(true)}
-              className="px-5 py-2.5 rounded-xl text-sm font-bold bg-accent hover:bg-accent-hover text-white transition-all"
+              className="px-6 py-3 rounded-2xl text-sm font-bold text-white transition-all shadow-lg"
+              style={{
+                background: `linear-gradient(135deg, ${category.color}, ${darken(category.color, 0.2)})`,
+                boxShadow: `0 8px 24px ${category.color}40`,
+              }}
             >
               첫 아티클 작성하기
             </button>

@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Home, Settings, Database, Sun, Moon } from 'lucide-react';
+import { BookOpen, Home, Settings, Database, Sun, Moon, FileText } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import SearchBar from './SearchBar';
 import Toast from './Toast';
@@ -9,8 +9,9 @@ export default function Layout() {
   const location = useLocation();
 
   const navItems = [
-    { to: '/', icon: Home, label: '홈' },
-    { to: '/settings', icon: Settings, label: '설정' },
+    { to: '/', icon: Home, label: '홈', end: true },
+    { to: '/docs', icon: FileText, label: '문서', end: false },
+    { to: '/settings', icon: Settings, label: '설정', end: false },
   ];
 
   return (
@@ -21,7 +22,10 @@ export default function Layout() {
           <nav className="glass rounded-full px-2 py-1.5 flex items-center gap-1 shadow-2xl shadow-black/20">
             {/* Logo */}
             <NavLink to="/" className="flex items-center gap-2 px-4 py-2 mr-1">
-              <BookOpen size={18} className="text-accent" />
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)' }}>
+                <BookOpen size={13} className="text-white" />
+              </div>
               <span className="text-sm font-black tracking-tight gradient-text hidden sm:inline">LearnVault</span>
             </NavLink>
 
@@ -30,11 +34,11 @@ export default function Layout() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/'}
+                end={item.end}
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
                     isActive
-                      ? 'bg-white/10 text-white'
+                      ? 'bg-white/10 text-white shadow-sm'
                       : 'text-text-muted hover:text-text-primary hover:bg-white/5'
                   }`
                 }
@@ -55,9 +59,9 @@ export default function Layout() {
             {/* Data source badge */}
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${
               dataSource === 'github'
-                ? 'bg-accent-green/10 text-accent-green'
+                ? 'bg-emerald-500/10 text-emerald-400'
                 : dataSource === 'syncing'
-                ? 'bg-accent-amber/10 text-accent-amber animate-pulse'
+                ? 'bg-amber-500/10 text-amber-400 animate-pulse'
                 : 'bg-text-muted/10 text-text-muted'
             }`}>
               <Database size={10} />

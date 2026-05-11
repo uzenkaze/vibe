@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import CategoryPage from './pages/CategoryPage';
 import ArticlePage from './pages/ArticlePage';
 import SettingsPage from './pages/SettingsPage';
+import DocsPage from './pages/DocsPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/category/:id" element={<CategoryPage />} />
             <Route path="/article/:id" element={<ArticlePage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/docs" element={<DocsPage />} />
           </Route>
         </Routes>
       </HashRouter>

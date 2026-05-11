@@ -244,3 +244,19 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Isometric Stack */
+.preserve-3d { transform-style: preserve-3d; }
+.iso-card-wrapper {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+.group:hover .iso-card-wrapper {
+  transform: translate3d(var(--hover-tx), var(--hover-ty), var(--hover-tz));
+  box-shadow: -30px 30px 50px rgba(0, 0, 0, 0.15);
+}
+.group:hover .iso-card-wrapper:hover {
+  transform: translate3d(calc(var(--hover-tx) - 20px), calc(var(--hover-ty) + 20px), calc(var(--hover-tz) + 160px)) rotateY(40deg) rotateX(-50deg) rotateZ(40deg) scale(1.15) !important;
+  box-shadow: -10px 30px 60px rgba(0, 0, 0, 0.4) !important;
+  filter: brightness(1.15);
+  z-index: 100 !important;
+}
