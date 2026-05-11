@@ -197,11 +197,11 @@ export default function ArticlePage() {
       {/* ── References ── */}
       {article.references.length > 0 && (
         <div className="animate-fade-in" style={{ animationDelay: '0.15s' }}>
-          <div className="flex items-center gap-2 mb-4">
-            <ExternalLink size={14} className="text-text-muted" />
-            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">참고 사이트</span>
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-1.5 h-4 bg-accent rounded-full" />
+            <h2 className="text-lg font-bold text-text-primary">사이트</h2>
           </div>
-          <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
             {article.references.map((ref, idx) => {
               const ytId = getYouTubeId(ref.url);
               if (ytId) {
@@ -277,24 +277,34 @@ export default function ArticlePage() {
                   href={ref.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-4 rounded-2xl transition-all group hover:-translate-y-0.5"
+                  className="flex flex-col rounded-2xl transition-all group hover:-translate-y-1 overflow-hidden"
                   style={{
                     background: 'var(--color-bg-elevated)',
                     border: `1px solid ${heroColor}25`,
-                    boxShadow: `0 2px 8px ${heroColor}10`,
+                    boxShadow: `0 4px 12px ${heroColor}15`,
                   }}
                 >
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${heroColor}18` }}
-                  >
-                    <ExternalLink size={14} style={{ color: heroColor }} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold text-text-primary group-hover:text-accent transition-colors truncate">
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div
+                        className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${heroColor}15` }}
+                      >
+                        <ExternalLink size={14} style={{ color: heroColor }} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-text-muted uppercase tracking-tight truncate">
+                          {new URL(ref.url).hostname}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-text-primary group-hover:text-accent transition-colors line-clamp-2 min-h-[40px] leading-snug">
                       {ref.title || ref.url}
                     </div>
-                    <div className="text-xs text-text-muted truncate mt-0.5">{ref.url}</div>
+                    <div className="text-[11px] text-text-muted truncate mt-3 opacity-60 flex items-center gap-1.5">
+                      <div className="w-1 h-1 rounded-full bg-text-muted opacity-40" />
+                      {ref.url}
+                    </div>
                   </div>
                 </a>
               );
@@ -303,10 +313,13 @@ export default function ArticlePage() {
         </div>
       )}
 
-      {/* ── FAB: 우측 고정, 아이콘 → 텍스트 펼침 ── */}
+      {/* ── FAB: 카드 영역 우측 추적 ── */}
       <div
-        className="fixed z-50 animate-fade-in"
-        style={{ top: '140px', right: '16px' }}
+        className="fixed z-50 animate-fade-in transition-all duration-500"
+        style={{ 
+          top: '200px', 
+          right: 'max(16px, calc(50% - 610px))'
+        }}
         onMouseEnter={() => setFabHovered(true)}
         onMouseLeave={() => setFabHovered(false)}
       >

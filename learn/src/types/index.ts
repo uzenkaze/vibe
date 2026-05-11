@@ -26,9 +26,18 @@ export interface Category {
   order: number;
 }
 
+export interface Memo {
+  id: string;
+  content: string;
+  color: string;
+  createdAt: string;
+}
+
 export interface AppData {
   categories: Category[];
   articles: Article[];
+  memos: Memo[];
+  trash: Memo[];
 }
 
 export interface GitHubConfig {

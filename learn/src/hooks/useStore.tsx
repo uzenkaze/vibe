@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import type { AppData, Category, Article, GitHubConfig, DataSource } from '../types';
-import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle } from '../services/storage';
+import type { AppData, Category, Article, GitHubConfig, DataSource, Memo } from '../types';
+import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle, createMemo, deleteMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos, updateMemo } from '../services/storage';
 import { getGitHubConfig, saveGitHubConfig, downloadFromGitHub, uploadToGitHub } from '../services/github';
 
 interface StoreContextType {
@@ -16,6 +16,14 @@ interface StoreContextType {
   addArticle: (input: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>) => void;
   editArticle: (id: string, updates: Partial<Article>) => void;
   removeArticle: (id: string) => void;
+  // Memo actions
+  addMemo: (content: string, color: string) => void;
+  removeMemo: (id: string) => void;
+  editMemo: (id: string, content: string) => void;
+  restoreMemo: (id: string) => void;
+  permanentlyDeleteMemo: (id: string) => void;
+  emptyTrash: () => void;
+  reorderMemos: (memos: Memo[]) => void;
   // GitHub actions
   updateGhConfig: (config: GitHubConfig) => void;
   syncDown: () => Promise<void>;
@@ -69,6 +77,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [ghConfig]);
 
+  // functional helper
+  const updateData = useCallback((fn: (prev: AppData) => AppData) => {
+    setData(prev => {
+      const next = fn(prev);
+      saveData(next);
+      if (ghConfig.token && ghConfig.autoSync) {
+        uploadToGitHub(ghConfig, next).then(ok => {
+          if (ok) setDataSource('github');
+        }).catch(console.error);
+      }
+      return next;
+    });
+  }, [ghConfig]);
+
   // Category actions
   const addCategory = useCallback((input: Omit<Category, 'id' | 'createdAt' | 'order'>) => {
     const newData = createCategory(data, input);
@@ -112,6 +134,41 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     showToast('아티클이 삭제되었습니다');
   }, [data, persistAndSync, showToast]);
 
+  // Memo actions
+  const addMemo = useCallback((content: string, color: string) => {
+    const newData = createMemo(data, content, color);
+    persistAndSync(newData);
+  }, [data, persistAndSync]);
+
+  const removeMemo = useCallback((id: string) => {
+    const newData = deleteMemo(data, id);
+    persistAndSync(newData);
+    showToast('메모가 삭제되었습니다');
+  }, [data, persistAndSync, showToast]);
+
+  const restoreMemoAction = useCallback((id: string) => {
+    updateData(prev => restoreMemo(prev, id));
+    showToast('메모가 복구되었습니다');
+  }, [updateData, showToast]);
+
+  const permanentlyDeleteMemoAction = useCallback((id: string) => {
+    updateData(prev => permanentlyDeleteMemo(prev, id));
+    showToast('메모가 영구 삭제되었습니다');
+  }, [updateData, showToast]);
+
+  const emptyTrashAction = useCallback(() => {
+    updateData(prev => emptyTrash(prev));
+    showToast('휴지통을 비웠습니다');
+  }, [updateData, showToast]);
+
+  const reorderMemosAction = useCallback((memos: any[]) => {
+    updateData(prev => reorderMemos(prev, memos));
+  }, [updateData]);
+
+  const editMemo = useCallback((id: string, content: string) => {
+    updateData(prev => updateMemo(prev, id, content));
+  }, [updateData]);
+
   // GitHub actions
   const updateGhConfig = useCallback((config: GitHubConfig) => {
     setGhConfig(config);
@@ -123,15 +180,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setDataSource('syncing');
     const result = await downloadFromGitHub<AppData>(ghConfig);
     if (result && result.categories && result.articles) {
-      setData(result);
-      saveData(result);
+      // Ensure we don't lose memos/trash if they are missing on GH
+      const merged: AppData = {
+        ...result,
+        memos: result.memos || data.memos || [],
+        trash: result.trash || data.trash || [],
+      };
+      setData(merged);
+      saveData(merged);
       setDataSource('github');
       showToast('GitHub에서 데이터를 불러왔습니다');
     } else {
       setDataSource('local');
       showToast('GitHub 데이터가 없거나 불러오기에 실패했습니다');
     }
-  }, [ghConfig, showToast]);
+  }, [ghConfig, data, showToast]);
 
   const syncUp = useCallback(async () => {
     setDataSource('syncing');
@@ -162,6 +225,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       data, dataSource, ghConfig,
       addCategory, editCategory, removeCategory, reorderCategories,
       addArticle, editArticle, removeArticle,
+      addMemo, removeMemo, editMemo,
+      restoreMemo: restoreMemoAction,
+      permanentlyDeleteMemo: permanentlyDeleteMemoAction,
+      emptyTrash: emptyTrashAction,
+      reorderMemos: reorderMemosAction,
       updateGhConfig, syncDown, syncUp,
       toast, showToast,
       theme, toggleTheme,

@@ -102,6 +102,7 @@ export function renderMarkdown(markdown: string): string {
   const html: string[] = [];
   let inCodeBlock = false;
   let codeContent: string[] = [];
+  let currentLinkGroup: string[] = [];
   let inList = false;
   let listType: 'ul' | 'ol' = 'ul';
 
@@ -112,11 +113,25 @@ export function renderMarkdown(markdown: string): string {
     }
   }
 
+  function flushLinkGroup() {
+    if (currentLinkGroup.length > 0) {
+      if (currentLinkGroup.length === 1) {
+        html.push(currentLinkGroup[0]);
+      } else {
+        html.push(`<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">${currentLinkGroup.join('')}</div>`);
+      }
+      currentLinkGroup = [];
+    }
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    const stripped = line.replace(/<[^>]+>/g, '').trim();
+    const mdLinkMatch = line.trim().match(/^\[([^\]]*)\]\((https?:\/\/[^\s]+)\)$/);
 
     // Code block
     if (line.trimStart().startsWith('```')) {
+      flushLinkGroup();
       if (inCodeBlock) {
         // ── 코드 블록 닫힘 ──
         const raw = codeContent.slice(1);           // __LANG__ 마커 제외
@@ -145,29 +160,31 @@ export function renderMarkdown(markdown: string): string {
 
     // 0. <iframe> 태그가 포함된 줄 → 반응형 래퍼로 즉시 변환
     if (/<iframe/i.test(line)) {
+      flushLinkGroup();
       closeList();
       html.push(makeIframeResponsive(line));
       continue;
     }
 
-    // 1. 단일 마크다운 링크인 경우 -> Link Preview Card
-    const mdLinkMatch = line.trim().match(/^\[([^\]]*)\]\((https?:\/\/[^\s]+)\)$/);
-    if (mdLinkMatch) {
+    const isLink = !!(mdLinkMatch || stripped.match(/^https?:\/\/[^\s]+$/));
+
+    if (isLink) {
+      let url = '';
+      if (mdLinkMatch) {
+        url = mdLinkMatch[2];
+      } else {
+        const hrefMatch = line.match(/href="([^"]+)"/);
+        url = hrefMatch ? hrefMatch[1] : stripped;
+        url = url.replace(/&amp;/g, '&');
+      }
+      
       closeList();
-      html.push(getPreviewHtml(mdLinkMatch[2]));
+      currentLinkGroup.push(getPreviewHtml(url));
       continue;
     }
 
-    // 2. HTML 태그가 포함되어 있더라도 텍스트 내용이 순수 URL 하나인 경우
-    const stripped = line.replace(/<[^>]+>/g, '').trim();
-    if (stripped.match(/^https?:\/\/[^\s]+$/)) {
-      closeList();
-      const hrefMatch = line.match(/href="([^"]+)"/);
-      let url = hrefMatch ? hrefMatch[1] : stripped;
-      url = url.replace(/&amp;/g, '&');
-      html.push(getPreviewHtml(url));
-      continue;
-    }
+    // Flush link group if this line is NOT a link
+    flushLinkGroup();
 
     // Headings
     const headingMatch = line.match(/^(#{1,6})\s+(.+)/);
@@ -241,6 +258,7 @@ export function renderMarkdown(markdown: string): string {
   }
 
   // Close any open blocks
+  flushLinkGroup();
   if (inCodeBlock) {
     const raw = codeContent.slice(1); // skip __LANG__ marker
     const lang = (codeContent[0] || '').replace('__LANG__', '') || 'code';

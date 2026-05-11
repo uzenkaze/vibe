@@ -1,4 +1,4 @@
-import type { AppData, Category, Article } from '../types';
+import type { AppData, Category, Article, Memo } from '../types';
 
 const STORAGE_KEY = 'learnVaultData';
 
@@ -10,10 +10,21 @@ export function loadData(): AppData {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      return {
+        categories: Array.isArray(parsed.categories) ? parsed.categories : [],
+        articles: Array.isArray(parsed.articles) ? parsed.articles : [],
+        memos: Array.isArray(parsed.memos) ? parsed.memos : [],
+        trash: Array.isArray(parsed.trash) ? parsed.trash : [],
+      };
     } catch { /* ignore */ }
   }
-  return { categories: [], articles: [] };
+  return { 
+    categories: [], 
+    articles: [], 
+    memos: [],
+    trash: []
+  };
 }
 
 export function saveData(data: AppData): void {
@@ -108,4 +119,69 @@ export function getCategoryById(data: AppData, id: string): Category | undefined
 
 export function getArticleById(data: AppData, id: string): Article | undefined {
   return data.articles.find(a => a.id === id);
+}
+
+// Memo CRUD
+export function createMemo(data: AppData, content: string, color: string): AppData {
+  const memo: Memo = {
+    id: generateId('memo'),
+    content,
+    color,
+    createdAt: new Date().toISOString(),
+  };
+  const memos = data.memos || [];
+  return { ...data, memos: [memo, ...memos] };
+}
+
+export function deleteMemo(data: AppData, id: string): AppData {
+  const currentMemos = Array.isArray(data.memos) ? data.memos : [];
+  const memo = currentMemos.find(m => m.id === id);
+  if (!memo) return data;
+  
+  return {
+    ...data,
+    memos: currentMemos.filter(m => m.id !== id),
+    trash: [memo, ...(data.trash || [])],
+  };
+}
+
+export function restoreMemo(data: AppData, id: string): AppData {
+  const currentTrash = Array.isArray(data.trash) ? data.trash : [];
+  const currentMemos = Array.isArray(data.memos) ? data.memos : [];
+  
+  const memoIndex = currentTrash.findIndex(m => m.id === id);
+  if (memoIndex === -1) return data;
+
+  const memo = currentTrash[memoIndex];
+  const newTrash = [...currentTrash];
+  newTrash.splice(memoIndex, 1);
+
+  return {
+    ...data,
+    trash: newTrash,
+    memos: [memo, ...currentMemos],
+  };
+}
+
+export function permanentlyDeleteMemo(data: AppData, id: string): AppData {
+  return {
+    ...data,
+    trash: (data.trash || []).filter(m => m.id !== id),
+  };
+}
+
+export function emptyTrash(data: AppData): AppData {
+  return { ...data, trash: [] };
+}
+
+export function reorderMemos(data: AppData, memos: Memo[]): AppData {
+  return { ...data, memos };
+}
+
+export function updateMemo(data: AppData, id: string, content: string): AppData {
+  const memos = Array.isArray(data.memos) ? data.memos : [];
+  return {
+    ...data,
+    memos: memos.map(m => m.id === id ? { ...m, content } : m),
+  };
 }

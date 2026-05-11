@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Home, Settings, Database, Sun, Moon, FileText } from 'lucide-react';
+import { BookOpen, Home, Settings, Database, Sun, Moon, FileText, StickyNote } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import SearchBar from './SearchBar';
 import Toast from './Toast';
@@ -11,6 +11,7 @@ export default function Layout() {
   const navItems = [
     { to: '/', icon: Home, label: '홈', end: true },
     { to: '/docs', icon: FileText, label: '문서', end: false },
+    { to: '/memos', icon: StickyNote, label: '메모', end: false },
     { to: '/settings', icon: Settings, label: '설정', end: false },
   ];
 
