@@ -111,15 +111,6 @@
   ],
   "memos": [
     {
-      "id": "memo_mp27tt5z_gjk90",
-      "title": "",
-      "content": "ㄷㄷㄷㄷㄷ\nㅁㄹㄴㅇㅁㄹ",
-      "color": "#fef9c3",
-      "folderId": "folder_default",
-      "createdAt": "2026-05-12T05:54:08.999Z",
-      "updatedAt": "2026-05-12T05:54:08.999Z"
-    },
-    {
       "id": "memo_mp27tkzc_ezgsb",
       "title": "",
       "content": "ㄹㅇㄴㅁㄹㄴㅁㄻㄴㄹ",
@@ -189,7 +180,17 @@
       "createdAt": "2026-05-11T06:35:14.043Z"
     }
   ],
-  "trash": [],
+  "trash": [
+    {
+      "id": "memo_mp27tt5z_gjk90",
+      "title": "",
+      "content": "ㄷㄷㄷㄷㄷ\nㅁㄹㄴㅇㅁㄹ",
+      "color": "#fef9c3",
+      "folderId": "folder_default",
+      "createdAt": "2026-05-12T05:54:08.999Z",
+      "updatedAt": "2026-05-12T05:54:08.999Z"
+    }
+  ],
   "memoFolders": [
     {
       "id": "folder_default",
