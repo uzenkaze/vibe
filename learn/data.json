@@ -111,6 +111,16 @@
   ],
   "memos": [
     {
+      "id": "memo_mp0tv1nf_prmr8",
+      "content": "잔여\n\nNH(지산) : 994,849\n카드 : 7,768,985\n보험 : 177,981\n\n총 : 8,941,815\n\n카뱅 : 8,493,697\n\n부족금 : 448,118",
+      "color": "#dcfce7",
+      "createdAt": "2026-05-11T06:35:25.851Z",
+      "title": "5월",
+      "updatedAt": "2026-05-12T01:11:29.661Z",
+      "isFavorite": true,
+      "isPinned": true
+    },
+    {
       "id": "memo_mp0tvbpa_zsjv4",
       "content": "메모를 삭제하면 휴지통으로 이동하며 복구가능해요",
       "color": "#ffedd5",
@@ -125,16 +135,6 @@
       "isPinned": true,
       "updatedAt": "2026-05-12T01:00:38.610Z",
       "isFavorite": true
-    },
-    {
-      "id": "memo_mp0tv1nf_prmr8",
-      "content": "잔여\n\nNH(지산) : 994,849\n카드 : 7,768,985\n보험 : 177,981\n\n총 : 8,941,815\n\n카뱅 : 8,493,697\n\n부족금 : 448,118",
-      "color": "#dcfce7",
-      "createdAt": "2026-05-11T06:35:25.851Z",
-      "title": "5월",
-      "updatedAt": "2026-05-12T01:11:23.966Z",
-      "isFavorite": true,
-      "isPinned": false
     },
     {
       "id": "memo_mp0tv8h8_04pyk",
