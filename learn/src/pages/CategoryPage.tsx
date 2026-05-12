@@ -64,7 +64,7 @@ export default function CategoryPage() {
   const textMuted = isLight ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.72)';
 
   return (
-    <div className="py-8 space-y-8">
+    <div className="py-4 sm:py-8 space-y-6 sm:space-y-8 px-4 sm:px-0">
       {/* Back button */}
       <button
         onClick={() => navigate('/')}
@@ -91,7 +91,7 @@ export default function CategoryPage() {
         <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10 pointer-events-none"
           style={{ background: 'rgba(255,255,255,0.5)' }} />
 
-        <div className="relative p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="relative p-5 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           {/* Left: icon + info */}
           <div className="flex items-center gap-5">
             <div

@@ -208,7 +208,7 @@ export default function MemoPage() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-120px)] bg-bg-primary rounded-3xl overflow-hidden shadow-2xl border border-border animate-fade-in transition-all duration-300">
+    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-120px)] bg-bg-primary lg:rounded-3xl overflow-hidden lg:shadow-2xl lg:border lg:border-border animate-fade-in transition-all duration-300">
       {/* Sidebar */}
       <aside className={`bg-bg-secondary/50 backdrop-blur-xl border-b lg:border-b-0 lg:border-r border-border flex flex-row lg:flex-col p-2 sm:p-4 space-y-0 lg:space-y-6 overflow-x-auto lg:overflow-y-auto transition-all duration-300 ${isSidebarCollapsed ? 'lg:w-20' : 'lg:w-72'} w-full`}>
         {/* Toggle Button - Hidden on Mobile */}

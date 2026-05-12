@@ -120,13 +120,15 @@ export default function Layout() {
         </div>
 
         {/* Mobile search */}
-        <div className="md:hidden px-4 pb-2 max-w-md mx-auto">
-          <SearchBar />
+        <div className="md:hidden flex justify-center px-6 pb-3 mt-1">
+          <div className="w-full max-w-[400px]">
+            <SearchBar />
+          </div>
         </div>
       </header>
 
       {/* Page Content */}
-      <main className="w-full max-w-[1100px] mx-auto px-4 sm:px-[4%] pb-20 overflow-x-hidden">
+      <main className="w-full max-w-[1100px] mx-auto px-0 sm:px-[4%] pb-20 overflow-x-hidden">
         <Outlet />
       </main>
 

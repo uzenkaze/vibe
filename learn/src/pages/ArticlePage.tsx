@@ -77,7 +77,7 @@ export default function ArticlePage() {
   const textMuted = isLight ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.72)';
 
   return (
-    <div className="py-8 w-full space-y-6 overflow-hidden">
+    <div className="py-6 sm:py-8 w-full space-y-6 sm:space-y-8 overflow-hidden px-4 sm:px-0">
 
       {/* Back */}
       <button
@@ -105,7 +105,7 @@ export default function ArticlePage() {
         <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10 pointer-events-none"
           style={{ background: 'rgba(255,255,255,0.5)' }} />
 
-        <div className="relative p-8">
+        <div className="relative p-6 sm:p-8">
           {/* Category + Pin badges */}
           <div className="flex items-center gap-2 mb-4">
             {category && (
@@ -150,7 +150,7 @@ export default function ArticlePage() {
 
       {/* ── Content ── */}
       <div
-        className="animate-slide-up rounded-3xl border border-border p-6 sm:p-10"
+        className="animate-slide-up rounded-3xl border border-border p-5 sm:p-10"
         style={{ background: 'var(--color-bg-elevated)', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}
       >
         {article.content ? (

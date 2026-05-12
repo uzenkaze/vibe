@@ -78,9 +78,9 @@ export default function HomePage() {
 
 
   return (
-    <div className="pb-16 space-y-16">
+    <div className="pb-16 space-y-12 sm:space-y-16">
       {/* Hero Section (2-Column Layout) */}
-      <section className="relative pt-12 lg:pt-20 pb-12 flex flex-col lg:flex-row items-center gap-16 lg:gap-8 animate-fade-in overflow-hidden">
+      <section className="relative pt-6 sm:pt-12 lg:pt-20 pb-8 sm:pb-12 flex flex-col lg:flex-row items-center gap-10 sm:gap-16 lg:gap-8 animate-fade-in px-4 sm:px-0">
         {/* Background glow effect */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-accent/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
 
@@ -101,7 +101,7 @@ export default function HomePage() {
           </div>
 
           {/* ── Heading ── */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12]">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.2] sm:leading-[1.12]">
             <span className="text-text-primary">Organize one's</span><br />
             <span
               style={{
@@ -212,12 +212,16 @@ export default function HomePage() {
 
 
         {/* Right Side: Stacked Cards Animation */}
-        <div className="flex-1 flex justify-center items-center w-full min-h-[440px] z-10" style={{ perspective: '1400px' }}>
+        <div 
+          className="flex-1 flex justify-center items-center w-full min-h-[380px] sm:min-h-[460px] z-10" 
+          style={{ perspective: '1200px' }}
+          onPointerDown={() => setHoveredCard(null)}
+        >
           <div
-            className="relative"
+            className="relative scale-[0.65] sm:scale-[0.85] lg:scale-100"
             style={{
-              width: '360px',
-              height: '400px',
+              width: '320px',
+              height: '360px',
               transformStyle: 'preserve-3d',
               transform: 'rotateX(52deg) rotateZ(-44deg)',
               transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -254,9 +258,19 @@ export default function HomePage() {
               return (
                 <div
                   key={item.id + visualIndex}
-                  onMouseEnter={() => setHoveredCard(visualIndex)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                  onClick={() => navigate(`/category/${item.id}`)}
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    // Just stop propagation to let onClick handle it, 
+                    // or set it here if preferred.
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (hoveredCard !== visualIndex) {
+                      setHoveredCard(visualIndex);
+                    } else {
+                      navigate(`/category/${item.id}`);
+                    }
+                  }}
                   style={{
                     position: 'absolute',
                     inset: 0,
@@ -318,13 +332,12 @@ export default function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="animate-slide-up">
+      <section className="animate-slide-up px-0 sm:px-0">
         {/* Section container with light card-like panel */}
         <div
-          className="rounded-3xl p-8"
+          className="sm:rounded-3xl p-4 sm:p-8 sm:border sm:border-black/5"
           style={{
             background: 'rgba(248, 249, 255, 0.6)',
-            border: '1px solid rgba(0,0,0,0.05)',
           }}
         >
           {/* Header */}
@@ -386,12 +399,12 @@ export default function HomePage() {
       {/* Recent Articles */}
       {recentArticles.length > 0 && (
         <section className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-6 px-4 sm:px-0">
             <BookOpen size={16} className="text-accent-cyan" />
             <h2 className="text-lg font-bold text-text-primary">최근 아티클</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children px-4 sm:px-0">
             {recentArticles.map(article => (
               <ArticleCard key={article.id} article={article} showCategory />
             ))}
@@ -400,7 +413,7 @@ export default function HomePage() {
       )}
 
       {/* ── AI Chat Quick Access ── */}
-      <section className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
+      <section className="animate-slide-up px-4 sm:px-0" style={{ animationDelay: '0.3s' }}>
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
           <div
@@ -605,57 +618,57 @@ export default function HomePage() {
             </div>
           </a>
 
-          {/* ── Gemini Code ── */}
+          {/* ── DeepSeek ── */}
+          <a
+            href="https://chat.deepseek.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45,115,255,0.08), rgba(0,224,255,0.06))',
+              border: '1px solid rgba(45,115,255,0.20)',
+              boxShadow: '0 4px 20px rgba(45,115,255,0.08)',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(45,115,255,0.22)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(45,115,255,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(45,115,255,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(45,115,255,0.20)'; }}
+          >
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #2d73ff, #00e0ff)' }}
+            >
+              <div className="text-white font-black text-lg italic">D</div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-black text-sm text-text-primary">DeepSeek</div>
+              <div className="text-xs text-text-muted mt-0.5">R1 / V3 Model</div>
+            </div>
+          </a>
+
+          {/* ── Google AI Studio ── */}
           <a
             href="https://aistudio.google.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
             style={{
-              background: 'linear-gradient(135deg, rgba(66,133,244,0.08), rgba(167,139,250,0.06))',
+              background: 'linear-gradient(135deg, rgba(66,133,244,0.08), rgba(139,92,246,0.06))',
               border: '1px solid rgba(66,133,244,0.20)',
               boxShadow: '0 4px 20px rgba(66,133,244,0.08)',
               textDecoration: 'none',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(66,133,244,0.22)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(66,133,244,0.4)'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(66,133,244,0.25)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(66,133,244,0.4)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(66,133,244,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(66,133,244,0.20)'; }}
           >
             <div
               className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, #4285f4, #a78bfa)' }}
+              style={{ background: 'linear-gradient(135deg, #4285f4, #8b5cf6)' }}
             >
               <Sparkles size={20} className="text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-black text-sm text-text-primary">Gemini Code</div>
-              <div className="text-xs text-text-muted mt-0.5">AI Studio</div>
-            </div>
-          </a>
-
-          {/* ── Codex CLI ── */}
-          <a
-            href="https://github.com/openai/codex"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
-            style={{
-              background: 'linear-gradient(135deg, rgba(20,20,20,0.08), rgba(0,0,0,0.06))',
-              border: '1px solid rgba(0,0,0,0.15)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-              textDecoration: 'none',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.15)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,0,0,0.3)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(0,0,0,0.15)'; }}
-          >
-            <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, #222, #000)' }}
-            >
-              <Terminal size={20} className="text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-black text-sm text-text-primary">Codex CLI</div>
-              <div className="text-xs text-text-muted mt-0.5">Terminal Agent</div>
+              <div className="font-black text-sm text-text-primary">Google AI Studio</div>
+              <div className="text-xs text-text-muted mt-0.5">Pro/Flash Models</div>
             </div>
           </a>
 

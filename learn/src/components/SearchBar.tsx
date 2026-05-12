@@ -45,7 +45,7 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="relative w-full max-w-[220px]">
+    <div className="relative w-full md:max-w-[220px]">
       {/* Input */}
       <div
         className="flex items-center gap-2 rounded-full transition-all duration-300"
