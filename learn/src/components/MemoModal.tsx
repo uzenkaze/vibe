@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Maximize2, Star, Globe, Pin, Folder, Calendar, History, Info, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Star, Pin, Trash2 } from 'lucide-react';
 import type { Memo } from '../types';
 
 interface MemoModalProps {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical, Check, Pin, Star } from 'lucide-react';
+import { Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical, Pin, Star } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import MemoModal from '../components/MemoModal';
 import type { Memo } from '../types';
