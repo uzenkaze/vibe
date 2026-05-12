@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import { Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical, Pin, Star } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { 
+  Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical, 
+  Pin, Star, Folder, ChevronDown, ChevronUp, FolderPlus, 
+  MoreVertical, Edit3, LayoutGrid, Search, Menu, ChevronLeft, ChevronRight
+} from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import MemoModal from '../components/MemoModal';
-import type { Memo } from '../types';
+import type { Memo, MemoFolder } from '../types';
 
 const MEMO_COLORS = [
   '#fef9c3', // Yellow
@@ -87,26 +91,71 @@ function MemoCard({ memo, idx, draggedIndex, onDragStart, onDragOver, onDrop, on
 }
 
 export default function MemoPage() {
-  const { data, addMemo, removeMemo, editMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos } = useStore();
+  const { 
+    data, addMemo, removeMemo, editMemo, restoreMemo, 
+    permanentlyDeleteMemo, emptyTrash, reorderMemos,
+    addMemoFolder, removeMemoFolder, editMemoFolder
+  } = useStore();
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const [selectedFolderId, setSelectedFolderId] = useState<string>('all');
   const [isAdding, setIsAdding] = useState(false);
-  const [showTrash, setShowTrash] = useState(false);
   const [newContent, setNewContent] = useState('');
   const [selectedColor, setSelectedColor] = useState(MEMO_COLORS[0]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [isFoldersOpen, setIsFoldersOpen] = useState(false);
+  const [isAddingFolder, setIsAddingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Edit State
   const [selectedMemo, setSelectedMemo] = useState<Memo | null>(null);
 
   const activeMemos = data.memos || [];
-  const pinnedMemos = activeMemos.filter(m => m.isPinned);
-  const otherMemos = activeMemos.filter(m => !m.isPinned);
   const trashMemos = data.trash || [];
+  const folders = data.memoFolders || [];
+
+  // Filter Logic
+  const filteredMemos = useMemo(() => {
+    let result = [...activeMemos];
+    
+    if (selectedFolderId === 'important') {
+      result = result.filter(m => m.isPinned || m.isFavorite);
+    } else if (selectedFolderId === 'trash') {
+      result = [...trashMemos];
+    } else if (selectedFolderId !== 'all') {
+      result = result.filter(m => m.folderId === selectedFolderId);
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(m => 
+        m.content.toLowerCase().includes(q) || 
+        (m.title && m.title.toLowerCase().includes(q))
+      );
+    }
+
+    return result;
+  }, [activeMemos, trashMemos, selectedFolderId, searchQuery]);
+
+  const pinnedMemos = filteredMemos.filter(m => m.isPinned && selectedFolderId !== 'trash');
+  const otherMemos = filteredMemos.filter(m => !m.isPinned || selectedFolderId === 'trash');
 
   const handleAdd = () => {
     if (!newContent.trim()) return;
-    addMemo(newContent.trim(), selectedColor);
+    const folderId = (selectedFolderId !== 'all' && selectedFolderId !== 'important' && selectedFolderId !== 'trash') 
+      ? selectedFolderId 
+      : 'folder_default';
+    addMemo(newContent.trim(), selectedColor, '', folderId);
     setNewContent('');
     setIsAdding(false);
+  };
+
+  const handleAddFolder = () => {
+    if (!newFolderName.trim()) return;
+    addMemoFolder(newFolderName.trim(), MEMO_COLORS[Math.floor(Math.random() * MEMO_COLORS.length)]);
+    setNewFolderName('');
+    setIsAddingFolder(false);
   };
 
   const handleOpenModal = (memo: Memo) => {
@@ -124,6 +173,7 @@ export default function MemoPage() {
 
   // Drag and Drop Logic
   const onDragStart = (idx: number) => {
+    if (selectedFolderId === 'trash' || searchQuery) return;
     setDraggedIndex(idx);
   };
 
@@ -142,66 +192,197 @@ export default function MemoPage() {
     setDraggedIndex(null);
   };
 
+  const getFolderMemoCount = (folderId: string) => {
+    return activeMemos.filter(m => m.folderId === folderId).length;
+  };
+
   return (
-    <>
-      <div className="py-8 space-y-8 animate-fade-in">
-      {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
-              <StickyNote size={22} />
-            </div>
-            <h1 className="text-3xl font-black text-text-primary tracking-tight">Quick Memos</h1>
-          </div>
-          
-          <div className="flex p-1 bg-bg-secondary rounded-xl border border-border">
-            <button
-              onClick={() => setShowTrash(false)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${!showTrash ? 'bg-bg-card text-accent shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
-            >
-              활성 메모 ({activeMemos.length})
-            </button>
-            <button
-              onClick={() => setShowTrash(true)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${showTrash ? 'bg-bg-card text-accent shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
-            >
-              휴지통 ({trashMemos.length})
-            </button>
-          </div>
+    <div className="flex h-[calc(100vh-120px)] bg-bg-primary rounded-3xl overflow-hidden shadow-2xl border border-border animate-fade-in transition-all duration-300">
+      {/* Sidebar */}
+      <aside className={`bg-bg-secondary/50 backdrop-blur-xl border-r border-border flex flex-col p-4 space-y-6 overflow-y-auto transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-72'}`}>
+        {/* Toggle Button */}
+        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between px-2'}`}>
+          {!isSidebarCollapsed && (
+            <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] animate-fade-in">Menu</span>
+          )}
+          <button 
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="p-2.5 rounded-xl hover:bg-bg-card text-text-secondary hover:text-accent transition-all duration-300 shadow-sm active:scale-95"
+          >
+            {isSidebarCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
+          </button>
         </div>
 
-        <div className="flex gap-3">
-          {showTrash ? (
-            <button
-              onClick={() => { if (window.confirm('휴지통을 비우시겠습니까?')) emptyTrash(); }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all"
+        <div className="space-y-1.5">
+          <button 
+            onClick={() => setSelectedFolderId('all')}
+            className={`w-full flex items-center px-3 py-3 rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} ${selectedFolderId === 'all' ? 'bg-accent/10 text-accent shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
+            title="전체 메모"
+          >
+            <div className="flex items-center gap-3">
+              <LayoutGrid size={20} className={isSidebarCollapsed ? 'text-accent' : ''} />
+              {!isSidebarCollapsed && <span className="animate-fade-in">전체</span>}
+            </div>
+            {!isSidebarCollapsed && <span className="text-xs opacity-60 animate-fade-in">{activeMemos.length}</span>}
+          </button>
+
+          <button 
+            onClick={() => setSelectedFolderId('important')}
+            className={`w-full flex items-center px-3 py-3 rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} ${selectedFolderId === 'important' ? 'bg-amber-500/10 text-amber-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
+            title="중요 메모"
+          >
+            <div className="flex items-center gap-3">
+              <Star size={20} className={isSidebarCollapsed ? 'text-amber-500' : ''} />
+              {!isSidebarCollapsed && <span className="animate-fade-in">중요</span>}
+            </div>
+            {!isSidebarCollapsed && <span className="text-xs opacity-60 animate-fade-in">{activeMemos.filter(m => m.isPinned || m.isFavorite).length}</span>}
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div className={`flex items-center px-2 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+            <button 
+              onClick={() => {
+                if (isSidebarCollapsed) setIsSidebarCollapsed(false);
+                setIsFoldersOpen(!isFoldersOpen);
+              }}
+              className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest hover:text-text-primary transition-colors"
             >
-              <Trash size={16} />
-              휴지통 비우기
+              <Folder size={16} className="text-accent" />
+              {!isSidebarCollapsed && (
+                <>
+                  <span className="animate-fade-in">폴더</span>
+                  {isFoldersOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </>
+              )}
             </button>
-          ) : (
-            <button
-              onClick={() => setIsAdding(true)}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-accent text-white font-bold hover:bg-accent-hover transition-all shadow-lg shadow-accent/25 hover:-translate-y-0.5"
-            >
-              <Plus size={18} />
-              새 메모 추가
-            </button>
+            {!isSidebarCollapsed && (
+              <button 
+                onClick={() => setIsAddingFolder(true)}
+                className="p-1 hover:bg-accent/10 rounded-lg text-accent transition-colors animate-fade-in"
+              >
+                <FolderPlus size={16} />
+              </button>
+            )}
+          </div>
+
+          {isFoldersOpen && !isSidebarCollapsed && (
+            <div className="space-y-1 animate-slide-down">
+              {isAddingFolder && (
+                <div className="px-2 py-2">
+                  <input
+                    autoFocus
+                    value={newFolderName}
+                    onChange={e => setNewFolderName(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleAddFolder()}
+                    onBlur={() => !newFolderName && setIsAddingFolder(false)}
+                    placeholder="폴더 이름..."
+                    className="w-full bg-bg-card border border-accent/30 rounded-xl px-3 py-2 text-sm outline-none shadow-sm"
+                  />
+                </div>
+              )}
+              {folders
+                .sort((a, b) => (a.id === 'folder_default' ? -1 : b.id === 'folder_default' ? 1 : 0))
+                .map(folder => (
+                <div key={folder.id} className="group relative px-1">
+                  <button 
+                    onClick={() => setSelectedFolderId(folder.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl font-bold transition-all ${selectedFolderId === folder.id ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-secondary hover:bg-bg-card/50 hover:text-text-primary'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: folder.color }} />
+                      <span className="truncate max-w-[120px]">{folder.name}</span>
+                    </div>
+                    <span className="text-[10px] opacity-40">{getFolderMemoCount(folder.id)}</span>
+                  </button>
+                  {folder.id !== 'folder_default' && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); if (window.confirm('폴더를 삭제하시겠습니까? 폴더 내 메모는 기본 폴더로 이동됩니다.')) removeMemoFolder(folder.id); }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 opacity-0 group-hover:opacity-100 text-red-400 hover:bg-red-50 rounded-lg transition-all"
+                    >
+                      <Trash size={12} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Content Area */}
-      {!showTrash ? (
-        <div className="space-y-12">
-          {/* Pinned Memos Section */}
+        <div className="pt-4 mt-auto border-t border-border/50">
+          <button 
+            onClick={() => setSelectedFolderId('trash')}
+            className={`w-full flex items-center px-3 py-3 rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} ${selectedFolderId === 'trash' ? 'bg-red-500/10 text-red-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
+            title="삭제된 메모"
+          >
+            <div className="flex items-center gap-3">
+              <Trash2 size={20} className={isSidebarCollapsed ? 'text-red-500' : ''} />
+              {!isSidebarCollapsed && <span className="animate-fade-in">휴지통</span>}
+            </div>
+            {!isSidebarCollapsed && <span className="text-xs opacity-60 animate-fade-in">{trashMemos.length}</span>}
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col bg-bg-card/30 overflow-hidden">
+        {/* Header Section */}
+        <header className="px-8 py-6 border-b border-border flex items-center justify-between gap-6 bg-bg-card/20 backdrop-blur-sm">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+              <input 
+                type="text"
+                placeholder="메모 검색..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full bg-bg-primary/50 border border-border rounded-2xl pl-12 pr-4 py-2.5 text-sm focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {selectedFolderId === 'trash' ? (
+              <button
+                onClick={() => { if (window.confirm('휴지통을 비우시겠습니까?')) emptyTrash(); }}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all"
+              >
+                <Trash size={16} />
+                휴지통 비우기
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsAdding(true)}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-accent text-white font-bold hover:bg-accent-hover transition-all shadow-lg shadow-accent/25 hover:-translate-y-0.5"
+              >
+                <Plus size={18} />
+                새 메모 추가
+              </button>
+            )}
+          </div>
+        </header>
+
+        {/* Memos Grid */}
+        <div className="flex-1 overflow-y-auto p-8 space-y-12">
+          {/* Section Titles */}
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-2xl font-black text-text-primary tracking-tight">
+              {selectedFolderId === 'all' ? '전체 메모' : 
+               selectedFolderId === 'important' ? '중요 메모' :
+               selectedFolderId === 'trash' ? '휴지통' : 
+               folders.find(f => f.id === selectedFolderId)?.name || '폴더'}
+            </h1>
+            <span className="px-2 py-0.5 rounded-lg bg-accent/10 text-accent text-xs font-black">
+              {filteredMemos.length}
+            </span>
+          </div>
+
+          {/* Pinned Memos */}
           {pinnedMemos.length > 0 && (
             <div className="space-y-6">
               <div className="flex items-center gap-2 text-accent">
-                <Pin size={20} fill="currentColor" />
-                <h2 className="text-xl font-bold tracking-tight">고정된 메모</h2>
-                <div className="h-px flex-1 bg-accent/20 ml-2" />
+                <Pin size={18} fill="currentColor" />
+                <h2 className="text-sm font-bold uppercase tracking-wider">고정됨</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {pinnedMemos.map((memo) => {
@@ -224,16 +405,17 @@ export default function MemoPage() {
             </div>
           )}
 
-          {/* Regular Memos Section */}
+          {/* Regular Memos / Trash */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2 text-text-secondary">
-              <StickyNote size={20} />
-              <h2 className="text-xl font-bold tracking-tight">일반 메모</h2>
-              <div className="h-px flex-1 bg-border/50 ml-2" />
-            </div>
+            {pinnedMemos.length > 0 && (
+              <div className="flex items-center gap-2 text-text-muted">
+                <StickyNote size={18} />
+                <h2 className="text-sm font-bold uppercase tracking-wider">메모</h2>
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {/* Add Form Card */}
-              {isAdding && (
+              {isAdding && selectedFolderId !== 'trash' && (
                 <div 
                   className="relative flex flex-col p-6 rounded-3xl border-2 border-dashed border-accent/30 bg-accent/5 animate-scale-in"
                   style={{ minHeight: '240px' }}
@@ -248,6 +430,7 @@ export default function MemoPage() {
                     autoFocus
                     value={newContent}
                     onChange={e => setNewContent(e.target.value)}
+                    onBlur={handleAdd}
                     placeholder="여기에 내용을 입력하세요..."
                     className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-text-primary font-sans leading-relaxed placeholder:text-text-muted/50"
                   />
@@ -262,104 +445,88 @@ export default function MemoPage() {
                         />
                       ))}
                     </div>
-                    <button
-                      onClick={handleAdd}
-                      disabled={!newContent.trim()}
-                      className="px-4 py-1.5 rounded-xl bg-accent text-white text-xs font-bold disabled:opacity-50 transition-all"
-                    >
-                      저장
-                    </button>
                   </div>
                 </div>
               )}
 
-              {otherMemos.map((memo) => {
-                const globalIdx = activeMemos.findIndex(m => m.id === memo.id);
-                return (
-                  <MemoCard 
-                    key={memo.id} 
-                    memo={memo} 
-                    idx={globalIdx} 
-                    draggedIndex={draggedIndex}
-                    onDragStart={onDragStart}
-                    onDragOver={onDragOver}
-                    onDrop={onDrop}
-                    onOpen={handleOpenModal}
-                    onRemove={removeMemo}
-                  />
-                );
-              })}
+              {selectedFolderId === 'trash' ? (
+                otherMemos.map((memo, idx) => (
+                  <div
+                    key={memo.id}
+                    className="group relative p-6 rounded-2xl shadow-sm transition-all duration-300 animate-scale-in grayscale-[0.3]"
+                    style={{
+                      backgroundColor: memo.color,
+                      minHeight: '200px',
+                      transform: `rotate(${(idx % 3 - 1) * 0.8}deg)`,
+                      color: '#475569',
+                      opacity: 0.8
+                    }}
+                  >
+                    <div className="flex absolute top-3 right-3 gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                      <button
+                        onClick={() => restoreMemo(memo.id)}
+                        title="복구"
+                        className="p-1.5 rounded-lg hover:bg-black/10 text-green-600 transition-all"
+                      >
+                        <RotateCcw size={14} />
+                      </button>
+                      <button
+                        onClick={() => { if (window.confirm('영구 삭제하시겠습니까?')) permanentlyDeleteMemo(memo.id); }}
+                        title="영구 삭제"
+                        className="p-1.5 rounded-lg hover:bg-black/10 text-red-600 transition-all"
+                      >
+                        <Trash size={14} />
+                      </button>
+                    </div>
 
-              {activeMemos.length === 0 && !isAdding && (
+                    <div className="relative text-sm font-medium leading-relaxed whitespace-pre-wrap break-words pr-8">
+                      {memo.content}
+                    </div>
+                    
+                    <div className="absolute bottom-4 left-6 text-[10px] font-bold opacity-30 uppercase tracking-widest">
+                      삭제됨
+                    </div>
+                  </div>
+                ))
+              ) : (
+                otherMemos.map((memo) => {
+                  const globalIdx = activeMemos.findIndex(m => m.id === memo.id);
+                  return (
+                    <MemoCard 
+                      key={memo.id} 
+                      memo={memo} 
+                      idx={globalIdx} 
+                      draggedIndex={draggedIndex}
+                      onDragStart={onDragStart}
+                      onDragOver={onDragOver}
+                      onDrop={onDrop}
+                      onOpen={handleOpenModal}
+                      onRemove={removeMemo}
+                    />
+                  );
+                })
+              )}
+
+              {filteredMemos.length === 0 && !isAdding && (
                 <div className="col-span-full py-20 flex flex-col items-center justify-center text-text-muted opacity-50">
-                  <StickyNote size={48} className="mb-4" strokeWidth={1} />
-                  <p className="text-sm font-medium">아직 메모가 없습니다.</p>
+                  <LayoutGrid size={48} className="mb-4" strokeWidth={1} />
+                  <p className="text-sm font-medium">표시할 메모가 없습니다.</p>
                 </div>
               )}
             </div>
           </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {/* Trash Memos */}
-          {trashMemos.map((memo, idx) => (
-            <div
-              key={memo.id}
-              className="group relative p-6 rounded-2xl shadow-sm transition-all duration-300 animate-scale-in grayscale-[0.3]"
-              style={{
-                backgroundColor: memo.color,
-                minHeight: '200px',
-                transform: `rotate(${(idx % 3 - 1) * 0.8}deg)`,
-                color: '#475569',
-                opacity: 0.8
-              }}
-            >
-              <div className="flex absolute top-3 right-3 gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                <button
-                  onClick={() => restoreMemo(memo.id)}
-                  title="복구"
-                  className="p-1.5 rounded-lg hover:bg-black/10 text-green-600 transition-all"
-                >
-                  <RotateCcw size={14} />
-                </button>
-                <button
-                  onClick={() => { if (window.confirm('영구 삭제하시겠습니까?')) permanentlyDeleteMemo(memo.id); }}
-                  title="영구 삭제"
-                  className="p-1.5 rounded-lg hover:bg-black/10 text-red-600 transition-all"
-                >
-                  <Trash size={14} />
-                </button>
-              </div>
+      </main>
 
-              <div className="relative text-sm font-medium leading-relaxed whitespace-pre-wrap break-words pr-8">
-                {memo.content}
-              </div>
-              
-              <div className="absolute bottom-4 left-6 text-[10px] font-bold opacity-30 uppercase tracking-widest">
-                삭제됨
-              </div>
-            </div>
-          ))}
-
-          {trashMemos.length === 0 && (
-            <div className="col-span-full py-20 flex flex-col items-center justify-center text-text-muted opacity-50">
-              <Trash size={48} className="mb-4" strokeWidth={1} />
-              <p className="text-sm font-medium">휴지통이 비어있습니다.</p>
-            </div>
-          )}
-        </div>
+      {/* Memo Modal */}
+      {selectedMemo && (
+        <MemoModal
+          memo={selectedMemo}
+          onClose={() => setSelectedMemo(null)}
+          onSave={handleSaveModal}
+          onDelete={removeMemo}
+        />
       )}
     </div>
-    
-    {/* Memo Modal - Moved outside of animated container to fix fixed positioning issue */}
-    {selectedMemo && (
-      <MemoModal
-        memo={selectedMemo}
-        onClose={() => setSelectedMemo(null)}
-        onSave={handleSaveModal}
-        onDelete={removeMemo}
-      />
-    )}
-  </>
-);
+  );
 }

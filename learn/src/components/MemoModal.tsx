@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { X, Star, Pin, Trash2 } from 'lucide-react';
+import { X, Star, Pin, Trash2, Folder } from 'lucide-react';
+import { useStore } from '../hooks/useStore';
 import type { Memo } from '../types';
 
 interface MemoModalProps {
@@ -10,9 +11,14 @@ interface MemoModalProps {
 }
 
 export default function MemoModal({ memo, onClose, onSave, onDelete }: MemoModalProps) {
+  const { data } = useStore();
   const [title, setTitle] = useState(memo.title || '');
   const [content, setContent] = useState(memo.content);
   const [isClosing, setIsClosing] = useState(false);
+  const [showFolderList, setShowFolderList] = useState(false);
+
+  const folders = data.memoFolders || [];
+  const currentFolder = folders.find(f => f.id === (memo.folderId || 'folder_default'));
 
   useEffect(() => {
     setTitle(memo.title || '');
@@ -35,13 +41,13 @@ export default function MemoModal({ memo, onClose, onSave, onDelete }: MemoModal
 
   return (
     <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}>
-      {/* Backdrop - fixed and full screen */}
+      {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/60 backdrop-blur-md cursor-pointer"
         onClick={handleClose}
       />
       
-      {/* Modal Content - relative to fixed wrapper */}
+      {/* Modal Content */}
       <div className={`relative w-full max-w-4xl bg-white rounded-3xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden transition-all duration-300 ease-out ${isClosing ? 'scale-95 opacity-0 translate-y-4' : 'scale-100 opacity-100 translate-y-0'}`}
            style={{ height: '85vh', maxHeight: '900px' }}>
         
@@ -54,6 +60,35 @@ export default function MemoModal({ memo, onClose, onSave, onDelete }: MemoModal
                 고정됨
               </div>
             )}
+            
+            {/* Folder Selector */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowFolderList(!showFolderList)}
+                className="flex items-center gap-2 px-3 py-1 rounded-full hover:bg-gray-100 text-gray-500 text-xs font-bold transition-colors"
+              >
+                <Folder size={12} style={{ color: currentFolder?.color }} />
+                {currentFolder?.name || '폴더 선택'}
+              </button>
+              
+              {showFolderList && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50 animate-scale-in">
+                  {folders.map(f => (
+                    <button
+                      key={f.id}
+                      onClick={() => {
+                        onSave(content, title, { folderId: f.id });
+                        setShowFolderList(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${memo.folderId === f.id ? 'bg-accent/5 text-accent' : 'hover:bg-gray-50 text-gray-600'}`}
+                    >
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: f.color }} />
+                      {f.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="flex items-center gap-1 md:gap-2">
@@ -96,9 +131,9 @@ export default function MemoModal({ memo, onClose, onSave, onDelete }: MemoModal
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-8 md:p-12 space-y-8">
           <div className="flex items-center justify-between text-xs font-bold">
-             <div className="flex items-center gap-2 text-amber-400">
-               <span className="w-2 h-2 rounded-full bg-amber-400" />
-               내 메모
+             <div className="flex items-center gap-2" style={{ color: currentFolder?.color }}>
+               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentFolder?.color }} />
+               {currentFolder?.name}
              </div>
              <div className="text-gray-300">
                {formatDate(memo.updatedAt || memo.createdAt)}

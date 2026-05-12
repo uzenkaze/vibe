@@ -33,8 +33,16 @@ export interface Memo {
   color: string;
   isPinned?: boolean;
   isFavorite?: boolean;
+  folderId?: string;
   createdAt: string;
   updatedAt?: string;
+}
+
+export interface MemoFolder {
+  id: string;
+  name: string;
+  color: string;
+  createdAt: string;
 }
 
 export interface AppData {
@@ -42,6 +50,7 @@ export interface AppData {
   articles: Article[];
   memos: Memo[];
   trash: Memo[];
+  memoFolders?: MemoFolder[];
 }
 
 export interface GitHubConfig {

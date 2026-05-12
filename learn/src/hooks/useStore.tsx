@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import type { AppData, Category, Article, GitHubConfig, DataSource, Memo } from '../types';
-import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle, createMemo, deleteMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos, updateMemo } from '../services/storage';
+import type { AppData, Category, Article, GitHubConfig, DataSource, Memo, MemoFolder } from '../types';
+import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle, createMemo, deleteMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos, updateMemo, createMemoFolder, deleteMemoFolder, updateMemoFolder } from '../services/storage';
 import { getGitHubConfig, saveGitHubConfig, downloadFromGitHub, uploadToGitHub } from '../services/github';
 
 interface StoreContextType {
@@ -17,13 +17,17 @@ interface StoreContextType {
   editArticle: (id: string, updates: Partial<Article>) => void;
   removeArticle: (id: string) => void;
   // Memo actions
-  addMemo: (content: string, color: string, title?: string) => void;
+  addMemo: (content: string, color: string, title?: string, folderId?: string) => void;
   removeMemo: (id: string) => void;
   editMemo: (id: string, content: string, title?: string, updates?: Partial<Memo>) => void;
   restoreMemo: (id: string) => void;
   permanentlyDeleteMemo: (id: string) => void;
   emptyTrash: () => void;
   reorderMemos: (memos: Memo[]) => void;
+  // Memo Folder actions
+  addMemoFolder: (name: string, color: string) => void;
+  removeMemoFolder: (id: string) => void;
+  editMemoFolder: (id: string, name: string, color: string) => void;
   // GitHub actions
   updateGhConfig: (config: GitHubConfig) => void;
   syncDown: () => Promise<void>;
@@ -141,8 +145,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [data, persistAndSync, showToast]);
 
   // Memo actions
-  const addMemo = useCallback((content: string, color: string, title: string = '') => {
-    const newData = createMemo(data, content, color, title);
+  const addMemo = useCallback((content: string, color: string, title: string = '', folderId?: string) => {
+    const newData = createMemo(data, content, color, title, folderId);
     persistAndSync(newData);
   }, [data, persistAndSync]);
 
@@ -175,6 +179,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     updateData(prev => updateMemo(prev, id, content, title, updates));
   }, [updateData]);
 
+  const addMemoFolder = useCallback((name: string, color: string) => {
+    updateData(prev => createMemoFolder(prev, name, color));
+    showToast('폴더가 생성되었습니다');
+  }, [updateData, showToast]);
+
+  const removeMemoFolder = useCallback((id: string) => {
+    updateData(prev => deleteMemoFolder(prev, id));
+    showToast('폴더가 삭제되었습니다');
+  }, [updateData, showToast]);
+
+  const editMemoFolder = useCallback((id: string, name: string, color: string) => {
+    updateData(prev => updateMemoFolder(prev, id, name, color));
+    showToast('폴더가 수정되었습니다');
+  }, [updateData, showToast]);
+
   // GitHub actions
   const updateGhConfig = useCallback((config: GitHubConfig) => {
     setGhConfig(config);
@@ -191,6 +210,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...result,
         memos: result.memos || data.memos || [],
         trash: result.trash || data.trash || [],
+        memoFolders: (() => {
+          const f = result.memoFolders || data.memoFolders || [];
+          if (!f.some(x => x.id === 'folder_default')) {
+            f.unshift({ id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() });
+          }
+          return f;
+        })(),
       };
       setData(merged);
       saveData(merged);
@@ -215,8 +241,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setDataSource('syncing');
       downloadFromGitHub<AppData>(ghConfig).then(result => {
         if (result && result.categories && result.articles) {
-          setData(result);
-          saveData(result);
+          const merged: AppData = {
+            ...result,
+            memos: result.memos || data.memos || [],
+            trash: result.trash || data.trash || [],
+            memoFolders: (() => {
+              const f = result.memoFolders || data.memoFolders || [];
+              if (!f.some(x => x.id === 'folder_default')) {
+                f.unshift({ id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() });
+              }
+              return f;
+            })(),
+          };
+          setData(merged);
+          saveData(merged);
           setDataSource('github');
         } else {
           setDataSource('local');
@@ -236,6 +274,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       permanentlyDeleteMemo: permanentlyDeleteMemoAction,
       emptyTrash: emptyTrashAction,
       reorderMemos: reorderMemosAction,
+      addMemoFolder, removeMemoFolder, editMemoFolder,
       updateGhConfig, syncDown, syncUp,
       toast, showToast,
       theme, toggleTheme,

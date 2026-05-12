@@ -1,4 +1,4 @@
-import type { AppData, Category, Article, Memo } from '../types';
+import type { AppData, Category, Article, Memo, MemoFolder } from '../types';
 
 const STORAGE_KEY = 'learnVaultData';
 
@@ -14,8 +14,21 @@ export function loadData(): AppData {
       return {
         categories: Array.isArray(parsed.categories) ? parsed.categories : [],
         articles: Array.isArray(parsed.articles) ? parsed.articles : [],
-        memos: Array.isArray(parsed.memos) ? parsed.memos : [],
-        trash: Array.isArray(parsed.trash) ? parsed.trash : [],
+        memos: Array.isArray(parsed.memos) ? parsed.memos.map((m: any) => ({
+          ...m,
+          folderId: m.folderId || 'folder_default'
+        })) : [],
+        trash: Array.isArray(parsed.trash) ? parsed.trash.map((m: any) => ({
+          ...m,
+          folderId: m.folderId || 'folder_default'
+        })) : [],
+        memoFolders: (() => {
+          const folders = Array.isArray(parsed.memoFolders) ? parsed.memoFolders : [];
+          if (!folders.some(f => f.id === 'folder_default')) {
+            folders.unshift({ id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() });
+          }
+          return folders;
+        })(),
       };
     } catch { /* ignore */ }
   }
@@ -23,7 +36,10 @@ export function loadData(): AppData {
     categories: [], 
     articles: [], 
     memos: [],
-    trash: []
+    trash: [],
+    memoFolders: [
+      { id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() }
+    ]
   };
 }
 
@@ -147,13 +163,14 @@ export function getArticleById(data: AppData, id: string): Article | undefined {
 }
 
 // Memo CRUD
-export function createMemo(data: AppData, content: string, color: string, title: string = ''): AppData {
+export function createMemo(data: AppData, content: string, color: string, title: string = '', folderId?: string): AppData {
   const now = new Date().toISOString();
   const memo: Memo = {
     id: generateId('memo'),
     title,
     content,
     color,
+    folderId: folderId || 'folder_default',
     createdAt: now,
     updatedAt: now,
   };
@@ -231,5 +248,35 @@ export function updateMemo(data: AppData, id: string, content: string, title?: s
   return {
     ...data,
     memos,
+  };
+}
+
+// MemoFolder CRUD
+export function createMemoFolder(data: AppData, name: string, color: string): AppData {
+  const folder: MemoFolder = {
+    id: generateId('fld'),
+    name,
+    color,
+    createdAt: new Date().toISOString(),
+  };
+  return {
+    ...data,
+    memoFolders: [...(data.memoFolders || []), folder]
+  };
+}
+
+export function deleteMemoFolder(data: AppData, id: string): AppData {
+  if (id === 'folder_default') return data;
+  return {
+    ...data,
+    memoFolders: (data.memoFolders || []).filter(f => f.id !== id),
+    memos: (data.memos || []).map(m => m.folderId === id ? { ...m, folderId: 'folder_default' } : m)
+  };
+}
+
+export function updateMemoFolder(data: AppData, id: string, name: string, color: string): AppData {
+  return {
+    ...data,
+    memoFolders: (data.memoFolders || []).map(f => f.id === id ? { ...f, name, color } : f)
   };
 }
