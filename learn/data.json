@@ -154,15 +154,15 @@
       "createdAt": "2026-05-11T06:35:05.371Z",
       "title": "",
       "updatedAt": "2026-05-12T04:35:41.643Z"
-    },
+    }
+  ],
+  "trash": [
     {
       "id": "memo_mp0tusjf_41k67",
       "content": "ㅁㅁㅁ",
       "color": "#fee2e2",
       "createdAt": "2026-05-11T06:35:14.043Z"
-    }
-  ],
-  "trash": [
+    },
     {
       "id": "memo_mp27sciw_j1f4k",
       "title": "",
