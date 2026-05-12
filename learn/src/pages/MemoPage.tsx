@@ -64,14 +64,18 @@ function MemoCard({ memo, idx, draggedIndex, onDragStart, onDragOver, onDrop, on
           {memo.content}
         </p>
         
-        {memo.isPinned && (
-          <div className="absolute top-12 left-6 text-accent animate-pulse">
-            <Pin size={12} fill="currentColor" />
+        <div className="mt-4 text-[10px] font-bold uppercase tracking-widest flex items-center justify-between">
+          <span className="opacity-30">{new Date(memo.createdAt).toLocaleDateString('ko-KR')}</span>
+          <div className="flex items-center gap-1.5">
+            {memo.isPinned && (
+              <Pin size={12} fill="currentColor" className="text-accent" />
+            )}
+            {memo.isFavorite && (
+              <div className="relative">
+                <Star size={14} fill="#f59e0b" className="text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+              </div>
+            )}
           </div>
-        )}
-        <div className="mt-4 text-[10px] font-bold opacity-30 uppercase tracking-widest flex items-center justify-between">
-          <span>{new Date(memo.createdAt).toLocaleDateString('ko-KR')}</span>
-          {memo.isFavorite && <Star size={10} fill="#f59e0b" className="text-amber-500" />}
         </div>
 
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
