@@ -111,6 +111,15 @@
   ],
   "memos": [
     {
+      "id": "memo_mp27sciw_j1f4k",
+      "title": "",
+      "content": "ㅁㅁㅁ",
+      "color": "#fef9c3",
+      "folderId": "folder_default",
+      "createdAt": "2026-05-12T05:53:00.776Z",
+      "updatedAt": "2026-05-12T05:53:00.776Z"
+    },
+    {
       "id": "memo_mp0tv8h8_04pyk",
       "content": "* 크레모아 AS접수\n- 26.05.12 \nㄴ 접수완료\nㄴ CJ택배신청완료",
       "color": "#f3e8ff",
@@ -164,6 +173,12 @@
   ],
   "trash": [],
   "memoFolders": [
+    {
+      "id": "folder_default",
+      "name": "내 메모",
+      "color": "#fbbf24",
+      "createdAt": "2026-05-12T05:48:57.099Z"
+    },
     {
       "id": "fld_mp27k18a_vl4ps",
       "name": "기본",
