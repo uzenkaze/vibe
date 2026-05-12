@@ -114,7 +114,10 @@
       "id": "memo_mp0tv8h8_04pyk",
       "content": "* 크레모아 AS접수\n- 26.05.12 \nㄴ 접수완료\nㄴ CJ택배신청완료",
       "color": "#f3e8ff",
-      "createdAt": "2026-05-11T06:35:34.700Z"
+      "createdAt": "2026-05-11T06:35:34.700Z",
+      "title": "",
+      "folderId": "fld_mp27k18a_vl4ps",
+      "updatedAt": "2026-05-12T05:47:18.480Z"
     },
     {
       "id": "memo_mp0tvbpa_zsjv4",
@@ -129,8 +132,9 @@
       "createdAt": "2026-05-11T06:35:30.609Z",
       "title": "",
       "isPinned": true,
-      "updatedAt": "2026-05-12T01:00:38.610Z",
-      "isFavorite": true
+      "updatedAt": "2026-05-12T05:47:03.329Z",
+      "isFavorite": true,
+      "folderId": "fld_mp27khoj_yw61u"
     },
     {
       "id": "memo_mp0tv1nf_prmr8",
@@ -138,10 +142,13 @@
       "color": "#dcfce7",
       "createdAt": "2026-05-11T06:35:25.851Z",
       "title": "5월",
-      "updatedAt": "2026-05-12T01:11:29.661Z",
+      "updatedAt": "2026-05-12T05:47:11.302Z",
       "isFavorite": true,
-      "isPinned": true
-    },
+      "isPinned": true,
+      "folderId": "fld_mp27khoj_yw61u"
+    }
+  ],
+  "trash": [
     {
       "id": "memo_mp0tuluj_x531p",
       "content": "",
@@ -155,7 +162,53 @@
       "content": "ㅁㅁㅁ",
       "color": "#fee2e2",
       "createdAt": "2026-05-11T06:35:14.043Z"
+    },
+    {
+      "id": "memo_mp27sciw_j1f4k",
+      "title": "",
+      "content": "ㅁㅁㅁ",
+      "color": "#fef9c3",
+      "folderId": "folder_default",
+      "createdAt": "2026-05-12T05:53:00.776Z",
+      "updatedAt": "2026-05-12T05:53:00.776Z"
+    },
+    {
+      "id": "memo_mp27tkzc_ezgsb",
+      "title": "",
+      "content": "ㄹㅇㄴㅁㄹㄴㅁㄻㄴㄹ",
+      "color": "#fef9c3",
+      "folderId": "folder_default",
+      "createdAt": "2026-05-12T05:53:58.392Z",
+      "updatedAt": "2026-05-12T05:53:58.392Z"
+    },
+    {
+      "id": "memo_mp27tt5z_gjk90",
+      "title": "",
+      "content": "ㄷㄷㄷㄷㄷ\nㅁㄹㄴㅇㅁㄹ",
+      "color": "#fef9c3",
+      "folderId": "folder_default",
+      "createdAt": "2026-05-12T05:54:08.999Z",
+      "updatedAt": "2026-05-12T05:54:08.999Z"
     }
   ],
-  "trash": []
+  "memoFolders": [
+    {
+      "id": "folder_default",
+      "name": "내 메모",
+      "color": "#fbbf24",
+      "createdAt": "2026-05-12T05:48:57.099Z"
+    },
+    {
+      "id": "fld_mp27k18a_vl4ps",
+      "name": "기본",
+      "color": "#f3e8ff",
+      "createdAt": "2026-05-12T05:46:32.890Z"
+    },
+    {
+      "id": "fld_mp27khoj_yw61u",
+      "name": "생활",
+      "color": "#f3e8ff",
+      "createdAt": "2026-05-12T05:46:54.211Z"
+    }
+  ]
 }
