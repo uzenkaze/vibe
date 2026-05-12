@@ -164,6 +164,12 @@
       "name": "기본",
       "color": "#f3e8ff",
       "createdAt": "2026-05-12T05:46:32.890Z"
+    },
+    {
+      "id": "fld_mp27khoj_yw61u",
+      "name": "생활",
+      "color": "#f3e8ff",
+      "createdAt": "2026-05-12T05:46:54.211Z"
     }
   ]
 }
