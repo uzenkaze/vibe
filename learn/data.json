@@ -111,6 +111,12 @@
   ],
   "memos": [
     {
+      "id": "memo_mp0tv8h8_04pyk",
+      "content": "* 크레모아 AS접수\n- 26.05.12 \nㄴ 접수완료\nㄴ CJ택배신청완료",
+      "color": "#f3e8ff",
+      "createdAt": "2026-05-11T06:35:34.700Z"
+    },
+    {
       "id": "memo_mp0tvbpa_zsjv4",
       "content": "메모를 삭제하면 휴지통으로 이동하며 복구가능해요",
       "color": "#ffedd5",
@@ -135,12 +141,6 @@
       "updatedAt": "2026-05-12T01:11:29.661Z",
       "isFavorite": true,
       "isPinned": true
-    },
-    {
-      "id": "memo_mp0tv8h8_04pyk",
-      "content": "* 크레모아 AS접수\n- 26.05.12 \nㄴ 접수완료\nㄴ CJ택배신청완료",
-      "color": "#f3e8ff",
-      "createdAt": "2026-05-11T06:35:34.700Z"
     },
     {
       "id": "memo_mp0tuluj_x531p",
