@@ -112,21 +112,21 @@
   "memos": [
     {
       "id": "memo_mp0tv5bl_0g2yz",
-      "content": "ㄷㄷㄷ",
+      "content": "* 크레모아 AS접수 시\n동봉 메모 필수 (미기재 시 처리 지연)제품과 함께 아래 내용을 적은 메모를 꼭 동봉해 주세요.필수 기재 항목         \n1) 고객 정보: 이름 / 연락처 / 주소         \n2) 제품 정보: 모델명 / 증상         3) 구매 정보: 구매처 / 구매 시기스탠드 / 브로드윙 수리 요청 시 어댑터도 꼭 동봉해 주세요.",
       "color": "#dbeafe",
       "createdAt": "2026-05-11T06:35:30.609Z"
+    },
+    {
+      "id": "memo_mp0tv8h8_04pyk",
+      "content": "* 크레모아 AS접수\n- 26.05.12 \nㄴ 접수완료\nㄴ CJ택배신청완료",
+      "color": "#f3e8ff",
+      "createdAt": "2026-05-11T06:35:34.700Z"
     },
     {
       "id": "memo_mp0tuluj_x531p",
       "content": "생각나면 적어",
       "color": "#fef9c3",
       "createdAt": "2026-05-11T06:35:05.371Z"
-    },
-    {
-      "id": "memo_mp0tv8h8_04pyk",
-      "content": "ㅇㅇㅇ",
-      "color": "#f3e8ff",
-      "createdAt": "2026-05-11T06:35:34.700Z"
     },
     {
       "id": "memo_mp0tv1nf_prmr8",
