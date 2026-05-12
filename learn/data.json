@@ -157,5 +157,13 @@
       "createdAt": "2026-05-11T06:35:14.043Z"
     }
   ],
-  "trash": []
+  "trash": [],
+  "memoFolders": [
+    {
+      "id": "fld_mp27k18a_vl4ps",
+      "name": "기본",
+      "color": "#f3e8ff",
+      "createdAt": "2026-05-12T05:46:32.890Z"
+    }
+  ]
 }
