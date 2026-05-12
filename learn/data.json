@@ -146,7 +146,9 @@
       "isFavorite": true,
       "isPinned": true,
       "folderId": "fld_mp27khoj_yw61u"
-    },
+    }
+  ],
+  "trash": [
     {
       "id": "memo_mp0tuluj_x531p",
       "content": "",
@@ -154,9 +156,7 @@
       "createdAt": "2026-05-11T06:35:05.371Z",
       "title": "",
       "updatedAt": "2026-05-12T04:35:41.643Z"
-    }
-  ],
-  "trash": [
+    },
     {
       "id": "memo_mp0tusjf_41k67",
       "content": "ㅁㅁㅁ",
