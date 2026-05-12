@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, BookOpen, FolderOpen, Sparkles, Database, FileText, Terminal } from 'lucide-react';
+import { Plus, BookOpen, FolderOpen, Sparkles, Database, FileText } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import { getRecentArticles } from '../services/storage';
 import CategoryCard from '../components/CategoryCard';

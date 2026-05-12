@@ -1,4 +1,5 @@
 # d:\VibeCoding\deploy.ps1
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $deployDir = "deploy_dist"
 
