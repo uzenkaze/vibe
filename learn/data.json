@@ -144,9 +144,11 @@
     },
     {
       "id": "memo_mp0tuluj_x531p",
-      "content": "생각나면 적어",
+      "content": "",
       "color": "#fef9c3",
-      "createdAt": "2026-05-11T06:35:05.371Z"
+      "createdAt": "2026-05-11T06:35:05.371Z",
+      "title": "",
+      "updatedAt": "2026-05-12T04:35:41.643Z"
     },
     {
       "id": "memo_mp0tusjf_41k67",
