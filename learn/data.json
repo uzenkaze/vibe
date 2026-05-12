@@ -213,8 +213,8 @@
   ],
   "mindmap": {
     "version": 2,
-    "activeId": 1,
-    "nextPageId": 2,
+    "activeId": 2,
+    "nextPageId": 3,
     "pages": [
       {
         "id": 1,
@@ -265,6 +265,24 @@
           }
         ],
         "nextId": 4
+      },
+      {
+        "id": 2,
+        "title": "New Page 2",
+        "nodes": [
+          {
+            "id": 1,
+            "type": "group",
+            "label": "New Topic",
+            "x": 0,
+            "y": 0,
+            "color": 0,
+            "_w": 140,
+            "_h": 60
+          }
+        ],
+        "edges": [],
+        "nextId": 2
       }
     ]
   }
