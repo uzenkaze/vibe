@@ -2,11 +2,11 @@ import { useState, useMemo } from 'react';
 import { 
   Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical, 
   Pin, Star, Folder, ChevronDown, ChevronUp, FolderPlus, 
-  MoreVertical, Edit3, LayoutGrid, Search, Menu, ChevronLeft, ChevronRight
+  LayoutGrid, Search, Menu, ChevronLeft
 } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import MemoModal from '../components/MemoModal';
-import type { Memo, MemoFolder } from '../types';
+import type { Memo } from '../types';
 
 const MEMO_COLORS = [
   '#fef9c3', // Yellow
@@ -94,7 +94,7 @@ export default function MemoPage() {
   const { 
     data, addMemo, removeMemo, editMemo, restoreMemo, 
     permanentlyDeleteMemo, emptyTrash, reorderMemos,
-    addMemoFolder, removeMemoFolder, editMemoFolder
+    addMemoFolder, removeMemoFolder
   } = useStore();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);

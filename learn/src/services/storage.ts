@@ -24,7 +24,7 @@ export function loadData(): AppData {
         })) : [],
         memoFolders: (() => {
           const folders = Array.isArray(parsed.memoFolders) ? parsed.memoFolders : [];
-          if (!folders.some(f => f.id === 'folder_default')) {
+          if (!folders.some((f: MemoFolder) => f.id === 'folder_default')) {
             folders.unshift({ id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() });
           }
           return folders;
@@ -277,6 +277,8 @@ export function deleteMemoFolder(data: AppData, id: string): AppData {
 export function updateMemoFolder(data: AppData, id: string, name: string, color: string): AppData {
   return {
     ...data,
-    memoFolders: (data.memoFolders || []).map(f => f.id === id ? { ...f, name, color } : f)
+    memoFolders: (data.memoFolders || []).map((f: MemoFolder) => 
+      f.id === id ? { ...f, name, color } : f
+    ),
   };
 }

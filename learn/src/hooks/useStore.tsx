@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import type { AppData, Category, Article, GitHubConfig, DataSource, Memo, MemoFolder } from '../types';
+import type { AppData, Category, Article, GitHubConfig, DataSource, Memo } from '../types';
 import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle, createMemo, deleteMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos, updateMemo, createMemoFolder, deleteMemoFolder, updateMemoFolder } from '../services/storage';
 import { getGitHubConfig, saveGitHubConfig, downloadFromGitHub, uploadToGitHub } from '../services/github';
 
