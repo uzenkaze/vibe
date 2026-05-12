@@ -111,10 +111,30 @@
   ],
   "memos": [
     {
+      "id": "memo_mp0tvbpa_zsjv4",
+      "content": "메모를 삭제하면 휴지통으로 이동하며 복구가능해요",
+      "color": "#ffedd5",
+      "createdAt": "2026-05-11T06:35:38.878Z"
+    },
+    {
       "id": "memo_mp0tv5bl_0g2yz",
       "content": "* 크레모아 AS접수 시\n동봉 메모 필수 (미기재 시 처리 지연)제품과 함께 아래 내용을 적은 메모를 꼭 동봉해 주세요.필수 기재 항목         \n1) 고객 정보: 이름 / 연락처 / 주소         \n2) 제품 정보: 모델명 / 증상         3) 구매 정보: 구매처 / 구매 시기스탠드 / 브로드윙 수리 요청 시 어댑터도 꼭 동봉해 주세요.",
       "color": "#dbeafe",
-      "createdAt": "2026-05-11T06:35:30.609Z"
+      "createdAt": "2026-05-11T06:35:30.609Z",
+      "title": "",
+      "isPinned": true,
+      "updatedAt": "2026-05-12T01:00:38.610Z",
+      "isFavorite": true
+    },
+    {
+      "id": "memo_mp0tv1nf_prmr8",
+      "content": "잔여\n\nNH(지산) : 994,849\n카드 : 7,768,985\n보험 : 177,981\n\n총 : 8,941,815\n\n카뱅 : 8,493,697\n\n부족금 : 448,118",
+      "color": "#dcfce7",
+      "createdAt": "2026-05-11T06:35:25.851Z",
+      "title": "5월",
+      "updatedAt": "2026-05-12T01:11:29.661Z",
+      "isFavorite": true,
+      "isPinned": true
     },
     {
       "id": "memo_mp0tv8h8_04pyk",
@@ -129,26 +149,11 @@
       "createdAt": "2026-05-11T06:35:05.371Z"
     },
     {
-      "id": "memo_mp0tv1nf_prmr8",
-      "content": "잔여\n\nNH(지산) : ",
-      "color": "#dcfce7",
-      "createdAt": "2026-05-11T06:35:25.851Z",
-      "title": "5월",
-      "updatedAt": "2026-05-12T00:53:50.276Z"
-    },
-    {
       "id": "memo_mp0tusjf_41k67",
       "content": "ㅁㅁㅁ",
       "color": "#fee2e2",
       "createdAt": "2026-05-11T06:35:14.043Z"
     }
   ],
-  "trash": [
-    {
-      "id": "memo_mp0tvbpa_zsjv4",
-      "content": "메모를 삭제하면 휴지통으로 이동하며 복구가능해요",
-      "color": "#ffedd5",
-      "createdAt": "2026-05-11T06:35:38.878Z"
-    }
-  ]
+  "trash": []
 }
