@@ -49,7 +49,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [dataSource, setDataSource] = useState<DataSource>('local');
   const [toast, setToast] = useState<string | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    return (localStorage.getItem('learnVaultTheme') as 'dark' | 'light') || 'dark';
+    return (localStorage.getItem('learnVaultTheme') as 'dark' | 'light') || 'light';
   });
 
   const showToast = useCallback((msg: string) => {
@@ -63,10 +63,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('learnVaultTheme', theme);
-    if (theme === 'light') {
-      document.documentElement.classList.add('light');
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('light');
+      document.documentElement.classList.remove('dark');
     }
   }, [theme]);
 
