@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, Book, Folder, StickyNote } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../hooks/useStore';
-import { searchArticles } from '../services/storage';
+import { globalSearch, type SearchResult } from '../services/storage';
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
@@ -10,12 +10,38 @@ export default function SearchBar() {
   const { data } = useStore();
   const navigate = useNavigate();
 
-  const results = query.trim().length > 1 ? searchArticles(data, query) : [];
+  const results = query.trim().length > 1 ? globalSearch(data, query) : [];
 
-  const handleSelect = (articleId: string) => {
+  const handleSelect = (result: SearchResult) => {
     setQuery('');
     setIsOpen(false);
-    navigate(`/article/${articleId}`);
+    if (result.type === 'article') navigate(`/article/${result.data.id}`);
+    if (result.type === 'category') navigate(`/category/${result.data.id}`);
+    if (result.type === 'memo') navigate('/memos');
+  };
+
+  const getResultIcon = (type: SearchResult['type']) => {
+    if (type === 'article') return <Book size={12} />;
+    if (type === 'category') return <Folder size={12} />;
+    if (type === 'memo') return <StickyNote size={12} />;
+    return null;
+  };
+
+  const getResultTitle = (result: SearchResult) => {
+    if (result.type === 'article') return result.data.title;
+    if (result.type === 'category') return result.data.name;
+    if (result.type === 'memo') return result.data.title || result.data.content.slice(0, 20) + '...';
+    return '';
+  };
+
+  const getResultSubtitle = (result: SearchResult) => {
+    if (result.type === 'article') {
+      const cat = data.categories.find(c => c.id === result.data.categoryId);
+      return `아티클 • ${cat?.name || '미분류'}`;
+    }
+    if (result.type === 'category') return '카테고리';
+    if (result.type === 'memo') return '메모';
+    return '';
   };
 
   return (
@@ -43,7 +69,7 @@ export default function SearchBar() {
           value={query}
           onChange={e => { setQuery(e.target.value); setIsOpen(true); }}
           onFocus={() => setIsOpen(true)}
-          placeholder="지식 검색..."
+          placeholder="통합 검색..."
           className="flex-1 bg-transparent py-2 pr-2 text-xs font-medium outline-none"
           style={{ color: 'var(--color-text-primary)' }}
         />
@@ -68,42 +94,38 @@ export default function SearchBar() {
             boxShadow: '0 16px 40px rgba(0,0,0,0.2)',
           }}
         >
-          <div className="max-h-72 overflow-y-auto">
-            {results.slice(0, 8).map(article => {
-              const category = data.categories.find(c => c.id === article.categoryId);
-              const cardColor = article.color || category?.color || '#8b5cf6';
+          <div className="max-h-80 overflow-y-auto">
+            {results.slice(0, 10).map((result, idx) => {
+              const id = result.type === 'article' ? result.data.id : 
+                         result.type === 'category' ? result.data.id : result.data.id;
               return (
                 <button
-                  key={article.id}
-                  onClick={() => handleSelect(article.id)}
-                  className="w-full text-left px-3 py-2.5 transition-all flex items-center gap-3 border-b last:border-b-0 hover:pl-4"
+                  key={`${result.type}-${id}-${idx}`}
+                  onClick={() => handleSelect(result)}
+                  className="w-full text-left px-3 py-2.5 transition-all flex items-center gap-3 border-b last:border-b-0 hover:bg-white/5"
                   style={{ borderColor: 'var(--color-border)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${cardColor}10`; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                 >
-                  {/* Color dot */}
-                  <div
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ background: cardColor, boxShadow: `0 0 6px ${cardColor}60` }}
-                  />
+                  <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-accent">
+                    {getResultIcon(result.type)}
+                  </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
-                      {article.title}
+                      {getResultTitle(result)}
                     </div>
                     <div className="text-[10px] font-medium mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                      {category?.icon} {category?.name || '미분류'}
+                      {getResultSubtitle(result)}
                     </div>
                   </div>
                 </button>
               );
             })}
           </div>
-          {results.length > 8 && (
+          {results.length > 10 && (
             <div
               className="px-3 py-2 text-[10px] font-semibold text-center"
               style={{ color: 'var(--color-text-muted)', borderTop: '1px solid var(--color-border)' }}
             >
-              +{results.length - 8}개 더 있음
+              +{results.length - 10}개 결과 더 있음
             </div>
           )}
         </div>

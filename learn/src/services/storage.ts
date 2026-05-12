@@ -103,14 +103,39 @@ export function getRecentArticles(data: AppData, limit: number = 5): Article[] {
     .slice(0, limit);
 }
 
-export function searchArticles(data: AppData, query: string): Article[] {
+export type SearchResult = 
+  | { type: 'article', data: Article }
+  | { type: 'category', data: Category }
+  | { type: 'memo', data: Memo };
+
+export function globalSearch(data: AppData, query: string): SearchResult[] {
   const q = query.toLowerCase().trim();
   if (!q) return [];
-  return data.articles.filter(a =>
-    a.title.toLowerCase().includes(q) ||
-    a.content.toLowerCase().includes(q) ||
-    a.tags.some(t => t.toLowerCase().includes(q))
-  );
+  
+  const results: SearchResult[] = [];
+  
+  // Search Articles
+  data.articles.forEach(a => {
+    if (a.title.toLowerCase().includes(q) || a.content.toLowerCase().includes(q)) {
+      results.push({ type: 'article', data: a });
+    }
+  });
+  
+  // Search Categories
+  data.categories.forEach(c => {
+    if (c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)) {
+      results.push({ type: 'category', data: c });
+    }
+  });
+  
+  // Search Memos
+  data.memos.forEach(m => {
+    if ((m.title?.toLowerCase().includes(q)) || m.content.toLowerCase().includes(q)) {
+      results.push({ type: 'memo', data: m });
+    }
+  });
+  
+  return results;
 }
 
 export function getCategoryById(data: AppData, id: string): Category | undefined {
@@ -122,12 +147,15 @@ export function getArticleById(data: AppData, id: string): Article | undefined {
 }
 
 // Memo CRUD
-export function createMemo(data: AppData, content: string, color: string): AppData {
+export function createMemo(data: AppData, content: string, color: string, title: string = ''): AppData {
+  const now = new Date().toISOString();
   const memo: Memo = {
     id: generateId('memo'),
+    title,
     content,
     color,
-    createdAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
   };
   const memos = data.memos || [];
   return { ...data, memos: [memo, ...memos] };
@@ -178,10 +206,30 @@ export function reorderMemos(data: AppData, memos: Memo[]): AppData {
   return { ...data, memos };
 }
 
-export function updateMemo(data: AppData, id: string, content: string): AppData {
-  const memos = Array.isArray(data.memos) ? data.memos : [];
+export function updateMemo(data: AppData, id: string, content: string, title?: string, updates: Partial<Memo> = {}): AppData {
+  let memos = Array.isArray(data.memos) ? [...data.memos] : [];
+  
+  const index = memos.findIndex(m => m.id === id);
+  if (index === -1) return data;
+
+  const updatedMemo = { 
+    ...memos[index], 
+    content, 
+    title: title !== undefined ? title : memos[index].title,
+    ...updates,
+    updatedAt: new Date().toISOString() 
+  };
+
+  // If it's being pinned, move to front. If unpinned, stay where it is but updated.
+  if (updates.isPinned === true) {
+    memos.splice(index, 1);
+    memos = [updatedMemo, ...memos];
+  } else {
+    memos[index] = updatedMemo;
+  }
+
   return {
     ...data,
-    memos: memos.map(m => m.id === id ? { ...m, content } : m),
+    memos,
   };
 }

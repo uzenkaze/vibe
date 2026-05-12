@@ -17,9 +17,9 @@ interface StoreContextType {
   editArticle: (id: string, updates: Partial<Article>) => void;
   removeArticle: (id: string) => void;
   // Memo actions
-  addMemo: (content: string, color: string) => void;
+  addMemo: (content: string, color: string, title?: string) => void;
   removeMemo: (id: string) => void;
-  editMemo: (id: string, content: string) => void;
+  editMemo: (id: string, content: string, title?: string, updates?: Partial<Memo>) => void;
   restoreMemo: (id: string) => void;
   permanentlyDeleteMemo: (id: string) => void;
   emptyTrash: () => void;
@@ -65,31 +65,37 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [theme]);
 
-  // Persist to localStorage on change
-  const persistAndSync = useCallback((newData: AppData) => {
+  // Persist to localStorage and trigger background sync
+  const persistAndSync = useCallback(async (newData: AppData) => {
     setData(newData);
     saveData(newData);
-    // Auto upload in background
+    
     if (ghConfig.token && ghConfig.autoSync) {
-      uploadToGitHub(ghConfig, newData).then(ok => {
-        if (ok) setDataSource('github');
-      }).catch(console.error);
+      setDataSource('syncing');
+      const uploadOk = await uploadToGitHub(ghConfig, newData);
+      
+      if (uploadOk) {
+        // As requested: "서버에 저장하고 저장된 데이터를 조회해서 보여줘"
+        // After successful upload, we fetch back to ensure 100% consistency
+        const verifiedData = await downloadFromGitHub<AppData>(ghConfig);
+        if (verifiedData) {
+          setData(verifiedData);
+          saveData(verifiedData);
+          setDataSource('github');
+          return;
+        }
+      }
+      setDataSource(uploadOk ? 'github' : 'local');
+    } else {
+      setDataSource('local');
     }
   }, [ghConfig]);
 
-  // functional helper
-  const updateData = useCallback((fn: (prev: AppData) => AppData) => {
-    setData(prev => {
-      const next = fn(prev);
-      saveData(next);
-      if (ghConfig.token && ghConfig.autoSync) {
-        uploadToGitHub(ghConfig, next).then(ok => {
-          if (ok) setDataSource('github');
-        }).catch(console.error);
-      }
-      return next;
-    });
-  }, [ghConfig]);
+  // functional helper for state updates
+  const updateData = useCallback(async (fn: (prev: AppData) => AppData) => {
+    const next = fn(data); // Using current 'data' state
+    await persistAndSync(next);
+  }, [data, persistAndSync]);
 
   // Category actions
   const addCategory = useCallback((input: Omit<Category, 'id' | 'createdAt' | 'order'>) => {
@@ -135,8 +141,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [data, persistAndSync, showToast]);
 
   // Memo actions
-  const addMemo = useCallback((content: string, color: string) => {
-    const newData = createMemo(data, content, color);
+  const addMemo = useCallback((content: string, color: string, title: string = '') => {
+    const newData = createMemo(data, content, color, title);
     persistAndSync(newData);
   }, [data, persistAndSync]);
 
@@ -165,8 +171,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     updateData(prev => reorderMemos(prev, memos));
   }, [updateData]);
 
-  const editMemo = useCallback((id: string, content: string) => {
-    updateData(prev => updateMemo(prev, id, content));
+  const editMemo = useCallback((id: string, content: string, title?: string, updates?: Partial<Memo>) => {
+    updateData(prev => updateMemo(prev, id, content, title, updates));
   }, [updateData]);
 
   // GitHub actions

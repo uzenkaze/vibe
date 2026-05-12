@@ -28,9 +28,13 @@ export interface Category {
 
 export interface Memo {
   id: string;
+  title?: string;
   content: string;
   color: string;
+  isPinned?: boolean;
+  isFavorite?: boolean;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AppData {
