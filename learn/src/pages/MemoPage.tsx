@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { 
   Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical, 
   Pin, Star, Folder, ChevronDown, ChevronUp, FolderPlus, 
-  LayoutGrid, Search, Menu, ChevronLeft
+  LayoutGrid, Search, Menu, ChevronLeft, Edit3
 } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import MemoModal from '../components/MemoModal';
@@ -94,7 +94,7 @@ export default function MemoPage() {
   const { 
     data, addMemo, removeMemo, editMemo, restoreMemo, 
     permanentlyDeleteMemo, emptyTrash, reorderMemos,
-    addMemoFolder, removeMemoFolder
+    addMemoFolder, removeMemoFolder, editMemoFolder
   } = useStore();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
@@ -106,6 +106,8 @@ export default function MemoPage() {
   const [isFoldersOpen, setIsFoldersOpen] = useState(false);
   const [isAddingFolder, setIsAddingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const [isRenamingFolderId, setIsRenamingFolderId] = useState<string | null>(null);
+  const [editFolderName, setEditFolderName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Edit State
@@ -156,6 +158,15 @@ export default function MemoPage() {
     addMemoFolder(newFolderName.trim(), MEMO_COLORS[Math.floor(Math.random() * MEMO_COLORS.length)]);
     setNewFolderName('');
     setIsAddingFolder(false);
+  };
+
+  const handleRenameFolder = (id: string) => {
+    if (!editFolderName.trim()) return;
+    const folder = folders.find(f => f.id === id);
+    if (folder) {
+      editMemoFolder(id, editFolderName.trim(), folder.color);
+    }
+    setIsRenamingFolderId(null);
   };
 
   const handleOpenModal = (memo: Memo) => {
@@ -285,23 +296,53 @@ export default function MemoPage() {
                 .sort((a, b) => (a.id === 'folder_default' ? -1 : b.id === 'folder_default' ? 1 : 0))
                 .map(folder => (
                 <div key={folder.id} className="group relative px-1">
-                  <button 
-                    onClick={() => setSelectedFolderId(folder.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl font-bold transition-all ${selectedFolderId === folder.id ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-secondary hover:bg-bg-card/50 hover:text-text-primary'}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: folder.color }} />
-                      <span className="truncate max-w-[120px]">{folder.name}</span>
+                  {isRenamingFolderId === folder.id ? (
+                    <div className="px-2 py-1.5">
+                      <input
+                        autoFocus
+                        value={editFolderName}
+                        onChange={e => setEditFolderName(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') handleRenameFolder(folder.id);
+                          else if (e.key === 'Escape') setIsRenamingFolderId(null);
+                        }}
+                        onBlur={() => handleRenameFolder(folder.id)}
+                        className="w-full bg-bg-card border border-accent/30 rounded-xl px-3 py-2 text-sm outline-none shadow-sm"
+                      />
                     </div>
-                    <span className="text-[10px] opacity-40">{getFolderMemoCount(folder.id)}</span>
-                  </button>
-                  {folder.id !== 'folder_default' && (
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); if (window.confirm('폴더를 삭제하시겠습니까? 폴더 내 메모는 기본 폴더로 이동됩니다.')) removeMemoFolder(folder.id); }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 opacity-0 group-hover:opacity-100 text-red-400 hover:bg-red-50 rounded-lg transition-all"
-                    >
-                      <Trash size={12} />
-                    </button>
+                  ) : (
+                    <>
+                      <button 
+                        onClick={() => setSelectedFolderId(folder.id)}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl font-bold transition-all ${selectedFolderId === folder.id ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-secondary hover:bg-bg-card/50 hover:text-text-primary'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: folder.color }} />
+                          <span className="truncate max-w-[120px]">{folder.name}</span>
+                        </div>
+                        <span className="text-[10px] opacity-40">{getFolderMemoCount(folder.id)}</span>
+                      </button>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            setIsRenamingFolderId(folder.id); 
+                            setEditFolderName(folder.name); 
+                          }}
+                          className="p-1 hover:bg-accent/10 rounded-lg text-accent transition-colors"
+                        >
+                          <Edit3 size={14} />
+                        </button>
+                        {folder.id !== 'folder_default' && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); if (window.confirm('폴더를 삭제하시겠습니까? 폴더 내 메모는 기본 폴더로 이동됩니다.')) removeMemoFolder(folder.id); }}
+                            className="p-1 hover:bg-red-500/10 rounded-lg text-red-500 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </>
                   )}
                 </div>
               ))}

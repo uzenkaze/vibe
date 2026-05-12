@@ -1,4 +1,4 @@
-import type { AppData, Category, Article, Memo, MemoFolder } from '../types';
+import type { AppData, Category, Article, Memo, MemoFolder, MindmapStore } from '../types';
 
 const STORAGE_KEY = 'learnVaultData';
 
@@ -29,6 +29,14 @@ export function loadData(): AppData {
           }
           return folders;
         })(),
+        mindmap: parsed.mindmap || {
+          version: 2,
+          activeId: 1,
+          nextPageId: 2,
+          pages: [
+            { id: 1, title: 'Main Page', nodes: [{ id: 1, type: 'group', label: 'Main Group', x: 0, y: 0, color: 0, memo: '' }], edges: [], nextId: 2 }
+          ]
+        },
       };
     } catch { /* ignore */ }
   }
@@ -39,8 +47,20 @@ export function loadData(): AppData {
     trash: [],
     memoFolders: [
       { id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() }
-    ]
+    ],
+    mindmap: {
+      version: 2,
+      activeId: 1,
+      nextPageId: 2,
+      pages: [
+        { id: 1, title: 'Main Page', nodes: [{ id: 1, type: 'group', label: 'Main Group', x: 0, y: 0, color: 0, memo: '' }], edges: [], nextId: 2 }
+      ]
+    }
   };
+}
+
+export function updateMindmap(data: AppData, mindmap: MindmapStore): AppData {
+  return { ...data, mindmap };
 }
 
 export function saveData(data: AppData): void {

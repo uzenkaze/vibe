@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import type { AppData, Category, Article, GitHubConfig, DataSource, Memo } from '../types';
-import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle, createMemo, deleteMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos, updateMemo, createMemoFolder, deleteMemoFolder, updateMemoFolder } from '../services/storage';
+import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle, createMemo, deleteMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos, updateMemo, createMemoFolder, deleteMemoFolder, updateMemoFolder, updateMindmap } from '../services/storage';
 import { getGitHubConfig, saveGitHubConfig, downloadFromGitHub, uploadToGitHub } from '../services/github';
 
 interface StoreContextType {
@@ -28,6 +28,7 @@ interface StoreContextType {
   addMemoFolder: (name: string, color: string) => void;
   removeMemoFolder: (id: string) => void;
   editMemoFolder: (id: string, name: string, color: string) => void;
+  setMindmap: (mindmap: any) => void;
   // GitHub actions
   updateGhConfig: (config: GitHubConfig) => void;
   syncDown: () => Promise<void>;
@@ -194,6 +195,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     showToast('폴더가 수정되었습니다');
   }, [updateData, showToast]);
 
+  const setMindmap = useCallback((mindmap: any) => {
+    updateData(prev => updateMindmap(prev, mindmap));
+  }, [updateData]);
+
   // GitHub actions
   const updateGhConfig = useCallback((config: GitHubConfig) => {
     setGhConfig(config);
@@ -217,6 +222,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           }
           return f;
         })(),
+        mindmap: result.mindmap || data.mindmap,
       };
       setData(merged);
       saveData(merged);
@@ -252,6 +258,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               }
               return f;
             })(),
+            mindmap: result.mindmap || data.mindmap,
           };
           setData(merged);
           saveData(merged);
@@ -275,6 +282,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       emptyTrash: emptyTrashAction,
       reorderMemos: reorderMemosAction,
       addMemoFolder, removeMemoFolder, editMemoFolder,
+      setMindmap,
       updateGhConfig, syncDown, syncUp,
       toast, showToast,
       theme, toggleTheme,

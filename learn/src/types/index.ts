@@ -45,12 +45,54 @@ export interface MemoFolder {
   createdAt: string;
 }
 
+export interface MindmapNode {
+  id: number;
+  type: 'group' | 'node' | 'memo';
+  label: string;
+  x: number;
+  y: number;
+  color: number;
+  memo?: string;
+  customColor?: string | null;
+  customBgColor?: string | null;
+  customBorderColor?: string | null;
+  _w?: number;
+  _h?: number;
+}
+
+export interface MindmapEdge {
+  from: number;
+  to: number;
+  label?: string;
+  lineStyle?: string;
+  bridge?: boolean;
+  customColor?: string | null;
+}
+
+export interface MindmapPageData {
+  id: number;
+  title: string;
+  nodes: MindmapNode[];
+  edges: MindmapEdge[];
+  nextId: number;
+  zoom?: number;
+  pan?: { x: number; y: number };
+}
+
+export interface MindmapStore {
+  version: number;
+  activeId: number;
+  nextPageId: number;
+  pages: MindmapPageData[];
+}
+
 export interface AppData {
   categories: Category[];
   articles: Article[];
   memos: Memo[];
   trash: Memo[];
   memoFolders?: MemoFolder[];
+  mindmap?: MindmapStore;
 }
 
 export interface GitHubConfig {

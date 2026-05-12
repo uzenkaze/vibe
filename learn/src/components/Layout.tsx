@@ -1,16 +1,16 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Home, Settings, Database, Sun, Moon, FileText, StickyNote } from 'lucide-react';
+import { NavLink, Outlet } from 'react-router-dom';
+import { BookOpen, Home, Settings, Database, Sun, Moon, FileText, StickyNote, GitBranch } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import SearchBar from './SearchBar';
 import Toast from './Toast';
 
 export default function Layout() {
   const { dataSource, theme, toggleTheme } = useStore();
-  const location = useLocation();
 
   const navItems = [
     { to: '/', icon: Home, label: '홈', end: true },
     { to: '/docs', icon: FileText, label: '문서', end: false },
+    { to: '/mindmap', icon: GitBranch, label: '마인드맵', end: false },
     { to: '/memos', icon: StickyNote, label: '메모', end: false },
     { to: '/settings', icon: Settings, label: '설정', end: false },
   ];
@@ -124,7 +124,7 @@ export default function Layout() {
       </header>
 
       {/* Page Content */}
-      <main className="w-[92%] max-w-[1100px] mx-auto pb-20" key={location.pathname}>
+      <main className="w-[92%] max-w-[1100px] mx-auto pb-20">
         <Outlet />
       </main>
 
