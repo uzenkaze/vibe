@@ -208,11 +208,11 @@ export default function MemoPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-120px)] bg-bg-primary rounded-3xl overflow-hidden shadow-2xl border border-border animate-fade-in transition-all duration-300">
+    <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-120px)] bg-bg-primary rounded-3xl overflow-hidden shadow-2xl border border-border animate-fade-in transition-all duration-300">
       {/* Sidebar */}
-      <aside className={`bg-bg-secondary/50 backdrop-blur-xl border-r border-border flex flex-col p-4 space-y-6 overflow-y-auto transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-72'}`}>
-        {/* Toggle Button */}
-        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between px-2'}`}>
+      <aside className={`bg-bg-secondary/50 backdrop-blur-xl border-b lg:border-b-0 lg:border-r border-border flex flex-row lg:flex-col p-2 sm:p-4 space-y-0 lg:space-y-6 overflow-x-auto lg:overflow-y-auto transition-all duration-300 ${isSidebarCollapsed ? 'lg:w-20' : 'lg:w-72'} w-full`}>
+        {/* Toggle Button - Hidden on Mobile */}
+        <div className={`hidden lg:flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between px-2'}`}>
           {!isSidebarCollapsed && (
             <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] animate-fade-in">Menu</span>
           )}
@@ -224,33 +224,46 @@ export default function MemoPage() {
           </button>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="flex lg:flex-col items-center lg:items-stretch gap-1 sm:gap-1.5 flex-1 min-w-max lg:min-w-0">
           <button 
             onClick={() => setSelectedFolderId('all')}
-            className={`w-full flex items-center px-3 py-3 rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} ${selectedFolderId === 'all' ? 'bg-accent/10 text-accent shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
+            className={`flex-1 lg:flex-none flex items-center px-3 py-2 sm:py-3 rounded-xl sm:rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'lg:justify-center' : 'lg:justify-between'} ${selectedFolderId === 'all' ? 'bg-accent/10 text-accent shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
             title="전체 메모"
           >
-            <div className="flex items-center gap-3">
-              <LayoutGrid size={20} className={isSidebarCollapsed ? 'text-accent' : ''} />
-              {!isSidebarCollapsed && <span className="animate-fade-in">전체</span>}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LayoutGrid size={18} className={isSidebarCollapsed ? 'lg:text-accent' : ''} />
+              <span className={`${isSidebarCollapsed ? 'lg:hidden' : 'inline'} text-xs sm:text-sm animate-fade-in`}>전체</span>
             </div>
-            {!isSidebarCollapsed && <span className="text-xs opacity-60 animate-fade-in">{activeMemos.length}</span>}
+            {!isSidebarCollapsed && <span className="hidden lg:inline text-xs opacity-60 animate-fade-in">{activeMemos.length}</span>}
           </button>
 
           <button 
             onClick={() => setSelectedFolderId('important')}
-            className={`w-full flex items-center px-3 py-3 rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} ${selectedFolderId === 'important' ? 'bg-amber-500/10 text-amber-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
+            className={`flex-1 lg:flex-none flex items-center px-3 py-2 sm:py-3 rounded-xl sm:rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'lg:justify-center' : 'lg:justify-between'} ${selectedFolderId === 'important' ? 'bg-amber-500/10 text-amber-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
             title="중요 메모"
           >
-            <div className="flex items-center gap-3">
-              <Star size={20} className={isSidebarCollapsed ? 'text-amber-500' : ''} />
-              {!isSidebarCollapsed && <span className="animate-fade-in">중요</span>}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Star size={18} className={isSidebarCollapsed ? 'lg:text-amber-500' : ''} />
+              <span className={`${isSidebarCollapsed ? 'lg:hidden' : 'inline'} text-xs sm:text-sm animate-fade-in`}>중요</span>
             </div>
-            {!isSidebarCollapsed && <span className="text-xs opacity-60 animate-fade-in">{activeMemos.filter(m => m.isPinned || m.isFavorite).length}</span>}
+            {!isSidebarCollapsed && <span className="hidden lg:inline text-xs opacity-60 animate-fade-in">{activeMemos.filter(m => m.isPinned || m.isFavorite).length}</span>}
+          </button>
+
+          {/* Folder Toggle - Compact for Mobile */}
+          <button 
+            onClick={() => {
+              if (isSidebarCollapsed) setIsSidebarCollapsed(false);
+              setIsFoldersOpen(!isFoldersOpen);
+            }}
+            className={`flex-1 lg:flex-none lg:hidden flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-bold transition-all ${isFoldersOpen ? 'bg-accent/10 text-accent' : 'text-text-secondary'}`}
+          >
+            <Folder size={18} />
+            <span className="text-xs">폴더</span>
           </button>
         </div>
 
-        <div className="space-y-4">
+        {/* Desktop Folders Section */}
+        <div className="hidden lg:block space-y-4">
           <div className={`flex items-center px-2 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
             <button 
               onClick={() => {
@@ -350,17 +363,17 @@ export default function MemoPage() {
           )}
         </div>
 
-        <div className="pt-4 mt-auto border-t border-border/50">
+        <div className="lg:pt-4 lg:mt-auto lg:border-t border-border/50 flex lg:block">
           <button 
             onClick={() => setSelectedFolderId('trash')}
-            className={`w-full flex items-center px-3 py-3 rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} ${selectedFolderId === 'trash' ? 'bg-red-500/10 text-red-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
+            className={`px-3 lg:px-3 py-2 lg:py-3 rounded-xl lg:rounded-2xl font-bold transition-all flex items-center ${isSidebarCollapsed ? 'lg:justify-center' : 'lg:justify-between'} ${selectedFolderId === 'trash' ? 'bg-red-500/10 text-red-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
             title="삭제된 메모"
           >
-            <div className="flex items-center gap-3">
-              <Trash2 size={20} className={isSidebarCollapsed ? 'text-red-500' : ''} />
-              {!isSidebarCollapsed && <span className="animate-fade-in">휴지통</span>}
+            <div className="flex items-center gap-2 lg:gap-3">
+              <Trash2 size={18} className={isSidebarCollapsed ? 'lg:text-red-500' : ''} />
+              <span className={`${isSidebarCollapsed ? 'lg:hidden' : 'inline'} text-xs lg:text-sm animate-fade-in`}>휴지통</span>
             </div>
-            {!isSidebarCollapsed && <span className="text-xs opacity-60 animate-fade-in">{trashMemos.length}</span>}
+            {!isSidebarCollapsed && <span className="hidden lg:inline text-xs opacity-60 animate-fade-in">{trashMemos.length}</span>}
           </button>
         </div>
       </aside>
@@ -368,52 +381,52 @@ export default function MemoPage() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col bg-bg-card/30 overflow-hidden">
         {/* Header Section */}
-        <header className="px-8 py-6 border-b border-border flex items-center justify-between gap-6 bg-bg-card/20 backdrop-blur-sm">
+        <header className="px-4 sm:px-8 py-4 sm:py-6 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-bg-card/20 backdrop-blur-sm">
           <div className="flex items-center gap-4 flex-1">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
               <input 
                 type="text"
                 placeholder="메모 검색..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-bg-primary/50 border border-border rounded-2xl pl-12 pr-4 py-2.5 text-sm focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none transition-all"
+                className="w-full bg-bg-primary/50 border border-border rounded-xl sm:rounded-2xl pl-10 sm:pl-12 pr-4 py-2 sm:py-2.5 text-xs sm:text-sm focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none transition-all"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {selectedFolderId === 'trash' ? (
               <button
                 onClick={() => { if (window.confirm('휴지통을 비우시겠습니까?')) emptyTrash(); }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-red-500/10 text-red-500 text-xs sm:text-sm font-bold hover:bg-red-500 hover:text-white transition-all"
               >
                 <Trash size={16} />
-                휴지통 비우기
+                <span>휴지통 비우기</span>
               </button>
             ) : (
               <button
                 onClick={() => setIsAdding(true)}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-accent text-white font-bold hover:bg-accent-hover transition-all shadow-lg shadow-accent/25 hover:-translate-y-0.5"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-accent text-white text-xs sm:text-sm font-bold hover:bg-accent-hover transition-all shadow-lg shadow-accent/25 hover:-translate-y-0.5"
               >
                 <Plus size={18} />
-                새 메모 추가
+                <span>새 메모 추가</span>
               </button>
             )}
           </div>
         </header>
 
         {/* Memos Grid */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-12">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-8 sm:space-y-12">
           {/* Section Titles */}
-          <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-2xl font-black text-text-primary tracking-tight">
+          <div className="flex items-center gap-3 sm:gap-4 mb-2">
+            <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
               {selectedFolderId === 'all' ? '전체 메모' : 
                selectedFolderId === 'important' ? '중요 메모' :
                selectedFolderId === 'trash' ? '휴지통' : 
                folders.find(f => f.id === selectedFolderId)?.name || '폴더'}
             </h1>
-            <span className="px-2 py-0.5 rounded-lg bg-accent/10 text-accent text-xs font-black">
+            <span className="px-2 py-0.5 rounded-lg bg-accent/10 text-accent text-[10px] sm:text-xs font-black">
               {filteredMemos.length}
             </span>
           </div>
@@ -422,10 +435,10 @@ export default function MemoPage() {
           {pinnedMemos.length > 0 && (
             <div className="space-y-6">
               <div className="flex items-center gap-2 text-accent">
-                <Pin size={18} fill="currentColor" />
-                <h2 className="text-sm font-bold uppercase tracking-wider">고정됨</h2>
+                <Pin size={16} fill="currentColor" />
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider">고정됨</h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {pinnedMemos.map((memo) => {
                   const globalIdx = activeMemos.findIndex(m => m.id === memo.id);
                   return (
@@ -450,16 +463,16 @@ export default function MemoPage() {
           <div className="space-y-6">
             {pinnedMemos.length > 0 && (
               <div className="flex items-center gap-2 text-text-muted">
-                <StickyNote size={18} />
-                <h2 className="text-sm font-bold uppercase tracking-wider">메모</h2>
+                <StickyNote size={16} />
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider">메모</h2>
               </div>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {/* Add Form Card */}
               {isAdding && selectedFolderId !== 'trash' && (
                 <div 
-                  className="relative flex flex-col p-6 rounded-3xl border-2 border-dashed border-accent/30 bg-accent/5 animate-scale-in"
-                  style={{ minHeight: '240px' }}
+                  className="relative flex flex-col p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-2 border-dashed border-accent/30 bg-accent/5 animate-scale-in"
+                  style={{ minHeight: '200px' }}
                 >
                   <button 
                     onClick={() => setIsAdding(false)}

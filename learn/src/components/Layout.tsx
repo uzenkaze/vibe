@@ -33,9 +33,9 @@ export default function Layout() {
 
       {/* ── Top Navigation ── */}
       <header className="sticky top-0 z-[1000] w-full">
-        <div className="flex items-center justify-center pt-3 pb-2 px-4">
+        <div className="flex items-center justify-center pt-3 pb-2 px-2 sm:px-4">
           <nav
-            className="flex items-center gap-1 px-2 py-1.5 shadow-2xl"
+            className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1.5 shadow-2xl max-w-full overflow-hidden"
             style={{
               background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
@@ -46,7 +46,7 @@ export default function Layout() {
             }}
           >
             {/* ── Logo ── */}
-            <NavLink to="/" className="flex items-center gap-2 px-3 py-1.5 rounded-full mr-1 transition-all hover:bg-white/5">
+            <NavLink to="/" className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-full transition-all hover:bg-white/5">
               <div
                 className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)', boxShadow: '0 4px 12px rgba(139,92,246,0.4)' }}
@@ -54,7 +54,7 @@ export default function Layout() {
                 <BookOpen size={13} className="text-white" />
               </div>
               <span
-                className="text-sm font-black tracking-tight hidden sm:inline"
+                className="text-sm font-black tracking-tight hidden lg:inline"
                 style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
               >
                 Han's Knowledge
@@ -62,29 +62,31 @@ export default function Layout() {
             </NavLink>
 
             {/* ── Nav Items ── */}
-            {navItems.map(item => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  `relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${isActive
-                    ? 'text-white'
-                    : 'text-text-muted hover:text-text-primary hover:bg-white/5'
-                  }`
-                }
-                style={({ isActive }) => isActive ? {
-                  background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-                  boxShadow: '0 4px 14px rgba(139,92,246,0.4)',
-                } : {}}
-              >
-                <item.icon size={13} />
-                <span className="hidden sm:inline">{item.label}</span>
-              </NavLink>
-            ))}
+            <div className="flex items-center">
+              {navItems.map(item => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `relative flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${isActive
+                      ? 'text-white'
+                      : 'text-text-muted hover:text-text-primary hover:bg-white/5'
+                    }`
+                  }
+                  style={({ isActive }) => isActive ? {
+                    background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                    boxShadow: '0 4px 14px rgba(139,92,246,0.4)',
+                  } : {}}
+                >
+                  <item.icon size={13} />
+                  <span className="hidden sm:inline">{item.label}</span>
+                </NavLink>
+              ))}
+            </div>
 
             {/* ── Separator ── */}
-            <div className="w-px h-5 mx-1" style={{ background: 'var(--glass-border)' }} />
+            <div className="hidden sm:block w-px h-5 mx-1" style={{ background: 'var(--glass-border)' }} />
 
             {/* ── Search ── */}
             <div className="hidden md:block">
@@ -92,11 +94,11 @@ export default function Layout() {
             </div>
 
             {/* ── Separator ── */}
-            <div className="w-px h-5 mx-1" style={{ background: 'var(--glass-border)' }} />
+            <div className="w-px h-5 mx-0.5 sm:mx-1" style={{ background: 'var(--glass-border)' }} />
 
             {/* ── Data source badge ── */}
             <div
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${dataSource === 'syncing' ? 'animate-pulse' : ''}`}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${dataSource === 'syncing' ? 'animate-pulse' : ''}`}
               style={{ background: syncBg, color: syncColor }}
             >
               <Database size={10} />
@@ -118,13 +120,13 @@ export default function Layout() {
         </div>
 
         {/* Mobile search */}
-        <div className="md:hidden px-4 pb-2">
+        <div className="md:hidden px-4 pb-2 max-w-md mx-auto">
           <SearchBar />
         </div>
       </header>
 
       {/* Page Content */}
-      <main className="w-[92%] max-w-[1100px] mx-auto pb-20">
+      <main className="w-full max-w-[1100px] mx-auto px-4 sm:px-[4%] pb-20 overflow-x-hidden">
         <Outlet />
       </main>
 
