@@ -210,5 +210,31 @@
       "color": "#f3e8ff",
       "createdAt": "2026-05-12T05:46:54.211Z"
     }
-  ]
+  ],
+  "mindmap": {
+    "version": 2,
+    "activeId": 1,
+    "nextPageId": 2,
+    "pages": [
+      {
+        "id": 1,
+        "title": "Main Page",
+        "nodes": [
+          {
+            "id": 1,
+            "type": "group",
+            "label": "Main Group",
+            "x": 0,
+            "y": 2.0392167351615225,
+            "color": 0,
+            "memo": "",
+            "_w": 140,
+            "_h": 60
+          }
+        ],
+        "edges": [],
+        "nextId": 2
+      }
+    ]
+  }
 }
