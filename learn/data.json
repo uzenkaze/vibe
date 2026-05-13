@@ -44,6 +44,15 @@
       "id": "cat_mp0khcjz_c2six",
       "createdAt": "2026-05-11T02:12:50.255Z",
       "order": 4
+    },
+    {
+      "name": "TAPO",
+      "description": "CCTV 카메로 설정방법",
+      "icon": "🏠",
+      "color": "#14b8a6",
+      "id": "cat_mp3p24bb_k3782",
+      "createdAt": "2026-05-13T06:44:16.344Z",
+      "order": 5
     }
   ],
   "articles": [
