@@ -29,11 +29,11 @@
     "dev_deploy_date": "2026-05-15",
     "deploy_date": "2026-05-19",
     "pub_content": "",
-    "remarks": "",
+    "remarks": "별도 SB없음",
     "start_date": "2026-05-13",
     "end_date": "2026-05-15",
     "reference": "바닥페이지 보험 클릭 시 nativeGoods.js > checkedInsrncChange(cd, tp) 호출\n\n[구현]\ninsuranceInfoBuyLayer.jsp\n- resetInsuranceSort() 추가\n- 보험 div영역별 index 추가\n\nnativeGoods.js\n- checkedInsrncChange() 와 checkedInsrncBreakChange() 함수에서 resetInsuranceSort() 호출",
-    "updated_at": "2026-05-13T04:33:18.896Z"
+    "updated_at": "2026-05-13T04:58:08.986Z"
   },
   {
     "id": "1777504933870",
