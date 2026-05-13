@@ -248,6 +248,39 @@
         </main>
     </div>
     <script src="script.js"></script>
+    <script>
+        // --- 📱 Mobile Keyboard & Viewport Fix ---
+        // Prevents keyboard from dismissing immediately and layout jumping
+        const originalHeight = window.innerHeight;
+        const inputFields = document.querySelectorAll('input, textarea');
+
+        function handleViewportChange() {
+            const vv = window.visualViewport;
+            if (!vv) return;
+            
+            // Adjust container height to match visual viewport to prevent layout breaking
+            const container = document.querySelector('.app-container');
+            if (container) {
+                container.style.height = vv.height + 'px';
+                // Also handle offset if needed
+                window.scrollTo(0, 0);
+            }
+        }
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleViewportChange);
+            window.visualViewport.addEventListener('scroll', handleViewportChange);
+        }
+
+        // Ensure focus is maintained on mobile
+        inputFields.forEach(field => {
+            field.addEventListener('focus', () => {
+                setTimeout(() => {
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+        });
+    </script>
     <!-- GitHub Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-content glass-panel">

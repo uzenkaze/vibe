@@ -12,7 +12,6 @@
             --bg-color: #0a0a0a;
             --accent-color: #bef264;
             --text-color: #ffffff;
-            --device-bezel: #1a1a1a;
         }
 
         body {
@@ -21,16 +20,22 @@
             color: var(--text-color);
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             position: relative;
         }
 
-        /* Background Scribble */
+        /* Shell Background */
+        .shell-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-color: var(--bg-color);
+            overflow: hidden;
+        }
+
         .scribble-bg {
             position: absolute;
             top: 50%;
@@ -38,225 +43,428 @@
             transform: translate(-50%, -50%);
             width: 120%;
             height: 120%;
-            z-index: -1;
             opacity: 0.8;
             pointer-events: none;
         }
 
-        /* Star Icon */
-        .star-icon {
+        /* Top Header */
+        .shell-header {
             position: fixed;
-            top: 40px;
-            right: 40px;
-            color: var(--accent-color);
-            z-index: 100;
-        }
-
-        /* Header Logo */
-        header {
-            position: absolute;
-            top: 40px;
-            left: 40px;
-            z-index: 100;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
         }
 
         .logo {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 900;
             letter-spacing: -0.05em;
             text-transform: uppercase;
+            pointer-events: auto;
+            cursor: pointer;
         }
 
-        /* Showcase Area */
-        .showcase-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 100px 20px;
-            width: 100%;
-            max-width: 1400px;
-            position: relative;
+        .star-icon {
+            color: var(--accent-color);
+            pointer-events: auto;
         }
 
-        /* Device Card */
-        .device-card {
-            width: 280px;
-            height: 580px;
-            background: #222;
-            border-radius: 50px;
-            padding: 10px;
-            position: relative;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-            border: 2px solid #333;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .device-card:nth-child(1) { transform: scale(1.1) rotate(-2deg); z-index: 10; margin-right: -40px; }
-        .device-card:nth-child(2) { transform: scale(0.95) rotate(1deg); z-index: 5; margin-right: -40px; margin-top: 60px; }
-        .device-card:nth-child(3) { transform: scale(0.9) rotate(-1deg); z-index: 3; margin-right: -40px; margin-top: 100px; }
-        .device-card:nth-child(4) { transform: scale(0.85) rotate(2deg); z-index: 1; margin-top: 140px; }
-
-        .device-card:hover {
-            transform: translateY(-30px) scale(1.15) rotate(0deg) !important;
-            z-index: 100;
-            border-color: var(--accent-color);
-        }
-
-        .device-screen {
+        /* Content Frame */
+        #contentFrame {
             width: 100%;
             height: 100%;
-            border-radius: 42px;
-            background-color: #000;
-            background-size: cover;
-            background-position: center;
-            position: relative;
+            border: none;
+            z-index: 10;
+        }
+
+        /* Persistent Player UI (Mini Player) */
+        .global-player {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            width: 92%;
+            max-width: 450px;
+            background: rgba(20, 20, 20, 0.88);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .global-player.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Mobile Optimization for Z Flip 6 and others */
+        @media (max-width: 640px) {
+            .shell-header {
+                padding: 12px 20px;
+            }
+            .logo {
+                font-size: 1.4rem;
+            }
+            .global-player {
+                bottom: 15px;
+                width: 94%;
+                padding: 8px 12px;
+                gap: 10px;
+                border-radius: 16px;
+            }
+            .player-thumb {
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+            }
+            .player-title {
+                font-size: 0.85rem;
+            }
+            .player-artist {
+                font-size: 0.7rem;
+            }
+            .control-btn {
+                font-size: 1.1rem;
+            }
+        }
+
+        .player-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             overflow: hidden;
-            border: 2px solid #000;
+            flex-shrink: 0;
+            background: #222;
         }
 
-        .dynamic-island {
-            position: absolute;
-            top: 14px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 24px;
-            background: #000;
-            border-radius: 20px;
-            z-index: 50;
+        .player-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .screen-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 30px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-            z-index: 30;
-            text-align: center;
+        .player-info {
+            flex: 1;
+            min-width: 0;
         }
 
-        .app-title {
-            font-size: 1.5rem;
+        .player-title {
+            font-size: 0.95rem;
             font-weight: 700;
-            margin-bottom: 5px;
             color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .app-desc {
-            font-size: 0.8rem;
+        .player-artist {
+            font-size: 0.75rem;
             color: var(--accent-color);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Bottom Browser Bar Mockup */
-        .browser-bar {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 140px;
-            height: 24px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            z-index: 40;
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
-            color: rgba(255,255,255,0.5);
-            font-weight: 500;
         }
 
-        /* Responsive */
-        @media (max-width: 1000px) {
-            .showcase-area { flex-direction: column; gap: 40px; }
-            .device-card { margin: 0 !important; transform: none !important; }
-            header, .star-icon { position: relative; left: auto; right: auto; top: auto; margin: 20px 0; }
+        .control-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--accent-color);
+        }
+
+        .play-pause-btn {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: #000;
+        }
+
+        .play-pause-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        /* YouTube Hidden Player */
+        #ytPlayerContainer {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            top: -100px;
+            left: -100px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Back Button for Sub-pages */
+        .home-back-btn {
+            position: fixed;
+            top: 25px;
+            left: 150px;
+            z-index: 1001;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .home-back-btn:hover {
+            background: var(--accent-color);
+            color: #000;
         }
     </style>
 </head>
 <body>
-    <!-- Background Scribble SVG -->
-    <svg class="scribble-bg" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M100 500C100 500 300 200 500 500C700 800 900 500 900 500" stroke="#bef264" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
-        <path d="M200 800C200 800 400 600 600 800C800 1000 1000 800 1000 800" stroke="#bef264" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" opacity="0.1"/>
-        <path d="M0 200C0 200 200 0 400 200C600 400 800 200 800 200" stroke="#bef264" stroke-width="50" stroke-linecap="round" stroke-linejoin="round" opacity="0.05"/>
-    </svg>
-
-    <div class="star-icon">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L14.5 9H21.5L16 13.5L18.5 20.5L12 16L5.5 20.5L8 13.5L2.5 9H9.5L12 2Z"/>
+    <div class="shell-bg">
+        <svg class="scribble-bg" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 500C100 500 300 200 500 500C700 800 900 500 900 500" stroke="#bef264" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
+            <path d="M200 800C200 800 400 600 600 800C800 1000 1000 800 1000 800" stroke="#bef264" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" opacity="0.1"/>
         </svg>
     </div>
 
-    <header>
-        <div class="logo">Vibe</div>
+    <header class="shell-header">
+        <div class="logo" onclick="navigateTo('home.html')">Vibe</div>
+        <div class="star-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L14.5 9H21.5L16 13.5L18.5 20.5L12 16L5.5 20.5L8 13.5L2.5 9H9.5L12 2Z"/>
+            </svg>
+        </div>
     </header>
 
-    <main class="showcase-area">
-        <!-- Asset Manager -->
-        <a href="Asset/asset.html" class="device-card">
-            <div class="dynamic-island"></div>
-            <div class="device-screen" style="background-image: url('vibe_asset_final.png')">
-                <div class="screen-overlay">
-                    <h3 class="app-title">Asset</h3>
-                    <p class="app-desc">Asset & Installment Flow</p>
-                </div>
-                <div class="browser-bar">vibestuff.com</div>
-            </div>
-        </a>
+    <button id="homeBackBtn" class="home-back-btn" onclick="navigateTo('home.html')">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        Home
+    </button>
 
-        <!-- Task Manager -->
-        <a href="task/task-manager.html" class="device-card">
-            <div class="dynamic-island"></div>
-            <div class="device-screen" style="background-image: url('vibe_task_final.png')">
-                <div class="screen-overlay">
-                    <h3 class="app-title">Task</h3>
-                    <p class="app-desc">Smart Schedule & Mindmap</p>
-                </div>
-                <div class="browser-bar">vibestuff.com</div>
-            </div>
-        </a>
+    <iframe id="contentFrame" src="home.html"></iframe>
 
-        <!-- Learn Hub -->
-        <a href="learn/" class="device-card">
-            <div class="dynamic-island"></div>
-            <div class="device-screen" style="background-image: url('vibe_learn_final.png')">
-                <div class="screen-overlay">
-                    <h3 class="app-title">Learn</h3>
-                    <p class="app-desc">React & Vite Knowledge</p>
-                </div>
-                <div class="browser-bar">vibestuff.com</div>
-            </div>
-        </a>
+    <!-- Global Player UI -->
+    <div id="globalPlayer" class="global-player">
+        <div class="player-thumb">
+            <img id="globalThumb" src="" alt="thumb">
+        </div>
+        <div class="player-info">
+            <div id="globalTitle" class="player-title">노래를 선택하세요</div>
+            <div id="globalArtist" class="player-artist">Vibe Music</div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn" onclick="globalPrev()"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M4 4a.5.5 0 0 1 1 0v3.248l6.267-3.636c.52-.302 1.166.113 1.166.696v7.384c0 .583-.647.998-1.166.696L5 8.752V12a.5.5 0 0 1-1 0V4zm7 4.544V5.456L6.5 8.016 11 10.559v-2.015z"/></svg></button>
+            <button id="globalPlayPause" class="control-btn play-pause-btn" onclick="toggleGlobalPlay()">
+                <svg id="playIcon" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+                <svg id="pauseIcon" style="display:none" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>
+            </button>
+            <button class="control-btn" onclick="globalNext()"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.713 3.31 4.067 3.725 4.067 4.308v7.384c0 .583.647.998 1.166.696L11.5 8.752V12a.5.5 0 0 0 1 0V4zm-7 4.544V5.456l4.5 2.56-4.5 2.543v-2.015z"/></svg></button>
+        </div>
+    </div>
 
-        <!-- Hobby Labs -->
-        <a href="hobby/" class="device-card">
-            <div class="dynamic-island"></div>
-            <div class="device-screen" style="background-image: url('vibe_hobby_final.png')">
-                <div class="screen-overlay">
-                    <h3 class="app-title">Hobby</h3>
-                    <p class="app-desc">Music & Creative Lab</p>
-                </div>
-                <div class="browser-bar">vibestuff.com</div>
-            </div>
-        </a>
-    </main>
+    <div id="ytPlayerContainer"><div id="ytPlayer"></div></div>
 
-    <footer style="position: absolute; bottom: 40px; left: 40px; font-weight: 900; font-size: 1.2rem; text-transform: uppercase; color: rgba(255,255,255,0.2);">
-        Vibe Portal
-    </footer>
-
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Optional: Hover sound or interaction logic could go here
+        let player;
+        let isPlayerReady = false;
+        let currentSong = null;
+        let progressInterval;
+        let _audioCtx = null;
+        let _keepAliveSource = null;
+
+        function startAudioKeepAlive() {
+            try {
+                if (!_audioCtx) {
+                    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (_audioCtx.state === 'suspended') {
+                    _audioCtx.resume();
+                }
+                if (_keepAliveSource) return;
+                const oscillator = _audioCtx.createOscillator();
+                const gainNode = _audioCtx.createGain();
+                gainNode.gain.value = 0.0001;
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 1;
+                oscillator.connect(gainNode);
+                gainNode.connect(_audioCtx.destination);
+                oscillator.start();
+                _keepAliveSource = oscillator;
+                console.log('[Portal] Audio session kept alive');
+            } catch(e) { console.warn('[Portal] Keep-alive failed', e); }
+        }
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytPlayer', {
+                height: '0',
+                width: '0',
+                videoId: '',
+                playerVars: { 'origin': window.location.origin },
+                events: {
+                    'onReady': () => { isPlayerReady = true; },
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            if (event.data == YT.PlayerState.PLAYING) {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+                startProgressSync();
+                startAudioKeepAlive();
+            } else {
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                if (event.data != YT.PlayerState.BUFFERING) stopProgressSync();
+            }
+            if (event.data == YT.PlayerState.ENDED) {
+                globalNext();
+            }
+            const frame = document.getElementById('contentFrame');
+            if (frame && frame.contentWindow) {
+                frame.contentWindow.postMessage({ type: 'PLAYER_STATE_CHANGE', state: event.data }, '*');
+            }
+        }
+
+        function startProgressSync() {
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                if (player && isPlayerReady && player.getCurrentTime) {
+                    const frame = document.getElementById('contentFrame');
+                    if (frame && frame.contentWindow) {
+                        frame.contentWindow.postMessage({
+                            type: 'TIME_UPDATE',
+                            currentTime: player.getCurrentTime(),
+                            duration: player.getDuration()
+                        }, '*');
+                    }
+                }
+            }, 500);
+        }
+
+        function stopProgressSync() {
+            if (progressInterval) clearInterval(progressInterval);
+        }
+
+        function playGlobalMusic(song) {
+            if (!isPlayerReady) return;
+            currentSong = song;
+            document.getElementById('globalTitle').textContent = song.title;
+            document.getElementById('globalArtist').textContent = song.artist;
+            document.getElementById('globalThumb').src = `https://img.youtube.com/vi/${song.youtubeId}/default.jpg`;
+            document.getElementById('globalPlayer').classList.add('active');
+            player.loadVideoById(song.youtubeId);
+            player.playVideo();
+            startAudioKeepAlive();
+        }
+
+        function toggleGlobalPlay() {
+            if (!player) return;
+            const state = player.getPlayerState();
+            if (state == YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                // Restore last song if player is empty
+                if (player.getVideoData && !player.getVideoData().video_id && currentSong) {
+                    player.loadVideoById(currentSong.youtubeId);
+                }
+                player.playVideo();
+                startAudioKeepAlive();
+            }
+        }
+
+        function globalNext() {
+            const frame = document.getElementById('contentFrame');
+            frame.contentWindow.postMessage({ type: 'NEXT_SONG' }, '*');
+        }
+
+        function globalPrev() {
+            const frame = document.getElementById('contentFrame');
+            frame.contentWindow.postMessage({ type: 'PREV_SONG' }, '*');
+        }
+
+        function navigateTo(url) {
+            const frame = document.getElementById('contentFrame');
+            const backBtn = document.getElementById('homeBackBtn');
+            const currentRelPath = frame.src.replace(window.location.origin + '/', '');
+            if (currentRelPath !== url) {
+                frame.src = url;
+            }
+            if (url === 'home.html' || url === './home.html') {
+                backBtn.style.display = 'none';
+            } else {
+                backBtn.style.display = 'flex';
+            }
+            // Ensure audio session doesn't drop during navigation
+            startAudioKeepAlive();
+        }
+
+        // Initialize state from storage
+        window.addEventListener('DOMContentLoaded', () => {
+            const lastSong = JSON.parse(localStorage.getItem('vibe_last_song'));
+            if (lastSong) {
+                currentSong = lastSong;
+                document.getElementById('globalTitle').textContent = lastSong.title;
+                document.getElementById('globalArtist').textContent = lastSong.artist;
+                document.getElementById('globalThumb').src = `https://img.youtube.com/vi/${lastSong.youtubeId}/default.jpg`;
+                document.getElementById('globalPlayer').classList.add('active');
+            }
+        });
+
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'PLAY_SONG') {
+                playGlobalMusic(event.data.song);
+            }
+            if (event.data.type === 'SEEK_TO') {
+                if (player && player.seekTo) {
+                    player.seekTo(event.data.time, true);
+                }
+            }
+            if (event.data.type === 'TOGGLE_PLAY') {
+                toggleGlobalPlay();
+            }
+        });
     </script>
 </body>
 </html>

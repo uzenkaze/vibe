@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, X, Book, Folder, StickyNote } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../hooks/useStore';
@@ -44,11 +44,24 @@ export default function SearchBar() {
     return '';
   };
 
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.search-container')) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [isOpen]);
+
   return (
-    <div className="relative w-full md:max-w-[220px]">
+    <div className="relative w-full md:max-w-[220px] search-container">
       {/* Input */}
       <div
-        className="flex items-center gap-2 rounded-full transition-all duration-300"
+        className="flex items-center gap-2 rounded-full transition-all duration-300 relative z-50"
         style={{
           background: isOpen
             ? 'rgba(139,92,246,0.10)'
@@ -87,7 +100,7 @@ export default function SearchBar() {
       {/* Results dropdown */}
       {isOpen && results.length > 0 && (
         <div
-          className="absolute top-full left-0 right-0 mt-2 rounded-2xl overflow-hidden z-50 animate-scale-in"
+          className="absolute top-full left-0 right-0 mt-2 rounded-2xl overflow-hidden z-[60] animate-scale-in"
           style={{
             background: 'var(--color-bg-elevated)',
             border: '1px solid var(--color-border)',
@@ -130,9 +143,6 @@ export default function SearchBar() {
           )}
         </div>
       )}
-
-      {/* Click outside to close */}
-      {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
     </div>
   );
 }

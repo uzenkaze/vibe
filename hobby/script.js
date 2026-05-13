@@ -236,6 +236,28 @@ async function init() {
     updatePlaylistBadge();
     setupEventListeners();
     await renderHome();
+
+    // 3. Restore last played song (Persistence)
+    const lastSong = JSON.parse(localStorage.getItem('vibe_last_song'));
+    if (lastSong && !currentPlayingSong) {
+        // Pre-set UI but don't auto-play (browser policy)
+        currentPlayingSong = lastSong;
+        activeSongId = lastSong.id;
+        currentTitle.textContent = lastSong.title;
+        currentArtist.textContent = lastSong.artist;
+        currentSongInfo.style.display = 'flex';
+        playerEmptyState.style.display = 'none';
+        playerControls.style.display = 'flex';
+        document.getElementById('seekbarContainer').style.display = 'flex';
+        syncMiniPlayer(lastSong);
+        updateLikeBtnUI(myPlaylistIds.includes(lastSong.id));
+        
+        if (lastSong.youtubeId) {
+            audioModeThumb.src = `https://img.youtube.com/vi/${lastSong.youtubeId}/hqdefault.jpg`;
+            audioModeThumb.style.display = 'block';
+            audioModeIcon.style.display = 'none';
+        }
+    }
 }
 
 
@@ -576,8 +598,10 @@ let visibleCount = 15;
 
 // Render the song list
 function renderSongs(songsToRender, resetPaging = true) {
+    if (!songsToRender || !Array.isArray(songsToRender)) songsToRender = [];
     if (resetPaging) visibleCount = 15;
     
+    if (!songList) return;
     songList.innerHTML = '';
     
     if (currentTab === 'search') {
@@ -930,13 +954,7 @@ function setupEventListeners() {
 
     if (togglePlayBtn) {
         togglePlayBtn.addEventListener('click', () => {
-            if (!player) return;
-            const state = player.getPlayerState();
-            if (state === YT.PlayerState.PLAYING) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
-            }
+            togglePlay();
         });
     }
 
@@ -1045,7 +1063,7 @@ function setupEventListeners() {
             currentTab = 'search';
             tabSearch.classList.add('active');
             tabPlaylist.classList.remove('active');
-            if (player) player.stopVideo();
+            // player.stopVideo() removed to keep music playing when going home
             stopProgressUpdate();
             youtubePlayerContainer.style.display = 'none';
             audioOnlyOverlay.style.display = 'none';
@@ -1190,8 +1208,46 @@ function setupMediaSession(song) {
         navigator.mediaSession.setActionHandler('seekto', (d) => {
             if (player && d.seekTime != null) player.seekTo(d.seekTime, true);
         });
-    } catch(e) { /* 일부 구형 브라우저 미지원 */ }
+    } catch(e) { console.warn('MediaSession seek handlers failed', e); }
 }
+
+const isInShell = window.parent !== window && window.parent.postMessage;
+
+function togglePlay() {
+    if (isInShell) {
+        if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({ type: 'TOGGLE_PLAY' }, '*');
+        }
+    } else if (player && typeof player.getPlayerState === 'function') {
+        try {
+            const state = player.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        } catch(e) { console.warn("Local player control failed", e); }
+    }
+}
+
+// Listen for global control messages from parent shell
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'NEXT_SONG') {
+        playNext();
+    } else if (event.data.type === 'PREV_SONG') {
+        playPrevious();
+    } else if (event.data.type === 'TIME_UPDATE') {
+        // Sync local UI with parent's playback time
+        const { currentTime, duration } = event.data;
+        const percent = (currentTime / duration) * 100;
+        updateSeekUI(percent, currentTime, duration);
+    } else if (event.data.type === 'PLAYER_STATE_CHANGE') {
+        // Update local play/pause buttons
+        const isPlaying = event.data.state === 1; // 1 = PLAYING
+        if (togglePlayBtn) togglePlayBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        updateMiniIcons(isPlaying);
+    }
+});
 
 // Handle Song Selection
 async function handleSongClick(songOrId, mode = null) {
@@ -1207,11 +1263,26 @@ async function handleSongClick(songOrId, mode = null) {
     activeSongId = song.id;
     if (mode) currentMode = mode;
 
+    // ⚡ GLOBAL SHELL SYNC: If in shell, delegate playback to parent
+    if (isInShell) {
+        window.parent.postMessage({
+            type: 'PLAY_SONG',
+            song: {
+                id: song.id,
+                title: song.title,
+                artist: song.artist,
+                youtubeId: song.youtubeId
+            }
+        }, '*');
+    }
+
     // ⚡ INSTANT PLAY: Start loading the video as the high-priority first step
-    if (isPlayerReady && player && song.youtubeId) {
-        player.loadVideoById(song.youtubeId);
-    } else if (song.youtubeId) {
-        setTimeout(() => handleSongClick(song, mode), 500);
+    if (!isInShell) {
+        if (isPlayerReady && player && song.youtubeId) {
+            player.loadVideoById(song.youtubeId);
+        } else if (song.youtubeId) {
+            setTimeout(() => handleSongClick(song, mode), 500);
+        }
     }
 
     // 📱 UX: Robust Scroll to top for all layout types
@@ -1316,6 +1387,9 @@ async function handleSongClick(songOrId, mode = null) {
 
     // Add to Recently Played
     addRecentSong(song);
+
+    // Save as last played for persistence
+    localStorage.setItem('vibe_last_song', JSON.stringify(song));
 }
 
 
@@ -1376,13 +1450,15 @@ async function renderHome() {
     // 1. Try Local Cache First for Instant Loading
     const cached = localStorage.getItem(HOME_CACHE_KEY);
     if (cached) {
-        const { timestamp, sections } = JSON.parse(cached);
-        const ageInMin = (Date.now() - timestamp) / 60000;
-        // MUST verify that sections.pop exists! (Cache migration fix)
-        if (ageInMin < 15 && sections && sections.pop) {
-            renderDiscoveryFromData(sections);
-            return;
-        }
+        try {
+            const { timestamp, sections } = JSON.parse(cached);
+            const ageInMin = (Date.now() - timestamp) / 60000;
+            // TTL 5 minutes for freshness
+            if (ageInMin < 5 && sections && sections.trending) {
+                renderDiscoveryFromData(sections);
+                return;
+            }
+        } catch(e) { localStorage.removeItem(HOME_CACHE_KEY); }
     }
 
 
@@ -1429,11 +1505,12 @@ async function renderHome() {
 
     // 3. Fetch from Network in Parallel
     try {
+        const todayStr = new Date().toLocaleDateString();
         const [trending, latest, pop, suggested] = await Promise.all([
-            fetchCategorySongs("실시간 인기 차트 TOP 20", "scrollerTrending", 12),
-            fetchCategorySongs(getRecent6MonthsQuery(), "scrollerLatest", 12),
-            fetchCategorySongs("Trending Global Pop Hits " + new Date().getFullYear(), "scrollerPop", 12),
-            fetchCategorySongs("잔잔하고 편안한 수면 명상 음악", "scrollerSuggested", 12)
+            fetchCategorySongs(`실시간 인기 차트 TOP 20 ${todayStr}`, "scrollerTrending", 12),
+            fetchCategorySongs(`${getRecent6MonthsQuery()} 최신곡`, "scrollerLatest", 12),
+            fetchCategorySongs(`Trending Global Pop Hits ${new Date().getFullYear()} Hot 100`, "scrollerPop", 12),
+            fetchCategorySongs(`잔잔하고 편안한 수면 명상 음악 스트리밍`, "scrollerSuggested", 12)
         ]);
 
 
@@ -1452,20 +1529,16 @@ async function renderHome() {
     }
 }
 
-// PERIODIC AUTO-REFRESH (Every 30 mins)
+// PERIODIC AUTO-REFRESH (Every 15 mins)
 function setupAutoHomeRefresh() {
     setInterval(() => {
         const discoveryDashboard = document.getElementById('discoveryDashboard');
-        // Refresh only if the dashboard is active and visible
         if (discoveryDashboard && discoveryDashboard.style.display !== 'none' && currentTab === 'search') {
             console.log("Auto-refreshing Home contents for fresh music...");
-            // Force refresh by ignoring cache inside the call if needed, 
-            // but simply re-calling renderHome with the 15-min TTL is often enough.
-            // If we want a guaranteed "latest" refresh, we can clear the cache first.
             localStorage.removeItem(HOME_CACHE_KEY);
             renderHome();
         }
-    }, 30 * 60000); // 30 mins
+    }, 15 * 60000); // 15 mins
 }
 
 
@@ -1537,12 +1610,14 @@ async function fetchCategorySongs(query, scrollerId, limit = 12) {
             const list = results.slice(0, limit);
             scroller.innerHTML = renderCardList(list);
             return list;
+        } else {
+            throw new Error("No results found for " + query);
         }
     } catch(e) {
         const scroller = document.getElementById(scrollerId);
         if (scroller) scroller.innerHTML = '<p style="font-size:0.8rem; opacity:0.5; padding:20px;">정보를 불러올 수 없습니다.</p>';
+        throw e; // Re-throw to trigger renderHome's fallback
     }
-    return null;
 }
 
 
@@ -1736,7 +1811,11 @@ async function fetchFromPipedAPI(query, idPrefix = 'global_') {
     const pipedNodes = [
         'https://pipedapi.kavin.rocks',
         'https://pipedapi.tokhmi.xyz',
-        'https://pipedapi.smnz.de'
+        'https://pipedapi.smnz.de',
+        'https://api.piped.victr.me',
+        'https://pipedapi.moomoo.me',
+        'https://piped-api.lunar.icu',
+        'https://piped-api.garudalinux.org'
     ];
     
     for (const node of pipedNodes) {
@@ -2048,7 +2127,12 @@ function handleSeekAction(e) {
     if (duration > 0) {
         const targetTime = percent * duration;
         updateSeekUI(percent * 100, targetTime, duration);
-        player.seekTo(targetTime, true);
+        
+        if (isInShell) {
+            window.parent.postMessage({ type: 'SEEK_TO', time: targetTime }, '*');
+        } else if (player) {
+            player.seekTo(targetTime, true);
+        }
     }
 }
 
@@ -2065,13 +2149,15 @@ function updateLikeBtnUI(isLiked) {
 
 
 
-// Inject YouTube API Script
-(function() {
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-})();
+// Inject YouTube API Script - Only when NOT in shell
+if (!isInShell) {
+    (function() {
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    })();
+}
 
 // Start app
 init();
@@ -2210,13 +2296,10 @@ function initMiniPlayer() {
         if (mainContent) scrollTop = mainContent.scrollTop;
         if (scrollTop === 0) scrollTop = window.scrollY; // fallback
         
-        // Show if scrolled down more than 50px
-        if (window.innerWidth <= 850) {
-            if (scrollTop > 50) {
-                miniPlayer.classList.add('visible');
-            } else {
-                miniPlayer.classList.remove('visible');
-            }
+        // Show if a song is active or scrolled down
+        const isSongActive = !!currentPlayingSong;
+        if (isSongActive || scrollTop > 50) {
+            miniPlayer.classList.add('visible');
         } else {
             miniPlayer.classList.remove('visible');
         }
@@ -2342,5 +2425,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-console.log('[Vibe] 백그라운드 재생 모듈 로드 완료');
+if (!isInShell) {
+    console.log('[Vibe] 백그라운드 재생 모듈 로드 완료');
+}
 
