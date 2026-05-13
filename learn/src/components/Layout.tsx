@@ -18,11 +18,11 @@ export default function Layout() {
   const syncColor =
     dataSource === 'github' ? '#10b981' :
       dataSource === 'syncing' ? '#f59e0b' :
-        '#94a3b8';
+        '#ef4444'; // Vivid red for local alert
   const syncBg =
     dataSource === 'github' ? 'rgba(16,185,129,0.12)' :
       dataSource === 'syncing' ? 'rgba(245,158,11,0.12)' :
-        'rgba(148,163,184,0.10)';
+        'rgba(239,68,68,0.15)'; // Reddish background
   const syncLabel =
     dataSource === 'github' ? 'GitHub' :
       dataSource === 'syncing' ? 'Syncing…' :
@@ -98,10 +98,15 @@ export default function Layout() {
 
             {/* ── Data source badge ── */}
             <div
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${dataSource === 'syncing' ? 'animate-pulse' : ''}`}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${
+                dataSource === 'syncing' ? 'animate-pulse' : 
+                (dataSource === 'local' || !dataSource ? 'animate-alert-blink shadow-[0_0_12px_rgba(239,68,68,0.3)]' : '')
+              }`}
               style={{ background: syncBg, color: syncColor }}
+              title={`현재 상태: ${syncLabel}`}
             >
-              <Database size={10} />
+              <Database size={10} className={dataSource === 'syncing' ? 'animate-spin' : ''} />
+              <span className="sm:hidden">{syncLabel.charAt(0)}</span>
               <span className="hidden sm:inline">{syncLabel}</span>
             </div>
 

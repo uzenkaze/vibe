@@ -109,7 +109,7 @@ export default function SettingsPage() {
   const labelClass = "block text-xs font-bold text-text-muted uppercase tracking-wider mb-2";
 
   return (
-    <div className="py-8 max-w-2xl mx-auto space-y-6">
+    <div className="py-8 px-4 sm:px-0 max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div className="animate-fade-in">
         <button onClick={() => navigate('/')} className="flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-text-primary transition-colors mb-6">

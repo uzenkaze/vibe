@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { 
-  Plus, Trash2, Maximize, 
+  Plus, Trash2,  Maximize, Focus,
   Type, ZoomIn, ZoomOut,
   GitBranch, Sparkles, X, Menu, LayoutGrid, StickyNote, CircleDot, Minus, CloudUpload, FileText
 } from 'lucide-react';
@@ -44,10 +44,12 @@ export default function MindmapPage() {
   const mindmapStore = data.mindmap as MindmapStore;
 
   const [localMindmap, setLocalMindmap] = useState<MindmapStore>(mindmapStore);
-  const isDirty = useRef(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const latestMindmapRef = useRef(localMindmap);
+  const isDirtyRef = useRef(false);
   
   useEffect(() => { latestMindmapRef.current = localMindmap; }, [localMindmap]);
+  useEffect(() => { isDirtyRef.current = hasUnsavedChanges; }, [hasUnsavedChanges]);
 
   const [activePageId, setActivePageId] = useState(localMindmap.activeId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -112,11 +114,11 @@ export default function MindmapPage() {
   const updateLocalStore = useCallback((updatedPage: MindmapPageData) => {
     const newPages = localMindmap.pages.map(p => p.id === updatedPage.id ? updatedPage : p);
     setLocalMindmap({ ...localMindmap, pages: newPages, activeId: activePageId });
-    isDirty.current = true;
+    setHasUnsavedChanges(true);
   }, [localMindmap, activePageId]);
 
   const handleSave = async () => {
-    if (!isDirty.current) {
+    if (!hasUnsavedChanges) {
         showToast('변경된 사항이 없습니다.');
         return;
     }
@@ -125,38 +127,63 @@ export default function MindmapPage() {
     const finalMindmap = { ...localMindmap, pages: localMindmap.pages.map(p => p.id === activePageId ? finalPage : p) };
     await setMindmap(finalMindmap);
     showToast('GitHub 서버에 저장이 완료되었습니다.');
-    isDirty.current = false;
+    setHasUnsavedChanges(false);
   };
 
   useEffect(() => {
     return () => {
-      if (isDirty.current) {
+      if (isDirtyRef.current) {
         setMindmap(latestMindmapRef.current);
       }
     };
   }, [setMindmap, activePageId]);
 
   const fitView = useCallback(() => {
-    if (nodes.length === 0 || !canvasRef.current) return;
-    const r = canvasRef.current.getBoundingClientRect();
+    const canvas = canvasRef.current;
+    if (!canvas || nodes.length === 0) return;
+
+    // Use window dimensions in fullscreen for maximum accuracy
+    const width = document.fullscreenElement ? window.innerWidth : canvas.clientWidth;
+    const height = document.fullscreenElement ? window.innerHeight : canvas.clientHeight;
+    if (width === 0 || height === 0) return;
+
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     nodes.forEach(n => {
-      const w = n._w || 160, h = n._h || 60;
+      // Estimate size for fitting if not yet rendered
+      const w = n._w || 180, h = n._h || 80;
       minX = Math.min(minX, n.x - w/2); maxX = Math.max(maxX, n.x + w/2);
       minY = Math.min(minY, n.y - h/2); maxY = Math.max(maxY, n.y + h/2);
     });
-    const padding = 100;
-    const contentW = maxX - minX + padding * 2, contentH = maxY - minY + padding * 2;
-    const nz = Math.min(r.width / contentW, r.height / contentH, 1.5);
+
+    const padding = 150;
+    const contentW = maxX - minX + padding * 2;
+    const contentH = maxY - minY + padding * 2;
+    
+    // Calculate the fit zoom
+    let nz = Math.min(width / contentW, height / contentH);
+    // Cap at 1.0 for very small maps, but allow shrinking as much as needed
+    nz = Math.min(nz, 1.0);
+    
+    const nx = width / 2 - (minX + maxX) / 2 * nz;
+    const ny = height / 2 - (minY + maxY) / 2 * nz;
+
     setZoom(nz);
-    setPan({ x: r.width / 2 - (minX + maxX) / 2 * nz, y: r.height / 2 - (minY + maxY) / 2 * nz });
-  }, [nodes]);
+    setPan({ x: nx, y: ny });
+    updateLocalStore({ ...activePage, zoom: nz, pan: { x: nx, y: ny } });
+  }, [nodes, activePage, updateLocalStore]);
+
+  useEffect(() => {
+    const handleFsChange = () => { if (document.fullscreenElement) setTimeout(fitView, 500); };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, [fitView]);
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen().then(() => {
-        setTimeout(fitView, 100);
+        // Give browser enough time to complete layout transition
+        setTimeout(fitView, 300);
       }).catch(err => {
         showToast(`전체화면 모드 전환 실패: ${err.message}`);
       });
@@ -170,11 +197,17 @@ export default function MindmapPage() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    const r = canvas.getBoundingClientRect();
-    canvas.width = r.width * window.devicePixelRatio;
-    canvas.height = r.height * window.devicePixelRatio;
-    ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-    ctx.clearRect(0, 0, r.width, r.height);
+    const dpr = window.devicePixelRatio || 1;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    
+    if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+    }
+    
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, width, height);
     
     ctx.save();
     ctx.translate(pan.x, pan.y); ctx.scale(zoom, zoom);
@@ -183,8 +216,8 @@ export default function MindmapPage() {
     const gridSize = 50;
     const startX = Math.floor(-pan.x / zoom / gridSize) * gridSize - gridSize;
     const startY = Math.floor(-pan.y / zoom / gridSize) * gridSize - gridSize;
-    for (let x = startX; x < startX + r.width / zoom + gridSize * 2; x += gridSize) {
-      for (let y = startY; y < startY + r.height / zoom + gridSize * 2; y += gridSize) {
+    for (let x = startX; x < startX + width / zoom + gridSize * 2; x += gridSize) {
+      for (let y = startY; y < startY + height / zoom + gridSize * 2; y += gridSize) {
         ctx.beginPath(); ctx.arc(x, y, 1, 0, Math.PI * 2); ctx.fill();
       }
     }
@@ -264,13 +297,21 @@ export default function MindmapPage() {
   }, [selectedNodeIds, nodes, edges, activePage, updateLocalStore]);
 
   const addMainGroup = () => {
-    const nid = activePage.nextId; const r = canvasRef.current?.getBoundingClientRect(); const wx = r ? (r.width / 2 - pan.x) / zoom : 0, wy = r ? (r.height / 2 - pan.y) / zoom : 0;
+    const nid = activePage.nextId; 
+    const canvas = canvasRef.current;
+    const width = canvas?.clientWidth || 0;
+    const height = canvas?.clientHeight || 0;
+    const wx = width ? (width / 2 - pan.x) / zoom : 0, wy = height ? (height / 2 - pan.y) / zoom : 0;
     const newNode: MindmapNode = { id: nid, type: 'group', label: 'Main Group', x: wx, y: wy, color: 0 };
     updateLocalStore({ ...activePage, nodes: [...nodes, newNode], nextId: nid + 1 }); setSelectedNodeIds([nid]);
   };
 
   const addFloatingMemo = () => {
-    const nid = activePage.nextId; const r = canvasRef.current?.getBoundingClientRect(); const wx = r ? (r.width / 2 - pan.x) / zoom : 0, wy = r ? (r.height / 2 - pan.y) / zoom : 0;
+    const nid = activePage.nextId; 
+    const canvas = canvasRef.current;
+    const width = canvas?.clientWidth || 0;
+    const height = canvas?.clientHeight || 0;
+    const wx = width ? (width / 2 - pan.x) / zoom : 0, wy = height ? (height / 2 - pan.y) / zoom : 0;
     const newNode: MindmapNode = { id: nid, type: 'memo', label: 'New Memo Bubble', x: wx, y: wy, color: 6 };
     updateLocalStore({ ...activePage, nodes: [...nodes, newNode], nextId: nid + 1 }); setSelectedNodeIds([nid]);
   };
@@ -286,7 +327,7 @@ export default function MindmapPage() {
   const handleRenameSubmit = () => {
     if (isRenamingPage === null) return;
     const nps = localMindmap.pages.map(p => p.id === isRenamingPage ? { ...p, title: newPageTitle || p.title } : p);
-    setLocalMindmap({ ...localMindmap, pages: nps }); setIsRenamingPage(null); isDirty.current = true;
+    setLocalMindmap({ ...localMindmap, pages: nps }); setIsRenamingPage(null); setHasUnsavedChanges(true);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -426,7 +467,7 @@ export default function MindmapPage() {
   useEffect(() => { render(); }, [render]);
 
   return (
-    <div className="flex h-[calc(100vh-120px)] bg-bg-primary rounded-3xl overflow-hidden shadow-2xl border border-border animate-fade-in relative transition-all duration-300">
+    <div className="mx-4 sm:mx-0 flex h-[calc(100vh-120px)] bg-bg-primary rounded-3xl overflow-hidden shadow-2xl border border-border animate-fade-in relative transition-all duration-300">
       <aside className={`bg-bg-secondary/50 backdrop-blur-xl border-r border-border flex flex-col p-4 space-y-6 overflow-y-auto transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-72'}`}>
         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between px-2'}`}>
           {!isSidebarCollapsed && <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Mindmaps</span>}
@@ -435,32 +476,32 @@ export default function MindmapPage() {
         <div className="space-y-4">
           <div className={`flex items-center px-2 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
             <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest"><LayoutGrid size={16} className="text-accent" />{!isSidebarCollapsed && <span>All Maps</span>}</div>
-            {!isSidebarCollapsed && <button onClick={() => { const nid = localMindmap.nextPageId; const np: MindmapPageData = { id: nid, title: `Map ${nid}`, nodes: [{ id: 1, type: 'group', label: 'Main Goal', x: 0, y: 0, color: 0 }], edges: [], nextId: 2 }; setLocalMindmap({ ...localMindmap, pages: [...localMindmap.pages, np], nextPageId: nid + 1, activeId: nid }); setActivePageId(nid); isDirty.current = true; }} className="p-1 hover:bg-accent/10 rounded-lg text-accent"><Plus size={16} /></button>}
+            {!isSidebarCollapsed && <button onClick={() => { const nid = localMindmap.nextPageId; const np: MindmapPageData = { id: nid, title: `Map ${nid}`, nodes: [{ id: 1, type: 'group', label: 'Main Goal', x: 0, y: 0, color: 0 }], edges: [], nextId: 2 }; setLocalMindmap({ ...localMindmap, pages: [...localMindmap.pages, np], nextPageId: nid + 1, activeId: nid }); setActivePageId(nid); setHasUnsavedChanges(true); }} className="p-1 hover:bg-accent/10 rounded-lg text-accent"><Plus size={16} /></button>}
           </div>
           <div className="space-y-1">{localMindmap.pages.map(p => (
             <div key={p.id} className="group relative px-1"><button onClick={() => setActivePageId(p.id)} className={`w-full flex items-center px-3 py-3 rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} ${activePageId === p.id ? 'bg-accent/10 text-accent shadow-sm' : 'text-text-secondary hover:bg-bg-card'}`} title={p.title}><div className="flex items-center gap-3 min-w-0"><div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: MM_COLORS.palette[p.id % 8].border }} />{!isSidebarCollapsed && <span className="truncate">{p.title}</span>}</div></button>
-            {!isSidebarCollapsed && <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={(e) => { e.stopPropagation(); setIsRenamingPage(p.id); setNewPageTitle(p.title); }} className="p-1 hover:bg-accent/10 rounded-lg text-accent"><Type size={14} /></button><button onClick={(e) => { e.stopPropagation(); if (localMindmap.pages.length > 1) { setLocalMindmap({ ...localMindmap, pages: localMindmap.pages.filter(x => x.id !== p.id), activeId: localMindmap.pages[0].id }); isDirty.current = true; } }} className="p-1 hover:bg-red-500/10 rounded-lg text-red-500"><Trash2 size={14} /></button></div>}</div>
+            {!isSidebarCollapsed && <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={(e) => { e.stopPropagation(); setIsRenamingPage(p.id); setNewPageTitle(p.title); }} className="p-1 hover:bg-accent/10 rounded-lg text-accent"><Type size={14} /></button><button onClick={(e) => { e.stopPropagation(); if (localMindmap.pages.length > 1) { setLocalMindmap({ ...localMindmap, pages: localMindmap.pages.filter(x => x.id !== p.id), activeId: localMindmap.pages[0].id }); setHasUnsavedChanges(true); } }} className="p-1 hover:bg-red-500/10 rounded-lg text-red-500"><Trash2 size={14} /></button></div>}</div>
           ))}</div>
         </div>
       </aside>
 
       <div className="flex-1 relative bg-bg-card/20 overflow-hidden flex flex-col" ref={containerRef}>
         {/* Main Toolbar */}
-        <div className="z-50 flex items-center justify-between p-3 bg-bg-card/90 backdrop-blur-2xl border-b border-border shadow-sm">
-          <div className="flex items-center gap-1">
-            <Tooltip label="메인 그룹 추가"><button onClick={addMainGroup} className="p-2.5 rounded-xl hover:bg-cyan-500/10 text-cyan-500"><CircleDot size={20} /></button></Tooltip>
-            <Tooltip label="메모 추가"><button onClick={addFloatingMemo} className="p-2.5 rounded-xl hover:bg-amber-500/10 text-amber-500"><StickyNote size={20} /></button></Tooltip>
-            <div className="w-px h-6 bg-border mx-2" />
-            <Tooltip label="하위 노드 추가 (Tab)"><button onClick={addChild} disabled={selectedNodeIds.length === 0} className="p-2.5 rounded-xl hover:bg-accent/10 text-text-secondary disabled:opacity-30"><GitBranch size={20} /></button></Tooltip>
-            <Tooltip label="AI 생성"><button onClick={() => showToast('AI 구성 중...')} className="p-2.5 rounded-xl hover:bg-purple-500/10 text-purple-500"><Sparkles size={20} /></button></Tooltip>
+        <div className="z-50 flex items-center justify-between flex-wrap gap-y-2 p-2 bg-bg-card/90 backdrop-blur-2xl border-b border-border shadow-sm min-h-[56px]">
+          <div className="flex items-center gap-0.5">
+            <Tooltip label="메인 그룹 추가"><button onClick={addMainGroup} className="p-2 rounded-xl hover:bg-cyan-500/10 text-cyan-500"><CircleDot size={18} /></button></Tooltip>
+            <Tooltip label="메모 추가"><button onClick={addFloatingMemo} className="p-2 rounded-xl hover:bg-amber-500/10 text-amber-500"><StickyNote size={18} /></button></Tooltip>
+            <div className="w-px h-6 bg-border mx-1" />
+            <Tooltip label="하위 노드 추가 (Tab)"><button onClick={addChild} disabled={selectedNodeIds.length === 0} className="p-2 rounded-xl hover:bg-accent/10 text-text-secondary disabled:opacity-30"><GitBranch size={18} /></button></Tooltip>
+            <Tooltip label="AI 생성"><button onClick={() => showToast('AI 구성 중...')} className="p-2 rounded-xl hover:bg-purple-500/10 text-purple-500"><Sparkles size={18} /></button></Tooltip>
           </div>
 
           {/* Contextual Properties (Integrated in Toolbar Area) */}
-          <div className={`flex items-center gap-4 transition-all duration-300 ${selectedNodeIds.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
-            <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 transition-all duration-300 ${selectedNodeIds.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
+            <div className="flex items-center gap-1">
               <div className="flex items-center gap-1 bg-bg-primary/50 p-1 rounded-xl border border-border">
                 {MM_COLORS.palette.map((c, i) => (
-                  <button key={i} onClick={() => { updateSelectedNodesProperty('customBorderColor', c.border); updateSelectedEdgesProperty('customColor', c.border); }} className="w-5 h-5 rounded-full border-2 hover:scale-125 transition-transform" style={{ borderColor: c.border }} />
+                  <button key={i} onClick={() => { updateSelectedNodesProperty('customBorderColor', c.border); updateSelectedEdgesProperty('customColor', c.border); }} className="w-4 h-4 rounded-full border-2 hover:scale-125 transition-transform" style={{ borderColor: c.border }} />
                 ))}
               </div>
             </div>
@@ -469,21 +510,22 @@ export default function MindmapPage() {
                 { id: 'solid', icon: <Minus size={14} className="stroke-[2px]" /> },
                 { id: 'thick', icon: <Minus size={14} className="stroke-[4px]" /> },
                 { id: 'dashed', icon: <div className="w-4 h-0.5 border-b-2 border-dashed border-current" /> },
-                { id: 'dotted', icon: <div className="w-4 h-0.5 border-b-2 border-dotted border-current" /> }
+                { id: 'dotted', icon: <div className="w-3.5 h-0.5 border-b-2 border-dotted border-current" /> }
               ].map(s => (
-                <button key={s.id} onClick={() => updateSelectedEdgesProperty('lineStyle', s.id)} className={`p-2 rounded-lg transition-all ${edges.find(e => selectedNodeIds.includes(e.to))?.lineStyle === s.id ? 'bg-accent text-white' : 'hover:bg-accent/10 text-text-secondary'}`}>{s.icon}</button>
+                <button key={s.id} onClick={() => updateSelectedEdgesProperty('lineStyle', s.id)} className={`p-1.5 rounded-lg transition-all ${edges.find(e => selectedNodeIds.includes(e.to))?.lineStyle === s.id ? 'bg-accent text-white' : 'hover:bg-accent/10 text-text-secondary'}`}>{s.icon}</button>
               ))}
             </div>
-            <Tooltip label="메모 상세보기"><button onClick={() => setIsSidebarOpen(true)} className="p-2.5 rounded-xl hover:bg-accent/10 text-text-secondary"><FileText size={20} /></button></Tooltip>
+            <Tooltip label="메모 상세보기"><button onClick={() => setIsSidebarOpen(true)} className="p-2 rounded-xl hover:bg-accent/10 text-text-secondary"><FileText size={18} /></button></Tooltip>
           </div>
 
-          <div className="flex items-center gap-1">
-            <Tooltip label="확대"><button onClick={() => setZoom(z => Math.min(4, z * 1.2))} className="p-2 text-text-secondary"><ZoomIn size={18} /></button></Tooltip>
-            <Tooltip label="축소"><button onClick={() => setZoom(z => Math.max(0.1, z * 0.8))} className="p-2 text-text-secondary"><ZoomOut size={18} /></button></Tooltip>
-            <Tooltip label="전체화면"><button onClick={toggleFullscreen} className="p-2 text-text-secondary hover:text-accent transition-colors"><Maximize size={18} /></button></Tooltip>
-            <div className="w-px h-6 bg-border mx-2" />
-            <Tooltip label="저장 (GitHub 서버)"><button onClick={handleSave} className={`p-2.5 rounded-xl transition-all ${isDirty.current ? 'bg-accent text-white shadow-lg animate-pulse' : 'hover:bg-accent/10 text-accent'}`}><CloudUpload size={20} /></button></Tooltip>
-            <Tooltip label="삭제 (Del)"><button onClick={deleteSelected} disabled={selectedNodeIds.length === 0} className="p-2.5 rounded-xl hover:bg-red-500/10 text-red-500 disabled:opacity-30"><Trash2 size={20} /></button></Tooltip>
+          <div className="flex items-center gap-0.5">
+            <Tooltip label="확대"><button onClick={() => setZoom(z => Math.min(4, z * 1.2))} className="p-1.5 text-text-secondary"><ZoomIn size={16} /></button></Tooltip>
+            <Tooltip label="축소"><button onClick={() => setZoom(z => Math.max(0.1, z * 0.8))} className="p-1.5 text-text-secondary"><ZoomOut size={16} /></button></Tooltip>
+            <Tooltip label="화면에 맞추기"><button onClick={fitView} className="p-1.5 text-text-secondary hover:text-accent transition-colors"><Focus size={16} /></button></Tooltip>
+            <Tooltip label="전체화면"><button onClick={toggleFullscreen} className="p-1.5 text-text-secondary hover:text-accent transition-colors"><Maximize size={16} /></button></Tooltip>
+            <div className="w-px h-5 bg-border mx-1" />
+            <Tooltip label="저장 (GitHub 서버)"><button onClick={handleSave} className={`p-2 rounded-xl transition-all ${hasUnsavedChanges ? 'bg-accent text-white shadow-lg animate-pulse' : 'hover:bg-accent/10 text-accent'}`}><CloudUpload size={18} /></button></Tooltip>
+            <Tooltip label="삭제 (Del)"><button onClick={deleteSelected} disabled={selectedNodeIds.length === 0} className="p-2 rounded-xl hover:bg-red-500/10 text-red-500 disabled:opacity-30"><Trash2 size={18} /></button></Tooltip>
           </div>
         </div>
 
@@ -512,8 +554,11 @@ export default function MindmapPage() {
             </div>
           )}
 
-          <div className="absolute top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-bg-card/80 backdrop-blur-xl border border-border shadow-lg"><div className={`w-2 h-2 rounded-full ${isDirty.current ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} /><span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{isDirty.current ? 'Pending Save' : (dataSource === 'github' ? 'Synced' : 'Local')}</span></div>
-          <div className="absolute bottom-6 right-6 px-4 py-2 bg-bg-card/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl text-xs font-black text-text-secondary">{Math.round(zoom * 100)}%</div>
+          <div className="absolute top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-bg-card/80 backdrop-blur-xl border border-border shadow-lg"><div className={`w-2 h-2 rounded-full ${hasUnsavedChanges ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} /><span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{hasUnsavedChanges ? 'Pending Save' : (dataSource === 'github' ? 'Synced' : 'Local')}</span></div>
+          <div className="absolute bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2 bg-bg-card/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl">
+            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Zoom</span>
+            <span className="text-xs font-black text-text-secondary w-10 text-right">{Math.round(zoom * 100)}%</span>
+          </div>
 
           {/* Inline Editor */}
           {editingNodeId !== null && (

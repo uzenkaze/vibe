@@ -255,3 +255,11 @@
   filter: brightness(1.15);
   z-index: 100 !important;
 }
+@keyframes alert-blink {
+  0%, 100% { opacity: 1; filter: saturate(1.5) brightness(1.1); }
+  50% { opacity: 0.5; filter: saturate(1) brightness(1); }
+}
+
+.animate-alert-blink {
+  animation: alert-blink 1.2s ease-in-out infinite;
+}

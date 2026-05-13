@@ -54,7 +54,7 @@ export default function DocsPage() {
   const selectStyle = { background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' };
 
   return (
-    <div className="py-8 space-y-8 animate-fade-in">
+    <div className="py-8 px-4 sm:px-0 space-y-8 animate-fade-in">
 
       {/* ── Hero Banner ── */}
       <div className="relative rounded-3xl overflow-hidden"
