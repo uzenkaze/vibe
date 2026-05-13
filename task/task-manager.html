@@ -3722,10 +3722,10 @@
     
     <!-- Query Modal -->
     <div class="modal-overlay" id="query-modal" style="z-index: 5000;">
-        <div class="modal-content" style="width: 100%; max-width:800px; padding:2.5rem; border-radius:1.5rem; background: var(--bg-card); box-shadow: var(--shadow-lg);">
+        <div class="modal-content" style="width: 100%; max-width:1000px; padding:2.5rem; border-radius:1.5rem; background: var(--bg-card); box-shadow: var(--shadow-lg);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 id="query-modal-title" style="margin: 0; font-size: 1.8rem; font-weight: 800; color: #1d1d1f;">새 쿼리 추가</h2>
-                <button class="modal-close" onclick="closeQueryModal()" style="position: static;">&times;</button>
+                <h2 id="query-modal-title" style="margin: 0; font-size: 1.8rem; font-weight: 800; color: #1d1d1f;">Query</h2>
+                <button type="button" onclick="closeQueryModal()" style="background: rgba(0,0,0,0.05); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: #1d1d1f;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <input type="hidden" id="query-id">
             <input type="hidden" id="query-color-value">
@@ -3743,7 +3743,7 @@
 
             <div style="margin-bottom:1.5rem;">
                 <label style="font-weight:600; font-size:0.9rem; color: #86868b; display:block; margin-bottom: 0.5rem;">쿼리 내용</label>
-                <textarea id="query-content" class="ts-input" style="width:100%; height:250px; font-family: 'Consolas', monospace; font-size: 0.95rem; padding: 15px; border-radius: 12px; resize: vertical; line-height: 1.5; background: #f9f9fb;" placeholder="SELECT * FROM ..."></textarea>
+                <textarea id="query-content" class="ts-input" style="width:100%; height:500px; font-family: 'Consolas', monospace; font-size: 0.95rem; padding: 15px; border-radius: 12px; resize: vertical; line-height: 1.5; background: #f9f9fb;" placeholder="SELECT * FROM ..."></textarea>
             </div>
             <div style="margin-bottom:2rem;">
                 <label style="font-weight:600; font-size:0.9rem; color: #86868b; display:block; margin-bottom: 0.5rem;">태그 (쉼표로 구분)</label>
@@ -8674,7 +8674,7 @@
             if (id) {
                 const q = queries.find(x => x.id === id);
                 if (q) {
-                    document.getElementById('query-modal-title').innerText = '쿼리 수정';
+                    document.getElementById('query-modal-title').innerText = 'Query';
                     document.getElementById('query-id').value = q.id;
                     document.getElementById('query-title').value = q.title || '';
                     document.getElementById('query-content').value = q.content || '';
@@ -8684,7 +8684,7 @@
                     delBtn.style.display = 'block';
                 }
             } else {
-                document.getElementById('query-modal-title').innerText = '새 쿼리 추가';
+                document.getElementById('query-modal-title').innerText = 'Query';
                 document.getElementById('query-id').value = '';
                 document.getElementById('query-title').value = '';
                 document.getElementById('query-content').value = '';
