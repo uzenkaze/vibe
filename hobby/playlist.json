@@ -50,6 +50,13 @@
   ],
   "recentlyPlayed": [
     {
+      "id": 1,
+      "title": "Supernova",
+      "artist": "aespa(에스파)",
+      "youtubeId": "JmD8_t0IuGg",
+      "lyrics": "I'm like some kind of Supernova\nWatch out...\nI'm like some kind of Supernova\n머릿속은 Bang Bang 너는 내 안의 Universe\n\n달을 삼킨 채 번지는 소문\n이것은 내게로 오는 신호\n너를 비추는 빛을 따라가\n어둠을 뚫고서 나를 불러\nI'm like some kind of Supernova\nWatch out!"
+    },
+    {
       "id": "related_HoJl5uv5g8U",
       "title": "[최신가요연속듣기 2026] KPOP 노동요 🌎 2026년 1월 5일 2주차, 멜론차트 X, 노래모음 플레이리스트 멜론 종합차트",
       "artist": "Yeo Doll",
@@ -163,15 +170,7 @@
       "youtubeId": "ru4DicGUCY0",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
-    },
-    {
-      "id": "related_gnQcIfUp8Ao",
-      "title": "Fin de la journée,dormez de la musique dansune chambre confortable☁musique de traitementdel'insomnie",
-      "artist": "뮤직 메이트 Music Mate",
-      "youtubeId": "gnQcIfUp8Ao",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     }
   ],
-  "lastSync": "2026-05-13T02:27:57.633Z"
+  "lastSync": "2026-05-13T03:57:54.830Z"
 }
