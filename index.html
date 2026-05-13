@@ -388,15 +388,38 @@
         }
 
         function playGlobalMusic(song) {
-            if (!isPlayerReady) return;
             currentSong = song;
+            const thumbUrl = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+            const proxyThumb = `https://images.weserv.nl/?url=${encodeURIComponent(thumbUrl)}`;
+            
             document.getElementById('globalTitle').textContent = song.title;
             document.getElementById('globalArtist').textContent = song.artist;
-            document.getElementById('globalThumb').src = `https://img.youtube.com/vi/${song.youtubeId}/default.jpg`;
+            
+            const thumbImg = document.getElementById('globalThumb');
+            thumbImg.dataset.failed = "0";
+            thumbImg.src = thumbUrl;
+            thumbImg.onerror = function() {
+                if (this.dataset.failed === "2") {
+                    this.onerror = null;
+                    this.src = 'music_placeholder.png'; 
+                } else if (this.dataset.failed === "1") {
+                    this.dataset.failed = "2";
+                    this.src = `https://images.weserv.nl/?url=https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`; 
+                } else {
+                    this.dataset.failed = "1";
+                    this.src = `https://i.ytimg.com/vi/${song.youtubeId}/mqdefault.jpg`;
+                }
+            };
+            
             document.getElementById('globalPlayer').classList.add('active');
-            player.loadVideoById(song.youtubeId);
-            player.playVideo();
-            startAudioKeepAlive();
+            
+            if (player && isPlayerReady) {
+                player.loadVideoById(song.youtubeId);
+                startAudioKeepAlive();
+            }
+
+            // Save for persistence
+            localStorage.setItem('vibe_last_song', JSON.stringify(song));
         }
 
         function toggleGlobalPlay() {

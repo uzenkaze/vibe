@@ -138,6 +138,18 @@ const loadMoreBtn = document.getElementById('loadMoreBtn');
 
 const lyricsContainer = document.getElementById('lyricsContainer');
 
+window.handleImageError = function(img, videoId) {
+    if (img.dataset.failed === "2") {
+        img.onerror = null;
+        img.src = 'music_placeholder.png';
+    } else if (img.dataset.failed === "1") {
+        img.dataset.failed = "2";
+        img.src = `https://images.weserv.nl/?url=https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    } else {
+        img.dataset.failed = "1";
+        img.src = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+    }
+};
 
 const lyricsTitle = document.getElementById('lyricsTitle');
 const lyricsContent = document.getElementById('lyricsContent');
@@ -445,106 +457,92 @@ async function handleGlobalSearch(customQuery = null, limit = 100) {
     noResults.style.display = 'none';
     loading.style.display = 'flex';
 
-    const cleanQ = cleanSearchQuery(query);
+    // 최우선 순위: 빠르고 정확한 Piped API 병렬 검색
+    try {
+        const pipedResults = await fetchFromPipedAPI(cleanQ, 'global_');
+        if (pipedResults && pipedResults.length > 0) {
+            searchCache.set(query, pipedResults);
+            renderSongsFromCache(query, limit);
+            return;
+        }
+    } catch (pipedErr) {
+        console.warn("Piped API failed, falling back to HTML proxies:", pipedErr);
+    }
+
+    // 2순위: HTML 파싱 프록시 (Piped 모두 실패 시 백업)
     const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanQ)}`;
-    
-    // Proxy functions that return a promise
-    const fetchFromProxy = async (proxyUrl) => {
-        const response = await fetch(proxyUrl, { method: 'GET' });
-        if (!response.ok) throw new Error('Proxy failed');
-        
-        let html;
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('json')) {
-            const json = await response.json();
-            html = json.contents || json;
-        } else {
-            html = await response.text();
-        }
-        
-        if (!html || typeof html !== 'string') throw new Error('Invalid HTML');
-        
-        const jsonMatch = html.match(/ytInitialData\s*=\s*({.+?});/);
-        if (!jsonMatch) throw new Error('No ytInitialData');
-        
-        const ytData = JSON.parse(jsonMatch[1]);
-        let sections = [];
-        try {
-            sections = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents;
-        } catch (e) {
-            sections = ytData.contents.sectionListRenderer.contents;
-        }
-
-        const results = [];
-        if (sections && Array.isArray(sections)) {
-            sections.forEach(section => {
-                const items = section.itemSectionRenderer ? section.itemSectionRenderer.contents : [];
-                if (!Array.isArray(items)) return;
-
-                items.forEach(item => {
-                    if (item.videoRenderer) {
-                        const v = item.videoRenderer;
-                        const videoId = v.videoId;
-                        if (!videoId) return;
-
-                        // --- 🚀 PLAYABILITY FILTER: Skip items that are historically unplayable in iframe ---
-                        const durationText = v.lengthText ? v.lengthText.simpleText : null;
-                        const viewCountText = (v.viewCountText && v.viewCountText.simpleText) ? v.viewCountText.simpleText : "";
-                        
-                        // 1. Skip Live Streams (Often unplayable in local iframe)
-                        const isLive = (v.badges && v.badges.some(b => 
-                            b.metadataBadgeRenderer && 
-                            (b.metadataBadgeRenderer.label === "LIVE" || b.metadataBadgeRenderer.style === "BADGE_STYLE_TYPE_LIVE_NOW")
-                        )) || viewCountText.toLowerCase().includes("live");
-
-                        // 2. Skip Shorts or Very Short clips (Usually not songs, often no duration text)
-                        if (!durationText || isLive) return;
-
-                        results.push({
-                            id: 'global_' + videoId,
-                            title: v.title.runs[0].text,
-                            artist: v.ownerText.runs[0].text,
-                            youtubeId: videoId,
-                            duration: durationText, // Save duration for info
-                            isGlobal: true,
-                            lyrics: `(유튜브 검색 결과)\n업로더: ${v.ownerText.runs[0].text}\n길이: ${durationText}`
-                        });
-                    }
-                });
-            });
-        }
-
-
-
-        if (results.length === 0) throw new Error('No videos found');
-        return results;
-    };
-
     const proxyUrls = [
-        `https://api.codetabs.com/v1/proxy?quest=${ytUrl}`,
         `https://api.allorigins.win/raw?url=${encodeURIComponent(ytUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(ytUrl)}`,
-        `https://corsproxy.org/?${encodeURIComponent(ytUrl)}`,
-        `https://cors-anywhere.herokuapp.com/${ytUrl}`
+        `https://api.codetabs.com/v1/proxy?quest=${ytUrl}`
     ];
+
+    const fetchFromProxy = async (proxyUrl) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 7000);
+        try {
+            const response = await fetch(proxyUrl, { method: 'GET', signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error('Proxy failed');
+            
+            let html;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('json')) {
+                const json = await response.json();
+                html = json.contents || json;
+            } else { html = await response.text(); }
+            
+            const jsonMatch = html.match(/ytInitialData\s*=\s*({.+?});/);
+            if (!jsonMatch) throw new Error('No ytInitialData');
+            
+            const ytData = JSON.parse(jsonMatch[1]);
+            let sections = [];
+            try { sections = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents; }
+            catch (e) { sections = ytData.contents.sectionListRenderer.contents; }
+
+            const results = [];
+            if (sections && Array.isArray(sections)) {
+                sections.forEach(section => {
+                    const items = section.itemSectionRenderer ? section.itemSectionRenderer.contents : [];
+                    if (!Array.isArray(items)) return;
+                    items.forEach(item => {
+                        if (item.videoRenderer) {
+                            const v = item.videoRenderer;
+                            const videoId = v.videoId;
+                            if (!videoId) return;
+
+                            const durationText = v.lengthText ? v.lengthText.simpleText : null;
+                            const viewCountText = (v.viewCountText && v.viewCountText.simpleText) ? v.viewCountText.simpleText : "";
+                            const isLive = (v.badges && v.badges.some(b => b.metadataBadgeRenderer && (b.metadataBadgeRenderer.label === "LIVE" || b.metadataBadgeRenderer.style === "BADGE_STYLE_TYPE_LIVE_NOW"))) || viewCountText.toLowerCase().includes("live");
+
+                            if (!durationText || isLive) return;
+
+                            results.push({
+                                id: 'global_' + videoId,
+                                title: v.title.runs[0].text,
+                                artist: v.ownerText.runs[0].text,
+                                youtubeId: videoId,
+                                duration: durationText,
+                                isGlobal: true,
+                                lyrics: `(유튜브 검색 결과)\n업로더: ${v.ownerText.runs[0].text}\n길이: ${durationText}`
+                            });
+                        }
+                    });
+                });
+            }
+            if (results.length === 0) throw new Error('No videos found');
+            return results;
+        } catch(e) {
+            clearTimeout(timeoutId);
+            throw e;
+        }
+    };
 
     try {
         const fastestResults = await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
         searchCache.set(query, fastestResults);
         renderSongsFromCache(query, limit);
     } catch (err) {
-        console.warn("HTML proxies failed. Trying Piped API Fallback...");
-        try {
-            const pipedResults = await fetchFromPipedAPI(cleanQ, 'global_');
-            if (pipedResults && pipedResults.length > 0) {
-                searchCache.set(query, pipedResults);
-                renderSongsFromCache(query, limit);
-                return;
-            }
-        } catch (pipedErr) {
-            console.warn("Piped API also failed:", pipedErr);
-        }
-
         console.warn("All proxies failed or blocked. Trying local database fallback...");
         loading.style.display = 'none';
 
@@ -1278,10 +1276,12 @@ async function handleSongClick(songOrId, mode = null) {
 
     // ⚡ INSTANT PLAY: Start loading the video as the high-priority first step
     if (!isInShell) {
-        if (isPlayerReady && player && song.youtubeId) {
+        if (isPlayerReady && player && typeof player.loadVideoById === 'function' && song.youtubeId) {
             player.loadVideoById(song.youtubeId);
         } else if (song.youtubeId) {
-            setTimeout(() => handleSongClick(song, mode), 500);
+            // Do not loop infinitely. If player isn't ready, just wait.
+            // onYouTubeIframeAPIReady will pick up activeSongId when it loads.
+            console.log("Player not ready yet, waiting...");
         }
     }
 
@@ -1587,19 +1587,26 @@ function renderDiscoveryFromData(sections) {
 
 function renderCardList(songsList, isRecent = false) {
     if (!songsList) return '';
-    return songsList.map(song => `
-        <div class="music-card" onclick="handleSongClick(${JSON.stringify(song).replace(/"/g, '&quot;')}, 'audio')">
-            <div class="card-thumb-wrapper">
-                <img src="https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg" loading="lazy">
-                <div class="card-play-overlay"><i class="fas fa-play"></i></div>
-                ${isRecent ? `<div class="card-delete-btn" onclick="event.stopPropagation(); removeRecentSong('${song.youtubeId}')" title="삭제"><i class="fas fa-times"></i></div>` : ''}
+    return songsList.map(song => {
+        const primaryThumb = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+        
+        return `
+            <div class="music-card" onclick="handleSongClick(${JSON.stringify(song).replace(/"/g, '&quot;')}, 'audio')">
+                <div class="card-thumb-wrapper">
+                    <img src="${primaryThumb}" 
+                         onerror="window.handleImageError(this, '${song.youtubeId}')" 
+                         loading="lazy"
+                         alt="${song.title}">
+                    <div class="card-play-overlay"><i class="fas fa-play"></i></div>
+                    ${isRecent ? `<div class="card-delete-btn" onclick="event.stopPropagation(); removeRecentSong('${song.youtubeId}')" title="삭제"><i class="fas fa-times"></i></div>` : ''}
+                </div>
+                <div class="card-info">
+                    <h4>${song.title}</h4>
+                    <p>${song.artist}</p>
+                </div>
             </div>
-            <div class="card-info">
-                <h4>${song.title}</h4>
-                <p>${song.artist}</p>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 async function fetchCategorySongs(query, scrollerId, limit = 12) {
@@ -1817,45 +1824,49 @@ async function fetchFromPipedAPI(query, idPrefix = 'global_') {
         'https://piped-api.lunar.icu',
         'https://piped-api.garudalinux.org'
     ];
-    
-    for (const node of pipedNodes) {
+
+    const fetchFromNode = async (node) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 6000);
-            
             const res = await fetch(`${node}/search?q=${encodeURIComponent(query)}&filter=all`, {
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
-            
-            if (!res.ok) continue;
+            if (!res.ok) throw new Error('Node failed');
             const data = await res.json();
+            if (!data.items || data.items.length === 0) throw new Error('No items');
             
-            if (data.items && data.items.length > 0) {
-                return data.items.filter(item => item.type === "stream" || (item.url && item.url.includes('?v='))).map(item => {
-                    const videoId = item.url.split('?v=')[1] || item.url.split('/watch?v=')[1];
-                    let durationText = "";
-                    if (item.duration) {
-                        const mins = Math.floor(item.duration / 60);
-                        const secs = item.duration % 60;
-                        durationText = `${mins}:${secs.toString().padStart(2, '0')}`;
-                    }
-                    return {
-                        id: idPrefix + videoId, 
-                        title: item.title,
-                        artist: item.uploaderName || 'YouTube Artist',
-                        youtubeId: videoId,
-                        duration: durationText,
-                        isGlobal: true,
-                        lyrics: `(API 자동 검색 결과)\n업로더: ${item.uploaderName || 'Unknown'}`
-                    };
-                });
-            }
+            return data.items.filter(item => item.type === "stream" || (item.url && item.url.includes('?v='))).map(item => {
+                const videoId = item.url.split('?v=')[1] || item.url.split('/watch?v=')[1];
+                let durationText = "";
+                if (item.duration) {
+                    const mins = Math.floor(item.duration / 60);
+                    const secs = item.duration % 60;
+                    durationText = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }
+                return {
+                    id: idPrefix + videoId, 
+                    title: item.title,
+                    artist: item.uploaderName || 'YouTube Artist',
+                    youtubeId: videoId,
+                    duration: durationText,
+                    isGlobal: true,
+                    lyrics: `(API 자동 검색 결과)\n업로더: ${item.uploaderName || 'Unknown'}`
+                };
+            });
         } catch(e) {
-            console.warn(`Piped node ${node} failed`, e);
+            clearTimeout(timeoutId);
+            throw e;
         }
+    };
+
+    try {
+        // Parallel fetch for extreme speed
+        return await Promise.any(pipedNodes.map(node => fetchFromNode(node)));
+    } catch(e) {
+        throw new Error("All piped nodes failed");
     }
-    throw new Error("All piped nodes failed");
 }
 
 
@@ -2257,7 +2268,11 @@ function syncMiniPlayer(song) {
     const miniPlayerArtist = document.getElementById('miniPlayerArtist');
     if (miniPlayerImg) {
         if (song.youtubeId || song.thumbnail) {
-            miniPlayerImg.src = song.youtubeId ? 'https://i.ytimg.com/vi/' + song.youtubeId + '/mqdefault.jpg' : (song.thumbnail || 'music_placeholder.png');
+            const thumbUrl = song.youtubeId ? `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg` : (song.thumbnail || 'music_placeholder.png');
+            miniPlayerImg.src = thumbUrl;
+            if (song.youtubeId) {
+                miniPlayerImg.onerror = function() { window.handleImageError(this, song.youtubeId); };
+            }
         } else {
             miniPlayerImg.src = 'music_placeholder.png';
         }
