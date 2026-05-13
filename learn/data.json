@@ -123,7 +123,8 @@
       "id": "memo_mp0tvbpa_zsjv4",
       "content": "메모를 삭제하면 휴지통으로 이동하며 복구가능해요",
       "color": "#ffedd5",
-      "createdAt": "2026-05-11T06:35:38.878Z"
+      "createdAt": "2026-05-11T06:35:38.878Z",
+      "folderId": "folder_default"
     },
     {
       "id": "memo_mp0tv5bl_0g2yz",
@@ -155,13 +156,15 @@
       "color": "#fef9c3",
       "createdAt": "2026-05-11T06:35:05.371Z",
       "title": "",
-      "updatedAt": "2026-05-12T04:35:41.643Z"
+      "updatedAt": "2026-05-12T04:35:41.643Z",
+      "folderId": "folder_default"
     },
     {
       "id": "memo_mp0tusjf_41k67",
       "content": "ㅁㅁㅁ",
       "color": "#fee2e2",
-      "createdAt": "2026-05-11T06:35:14.043Z"
+      "createdAt": "2026-05-11T06:35:14.043Z",
+      "folderId": "folder_default"
     },
     {
       "id": "memo_mp27sciw_j1f4k",
