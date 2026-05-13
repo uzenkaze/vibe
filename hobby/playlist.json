@@ -50,20 +50,20 @@
   ],
   "recentlyPlayed": [
     {
-      "id": "related_UxxPMqAKUN0",
-      "title": "[최신가요 실시간 인기차트] 2026년 5월 13일 3주차, 멜론차트 X, 노래모음 KPOP 플레이리스트 종합차트",
-      "artist": "Her Track",
-      "youtubeId": "UxxPMqAKUN0",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - Her Track"
-    },
-    {
       "id": "related_HoJl5uv5g8U",
       "title": "[최신가요연속듣기 2026] KPOP 노동요 🌎 2026년 1월 5일 2주차, 멜론차트 X, 노래모음 플레이리스트 멜론 종합차트",
       "artist": "Yeo Doll",
       "youtubeId": "HoJl5uv5g8U",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - Yeo Doll"
+    },
+    {
+      "id": "related_UxxPMqAKUN0",
+      "title": "[최신가요 실시간 인기차트] 2026년 5월 13일 3주차, 멜론차트 X, 노래모음 KPOP 플레이리스트 종합차트",
+      "artist": "Her Track",
+      "youtubeId": "UxxPMqAKUN0",
+      "isGlobal": true,
+      "lyrics": "(연관 추천곡) - Her Track"
     },
     {
       "id": "related_EsdDR20qRxU",
@@ -173,5 +173,5 @@
       "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     }
   ],
-  "lastSync": "2026-05-13T02:27:38.444Z"
+  "lastSync": "2026-05-13T02:27:57.633Z"
 }
