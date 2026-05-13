@@ -1,0 +1,11 @@
+[
+  {
+    "id": "xqjo03tjw",
+    "title": "보험 상품 조회(종류별)",
+    "content": "SELECT INS.STD_GOODS_NO,\n       PGB.GOODS_NO,\n       PGB.GOODS_NM,\n\t   (SELECT CD_NM FROM ST_STD_CD WHERE GRP_CD = 'PD122' AND CD IN('01','02','03','04','06','07','31','32','33','34') AND PGB.TP_DTL_CD = CD) AS INSURE\n  FROM PR_INSRNC_GOODS_REL_INFO INS, \n       PR_GOODS_BASE PGB\n WHERE 1=1\n   AND INS.TGT_GOODS_NO = PGB.GOODS_NO\n   AND PGB.SALE_STAT_CD = '01'\n ORDER BY INS.STD_GOODS_NO",
+    "tags": [],
+    "color": "#fee2e2",
+    "createdAt": "2026-05-13T07:45:53.562Z",
+    "updatedAt": "2026-05-13T07:48:05.942Z"
+  }
+]
