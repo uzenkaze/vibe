@@ -21,7 +21,7 @@
     "id": "1778630746699",
     "title": "[운영 개선] 상품상세 > 구매툴 보험선택 영역 정렬 로직 개선",
     "receive_date": "2026-05-13",
-    "status": "todo",
+    "status": "progress",
     "work_no": "44496",
     "task_no": "60683",
     "product_no": "0000019631  가전클리닝+연장보증\n0000018606  모든보험",
@@ -33,7 +33,7 @@
     "start_date": "2026-05-13",
     "end_date": "2026-05-15",
     "reference": "바닥페이지 보험 클릭 시 nativeGoods.js > checkedInsrncChange(cd, tp) 호출\n\n[구현]\ninsuranceInfoBuyLayer.jsp\n- resetInsuranceSort() 추가\n- 보험 div영역별 index 추가\n\nnativeGoods.js\n- checkedInsrncChange() 와 checkedInsrncBreakChange() 함수에서 resetInsuranceSort() 호출",
-    "updated_at": "2026-05-13T04:33:09.559Z"
+    "updated_at": "2026-05-13T04:33:18.896Z"
   },
   {
     "id": "1777504933870",
