@@ -1,17 +1,16 @@
-import Hls from 'hls.js';
+// import Hls from 'hls.js'; // CDN 사용으로 변경
 
-// 오늘 일자 기준 확보된 테스트용 m3u8 주소 (일부 주소는 HTTP 연결 및 지역 IP 우회 필요 가능)
-const CHANNELS = [
+let CHANNELS = [
   {
     id: 'kbs1',
     name: 'KBS 1TV',
-    network: 'KBS',
+    network: 'KBS1',
     url: 'http://121.156.46.79/live/10171.m3u8?sid=60720'
   },
   {
     id: 'kbs2',
     name: 'KBS 2TV',
-    network: 'KBS',
+    network: 'KBS2',
     url: 'http://121.156.46.79/live/10141.m3u8?sid=60720'
   },
   {
@@ -50,7 +49,24 @@ videoElement.muted = true;
 videoElement.setAttribute('playsinline', '');
 videoElement.setAttribute('autoplay', '');
 
-function initPlayer() {
+async function initPlayer() {
+  try {
+    // urls.json에서 최신 주소 가져오기
+    const response = await fetch('./urls.json');
+    if (response.ok) {
+      const dynamicUrls = await response.json();
+      CHANNELS = CHANNELS.map(ch => {
+        const netKey = ch.network.toUpperCase();
+        if (dynamicUrls[netKey]) {
+          return { ...ch, url: dynamicUrls[netKey] };
+        }
+        return ch;
+      });
+    }
+  } catch (e) {
+    console.warn("Failed to load dynamic URLs, using fallbacks.", e);
+  }
+
   // 채널 버튼 생성
   renderChannelButtons();
   
@@ -137,9 +153,17 @@ function playChannel(channel) {
         showLoading(false);
         switch (data.type) {
           case Hls.ErrorTypes.NETWORK_ERROR:
-            console.error('네트워크 또는 CORS 오류 발생 - 주소를 가져오지 못했습니다.');
-            alert("네트워크 통신 오류나 CORS 정책 차단으로 인해 해당 채널을 재생할 수 없습니다.");
-            hls.destroy();
+            console.error('네트워크 또는 CORS 오류 발생 - 프록시 시도 중...');
+            // 이미 프록시를 사용 중이 아니었다면 프록시 적용하여 재시도
+            if (!channel.url.includes('allorigins')) {
+              const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(channel.url)}`;
+              console.log("Retrying with proxy:", proxiedUrl);
+              hls.loadSource(proxiedUrl);
+              hls.startLoad();
+            } else {
+              alert("네트워크 통신 오류나 CORS 정책 차단으로 인해 해당 채널을 재생할 수 없습니다. 브라우저의 'CORS Unblock' 확장 프로그램을 설치하시면 원활한 시청이 가능합니다.");
+              hls.destroy();
+            }
             break;
           case Hls.ErrorTypes.MEDIA_ERROR:
             console.error('미디어 디코딩 오류 발생');

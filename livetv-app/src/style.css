@@ -134,7 +134,7 @@ video {
 }
 
 /* 브랜드 색상 포인트 예시 */
-.channel-btn[data-network="KBS"] .channel-logo { color: #ffffff; /* KBS는 보통 화이트 텍스트 로고 */ }
+.channel-btn[data-network^="KBS"] .channel-logo { color: #ffffff; /* KBS 계열 화이트 텍스트 */ }
 .channel-btn[data-network="MBC"] .channel-logo { color: #f29c1f; /* MBC 메인 컬러 일부 차용 로고 */ }
 .channel-btn[data-network="SBS"] .channel-logo { color: #007dc3; /* SBS 메인 블루 */ }
 .channel-btn[data-network="YTN"] .channel-logo { color: #00b0f0; /* YTN 블루 계열 */ }
