@@ -152,11 +152,12 @@ export default function HomePage() {
           <div className="flex justify-center lg:justify-start gap-3 pt-8 flex-wrap">
             {/* 카테고리 */}
             <div
-              className="flex items-center gap-3 px-4 py-3 rounded-2xl min-w-[150px] relative overflow-hidden"
+              onClick={() => document.getElementById('categories-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl min-w-[150px] relative overflow-hidden cursor-pointer hover:scale-105 active:scale-95 transition-all group"
               style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 8px 24px rgba(99,102,241,0.4)' }}
             >
               {/* Gloss */}
-              <div className="absolute inset-0 pointer-events-none rounded-2xl"
+              <div className="absolute inset-0 pointer-events-none rounded-2xl transition-opacity group-hover:opacity-80"
                 style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
               <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
                 style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}>
@@ -182,10 +183,11 @@ export default function HomePage() {
 
             {/* 아티클 */}
             <div
-              className="flex items-center gap-3 px-4 py-3 rounded-2xl min-w-[150px] relative overflow-hidden"
+              onClick={() => document.getElementById('articles-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl min-w-[150px] relative overflow-hidden cursor-pointer hover:scale-105 active:scale-95 transition-all group"
               style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', boxShadow: '0 8px 24px rgba(6,182,212,0.4)' }}
             >
-              <div className="absolute inset-0 pointer-events-none rounded-2xl"
+              <div className="absolute inset-0 pointer-events-none rounded-2xl transition-opacity group-hover:opacity-80"
                 style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
               <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
                 style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}>
@@ -332,7 +334,7 @@ export default function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="animate-slide-up px-0 sm:px-0">
+      <section id="categories-section" className="animate-slide-up px-0 sm:px-0">
         {/* Section container with light card-like panel */}
         <div
           className="sm:rounded-3xl p-4 sm:p-8 sm:border sm:border-black/5"
@@ -398,7 +400,7 @@ export default function HomePage() {
 
       {/* Recent Articles */}
       {recentArticles.length > 0 && (
-        <section className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <section id="articles-section" className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
           <div className="flex items-center gap-3 mb-6 px-4 sm:px-0">
             <BookOpen size={16} className="text-accent-cyan" />
             <h2 className="text-lg font-bold text-text-primary">최근 아티클</h2>

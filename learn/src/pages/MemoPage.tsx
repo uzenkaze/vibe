@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { 
-  Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical, 
-  Pin, Star, Folder, ChevronDown, ChevronUp, FolderPlus, 
+import {
+  Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical,
+  Pin, Star, Folder, ChevronDown, ChevronUp, FolderPlus,
   LayoutGrid, Search, Menu, ChevronLeft, Edit3
 } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
@@ -43,9 +43,9 @@ function MemoCard({ memo, idx, draggedIndex, onDragStart, onDragOver, onDrop, on
         color: '#1e293b'
       }}
     >
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" 
-           style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%)' }} />
-      
+      <div className="absolute inset-0 pointer-events-none rounded-2xl"
+        style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%)' }} />
+
       <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-30 transition-opacity">
         <GripVertical size={14} />
       </div>
@@ -57,7 +57,7 @@ function MemoCard({ memo, idx, draggedIndex, onDragStart, onDragOver, onDrop, on
         <Trash2 size={14} />
       </button>
 
-      <div 
+      <div
         onClick={() => onOpen(memo)}
         className="relative h-full flex flex-col pt-2 cursor-pointer"
       >
@@ -67,7 +67,7 @@ function MemoCard({ memo, idx, draggedIndex, onDragStart, onDragOver, onDrop, on
         <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words line-clamp-6 flex-1">
           {memo.content}
         </p>
-        
+
         <div className="mt-4 text-[10px] font-bold uppercase tracking-widest flex items-center justify-between">
           <span className="opacity-30">{new Date(memo.createdAt).toLocaleDateString('ko-KR')}</span>
           <div className="flex items-center gap-1.5">
@@ -83,7 +83,7 @@ function MemoCard({ memo, idx, draggedIndex, onDragStart, onDragOver, onDrop, on
         </div>
 
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-            <div className="bg-black/5 px-3 py-1.5 rounded-full text-[10px] font-bold backdrop-blur-sm">Click to expand</div>
+          <div className="bg-black/5 px-3 py-1.5 rounded-full text-[10px] font-bold backdrop-blur-sm">Click to expand</div>
         </div>
       </div>
     </div>
@@ -91,8 +91,8 @@ function MemoCard({ memo, idx, draggedIndex, onDragStart, onDragOver, onDrop, on
 }
 
 export default function MemoPage() {
-  const { 
-    data, addMemo, removeMemo, editMemo, restoreMemo, 
+  const {
+    data, addMemo, removeMemo, editMemo, restoreMemo,
     permanentlyDeleteMemo, emptyTrash, reorderMemos,
     addMemoFolder, removeMemoFolder, editMemoFolder
   } = useStore();
@@ -109,7 +109,7 @@ export default function MemoPage() {
   const [isRenamingFolderId, setIsRenamingFolderId] = useState<string | null>(null);
   const [editFolderName, setEditFolderName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Edit State
   const [selectedMemo, setSelectedMemo] = useState<Memo | null>(null);
 
@@ -120,7 +120,7 @@ export default function MemoPage() {
   // Filter Logic
   const filteredMemos = useMemo(() => {
     let result = [...activeMemos];
-    
+
     if (selectedFolderId === 'important') {
       result = result.filter(m => m.isPinned || m.isFavorite);
     } else if (selectedFolderId === 'trash') {
@@ -131,8 +131,8 @@ export default function MemoPage() {
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(m => 
-        m.content.toLowerCase().includes(q) || 
+      result = result.filter(m =>
+        m.content.toLowerCase().includes(q) ||
         (m.title && m.title.toLowerCase().includes(q))
       );
     }
@@ -145,8 +145,8 @@ export default function MemoPage() {
 
   const handleAdd = () => {
     if (!newContent.trim()) return;
-    const folderId = (selectedFolderId !== 'all' && selectedFolderId !== 'important' && selectedFolderId !== 'trash') 
-      ? selectedFolderId 
+    const folderId = (selectedFolderId !== 'all' && selectedFolderId !== 'important' && selectedFolderId !== 'trash')
+      ? selectedFolderId
       : 'folder_default';
     addMemo(newContent.trim(), selectedColor, '', folderId);
     setNewContent('');
@@ -194,11 +194,11 @@ export default function MemoPage() {
 
   const onDrop = (targetIdx: number) => {
     if (draggedIndex === null || draggedIndex === targetIdx) return;
-    
+
     const newMemos = [...activeMemos];
     const [draggedItem] = newMemos.splice(draggedIndex, 1);
     newMemos.splice(targetIdx, 0, draggedItem);
-    
+
     reorderMemos(newMemos);
     setDraggedIndex(null);
   };
@@ -216,7 +216,7 @@ export default function MemoPage() {
           {!isSidebarCollapsed && (
             <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] animate-fade-in">Menu</span>
           )}
-          <button 
+          <button
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             className="p-2.5 rounded-xl hover:bg-bg-card text-text-secondary hover:text-accent transition-all duration-300 shadow-sm active:scale-95"
           >
@@ -225,7 +225,7 @@ export default function MemoPage() {
         </div>
 
         <div className="flex lg:flex-col items-center lg:items-stretch gap-1 sm:gap-1.5 flex-1 min-w-max lg:min-w-0">
-          <button 
+          <button
             onClick={() => setSelectedFolderId('all')}
             className={`flex-1 lg:flex-none flex items-center px-3 py-2 sm:py-3 rounded-xl sm:rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'lg:justify-center' : 'lg:justify-between'} ${selectedFolderId === 'all' ? 'bg-accent/10 text-accent shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
             title="전체 메모"
@@ -237,7 +237,7 @@ export default function MemoPage() {
             {!isSidebarCollapsed && <span className="hidden lg:inline text-xs opacity-60 animate-fade-in">{activeMemos.length}</span>}
           </button>
 
-          <button 
+          <button
             onClick={() => setSelectedFolderId('important')}
             className={`flex-1 lg:flex-none flex items-center px-3 py-2 sm:py-3 rounded-xl sm:rounded-2xl font-bold transition-all ${isSidebarCollapsed ? 'lg:justify-center' : 'lg:justify-between'} ${selectedFolderId === 'important' ? 'bg-amber-500/10 text-amber-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
             title="중요 메모"
@@ -250,7 +250,7 @@ export default function MemoPage() {
           </button>
 
           {/* Folder Toggle - Compact for Mobile */}
-          <button 
+          <button
             onClick={() => {
               if (isSidebarCollapsed) setIsSidebarCollapsed(false);
               setIsFoldersOpen(!isFoldersOpen);
@@ -265,7 +265,7 @@ export default function MemoPage() {
         {/* Desktop Folders Section */}
         <div className="hidden lg:block space-y-4">
           <div className={`flex items-center px-2 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
-            <button 
+            <button
               onClick={() => {
                 if (isSidebarCollapsed) setIsSidebarCollapsed(false);
                 setIsFoldersOpen(!isFoldersOpen);
@@ -281,7 +281,7 @@ export default function MemoPage() {
               )}
             </button>
             {!isSidebarCollapsed && (
-              <button 
+              <button
                 onClick={() => setIsAddingFolder(true)}
                 className="p-1 hover:bg-accent/10 rounded-lg text-accent transition-colors animate-fade-in"
               >
@@ -308,63 +308,63 @@ export default function MemoPage() {
               {folders
                 .sort((a, b) => (a.id === 'folder_default' ? -1 : b.id === 'folder_default' ? 1 : 0))
                 .map(folder => (
-                <div key={folder.id} className="group relative px-1">
-                  {isRenamingFolderId === folder.id ? (
-                    <div className="px-2 py-1.5">
-                      <input
-                        autoFocus
-                        value={editFolderName}
-                        onChange={e => setEditFolderName(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') handleRenameFolder(folder.id);
-                          else if (e.key === 'Escape') setIsRenamingFolderId(null);
-                        }}
-                        onBlur={() => handleRenameFolder(folder.id)}
-                        className="w-full bg-bg-card border border-accent/30 rounded-xl px-3 py-2 text-sm outline-none shadow-sm"
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <button 
-                        onClick={() => setSelectedFolderId(folder.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl font-bold transition-all ${selectedFolderId === folder.id ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-secondary hover:bg-bg-card/50 hover:text-text-primary'}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: folder.color }} />
-                          <span className="truncate max-w-[120px]">{folder.name}</span>
-                        </div>
-                        <span className="text-[10px] opacity-40">{getFolderMemoCount(folder.id)}</span>
-                      </button>
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            setIsRenamingFolderId(folder.id); 
-                            setEditFolderName(folder.name); 
+                  <div key={folder.id} className="group relative px-1">
+                    {isRenamingFolderId === folder.id ? (
+                      <div className="px-2 py-1.5">
+                        <input
+                          autoFocus
+                          value={editFolderName}
+                          onChange={e => setEditFolderName(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') handleRenameFolder(folder.id);
+                            else if (e.key === 'Escape') setIsRenamingFolderId(null);
                           }}
-                          className="p-1 hover:bg-accent/10 rounded-lg text-accent transition-colors"
-                        >
-                          <Edit3 size={14} />
-                        </button>
-                        {folder.id !== 'folder_default' && (
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); if (window.confirm('폴더를 삭제하시겠습니까? 폴더 내 메모는 기본 폴더로 이동됩니다.')) removeMemoFolder(folder.id); }}
-                            className="p-1 hover:bg-red-500/10 rounded-lg text-red-500 transition-colors"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        )}
+                          onBlur={() => handleRenameFolder(folder.id)}
+                          className="w-full bg-bg-card border border-accent/30 rounded-xl px-3 py-2 text-sm outline-none shadow-sm"
+                        />
                       </div>
-                    </>
-                  )}
-                </div>
-              ))}
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => setSelectedFolderId(folder.id)}
+                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl font-bold transition-all ${selectedFolderId === folder.id ? 'bg-bg-card text-text-primary shadow-sm' : 'text-text-secondary hover:bg-bg-card/50 hover:text-text-primary'}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: folder.color }} />
+                            <span className="truncate max-w-[120px]">{folder.name}</span>
+                          </div>
+                          <span className="text-[10px] opacity-40">{getFolderMemoCount(folder.id)}</span>
+                        </button>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsRenamingFolderId(folder.id);
+                              setEditFolderName(folder.name);
+                            }}
+                            className="p-1 hover:bg-accent/10 rounded-lg text-accent transition-colors"
+                          >
+                            <Edit3 size={14} />
+                          </button>
+                          {folder.id !== 'folder_default' && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); if (window.confirm('폴더를 삭제하시겠습니까? 폴더 내 메모는 기본 폴더로 이동됩니다.')) removeMemoFolder(folder.id); }}
+                              className="p-1 hover:bg-red-500/10 rounded-lg text-red-500 transition-colors"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
             </div>
           )}
         </div>
 
         <div className="lg:pt-4 lg:mt-auto lg:border-t border-border/50 flex lg:block">
-          <button 
+          <button
             onClick={() => setSelectedFolderId('trash')}
             className={`px-3 lg:px-3 py-2 lg:py-3 rounded-xl lg:rounded-2xl font-bold transition-all flex items-center ${isSidebarCollapsed ? 'lg:justify-center' : 'lg:justify-between'} ${selectedFolderId === 'trash' ? 'bg-red-500/10 text-red-500 shadow-sm' : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'}`}
             title="삭제된 메모"
@@ -385,7 +385,7 @@ export default function MemoPage() {
           <div className="flex items-center gap-4 flex-1">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
-              <input 
+              <input
                 type="text"
                 placeholder="메모 검색..."
                 value={searchQuery}
@@ -421,10 +421,10 @@ export default function MemoPage() {
           {/* Section Titles */}
           <div className="flex items-center gap-3 sm:gap-4 mb-2">
             <h1 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight">
-              {selectedFolderId === 'all' ? '전체 메모' : 
-               selectedFolderId === 'important' ? '중요 메모' :
-               selectedFolderId === 'trash' ? '휴지통' : 
-               folders.find(f => f.id === selectedFolderId)?.name || '폴더'}
+              {selectedFolderId === 'all' ? '전체 메모' :
+                selectedFolderId === 'important' ? '중요 메모' :
+                  selectedFolderId === 'trash' ? '휴지통' :
+                    folders.find(f => f.id === selectedFolderId)?.name || '폴더'}
             </h1>
             <span className="px-2 py-0.5 rounded-lg bg-accent/10 text-accent text-[10px] sm:text-xs font-black">
               {filteredMemos.length}
@@ -442,10 +442,10 @@ export default function MemoPage() {
                 {pinnedMemos.map((memo) => {
                   const globalIdx = activeMemos.findIndex(m => m.id === memo.id);
                   return (
-                    <MemoCard 
-                      key={memo.id} 
-                      memo={memo} 
-                      idx={globalIdx} 
+                    <MemoCard
+                      key={memo.id}
+                      memo={memo}
+                      idx={globalIdx}
                       draggedIndex={draggedIndex}
                       onDragStart={onDragStart}
                       onDragOver={onDragOver}
@@ -470,11 +470,11 @@ export default function MemoPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {/* Add Form Card */}
               {isAdding && selectedFolderId !== 'trash' && (
-                <div 
+                <div
                   className="relative flex flex-col p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-2 border-dashed border-accent/30 bg-accent/5 animate-scale-in"
                   style={{ minHeight: '200px' }}
                 >
-                  <button 
+                  <button
                     onClick={() => setIsAdding(false)}
                     className="absolute top-4 right-4 p-1 rounded-full hover:bg-black/5 text-text-muted"
                   >
@@ -536,7 +536,7 @@ export default function MemoPage() {
                     <div className="relative text-sm font-medium leading-relaxed whitespace-pre-wrap break-words pr-8">
                       {memo.content}
                     </div>
-                    
+
                     <div className="absolute bottom-4 left-6 text-[10px] font-bold opacity-30 uppercase tracking-widest">
                       삭제됨
                     </div>
@@ -546,10 +546,10 @@ export default function MemoPage() {
                 otherMemos.map((memo) => {
                   const globalIdx = activeMemos.findIndex(m => m.id === memo.id);
                   return (
-                    <MemoCard 
-                      key={memo.id} 
-                      memo={memo} 
-                      idx={globalIdx} 
+                    <MemoCard
+                      key={memo.id}
+                      memo={memo}
+                      idx={globalIdx}
                       draggedIndex={draggedIndex}
                       onDragStart={onDragStart}
                       onDragOver={onDragOver}

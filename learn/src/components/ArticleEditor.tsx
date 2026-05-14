@@ -123,14 +123,20 @@ export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: 
                         htmlToPaste = htmlToPaste.substring(start, end);
                       }
                     }
-                    const target = e.target as HTMLTextAreaElement;
-                    const startPos = target.selectionStart;
-                    const endPos = target.selectionEnd;
-                    const newContent = content.substring(0, startPos) + htmlToPaste + content.substring(endPos);
-                    setContent(newContent);
-                    setTimeout(() => {
-                      target.selectionStart = target.selectionEnd = startPos + htmlToPaste.length;
-                    }, 0);
+                    // 브라우저의 Undo(Ctrl+Z) 기록을 보존하기 위해 execCommand 사용
+                    const success = document.execCommand('insertText', false, htmlToPaste);
+                    
+                    if (!success) {
+                      // Fallback: execCommand가 실패할 경우 기존 방식으로 직접 상태 변경 (단, Undo는 깨짐)
+                      const target = e.target as HTMLTextAreaElement;
+                      const startPos = target.selectionStart;
+                      const endPos = target.selectionEnd;
+                      const newContent = content.substring(0, startPos) + htmlToPaste + content.substring(endPos);
+                      setContent(newContent);
+                      setTimeout(() => {
+                        target.selectionStart = target.selectionEnd = startPos + htmlToPaste.length;
+                      }, 0);
+                    }
                   }
                 }}
                 placeholder="Markdown 형식으로 작성하세요..."

@@ -42,30 +42,49 @@ function makeIframeResponsive(line: string): string {
 }
 
 function parseInline(text: string): string {
-  let result = text; // 원본 HTML 태그 유지
+  const tokens: string[] = [];
+  
+  // 1. 보호해야 할 요소들을 토큰화 (HTML 태그, 마크다운 이미지/링크 등)
+  let result = text;
 
-  // task lists (목록 항목 시작부분)
+  // 1-1. 마크다운 이미지 ![alt](url) -> <img> 태그로 변환 후 토큰화 (URL 내부의 _ 보호)
+  result = result.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+    const tag = `<img src="${url}" alt="${alt}" referrerpolicy="no-referrer" />`;
+    tokens.push(tag);
+    return `%%TOKEN${tokens.length - 1}%%`;
+  });
+
+  // 1-2. 마크다운 링크 [text](url) -> <a> 태그로 변환 후 토큰화
+  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => {
+    const tag = `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    tokens.push(tag);
+    return `%%TOKEN${tokens.length - 1}%%`;
+  });
+
+  // 1-3. 기존 HTML 태그들 토큰화 (이미지 URL 내부의 _ 보호)
+  result = result.replace(/<[^>]+>/g, (match) => {
+    tokens.push(match);
+    return `%%TOKEN${tokens.length - 1}%%`;
+  });
+
+  // 2. 이제 순수 텍스트 영역에 대해서만 마크다운 문법 적용 (HTML 속성 등은 보호됨)
   result = result.replace(/^\[ \]\s+/, '<input type="checkbox" disabled /> ');
   result = result.replace(/^\[x\]\s+/i, '<input type="checkbox" checked disabled /> ');
-
-  // images ![alt](url)
-  result = result.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
-  // links [text](url)
-  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  // highlight ==text==
   result = result.replace(/==(.+?)==/g, '<mark>$1</mark>');
-  // underline ++text++
   result = result.replace(/\+\+(.+?)\+\+/g, '<u>$1</u>');
-  // bold **text** or __text__
   result = result.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   result = result.replace(/__(.+?)__/g, '<strong>$1</strong>');
-  // italic *text* or _text_
   result = result.replace(/\*(.+?)\*/g, '<em>$1</em>');
   result = result.replace(/_(.+?)_/g, '<em>$1</em>');
-  // color shortcuts @@color:text@@ (예: @@red:안녕@@, @@#ff0000:안녕@@)
   result = result.replace(/@@([^:]+):(.+?)@@/g, '<span style="color: $1">$2</span>');
-  // inline code `text` - 인라인 코드 안의 HTML은 화면에 문자로 보여야 하므로 escape 처리
   result = result.replace(/`([^`]+)`/g, (_, code) => `<code>${escapeHtml(code)}</code>`);
+
+  // 3. 토큰 복원 (역순으로 복원하여 중첩 방지 가능성 차단)
+  result = result.replace(/%%TOKEN(\d+)%%/g, (_, id) => tokens[parseInt(id)]);
+
+  // 4. 복원된 <img> 태그들에 referrerpolicy 최종 점검 및 주입
+  result = result.replace(/<img\s+(?![^>]*referrerpolicy\b)([^>]+)>/gi, '<img $1 referrerpolicy="no-referrer">');
+
   return result;
 }
 

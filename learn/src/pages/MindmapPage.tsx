@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { 
-  Plus, Trash2,  Maximize, Focus,
+  Plus, Trash2,  Maximize, Minimize, Focus,
   Type, ZoomIn, ZoomOut,
   GitBranch, Sparkles, X, Menu, LayoutGrid, StickyNote, CircleDot, Minus, CloudUpload, FileText
 } from 'lucide-react';
@@ -40,7 +40,7 @@ function Tooltip({ label, children }: TooltipProps) {
 }
 
 export default function MindmapPage() {
-  const { data, setMindmap, theme, showToast, dataSource } = useStore();
+  const { data, setMindmap, theme, showToast, dataSource, syncUp } = useStore();
   const mindmapStore = data.mindmap as MindmapStore;
 
   const [localMindmap, setLocalMindmap] = useState<MindmapStore>(mindmapStore);
@@ -54,6 +54,9 @@ export default function MindmapPage() {
   const [activePageId, setActivePageId] = useState(localMindmap.activeId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const touchStartDistRef = useRef<number | null>(null);
+  const touchStartZoomRef = useRef<number>(1);
+  const touchLastCenterRef = useRef<{x: number, y: number} | null>(null);
 
   const [zoom, setZoom] = useState(0.8);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -77,6 +80,7 @@ export default function MindmapPage() {
   const [newPageTitle, setNewPageTitle] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const activePage = useMemo(() => 
     localMindmap.pages.find(p => p.id === activePageId) || localMindmap.pages[0],
@@ -89,8 +93,9 @@ export default function MindmapPage() {
 
   // Load page state on activePageId change
   useEffect(() => {
-    if (activePage.zoom) setZoom(activePage.zoom);
-    if (activePage.pan) setPan(activePage.pan);
+    // 모든 디바이스(PC, 모바일, 태블릿)에서 페이지 진입 시 자동으로 한 화면에 꽉 차게 맞춥니다.
+    setTimeout(() => fitView(), 200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePageId]);
 
   const selectedNode = useMemo(() => nodes.find(n => n.id === selectedNodeIds[0]), [nodes, selectedNodeIds]);
@@ -125,8 +130,13 @@ export default function MindmapPage() {
     // Final sync of current view state before global save
     const finalPage = { ...activePage, zoom, pan };
     const finalMindmap = { ...localMindmap, pages: localMindmap.pages.map(p => p.id === activePageId ? finalPage : p) };
+    
+    // 로컬 스토어 및 상태 먼저 업데이트
     await setMindmap(finalMindmap);
-    showToast('GitHub 서버에 저장이 완료되었습니다.');
+    
+    // 수동 저장(Sync) 실행: 저장 버튼 클릭 시에만 GitHub에 업로드됨
+    await syncUp();
+    
     setHasUnsavedChanges(false);
   };
 
@@ -173,22 +183,37 @@ export default function MindmapPage() {
   }, [nodes, activePage, updateLocalStore]);
 
   useEffect(() => {
-    const handleFsChange = () => { if (document.fullscreenElement) setTimeout(fitView, 500); };
+    const handleFsChange = () => { 
+      const doc = document as any;
+      const isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+      setIsFullscreen(isFull);
+      if (isFull) setTimeout(fitView, 500); 
+    };
     document.addEventListener('fullscreenchange', handleFsChange);
-    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+    };
   }, [fitView]);
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().then(() => {
-        // Give browser enough time to complete layout transition
-        setTimeout(fitView, 300);
-      }).catch(err => {
-        showToast(`전체화면 모드 전환 실패: ${err.message}`);
-      });
+    const doc = document as any;
+    const isFull = doc.fullscreenElement || doc.webkitFullscreenElement;
+    if (!isFull) {
+      const el = containerRef.current as any;
+      const requestFs = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (requestFs) {
+        requestFs.call(el).then(() => {
+          setTimeout(fitView, 300);
+        }).catch((err: any) => {
+          showToast(`전체화면 모드 전환 실패: ${err.message}`);
+        });
+      }
     } else {
-      document.exitFullscreen();
+      const exitFs = doc.exitFullscreen || doc.webkitExitFullscreen;
+      if (exitFs) exitFs.call(doc);
     }
   };
 
@@ -456,6 +481,60 @@ export default function MindmapPage() {
       }
   };
 
+  const getDistance = (touches: React.TouchList) => Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+  const getCenter = (touches: React.TouchList) => ({ x: (touches[0].clientX + touches[1].clientX) / 2, y: (touches[0].clientY + touches[1].clientY) / 2 });
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      touchStartDistRef.current = getDistance(e.touches);
+      touchStartZoomRef.current = zoom;
+      touchLastCenterRef.current = getCenter(e.touches);
+    } else if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      const w = toWorld(touch.clientX, touch.clientY);
+      const node = getNodeAt(w.x, w.y);
+      if (node) {
+        if (!selectedNodeIds.includes(node.id)) setSelectedNodeIds([node.id]);
+        setDraggingNodeId(node.id); setDragOffset({ x: w.x, y: w.y });
+      } else {
+        setIsPanning(true); setPanStart({ x: touch.clientX - pan.x, y: touch.clientY - pan.y }); setSelectedNodeIds([]);
+      }
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      if (touchStartDistRef.current !== null && touchLastCenterRef.current !== null) {
+        const newDist = getDistance(e.touches);
+        const center = getCenter(e.touches);
+        const scale = newDist / touchStartDistRef.current;
+        const nz = Math.max(0.1, Math.min(4, touchStartZoomRef.current * scale));
+        const r = canvasRef.current?.getBoundingClientRect();
+        if (r) {
+           const mx = center.x - r.left, my = center.y - r.top;
+           const dx = center.x - touchLastCenterRef.current.x, dy = center.y - touchLastCenterRef.current.y;
+           setPan({ x: mx - (mx - pan.x - dx) * (nz / zoom), y: my - (my - pan.y - dy) * (nz / zoom) });
+           setZoom(nz);
+           touchLastCenterRef.current = center;
+        }
+      }
+    } else if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      const w = toWorld(touch.clientX, touch.clientY);
+      if (isPanning) { setPan({ x: touch.clientX - panStart.x, y: touch.clientY - panStart.y }); }
+      else if (draggingNodeId !== null) {
+        const dx = w.x - dragOffset.x, dy = w.y - dragOffset.y;
+        updateLocalStore({ ...activePage, nodes: nodes.map(n => selectedNodeIds.includes(n.id) ? { ...n, x: n.x + dx, y: n.y + dy } : n) });
+        setDragOffset({ x: w.x, y: w.y });
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) { touchStartDistRef.current = null; touchLastCenterRef.current = null; }
+    if (e.touches.length === 0) { setIsPanning(false); setDraggingNodeId(null); updateLocalStore({ ...activePage, zoom, pan }); }
+  };
+
   useEffect(() => {
     const hk = (e: KeyboardEvent) => {
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
@@ -468,10 +547,22 @@ export default function MindmapPage() {
 
   return (
     <div className="mx-4 sm:mx-0 flex h-[calc(100vh-120px)] bg-bg-primary rounded-3xl overflow-hidden shadow-2xl border border-border animate-fade-in relative transition-all duration-300">
-      <aside className={`bg-bg-secondary/50 backdrop-blur-xl border-r border-border flex flex-col p-4 space-y-6 overflow-y-auto transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-72'}`}>
+      {/* Sidebar Overlay for Mobile */}
+      {!isSidebarCollapsed && (
+        <div className="fixed inset-0 z-[100] bg-black/10 backdrop-blur-sm sm:hidden" onClick={() => setIsSidebarCollapsed(true)} />
+      )}
+
+      <aside className={`
+        bg-bg-secondary/50 backdrop-blur-xl border-r border-border flex flex-col space-y-6 overflow-y-auto transition-all duration-500
+        ${isSidebarCollapsed 
+          ? 'w-0 p-0 opacity-0 pointer-events-none sm:w-20 sm:p-4 sm:opacity-100 sm:pointer-events-auto' 
+          : 'fixed inset-y-0 left-0 z-[110] w-72 p-4 sm:relative sm:inset-auto sm:z-auto sm:opacity-100 sm:pointer-events-auto shadow-2xl sm:shadow-none'
+        }
+      `}>
         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between px-2'}`}>
           {!isSidebarCollapsed && <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Mindmaps</span>}
-          <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-2.5 rounded-xl hover:bg-bg-card text-text-secondary hover:text-accent shadow-sm"><Menu size={20} /></button>
+          <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-2.5 rounded-xl hover:bg-bg-card text-text-secondary hover:text-accent shadow-sm hidden sm:flex"><Menu size={20} /></button>
+          {!isSidebarCollapsed && <button onClick={() => setIsSidebarCollapsed(true)} className="p-2.5 rounded-xl hover:bg-bg-card text-text-secondary sm:hidden"><X size={20} /></button>}
         </div>
         <div className="space-y-4">
           <div className={`flex items-center px-2 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
@@ -486,51 +577,54 @@ export default function MindmapPage() {
       </aside>
 
       <div className="flex-1 relative bg-bg-card/20 overflow-hidden flex flex-col" ref={containerRef}>
-        {/* Main Toolbar */}
-        <div className="z-50 flex items-center justify-between flex-wrap gap-y-2 p-2 bg-bg-card/90 backdrop-blur-2xl border-b border-border shadow-sm min-h-[56px]">
-          <div className="flex items-center gap-0.5">
-            <Tooltip label="메인 그룹 추가"><button onClick={addMainGroup} className="p-2 rounded-xl hover:bg-cyan-500/10 text-cyan-500"><CircleDot size={18} /></button></Tooltip>
-            <Tooltip label="메모 추가"><button onClick={addFloatingMemo} className="p-2 rounded-xl hover:bg-amber-500/10 text-amber-500"><StickyNote size={18} /></button></Tooltip>
-            <div className="w-px h-6 bg-border mx-1" />
-            <Tooltip label="하위 노드 추가 (Tab)"><button onClick={addChild} disabled={selectedNodeIds.length === 0} className="p-2 rounded-xl hover:bg-accent/10 text-text-secondary disabled:opacity-30"><GitBranch size={18} /></button></Tooltip>
-            <Tooltip label="AI 생성"><button onClick={() => showToast('AI 구성 중...')} className="p-2 rounded-xl hover:bg-purple-500/10 text-purple-500"><Sparkles size={18} /></button></Tooltip>
+        {/* Main Toolbar (Always Visible) */}
+        <div className="relative z-50 flex items-center justify-between px-4 py-2 bg-bg-card/95 backdrop-blur-xl border-b border-border shadow-sm min-h-[56px] w-full">
+          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-2 sm:pl-0">
+            <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-2 mr-2 rounded-xl hover:bg-bg-card text-text-secondary sm:hidden flex-shrink-0"><Menu size={18} /></button>
+            <Tooltip label="메인 그룹 추가"><button onClick={addMainGroup} className="p-2 rounded-xl hover:bg-cyan-500/10 text-cyan-500 flex-shrink-0"><CircleDot size={18} /></button></Tooltip>
+            <Tooltip label="메모 추가"><button onClick={addFloatingMemo} className="p-2 rounded-xl hover:bg-amber-500/10 text-amber-500 flex-shrink-0"><StickyNote size={18} /></button></Tooltip>
+            <div className="w-px h-5 bg-border mx-1 flex-shrink-0" />
+            <Tooltip label="하위 노드 추가 (Tab)"><button onClick={addChild} disabled={selectedNodeIds.length === 0} className="p-2 rounded-xl hover:bg-accent/10 text-text-secondary disabled:opacity-30 flex-shrink-0"><GitBranch size={18} /></button></Tooltip>
+            <Tooltip label="AI 생성"><button onClick={() => showToast('AI 구성 중...')} className="p-2 rounded-xl hover:bg-purple-500/10 text-purple-500 flex-shrink-0 hidden sm:block"><Sparkles size={18} /></button></Tooltip>
           </div>
 
-          {/* Contextual Properties (Integrated in Toolbar Area) */}
-          <div className={`flex items-center gap-2 transition-all duration-300 ${selectedNodeIds.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
-            <div className="flex items-center gap-1">
-              <div className="flex items-center gap-1 bg-bg-primary/50 p-1 rounded-xl border border-border">
-                {MM_COLORS.palette.map((c, i) => (
-                  <button key={i} onClick={() => { updateSelectedNodesProperty('customBorderColor', c.border); updateSelectedEdgesProperty('customColor', c.border); }} className="w-4 h-4 rounded-full border-2 hover:scale-125 transition-transform" style={{ borderColor: c.border }} />
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-1 bg-bg-primary/50 p-1 rounded-xl border border-border">
-              {[
-                { id: 'solid', icon: <Minus size={14} className="stroke-[2px]" /> },
-                { id: 'thick', icon: <Minus size={14} className="stroke-[4px]" /> },
-                { id: 'dashed', icon: <div className="w-4 h-0.5 border-b-2 border-dashed border-current" /> },
-                { id: 'dotted', icon: <div className="w-3.5 h-0.5 border-b-2 border-dotted border-current" /> }
-              ].map(s => (
-                <button key={s.id} onClick={() => updateSelectedEdgesProperty('lineStyle', s.id)} className={`p-1.5 rounded-lg transition-all ${edges.find(e => selectedNodeIds.includes(e.to))?.lineStyle === s.id ? 'bg-accent text-white' : 'hover:bg-accent/10 text-text-secondary'}`}>{s.icon}</button>
-              ))}
-            </div>
-            <Tooltip label="메모 상세보기"><button onClick={() => setIsSidebarOpen(true)} className="p-2 rounded-xl hover:bg-accent/10 text-text-secondary"><FileText size={18} /></button></Tooltip>
-          </div>
-
-          <div className="flex items-center gap-0.5">
-            <Tooltip label="확대"><button onClick={() => setZoom(z => Math.min(4, z * 1.2))} className="p-1.5 text-text-secondary"><ZoomIn size={16} /></button></Tooltip>
-            <Tooltip label="축소"><button onClick={() => setZoom(z => Math.max(0.1, z * 0.8))} className="p-1.5 text-text-secondary"><ZoomOut size={16} /></button></Tooltip>
+          <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+            <Tooltip label="확대"><button onClick={() => setZoom(z => Math.min(4, z * 1.2))} className="p-1.5 text-text-secondary hidden sm:block"><ZoomIn size={16} /></button></Tooltip>
+            <Tooltip label="축소"><button onClick={() => setZoom(z => Math.max(0.1, z * 0.8))} className="p-1.5 text-text-secondary hidden sm:block"><ZoomOut size={16} /></button></Tooltip>
             <Tooltip label="화면에 맞추기"><button onClick={fitView} className="p-1.5 text-text-secondary hover:text-accent transition-colors"><Focus size={16} /></button></Tooltip>
-            <Tooltip label="전체화면"><button onClick={toggleFullscreen} className="p-1.5 text-text-secondary hover:text-accent transition-colors"><Maximize size={16} /></button></Tooltip>
+            <Tooltip label={isFullscreen ? "전체화면 닫기" : "전체화면"}><button onClick={toggleFullscreen} className={`p-1.5 transition-colors ${isFullscreen ? 'text-accent' : 'text-text-secondary hover:text-accent'}`}>{isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}</button></Tooltip>
             <div className="w-px h-5 bg-border mx-1" />
             <Tooltip label="저장 (GitHub 서버)"><button onClick={handleSave} className={`p-2 rounded-xl transition-all ${hasUnsavedChanges ? 'bg-accent text-white shadow-lg animate-pulse' : 'hover:bg-accent/10 text-accent'}`}><CloudUpload size={18} /></button></Tooltip>
             <Tooltip label="삭제 (Del)"><button onClick={deleteSelected} disabled={selectedNodeIds.length === 0} className="p-2 rounded-xl hover:bg-red-500/10 text-red-500 disabled:opacity-30"><Trash2 size={18} /></button></Tooltip>
           </div>
         </div>
 
+        {/* Contextual Properties (Floating precisely below Toolbar) */}
+        <div className={`absolute left-0 right-0 z-40 transition-all duration-300 ease-out flex justify-center w-full px-2 mt-2 pointer-events-none ${selectedNodeIds.length > 0 ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`} style={{ top: '56px' }}>
+          <div className="flex items-center gap-2 p-1.5 bg-bg-card/95 backdrop-blur-md border border-border shadow-xl rounded-2xl pointer-events-auto max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex items-center gap-1.5 px-1 flex-shrink-0">
+              {MM_COLORS.palette.map((c, i) => (
+                <button key={i} onClick={() => { updateSelectedNodesProperty('customBorderColor', c.border); updateSelectedEdgesProperty('customColor', c.border); }} className="w-6 h-6 rounded-full border-[3px] hover:scale-110 transition-transform shadow-sm" style={{ borderColor: c.border }} />
+              ))}
+            </div>
+            <div className="w-px h-6 bg-border flex-shrink-0" />
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {[
+                { id: 'solid', icon: <Minus size={16} className="stroke-[2px]" /> },
+                { id: 'thick', icon: <Minus size={16} className="stroke-[4px]" /> },
+                { id: 'dashed', icon: <div className="w-5 h-0.5 border-b-2 border-dashed border-current" /> },
+                { id: 'dotted', icon: <div className="w-4 h-0.5 border-b-2 border-dotted border-current" /> }
+              ].map(s => (
+                <button key={s.id} onClick={() => updateSelectedEdgesProperty('lineStyle', s.id)} className={`p-2 rounded-xl transition-all ${edges.find(e => selectedNodeIds.includes(e.to))?.lineStyle === s.id ? 'bg-accent text-white shadow-md' : 'hover:bg-accent/10 text-text-secondary'}`}>{s.icon}</button>
+              ))}
+            </div>
+            <div className="w-px h-6 bg-border flex-shrink-0" />
+            <Tooltip label="메모 상세보기"><button onClick={() => setIsSidebarOpen(true)} className="p-2 rounded-xl hover:bg-accent/10 text-text-secondary flex-shrink-0"><FileText size={18} /></button></Tooltip>
+          </div>
+        </div>
+
         <div className="flex-1 relative">
-          <canvas ref={canvasRef} onMouseDown={handleMouseDown} onDoubleClick={handleDoubleClick} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onWheel={handleWheel} className="w-full h-full cursor-crosshair" />
+          <canvas ref={canvasRef} onMouseDown={handleMouseDown} onDoubleClick={handleDoubleClick} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onWheel={handleWheel} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="w-full h-full cursor-crosshair touch-none" />
           
           {/* Memo Tooltip on Hover */}
           {hoveredNodeId !== null && nodes.find(n => n.id === hoveredNodeId)?.memo && (
@@ -554,7 +648,7 @@ export default function MindmapPage() {
             </div>
           )}
 
-          <div className="absolute top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-bg-card/80 backdrop-blur-xl border border-border shadow-lg"><div className={`w-2 h-2 rounded-full ${hasUnsavedChanges ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} /><span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{hasUnsavedChanges ? 'Pending Save' : (dataSource === 'github' ? 'Synced' : 'Local')}</span></div>
+          {/* Status Badge removed as per user request (Toolbar icon already shows status) */}
           <div className="absolute bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2 bg-bg-card/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl">
             <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Zoom</span>
             <span className="text-xs font-black text-text-secondary w-10 text-right">{Math.round(zoom * 100)}%</span>

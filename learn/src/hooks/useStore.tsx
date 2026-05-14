@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import type { AppData, Category, Article, GitHubConfig, DataSource, Memo } from '../types';
 import { loadData, saveData, createCategory, updateCategory, deleteCategory, updateCategories, createArticle, updateArticle, deleteArticle, createMemo, deleteMemo, restoreMemo, permanentlyDeleteMemo, emptyTrash, reorderMemos, updateMemo, createMemoFolder, deleteMemoFolder, updateMemoFolder, updateMindmap } from '../services/storage';
 import { getGitHubConfig, saveGitHubConfig, downloadFromGitHub, uploadToGitHub } from '../services/github';
@@ -70,22 +70,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [theme]);
 
+  const dataRef = useRef(data);
+  useEffect(() => { dataRef.current = data; }, [data]);
+
   // Persist to localStorage and trigger background sync
   const persistAndSync = useCallback(async (newData: AppData) => {
     setData(newData);
     saveData(newData);
+    dataRef.current = newData; // Update ref immediately
     
     if (ghConfig.token && ghConfig.autoSync) {
       setDataSource('syncing');
       const uploadOk = await uploadToGitHub(ghConfig, newData);
       
       if (uploadOk) {
-        // As requested: "서버에 저장하고 저장된 데이터를 조회해서 보여줘"
-        // After successful upload, we fetch back to ensure 100% consistency
+        // After successful upload, fetch back to ensure 100% consistency
         const verifiedData = await downloadFromGitHub<AppData>(ghConfig);
         if (verifiedData) {
           setData(verifiedData);
           saveData(verifiedData);
+          dataRef.current = verifiedData;
           setDataSource('github');
           return;
         }
@@ -98,64 +102,55 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // functional helper for state updates
   const updateData = useCallback(async (fn: (prev: AppData) => AppData) => {
-    const next = fn(data); // Using current 'data' state
+    const next = fn(dataRef.current); // Using ref to prevent infinite loops
     await persistAndSync(next);
-  }, [data, persistAndSync]);
+  }, [persistAndSync]);
 
   // Category actions
   const addCategory = useCallback((input: Omit<Category, 'id' | 'createdAt' | 'order'>) => {
-    const newData = createCategory(data, input);
-    persistAndSync(newData);
+    updateData(prev => createCategory(prev, input));
     showToast('카테고리가 추가되었습니다');
-  }, [data, persistAndSync, showToast]);
+  }, [updateData, showToast]);
 
   const editCategory = useCallback((id: string, updates: Partial<Category>) => {
-    const newData = updateCategory(data, id, updates);
-    persistAndSync(newData);
+    updateData(prev => updateCategory(prev, id, updates));
     showToast('카테고리가 수정되었습니다');
-  }, [data, persistAndSync, showToast]);
+  }, [updateData, showToast]);
 
   const removeCategory = useCallback((id: string) => {
-    const newData = deleteCategory(data, id);
-    persistAndSync(newData);
+    updateData(prev => deleteCategory(prev, id));
     showToast('카테고리가 삭제되었습니다');
-  }, [data, persistAndSync, showToast]);
+  }, [updateData, showToast]);
 
   const reorderCategories = useCallback((categories: Category[]) => {
-    const newData = updateCategories(data, categories);
-    persistAndSync(newData);
-  }, [data, persistAndSync]);
+    updateData(prev => updateCategories(prev, categories));
+  }, [updateData]);
 
   // Article actions
   const addArticle = useCallback((input: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newData = createArticle(data, input);
-    persistAndSync(newData);
+    updateData(prev => createArticle(prev, input));
     showToast('아티클이 저장되었습니다');
-  }, [data, persistAndSync, showToast]);
+  }, [updateData, showToast]);
 
   const editArticle = useCallback((id: string, updates: Partial<Article>) => {
-    const newData = updateArticle(data, id, updates);
-    persistAndSync(newData);
+    updateData(prev => updateArticle(prev, id, updates));
     showToast('아티클이 수정되었습니다');
-  }, [data, persistAndSync, showToast]);
+  }, [updateData, showToast]);
 
   const removeArticle = useCallback((id: string) => {
-    const newData = deleteArticle(data, id);
-    persistAndSync(newData);
+    updateData(prev => deleteArticle(prev, id));
     showToast('아티클이 삭제되었습니다');
-  }, [data, persistAndSync, showToast]);
+  }, [updateData, showToast]);
 
   // Memo actions
   const addMemo = useCallback((content: string, color: string, title: string = '', folderId?: string) => {
-    const newData = createMemo(data, content, color, title, folderId);
-    persistAndSync(newData);
-  }, [data, persistAndSync]);
+    updateData(prev => createMemo(prev, content, color, title, folderId));
+  }, [updateData]);
 
   const removeMemo = useCallback((id: string) => {
-    const newData = deleteMemo(data, id);
-    persistAndSync(newData);
+    updateData(prev => deleteMemo(prev, id));
     showToast('메모가 삭제되었습니다');
-  }, [data, persistAndSync, showToast]);
+  }, [updateData, showToast]);
 
   const restoreMemoAction = useCallback((id: string) => {
     updateData(prev => restoreMemo(prev, id));
@@ -211,35 +206,37 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const result = await downloadFromGitHub<AppData>(ghConfig);
     if (result && result.categories && result.articles) {
       // Ensure we don't lose memos/trash if they are missing on GH
+      const currentData = dataRef.current;
       const merged: AppData = {
         ...result,
-        memos: result.memos || data.memos || [],
-        trash: result.trash || data.trash || [],
+        memos: result.memos || currentData.memos || [],
+        trash: result.trash || currentData.trash || [],
         memoFolders: (() => {
-          const f = result.memoFolders || data.memoFolders || [];
+          const f = result.memoFolders || currentData.memoFolders || [];
           if (!f.some(x => x.id === 'folder_default')) {
             f.unshift({ id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() });
           }
           return f;
         })(),
-        mindmap: result.mindmap || data.mindmap,
+        mindmap: result.mindmap || currentData.mindmap,
       };
       setData(merged);
       saveData(merged);
+      dataRef.current = merged;
       setDataSource('github');
       showToast('GitHub에서 데이터를 불러왔습니다');
     } else {
       setDataSource('local');
       showToast('GitHub 데이터가 없거나 불러오기에 실패했습니다');
     }
-  }, [ghConfig, data, showToast]);
+  }, [ghConfig, showToast]);
 
   const syncUp = useCallback(async () => {
     setDataSource('syncing');
-    const ok = await uploadToGitHub(ghConfig, data);
+    const ok = await uploadToGitHub(ghConfig, dataRef.current);
     setDataSource(ok ? 'github' : 'local');
     showToast(ok ? 'GitHub에 업로드 완료' : '업로드 실패');
-  }, [ghConfig, data, showToast]);
+  }, [ghConfig, showToast]);
 
   // Initial background sync
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { BookOpen, Home, Settings, Database, Sun, Moon, FileText, StickyNote, GitBranch } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
@@ -6,6 +7,24 @@ import Toast from './Toast';
 
 export default function Layout() {
   const { dataSource, theme, toggleTheme } = useStore();
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // 100px 이상 스크롤 했을 때만 작동 (상단에서는 항상 표시)
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false); // 아래로 스크롤 시 숨김
+      } else {
+        setIsVisible(true); // 위로 스크롤 시 표시
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const navItems = [
     { to: '/', icon: Home, label: '홈', end: true },
@@ -32,14 +51,14 @@ export default function Layout() {
     <div className="min-h-screen bg-bg-primary">
 
       {/* ── Top Navigation ── */}
-      <header className="sticky top-0 z-[1000] w-full">
+      <header className={`sticky top-0 z-[1000] w-full transition-transform duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="flex items-center justify-center pt-3 pb-2 px-2 sm:px-4">
           <nav
             className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1.5 shadow-2xl max-w-full overflow-hidden"
             style={{
-              background: 'var(--glass-bg)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              background: theme === 'dark' ? 'rgba(20, 22, 35, 0.75)' : 'rgba(255, 255, 255, 0.75)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
               border: '1px solid var(--glass-border)',
               borderRadius: '999px',
               boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.06) inset',
