@@ -164,8 +164,11 @@
                     </div>
 
                     <div class="current-song-info" id="currentSongInfo" style="display: none;">
-                        <div class="album-art-placeholder">
-                            <i class="fas fa-music"></i>
+                        <div class="album-art-wrapper">
+                            <div class="album-art-placeholder" id="mainAlbumArt">
+                                <img id="mainThumb" src="" alt="thumb" style="display:none; width:100%; height:100%; object-fit:cover;">
+                                <i class="fas fa-music" id="mainMusicIcon"></i>
+                            </div>
                         </div>
                         <div class="info-text">
                             <h3 id="currentTitle">Song Title</h3>

@@ -162,6 +162,9 @@ const currentSongInfo = document.getElementById('currentSongInfo');
 const currentTitle = document.getElementById('currentTitle');
 const currentArtist = document.getElementById('currentArtist');
 const currentTimeEl = document.getElementById('currentTime');
+const mainAlbumArt = document.getElementById('mainAlbumArt');
+const mainThumb = document.getElementById('mainThumb');
+const mainMusicIcon = document.getElementById('mainMusicIcon');
 const playerControls = document.getElementById('playerControls');
 const audioOnlyOverlay = document.getElementById('audioOnlyOverlay');
 const prevBtn = document.getElementById('prevBtn');
@@ -187,7 +190,7 @@ const audioModeArt = document.getElementById('audioModeArt');
 // Real-time clock update
 function updateTime() {
     const now = new Date();
-    currentTimeEl.textContent = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    currentTimeEl.textContent = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 // Start app
@@ -261,6 +264,17 @@ async function init() {
         playerEmptyState.style.display = 'none';
         playerControls.style.display = 'flex';
         document.getElementById('seekbarContainer').style.display = 'flex';
+
+        // Update Main Album Art
+        if (lastSong.youtubeId) {
+            mainThumb.src = `https://img.youtube.com/vi/${lastSong.youtubeId}/hqdefault.jpg`;
+            mainThumb.style.display = 'block';
+            mainMusicIcon.style.display = 'none';
+        } else {
+            mainThumb.style.display = 'none';
+            mainMusicIcon.style.display = 'block';
+        }
+
         syncMiniPlayer(lastSong);
         updateLikeBtnUI(myPlaylistIds.includes(lastSong.id));
         
@@ -1243,6 +1257,7 @@ window.addEventListener('message', (event) => {
         // Update local play/pause buttons
         const isPlaying = event.data.state === 1; // 1 = PLAYING
         if (togglePlayBtn) togglePlayBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        if (mainAlbumArt) mainAlbumArt.classList.toggle('playing', isPlaying);
         updateMiniIcons(isPlaying);
     }
 });
@@ -1339,6 +1354,17 @@ async function handleSongClick(songOrId, mode = null) {
     playerEmptyState.style.display = 'none';
     playerControls.style.display = 'flex';
     document.getElementById('seekbarContainer').style.display = 'flex';
+
+    // Update Main Album Art
+    if (song.youtubeId) {
+        mainThumb.src = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+        mainThumb.style.display = 'block';
+        mainMusicIcon.style.display = 'none';
+        mainThumb.onerror = function() { window.handleImageError(this, song.youtubeId); };
+    } else {
+        mainThumb.style.display = 'none';
+        mainMusicIcon.style.display = 'block';
+    }
 
     // Update Heart State
     updateLikeBtnUI(myPlaylistIds.includes(song.id));
@@ -2013,6 +2039,7 @@ function onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
             togglePlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
             updateMiniIcons(true);
+            if (mainAlbumArt) mainAlbumArt.classList.add('playing');
             if (currentMode === 'audio') equalizer.style.display = 'flex';
             if (audioModeIcon) audioModeIcon.classList.remove('paused');
             if (audioModeArt) audioModeArt.classList.remove('paused');
@@ -2024,6 +2051,7 @@ function onPlayerStateChange(event) {
         } else {
             togglePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
             updateMiniIcons(false);
+            if (mainAlbumArt) mainAlbumArt.classList.remove('playing');
             equalizer.style.display = 'none';
             if (audioModeIcon) audioModeIcon.classList.add('paused');
             if (audioModeArt) audioModeArt.classList.add('paused');

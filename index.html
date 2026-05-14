@@ -271,13 +271,6 @@
         </div>
     </header>
 
-    <button id="homeBackBtn" class="home-back-btn" onclick="navigateTo('home.html')">
-        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-        </svg>
-        Home
-    </button>
-
     <iframe id="contentFrame" src="home.html"></iframe>
 
     <!-- Global Player UI -->
@@ -449,16 +442,31 @@
 
         function navigateTo(url) {
             const frame = document.getElementById('contentFrame');
-            const backBtn = document.getElementById('homeBackBtn');
+            const player = document.getElementById('globalPlayer');
+            const shellHeader = document.querySelector('.shell-header');
+            const scribble = document.querySelector('.scribble-bg');
+            
             const currentRelPath = frame.src.replace(window.location.origin + '/', '');
             if (currentRelPath !== url) {
                 frame.src = url;
             }
+            
+            // Show/Hide Shell Header
             if (url === 'home.html' || url === './home.html') {
-                backBtn.style.display = 'none';
+                if (shellHeader) shellHeader.style.display = 'flex';
+                if (scribble) scribble.style.display = 'block';
             } else {
-                backBtn.style.display = 'flex';
+                if (shellHeader) shellHeader.style.display = 'none';
+                if (scribble) scribble.style.display = 'none';
             }
+
+            // Show/Hide Global Player based on page
+            if (url.includes('hobby/')) {
+                if (currentSong) player.classList.add('active');
+            } else {
+                player.classList.remove('active');
+            }
+
             // Ensure audio session doesn't drop during navigation
             startAudioKeepAlive();
         }
@@ -466,18 +474,32 @@
         // Initialize state from storage
         window.addEventListener('DOMContentLoaded', () => {
             const lastSong = JSON.parse(localStorage.getItem('vibe_last_song'));
+            const frame = document.getElementById('contentFrame');
+            const player = document.getElementById('globalPlayer');
+
             if (lastSong) {
                 currentSong = lastSong;
                 document.getElementById('globalTitle').textContent = lastSong.title;
                 document.getElementById('globalArtist').textContent = lastSong.artist;
                 document.getElementById('globalThumb').src = `https://img.youtube.com/vi/${lastSong.youtubeId}/default.jpg`;
-                document.getElementById('globalPlayer').classList.add('active');
+                
+                // Only show if the frame is already on hobby (unlikely on start, but for robustness)
+                if (frame.src.includes('hobby/')) {
+                    player.classList.add('active');
+                }
             }
         });
 
         window.addEventListener('message', (event) => {
             if (event.data.type === 'PLAY_SONG') {
                 playGlobalMusic(event.data.song);
+                
+                // Ensure it only shows if we are on the hobby page
+                const frame = document.getElementById('contentFrame');
+                const player = document.getElementById('globalPlayer');
+                if (!frame.src.includes('hobby/')) {
+                    player.classList.remove('active');
+                }
             }
             if (event.data.type === 'SEEK_TO') {
                 if (player && player.seekTo) {
