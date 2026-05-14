@@ -1,42 +1,20 @@
 // import Hls from 'hls.js'; // CDN 사용으로 변경
 
 let CHANNELS = [
-  {
-    id: 'kbs1',
-    name: 'KBS 1TV',
-    network: 'KBS1',
-    url: 'http://121.156.46.79/live/10171.m3u8?sid=60720'
-  },
-  {
-    id: 'kbs2',
-    name: 'KBS 2TV',
-    network: 'KBS2',
-    url: 'http://121.156.46.79/live/10141.m3u8?sid=60720'
-  },
-  {
-    id: 'mbc',
-    name: 'MBC',
-    network: 'MBC',
-    url: 'https://5c3639aa99149.streamlock.net/live_TV/tv/playlist.m3u8'
-  },
-  {
-    id: 'sbs',
-    name: 'SBS (UBC)',
-    network: 'SBS',
-    url: 'https://stream.ubc.co.kr/hls/ubctvstream/index.m3u8'
-  },
-  {
-    id: 'ytn',
-    name: 'YTN',
-    network: 'YTN',
-    url: 'http://202.60.106.14:8080/214/playlist.m3u8'
-  },
-  {
-    id: 'yonhap',
-    name: '연합뉴스TV',
-    network: 'Yonhap',
-    url: 'https://wms211-kortv.akamaized.net/a_live/34402987/smil:20ch211.smil/chunklist_b2500000.m3u8'
-  }
+  { id: 'kbs1', name: 'KBS 1TV', network: 'KBS1', url: 'http://121.156.46.79/live/10171.m3u8?sid=60720' },
+  { id: 'kbs2', name: 'KBS 2TV', network: 'KBS2', url: 'http://121.156.46.79/live/10141.m3u8?sid=60720' },
+  { id: 'mbc', name: 'MBC', network: 'MBC', url: 'https://5c3639aa99149.streamlock.net/live_TV/tv/playlist.m3u8' },
+  { id: 'sbs', name: 'SBS', network: 'SBS', url: 'https://stream.ubc.co.kr/hls/ubctvstream/index.m3u8' },
+  { id: 'ebs1', name: 'EBS 1', network: 'EBS1', url: 'https://ebsonair.ebs.co.kr/ebs1familypc/familypc1m/playlist.m3u8' },
+  { id: 'ebs2', name: 'EBS 2', network: 'EBS2', url: 'https://ebsonair.ebs.co.kr/ebs2familypc/familypc1m/playlist.m3u8' },
+  { id: 'ytn', name: 'YTN', network: 'YTN', url: 'http://202.60.106.14:8080/214/playlist.m3u8' },
+  { id: 'yonhap', name: '연합뉴스TV', network: 'Yonhap', url: 'https://wms211-kortv.akamaized.net/a_live/34402987/smil:20ch211.smil/chunklist_b2500000.m3u8' },
+  { id: 'ktv', name: 'KTV 국민방송', network: 'KTV', url: 'https://hlive.ktv.go.kr/live/klive_h.stream/playlist.m3u8' },
+  { id: 'obs', name: 'OBS 경인TV', network: 'OBS', url: 'https://vod.obs.co.kr:444/live/obsstream1/tv.stream/playlist.m3u8' },
+  { id: 'tbs', name: 'TBS 교통방송', network: 'TBS', url: 'https://cdntv.tbs.seoul.kr/tbs/tbs_tv_web.smil/playlist.m3u8' },
+  { id: 'arirang', name: 'Arirang TV', network: 'ARIRANG', url: 'https://dash3.antik.sk/live/test_arirang/playlist.m3u8' },
+  { id: 'cj_shop', name: 'CJ 온스타일', network: 'CJ_SHOP', url: 'https://live-ch2.cjonstyle.net/cjosplus/live2/playlist.m3u8' },
+  { id: 'gs_shop', name: 'GS SHOP', network: 'GS_SHOP', url: 'https://gstv-gsshop.gsshop.com/gsshop_hd/gsshop_hd.stream/playlist.m3u8' }
 ];
 
 let hls = null;

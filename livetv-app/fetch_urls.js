@@ -24,6 +24,14 @@ https.get('https://iptv-org.github.io/iptv/countries/kr.m3u', (res) => {
           if (currentChannel.includes('SBS') && !currentChannel.includes('Golf') && !currentChannel.includes('Sports')) channels['SBS'] = line.trim();
           if (currentChannel.includes('YTN')) channels['YTN'] = line.trim();
           if (currentChannel.includes('Yonhap') || currentChannel.includes('연합뉴스')) channels['Yonhap'] = line.trim();
+          if (currentChannel.includes('EBS 1') || currentChannel.includes('EBS1')) channels['EBS1'] = line.trim();
+          if (currentChannel.includes('EBS 2') || currentChannel.includes('EBS2')) channels['EBS2'] = line.trim();
+          if (currentChannel.includes('KTV') || currentChannel.includes('Korea TV')) channels['KTV'] = line.trim();
+          if (currentChannel.includes('Arirang TV')) channels['ARIRANG'] = line.trim();
+          if (currentChannel.includes('OBS')) channels['OBS'] = line.trim();
+          if (currentChannel.includes('TBS')) channels['TBS'] = line.trim();
+          if (currentChannel.includes('CJ OnStyle') || currentChannel.includes('CJ온스타일')) channels['CJ_SHOP'] = line.trim();
+          if (currentChannel.includes('GS Shop') || currentChannel.includes('GS홈쇼핑')) channels['GS_SHOP'] = line.trim();
           currentChannel = null;
         }
       }

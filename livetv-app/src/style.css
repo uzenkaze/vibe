@@ -139,6 +139,12 @@ video {
 .channel-btn[data-network="SBS"] .channel-logo { color: #007dc3; /* SBS 메인 블루 */ }
 .channel-btn[data-network="YTN"] .channel-logo { color: #00b0f0; /* YTN 블루 계열 */ }
 .channel-btn[data-network="Yonhap"] .channel-logo { color: #e31837; /* 연합뉴스 레드 포인트 */ }
+.channel-btn[data-network^="EBS"] .channel-logo { color: #6fc9f3; /* EBS 라이트 블루 */ }
+.channel-btn[data-network="OBS"] .channel-logo { color: #0076be; /* OBS 블루 */ }
+.channel-btn[data-network="TBS"] .channel-logo { color: #efdc05; /* TBS 옐로우 */ }
+.channel-btn[data-network="ARIRANG"] .channel-logo { color: #0098d8; /* 아리랑 블루 */ }
+.channel-btn[data-network="KTV"] .channel-logo { color: #005aab; /* KTV 블루 */ }
+.channel-btn[data-network$="SHOP"] .channel-logo { color: #ff5073; /* 쇼핑 채널 핑크 포인트 */ }
 
 /* 로딩 오버레이 */
 .overlay {
