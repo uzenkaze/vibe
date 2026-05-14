@@ -3728,26 +3728,19 @@
                 <button type="button" onclick="closeQueryModal()" style="background: rgba(0,0,0,0.05); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: #1d1d1f;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <input type="hidden" id="query-id">
-            <input type="hidden" id="query-color-value">
             
-            <div style="display:flex; gap: 2rem; margin-bottom: 1.5rem;">
-                <div style="flex:1;">
-                    <label style="font-weight:600; font-size:0.9rem; color: #86868b; display:block; margin-bottom: 0.5rem;">제목</label>
-                    <input type="text" id="query-title" class="ts-input" style="width:100%; padding: 12px; font-size: 1rem; border-radius: 12px;" placeholder="쿼리 제목 입력">
-                </div>
-                <div>
-                    <label style="font-weight:600; font-size:0.9rem; color: #86868b; display:block; margin-bottom: 0.5rem;">배경 색상</label>
-                    <div id="query-color-selector" style="display: flex; gap: 10px;"></div>
-                </div>
+            <div style="margin-bottom: 2rem; margin-top: 0.5rem;">
+                <label style="font-weight:700; font-size:0.85rem; color: #86868b; display:block; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">제목</label>
+                <input type="text" id="query-title" class="ts-input" style="width:100%; padding: 16px 20px; font-size: 1.1rem; border-radius: 16px; border: 1.5px solid #e5e5ea; background: #f9f9fb; transition: all 0.2s;" placeholder="쿼리 제목을 입력하세요" onfocus="this.style.borderColor='#0071e3'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 4px rgba(0,113,227,0.1)';" onblur="this.style.borderColor='#e5e5ea'; this.style.background='#f9f9fb'; this.style.boxShadow='none';">
             </div>
 
             <div style="margin-bottom:1.5rem;">
                 <label style="font-weight:600; font-size:0.9rem; color: #86868b; display:block; margin-bottom: 0.5rem;">쿼리 내용</label>
                 <textarea id="query-content" class="ts-input" style="width:100%; height:500px; font-family: 'Consolas', monospace; font-size: 0.95rem; padding: 15px; border-radius: 12px; resize: vertical; line-height: 1.5; background: #f9f9fb;" placeholder="SELECT * FROM ..."></textarea>
             </div>
-            <div style="margin-bottom:2rem;">
-                <label style="font-weight:600; font-size:0.9rem; color: #86868b; display:block; margin-bottom: 0.5rem;">태그 (쉼표로 구분)</label>
-                <input type="text" id="query-tags" class="ts-input" style="width:100%; padding: 12px; font-size: 0.95rem; border-radius: 12px;" placeholder="sql, tip, etc...">
+            <div style="margin-bottom:2.5rem;">
+                <label style="font-weight:700; font-size:0.85rem; color: #86868b; display:block; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">태그 (쉼표로 구분)</label>
+                <input type="text" id="query-tags" class="ts-input" style="width:100%; padding: 14px 18px; font-size: 0.95rem; border-radius: 14px; border: 1.5px solid #e5e5ea; background: #f9f9fb;" placeholder="sql, tip, etc...">
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button type="button" class="btn-ts btn-danger" id="query-delete-btn" style="display:none; padding: 0.8rem 1.5rem; border-radius: 20px;" onclick="deleteQuery()">삭제</button>
@@ -4099,6 +4092,8 @@
             manpowers = JSON.parse(localStorage.getItem('manpowers') || '[]');
             customGroups = JSON.parse(localStorage.getItem('manpowerGroups') || '[]');
             tableSpecs = JSON.parse(localStorage.getItem('tableSpecs') || '[]');
+            const savedView = localStorage.getItem('taskCurrentView');
+            if (savedView) currentView = savedView;
 
             renderSidebar();
             render();
@@ -5850,6 +5845,7 @@
 
         function switchView(viewId) {
             currentView = viewId;
+            localStorage.setItem('taskCurrentView', viewId);
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(viewId);
             if (target) target.classList.add('active');
@@ -8663,51 +8659,33 @@
             const modal = document.getElementById('query-modal');
             const delBtn = document.getElementById('query-delete-btn');
             
-            // 색상 선택 UI
-            const colorContainer = document.getElementById('query-color-selector');
-            if (colorContainer) {
-                colorContainer.innerHTML = QUERY_COLORS.map(c => 
-                    '<div onclick="selectQueryColor(\'' + c + '\')" style="width: 32px; height: 32px; border-radius: 50%; cursor: pointer; background-color: ' + c + '; border: 2px solid transparent; transition: all 0.2s;" class="color-dot" data-color="' + c + '"></div>'
-                ).join('');
-            }
-
             if (id) {
                 const q = queries.find(x => x.id === id);
                 if (q) {
-                    document.getElementById('query-modal-title').innerText = 'Query';
+                    document.getElementById('query-modal-title').innerText = 'Edit Query';
                     document.getElementById('query-id').value = q.id;
                     document.getElementById('query-title').value = q.title || '';
                     document.getElementById('query-content').value = q.content || '';
                     document.getElementById('query-tags').value = (q.tags || []).join(', ');
-                    document.getElementById('query-color-value').value = q.color || QUERY_COLORS[0];
-                    selectQueryColor(q.color || QUERY_COLORS[0]);
                     delBtn.style.display = 'block';
                 }
             } else {
-                document.getElementById('query-modal-title').innerText = 'Query';
+                document.getElementById('query-modal-title').innerText = 'New Query';
                 document.getElementById('query-id').value = '';
                 document.getElementById('query-title').value = '';
                 document.getElementById('query-content').value = '';
                 document.getElementById('query-tags').value = '';
-                document.getElementById('query-color-value').value = QUERY_COLORS[0];
-                selectQueryColor(QUERY_COLORS[0]);
                 delBtn.style.display = 'none';
             }
             modal.style.display = 'flex';
+            
+            // Sync highlight after data is set
+            setTimeout(() => {
+                if (typeof syncEditorHighlight === 'function') syncEditorHighlight();
+            }, 50);
         }
 
-        function selectQueryColor(color) {
-            document.getElementById('query-color-value').value = color;
-            document.querySelectorAll('#query-color-selector .color-dot').forEach(el => {
-                if (el.getAttribute('data-color') === color) {
-                    el.style.border = '2px solid rgba(0,0,0,0.3)';
-                    el.style.transform = 'scale(1.2)';
-                } else {
-                    el.style.border = '2px solid transparent';
-                    el.style.transform = 'scale(1)';
-                }
-            });
-        }
+
 
         function closeQueryModal() {
             document.getElementById('query-modal').style.display = 'none';
@@ -8718,7 +8696,6 @@
             const title = document.getElementById('query-title').value.trim();
             const content = document.getElementById('query-content').value.trim();
             const tagsStr = document.getElementById('query-tags').value;
-            const color = document.getElementById('query-color-value').value || QUERY_COLORS[0];
             const tags = tagsStr.split(',').map(t => t.trim()).filter(t => t);
 
             if (!title) { alert('제목을 입력하세요.'); return; }
@@ -8727,7 +8704,7 @@
             if (id) {
                 const idx = queries.findIndex(q => q.id === id);
                 if (idx > -1) {
-                    queries[idx] = Object.assign({}, queries[idx], { title, content, tags, color, updatedAt: new Date().toISOString() });
+                    queries[idx] = Object.assign({}, queries[idx], { title, content, tags, updatedAt: new Date().toISOString() });
                 }
             } else {
                 queries.push({
@@ -8735,7 +8712,6 @@
                     title,
                     content,
                     tags,
-                    color,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 });

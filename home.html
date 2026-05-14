@@ -138,8 +138,33 @@
         }
 
         @media (max-width: 1000px) {
-            .showcase-area { flex-direction: column; gap: 40px; }
-            .device-card { margin: 0 !important; transform: none !important; }
+            body {
+                justify-content: flex-start;
+                padding-top: 60px;
+            }
+            .showcase-area { 
+                flex-direction: row; 
+                gap: 20px; 
+                overflow-x: auto; 
+                padding: 40px 25px;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: none; /* Firefox */
+                justify-content: flex-start;
+                -ms-overflow-style: none; /* IE/Edge */
+            }
+            .showcase-area::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Opera */
+            }
+            .device-card { 
+                margin: 0 !important; 
+                transform: none !important; 
+                flex-shrink: 0;
+                width: 280px;
+                scroll-snap-align: center;
+            }
+            .device-card:hover {
+                transform: scale(1.05) !important;
+            }
         }
     </style>
 </head>

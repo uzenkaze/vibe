@@ -120,6 +120,12 @@
             .logo {
                 font-size: 1.4rem;
             }
+            .star-icon {
+                display: none;
+            }
+            #contentFrame {
+                /* 모바일에서 포털 로고 공간 확보를 위해 약간의 상단 여백 고려 가능 */
+            }
             .global-player {
                 bottom: 15px;
                 width: 94%;
@@ -440,42 +446,107 @@
             frame.contentWindow.postMessage({ type: 'PREV_SONG' }, '*');
         }
 
-        function navigateTo(url) {
+        function navigateTo(url, updateHash = true) {
             const frame = document.getElementById('contentFrame');
-            const player = document.getElementById('globalPlayer');
-            const shellHeader = document.querySelector('.shell-header');
-            const scribble = document.querySelector('.scribble-bg');
-            
-            const currentRelPath = frame.src.replace(window.location.origin + '/', '');
-            if (currentRelPath !== url) {
+            if (!frame) return;
+
+            try {
+                // Normalize URL for comparison
+                const targetUrl = new URL(url, window.location.origin).href;
+                let currentUrl = "";
+                try {
+                    currentUrl = frame.contentWindow ? frame.contentWindow.location.href : frame.src;
+                } catch(e) {
+                    currentUrl = frame.src;
+                }
+                
+                if (currentUrl !== targetUrl && !currentUrl.endsWith(url)) {
+                    frame.src = url;
+                }
+            } catch(e) {
                 frame.src = url;
             }
             
-            // Show/Hide Shell Header
-            if (url === 'home.html' || url === './home.html') {
-                if (shellHeader) shellHeader.style.display = 'flex';
-                if (scribble) scribble.style.display = 'block';
-            } else {
-                if (shellHeader) shellHeader.style.display = 'none';
-                if (scribble) scribble.style.display = 'none';
+            // Update URL hash for clean routing
+            if (updateHash) {
+                const hashPath = url.replace('home.html', '').replace('./', '');
+                window.location.hash = hashPath ? '/' + hashPath : '';
             }
 
-            // Show/Hide Global Player based on page
-            if (url.includes('hobby/')) {
-                if (currentSong) player.classList.add('active');
-            } else {
-                player.classList.remove('active');
-            }
+            // Save path for refresh persistence
+            localStorage.setItem('vibe_last_path', url);
+            
+            // UI state management
+            updatePortalUI(url);
 
             // Ensure audio session doesn't drop during navigation
             startAudioKeepAlive();
         }
 
+        // Listen for hash changes to support browser back/forward and clean URLs
+        window.addEventListener('hashchange', () => {
+            let hash = window.location.hash.replace('#/', '');
+            if (!hash || hash === '/') hash = 'home.html';
+            navigateTo(hash, false);
+        });
+
+        function updatePortalUI(url) {
+            const player = document.getElementById('globalPlayer');
+            const shellHeader = document.querySelector('.shell-header');
+            const scribble = document.querySelector('.scribble-bg');
+
+            if (url && (url.includes('home.html') || url === './' || url === '/')) {
+                if (shellHeader) shellHeader.style.display = 'flex';
+                if (scribble) scribble.style.display = 'block';
+            } else {
+                // 서브 페이지에서는 포털 헤더를 숨겨서 서브 앱의 메뉴 접근 방해 금지
+                if (shellHeader) shellHeader.style.display = 'none';
+                if (scribble) scribble.style.display = 'none';
+            }
+
+            if (url && url.includes('hobby/')) {
+                if (currentSong) player.classList.add('active');
+            } else {
+                player.classList.remove('active');
+            }
+        }
+
+        // Periodically sync the internal iframe path to localStorage
+        function startPathSync() {
+            setInterval(() => {
+                try {
+                    const frame = document.getElementById('contentFrame');
+                    if (frame && frame.contentWindow) {
+                        const fullUrl = frame.contentWindow.location.href;
+                        const origin = window.location.origin;
+                        if (fullUrl.startsWith(origin)) {
+                            const relPath = fullUrl.replace(origin + '/', '');
+                            if (relPath && !relPath.includes('about:blank')) {
+                                localStorage.setItem('vibe_last_path', relPath);
+                                // Also update UI based on sub-path
+                                updatePortalUI(relPath);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // Cross-origin or other issues, ignore
+                }
+            }, 1000);
+        }
+
         // Initialize state from storage
         window.addEventListener('DOMContentLoaded', () => {
             const lastSong = JSON.parse(localStorage.getItem('vibe_last_song'));
+            let initialPath = window.location.hash.replace('#/', '');
+            if (!initialPath || initialPath === '/') {
+                initialPath = 'home.html';
+            }
+            
             const frame = document.getElementById('contentFrame');
             const player = document.getElementById('globalPlayer');
+
+            // Set initial UI state
+            updatePortalUI(initialPath);
 
             if (lastSong) {
                 currentSong = lastSong;
@@ -483,11 +554,16 @@
                 document.getElementById('globalArtist').textContent = lastSong.artist;
                 document.getElementById('globalThumb').src = `https://img.youtube.com/vi/${lastSong.youtubeId}/default.jpg`;
                 
-                // Only show if the frame is already on hobby (unlikely on start, but for robustness)
                 if (frame.src.includes('hobby/')) {
                     player.classList.add('active');
                 }
             }
+
+            // Restore path from URL hash or default
+            navigateTo(initialPath, true);
+
+            // Start background sync
+            startPathSync();
         });
 
         window.addEventListener('message', (event) => {
