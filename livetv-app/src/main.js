@@ -33,28 +33,28 @@ const CHANNELS = [
   ] },
 
   // 종합편성
-  { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', urls: [
+  { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', urls: [
     'https://jtbc-hls.gcdn.ntruss.com/jtbc/jtbc_1080p/playlist.m3u8',
     'https://live-amagi.jtbc.co.kr/playlist.m3u8',
     'https://jtbclive-lh.akamaihd.net/i/jtbc_1@189884/master.m3u8'
   ]},
-  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', urls: [
+  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'http://broadcast.tvchosun.com/onair/on.cstv', urls: [
     'https://tvchosun-live.akamaized.net/hls/live/2039304/tvchosun/playlist.m3u8',
     'https://tvchosun-lh.akamaihd.net/i/tvchosun_1@300298/master.m3u8'
   ]},
-  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA', urls: [
+  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', officialUrl: 'https://www.ichannela.com/com/onair.do', urls: [
     'https://ca-live.akamaized.net/hls/live/2039230/ca/playlist.m3u8',
     'https://channela-lh.akamaihd.net/i/channela_1@300300/master.m3u8'
   ]},
-  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', urls: [
+  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@MBN_NEWS', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/onair/', urls: [
     'https://mbn-live.akamaized.net/hls/live/2039235/mbn/playlist.m3u8',
     'https://mbn-lh.akamaihd.net/i/mbn_1@300302/master.m3u8'
   ]},
-  { id: 'jtbc2', name: 'JTBC2', network: 'JTBC', category: '종합편성', urls: [
+  { id: 'jtbc2', name: 'JTBC2', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', urls: [
     'https://jtbc-hls.gcdn.ntruss.com/jtbc2/jtbc2_1080p/playlist.m3u8',
     'https://jtbc2live-lh.akamaihd.net/i/jtbc2_1@379797/master.m3u8'
   ]},
-  { id: 'jtbc4', name: 'JTBC4', network: 'JTBC', category: '종합편성', urls: [
+  { id: 'jtbc4', name: 'JTBC4', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', urls: [
     'https://jtbc-hls.gcdn.ntruss.com/jtbc4/jtbc4_1080p/playlist.m3u8',
     'https://jtbc4live-lh.akamaihd.net/i/jtbc4_1@462783/master.m3u8'
   ]},
@@ -577,18 +577,36 @@ function showYouTubeFallback(ch) {
     if (parent) parent.appendChild(fallbackEl);
   }
 
+  let buttonsHtml = '';
+  if (ch.officialUrl) {
+    buttonsHtml += `
+      <a href="${ch.officialUrl}" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#4F46E5;color:#fff;font-weight:700;font-size:0.9rem;padding:12px 24px;border-radius:9999px;text-decoration:none;transition:opacity 0.2s;margin-bottom:10px;width:240px;text-align:center;"
+         onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        🌐 공식 홈페이지 온에어 시청
+      </a>
+    `;
+  }
+  if (ch.ytHandle) {
+    buttonsHtml += `
+      <a href="${ytLiveUrl}" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#FF0000;color:#fff;font-weight:700;font-size:0.9rem;padding:12px 24px;border-radius:9999px;text-decoration:none;transition:opacity 0.2s;width:240px;text-align:center;"
+         onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <svg width="18" height="12" viewBox="0 0 24 17" fill="white"><path d="M23.5 2.5a3 3 0 0 0-2.1-2.1C19.5 0 12 0 12 0S4.5 0 2.6.4A3 3 0 0 0 .5 2.5C0 4.4 0 8.5 0 8.5s0 4.1.5 6a3 3 0 0 0 2.1 2.1C4.5 17 12 17 12 17s7.5 0 9.4-.4a3 3 0 0 0 2.1-2.1C24 12.6 24 8.5 24 8.5s0-4.1-.5-6zM9.5 12V5l6.5 3.5L9.5 12z"/></svg>
+        YouTube 실시간 라이브 시청
+      </a>
+    `;
+  }
+
   fallbackEl.innerHTML = `
     <div style="text-align:center;">
       <div style="font-size:2.5rem;margin-bottom:8px;">📺</div>
       <div style="color:#fff;font-weight:800;font-size:1.1rem;margin-bottom:6px;">${ch.name}</div>
-      <div style="color:#9ca3af;font-size:0.8rem;margin-bottom:20px;">HLS 스트림 연결 실패 · YouTube에서 시청하세요</div>
-      <a href="${ytLiveUrl}" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;gap:8px;background:#FF0000;color:#fff;font-weight:700;font-size:0.9rem;padding:12px 24px;border-radius:9999px;text-decoration:none;transition:opacity 0.2s;"
-         onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-        <svg width="18" height="12" viewBox="0 0 24 17" fill="white"><path d="M23.5 2.5a3 3 0 0 0-2.1-2.1C19.5 0 12 0 12 0S4.5 0 2.6.4A3 3 0 0 0 .5 2.5C0 4.4 0 8.5 0 8.5s0 4.1.5 6a3 3 0 0 0 2.1 2.1C4.5 17 12 17 12 17s7.5 0 9.4-.4a3 3 0 0 0 2.1-2.1C24 12.6 24 8.5 24 8.5s0-4.1-.5-6zM9.5 12V5l6.5 3.5L9.5 12z"/></svg>
-        YouTube에서 실시간 시청
-      </a>
-      <div style="margin-top:14px;">
+      <div style="color:#9ca3af;font-size:0.8rem;margin-bottom:20px;">HLS 스트림 연결 실패 · 아래 경로로 시청해 보세요</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        ${buttonsHtml}
+      </div>
+      <div style="margin-top:20px;">
         <button onclick="hideFallback('${containerId}')"
           style="background:rgba(255,255,255,0.08);color:#9ca3af;font-size:0.75rem;padding:8px 16px;border:1px solid rgba(255,255,255,0.1);border-radius:9999px;cursor:pointer;">
           ✕ 다른 채널 선택하기
@@ -597,7 +615,7 @@ function showYouTubeFallback(ch) {
     </div>
   `;
   fallbackEl.style.display = 'flex';
-  updateTitle(`${ch.name} · YouTube`);
+  updateTitle(`${ch.name} · 외부 채널`);
 
   // 반대편 fallback 숨기기 - 인라인 style 직접 제어
   const otherId = isPC() ? 'yt-fallback-mobile' : 'yt-fallback-pc';
