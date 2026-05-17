@@ -584,6 +584,7 @@ async function handleGlobalSearch(customQuery = null, limit = 100) {
     }
 }
 
+
 function renderSongsFromCache(query, limit) {
     const results = searchCache.get(query);
     currentResults = results.slice(0, limit); 
