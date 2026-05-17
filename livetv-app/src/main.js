@@ -27,7 +27,10 @@ const CHANNELS = [
   ] },
   { id: 'ebs1', name: 'EBS 1', network: 'EBS1', category: '지상파', ytHandle: '@ebskorea', urls: ['https://ebsonair.ebs.co.kr/ebs1familypc/familypc1m/playlist.m3u8'] },
   { id: 'ebs2', name: 'EBS 2', network: 'EBS2', category: '지상파', urls: ['https://ebsonair.ebs.co.kr/ebs2familypc/familypc1m/playlist.m3u8'] },
-  { id: 'obs', name: 'OBS 경인TV', network: 'OBS', category: '지상파', urls: ['https://vod.obs.co.kr:444/live/obsstream1/tv.stream/playlist.m3u8'] },
+  { id: 'obs', name: 'OBS 경인TV', network: 'OBS', category: '지상파', ytHandle: '@OBSKyungIn', urls: [
+    'https://vod3.obs.co.kr:444/live/obsstream1/tv.stream/playlist.m3u8',
+    'https://vod.obs.co.kr:444/live/obsstream1/tv.stream/playlist.m3u8'
+  ] },
 
   // 종합편성
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', urls: [
@@ -155,7 +158,11 @@ let hls = null;
 let activeChannelId = null;
 let activeCategoryFilter = null;
 let playbackTimeout = null;
+let currentUrlIdx = 0;
+let isYouTubeMode = false;
+let lastIsPC = window.innerWidth >= 1024;
 const isPC = () => window.innerWidth >= 1024;
+
 
 /* =================== DOM REFS =================== */
 const videoEl        = document.getElementById('main-video');
@@ -370,8 +377,11 @@ function getNetName(ch) {
 }
 
 /* =================== PLAYBACK ENGINE =================== */
-async function playChannel(ch, urlIdx = 0) {
+async function playChannel(ch, urlIdx = 0, startTime = 0) {
   activeChannelId = ch.id;
+  currentUrlIdx = urlIdx;
+  isYouTubeMode = false;
+
   updateActiveUI();
   showLoading(true, `${ch.name} 연결 중...`);
   updateTitle(ch.name);
@@ -431,7 +441,11 @@ async function playChannel(ch, urlIdx = 0) {
     });
     hls.loadSource(url);
     hls.attachMedia(target);
-    hls.on(Hls.Events.MANIFEST_PARSED, startPlayback);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      if (startTime > 0) target.currentTime = startTime;
+      startPlayback();
+    });
+
     hls.on(Hls.Events.ERROR, (e, data) => { 
       if (data.fatal || data.type === Hls.ErrorTypes.NETWORK_ERROR) {
         tryNextUrl(ch, urlIdx); 
@@ -467,7 +481,9 @@ function tryNextUrl(ch, currentIdx) {
 
 function showYouTubeFallback(ch) {
   showLoading(false);
+  isYouTubeMode = true;
   if (hls) { hls.destroy(); hls = null; }
+
 
   // video 요소 숨기기
   [videoEl, videoElMob].forEach(el => el?.classList.add('hidden'));
@@ -523,8 +539,30 @@ window.hideFallback = (id) => {
   [placeholder, placeholderMob].forEach(el => el?.classList.remove('hidden'));
   updateTitle('');
   activeChannelId = null;
+  isYouTubeMode = false;
   updateActiveUI();
 };
+
+/* =================== SEAMLESS TRANSITION (Resize) =================== */
+window.addEventListener('resize', () => {
+  const currentIsPC = isPC();
+  if (lastIsPC !== currentIsPC) {
+    lastIsPC = currentIsPC;
+    if (activeChannelId) {
+      const ch = CHANNELS.find(c => c.id === activeChannelId);
+      if (ch) {
+        if (isYouTubeMode) {
+          showYouTubeFallback(ch);
+        } else {
+          const oldTarget = !currentIsPC ? videoEl : videoElMob;
+          const currentTime = oldTarget.currentTime;
+          playChannel(ch, currentUrlIdx, currentTime);
+        }
+      }
+    }
+  }
+});
+
 
 
 
