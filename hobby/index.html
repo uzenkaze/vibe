@@ -92,7 +92,7 @@
                         <i class="fas fa-arrow-left"></i>
                     </button>
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="노래나 가수를 찾아보세요 (Enter)" autocomplete="off">
+                    <input type="text" id="searchInput" placeholder="노래나 가수를 찾아보세요 (Enter)" autocomplete="off" inputmode="search" enterkeyhint="search">
                     <button id="globalSearchBtn" class="search-btn" title="유튜브에서 직접 검색">
                         <i class="fab fa-youtube"></i> 검색
                     </button>
@@ -124,11 +124,8 @@
                         </div>
 
                         <div id="noResults" class="no-results" style="display: none;">
-
                             <i class="fas fa-exclamation-circle"></i>
                             <p>검색 결과가 없습니다.</p>
-                            <button id="globalSearchBtnFallback" class="glass-btn"><i class="fas fa-globe"></i> 전체 유튜브
-                                검색</button>
                         </div>
 
 
@@ -167,8 +164,11 @@
                     </div>
 
                     <div class="current-song-info" id="currentSongInfo" style="display: none;">
-                        <div class="album-art-placeholder">
-                            <i class="fas fa-music"></i>
+                        <div class="album-art-wrapper">
+                            <div class="album-art-placeholder" id="mainAlbumArt">
+                                <img id="mainThumb" src="" alt="thumb" style="display:none; width:100%; height:100%; object-fit:cover;">
+                                <i class="fas fa-music" id="mainMusicIcon"></i>
+                            </div>
                         </div>
                         <div class="info-text">
                             <h3 id="currentTitle">Song Title</h3>
@@ -251,6 +251,39 @@
         </main>
     </div>
     <script src="script.js"></script>
+    <script>
+        // --- 📱 Mobile Keyboard & Viewport Fix ---
+        // Prevents keyboard from dismissing immediately and layout jumping
+        const originalHeight = window.innerHeight;
+        const inputFields = document.querySelectorAll('input, textarea');
+
+        function handleViewportChange() {
+            const vv = window.visualViewport;
+            if (!vv) return;
+            
+            // Adjust container height to match visual viewport to prevent layout breaking
+            const container = document.querySelector('.app-container');
+            if (container) {
+                container.style.height = vv.height + 'px';
+                // Also handle offset if needed
+                window.scrollTo(0, 0);
+            }
+        }
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleViewportChange);
+            window.visualViewport.addEventListener('scroll', handleViewportChange);
+        }
+
+        // Ensure focus is maintained on mobile
+        inputFields.forEach(field => {
+            field.addEventListener('focus', () => {
+                setTimeout(() => {
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+        });
+    </script>
     <!-- GitHub Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-content glass-panel">

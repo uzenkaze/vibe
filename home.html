@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Home</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+        
+        :root {
+            --bg-color: transparent;
+            --accent-color: #bef264;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Showcase Area */
+        .showcase-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 100px 20px;
+            width: 100%;
+            max-width: 1400px;
+            position: relative;
+        }
+
+        /* Device Card */
+        .device-card {
+            width: 280px;
+            height: 580px;
+            background: #222;
+            border-radius: 50px;
+            padding: 10px;
+            position: relative;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            border: 2px solid #333;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .device-card:nth-child(1) { transform: scale(1.1) rotate(-2deg); z-index: 10; margin-right: -40px; }
+        .device-card:nth-child(2) { transform: scale(0.95) rotate(1deg); z-index: 5; margin-right: -40px; margin-top: 60px; }
+        .device-card:nth-child(3) { transform: scale(0.9) rotate(-1deg); z-index: 3; margin-right: -40px; margin-top: 100px; }
+        .device-card:nth-child(4) { transform: scale(0.85) rotate(2deg); z-index: 1; margin-top: 140px; }
+
+        .device-card:hover {
+            transform: translateY(-30px) scale(1.15) rotate(0deg) !important;
+            z-index: 100;
+            border-color: var(--accent-color);
+        }
+
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 42px;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #000;
+        }
+
+        .dynamic-island {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 24px;
+            background: #000;
+            border-radius: 20px;
+            z-index: 50;
+        }
+
+        .screen-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+            z-index: 30;
+            text-align: center;
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .app-desc {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .browser-bar {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 500;
+        }
+
+        @media (max-width: 1000px) {
+            body {
+                justify-content: flex-start;
+                padding-top: 60px;
+            }
+            .showcase-area { 
+                flex-direction: row; 
+                gap: 20px; 
+                overflow-x: auto; 
+                padding: 40px 25px;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: none; /* Firefox */
+                justify-content: flex-start;
+                -ms-overflow-style: none; /* IE/Edge */
+            }
+            .showcase-area::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Opera */
+            }
+            .device-card { 
+                margin: 0 !important; 
+                transform: none !important; 
+                flex-shrink: 0;
+                width: 280px;
+                scroll-snap-align: center;
+            }
+            .device-card:hover {
+                transform: scale(1.05) !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="showcase-area">
+        <!-- Asset Manager -->
+        <div onclick="parent.navigateTo('Asset/asset.html')" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen" style="background-image: url('vibe_asset_final.png')">
+                <div class="screen-overlay">
+                    <h3 class="app-title">Asset</h3>
+                    <p class="app-desc">Asset & Installment Flow</p>
+                </div>
+                <div class="browser-bar">vibestuff.com</div>
+            </div>
+        </div>
+
+        <!-- Task Manager -->
+        <div onclick="parent.navigateTo('task/task-manager.html')" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen" style="background-image: url('vibe_task_final.png')">
+                <div class="screen-overlay">
+                    <h3 class="app-title">Task</h3>
+                    <p class="app-desc">Smart Schedule & Mindmap</p>
+                </div>
+                <div class="browser-bar">vibestuff.com</div>
+            </div>
+        </div>
+
+        <!-- Learn Hub -->
+        <div onclick="parent.navigateTo('learn/')" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen" style="background-image: url('vibe_learn_final.png')">
+                <div class="screen-overlay">
+                    <h3 class="app-title">Learn</h3>
+                    <p class="app-desc">React & Vite Knowledge</p>
+                </div>
+                <div class="browser-bar">vibestuff.com</div>
+            </div>
+        </div>
+
+        <!-- Hobby Labs -->
+        <div onclick="parent.navigateTo('hobby/')" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen" style="background-image: url('vibe_hobby_final.png')">
+                <div class="screen-overlay">
+                    <h3 class="app-title">Hobby</h3>
+                    <p class="app-desc">Music & Creative Lab</p>
+                </div>
+                <div class="browser-bar">vibestuff.com</div>
+            </div>
+        </div>
+
+        <!-- Live TV -->
+        <div onclick="parent.navigateTo('livetv-app/')" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen" style="background-image: url('vibe_livetv_final.png')">
+                <div class="screen-overlay">
+                    <h3 class="app-title">Live TV</h3>
+                    <p class="app-desc">Streaming & Media</p>
+                </div>
+                <div class="browser-bar">vibestuff.com</div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
