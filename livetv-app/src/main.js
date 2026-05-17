@@ -33,31 +33,12 @@ const CHANNELS = [
   ] },
 
   // 종합편성
-  { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', urls: [
-    'https://jtbc-hls.gcdn.ntruss.com/jtbc/jtbc_1080p/playlist.m3u8',
-    'https://live-amagi.jtbc.co.kr/playlist.m3u8',
-    'https://jtbclive-lh.akamaihd.net/i/jtbc_1@189884/master.m3u8'
-  ]},
-  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'http://broadcast.tvchosun.com/onair/on.cstv', urls: [
-    'https://tvchosun-live.akamaized.net/hls/live/2039304/tvchosun/playlist.m3u8',
-    'https://tvchosun-lh.akamaihd.net/i/tvchosun_1@300298/master.m3u8'
-  ]},
-  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', officialUrl: 'https://www.ichannela.com/com/onair.do', urls: [
-    'https://ca-live.akamaized.net/hls/live/2039230/ca/playlist.m3u8',
-    'https://channela-lh.akamaihd.net/i/channela_1@300300/master.m3u8'
-  ]},
-  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@MBN_NEWS', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/onair/', urls: [
-    'https://mbn-live.akamaized.net/hls/live/2039235/mbn/playlist.m3u8',
-    'https://mbn-lh.akamaihd.net/i/mbn_1@300302/master.m3u8'
-  ]},
-  { id: 'jtbc2', name: 'JTBC2', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', urls: [
-    'https://jtbc-hls.gcdn.ntruss.com/jtbc2/jtbc2_1080p/playlist.m3u8',
-    'https://jtbc2live-lh.akamaihd.net/i/jtbc2_1@379797/master.m3u8'
-  ]},
-  { id: 'jtbc4', name: 'JTBC4', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', urls: [
-    'https://jtbc-hls.gcdn.ntruss.com/jtbc4/jtbc4_1080p/playlist.m3u8',
-    'https://jtbc4live-lh.akamaihd.net/i/jtbc4_1@462783/master.m3u8'
-  ]},
+  { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
+  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'http://broadcast.tvchosun.com/onair/on.cstv', noPlayableHls: true, urls: [] },
+  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', officialUrl: 'https://www.ichannela.com/com/onair.do', noPlayableHls: true, urls: [] },
+  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@MBN_NEWS', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/onair/', noPlayableHls: true, urls: [] },
+  { id: 'jtbc2', name: 'JTBC2', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
+  { id: 'jtbc4', name: 'JTBC4', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
 
   // 뉴스/경제
   { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChLGqe01qeG0QnPsJXLTojg', urls: [
@@ -420,6 +401,12 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   isYouTubeMode = false;
 
   updateActiveUI();
+
+  if (ch.noPlayableHls) {
+    showYouTubeFallback(ch);
+    return;
+  }
+
   showLoading(true, `${ch.name} 연결 중...`);
   updateTitle(ch.name);
 
