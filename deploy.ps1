@@ -15,7 +15,7 @@ New-Item -ItemType Directory -Path $deployDir | Out-Null
 # 2. 'learn' 프로젝트 빌드
 Write-Host "> 'learn' 프로젝트 빌드 중..." -ForegroundColor Yellow
 Set-Location learn
-npm run build
+npm.cmd run build
 # 빌드 결과물에서 불필요한 .git 폴더 제거 (GitHub Pages 간섭 방지)
 if (Test-Path "dist/.git") { Remove-Item -Recurse -Force "dist/.git" }
 Set-Location ..
@@ -25,6 +25,13 @@ Write-Host "> 'learn' 빌드 결과물 복사 중..."
 if (Test-Path "$deployDir/learn") { Remove-Item -Recurse -Force "$deployDir/learn" }
 New-Item -ItemType Directory -Path "$deployDir/learn" | Out-Null
 Copy-Item -Path "learn/dist/*" -Destination "$deployDir/learn" -Recurse -Force
+
+# 3-2. 'livetv-app' 프로젝트 빌드
+Write-Host "> 'livetv-app' 프로젝트 빌드 중..." -ForegroundColor Yellow
+Set-Location livetv-app
+npm.cmd run build
+Set-Location ..
+
 
 # 4. 기타 정적 폴더 복사 (Asset, task, hobby 등)
 $staticFolders = @("Asset", "task", "hobby", "livetv-app", "vibe-hybrid-app")
@@ -53,11 +60,20 @@ if (Test-Path "index.html") {
     Write-Host "> index.html 복사 중..."
     Copy-Item "index.html" $deployDir 
 }
+if (Test-Path "home.html") { 
+    Write-Host "> home.html 복사 중..."
+    Copy-Item "home.html" $deployDir 
+}
+# 포털 메인 카드 이미지 파일(vibe_*.png) 복사
+Write-Host "> vibe_*.png 이미지 파일 복사 중..."
+Get-ChildItem -Path . -Filter vibe_*.png | Copy-Item -Destination $deployDir
 
 # 6. GitHub Pages 배포
 Write-Host "> GitHub Pages 업로드 중 (gh-pages 브랜치)..." -ForegroundColor Green
 Set-Location $deployDir
 git init
+git config user.name "uzenkaze"
+git config user.email "uzenkaze@users.noreply.github.com"
 git add .
 git commit -m "Integrated deploy: learn, Asset, task, and others"
 git push -f https://github.com/uzenkaze/vibe.git master:gh-pages

@@ -57,28 +57,28 @@ const CHANNELS = [
   ]},
 
   // 뉴스/경제
-  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', urls: [
+  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChLGqe01qeG0QnPsJXLTojg', urls: [
     'https://ytn-live.akamaized.net/hls/live/2038573/ytn/playlist.m3u8',
     'https://ytnlive-lh.akamaihd.net/i/ytn_1@300295/master.m3u8',
     'http://ytndmb.ytn.co.kr:1935/live/ytn/playlist.m3u8'
   ]},
-  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', urls: [
+  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', urls: [
     'https://yonhapnewstv.akamaized.net/hls/live/2039234/yonhapnewstv/playlist.m3u8',
     'https://yonhapnewstv-lh.akamaihd.net/i/yonhapnewstv_1@300303/master.m3u8'
   ]},
-  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', urls: [
+  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytChannelId: 'UC34z1u3F9Z8_q1QJ6g_8-Xw', urls: [
     'http://183.110.27.87/mtnlive/720/playlist.m3u8',
     'http://live.mtn.co.kr/hls/mtn/playlist.m3u8'
   ]},
-  { id: 'ktv', name: 'KTV 국민방송', network: 'KTV', category: '뉴스/경제', ytHandle: '@KTVKorea', urls: [
+  { id: 'ktv', name: 'KTV 국민방송', network: 'KTV', category: '뉴스/경제', ytHandle: '@KTVKorea', ytChannelId: 'UCj8Snyrs1y-wnBQiUmGrTjw', urls: [
     'https://hlive.ktv.go.kr/live/klive_h.stream/playlist.m3u8',
     'https://hlive.ktv.go.kr/live/klive_l.stream/playlist.m3u8'
   ]},
-  { id: 'arirang', name: 'Arirang TV', network: 'ARIRANG', category: '뉴스/경제', ytHandle: '@arirangnews', urls: [
+  { id: 'arirang', name: 'Arirang TV', network: 'ARIRANG', category: '뉴스/경제', ytHandle: '@arirangnews', ytChannelId: 'UCV2R_C_c4Xp8k-L1qT7_hSw', urls: [
     'https://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8',
     'http://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8'
   ]},
-  { id: 'tbs', name: 'TBS 교통방송', network: 'TBS', category: '뉴스/경제', ytHandle: '@tbsnews', urls: [
+  { id: 'tbs', name: 'TBS 교통방송', network: 'TBS', category: '뉴스/경제', ytHandle: '@tbsnews', ytChannelId: 'UCF_yO86W0-S06z1L299OqYQ', urls: [
     'https://cdntv.tbs.seoul.kr/tbs/tbs_tv_web.smil/playlist.m3u8',
     'https://tbslive.tbs.seoul.kr/tbs/tbs_tv_web.smil/playlist.m3u8'
   ]},
@@ -135,6 +135,15 @@ const CHANNELS = [
     'https://kbs-hls.gcdn.ntruss.com/kbs/kbsnplus/playlist.m3u8',
     'https://624a79c87201d.streamlock.net/kbsnplus/live/playlist.m3u8'
   ]},
+  { id: 'kbaduk', name: 'K바둑', network: 'KBADUK', category: '스포츠', ytChannelId: 'UCfC7lLfshm-GGKengvBm_HQ', urls: [
+    'https://kbaduk.gscdn.com/kbaduk/live/playlist.m3u8'
+  ]},
+  { id: 'pba_tv', name: 'PBA 프로당구', network: 'PBA', category: '스포츠', ytChannelId: 'UC19P201D07j96D94y-uT1hQ', urls: [] },
+  { id: 'golfzone_tv', name: '골프존 TV', network: 'GOLFZON', category: '스포츠', ytChannelId: 'UCp3E0T2049e6f_1G-mFvX_Q', urls: [] },
+  { id: 'lck_esports', name: 'LCK e스포츠', network: 'LCK', category: '스포츠', ytChannelId: 'UC112c3fDqJqB-aYfH_QO1zQ', urls: [] },
+  { id: 'fishing_tv', name: '한국낚시방송', network: 'FISHING', category: '스포츠', urls: [
+    'https://fishingtv.gscdn.com/fishingtv/live/playlist.m3u8'
+  ]},
   // 교육/교양
   { id: 'job_plus', name: '한국직업방송', network: 'JOB_PLUS', category: '교육/교양', urls: [
     'https://live.jobplustv.or.kr/live/wowtvlive1.sdp/playlist.m3u8',
@@ -165,10 +174,12 @@ const placeholderMob = document.getElementById('player-placeholder-mobile');
 const loadingOverlay = document.getElementById('loading-overlay');
 const nowPlayingPC   = document.getElementById('now-playing-title');
 const nowPlayingMob  = document.getElementById('now-playing-title-mobile');
-const catContainerPC = document.getElementById('category-tabs');
+const catContainerPC = document.getElementById('category-tabs-pc');
 const catContainerMob = document.getElementById('category-tabs-mobile');
 const gridPC         = document.getElementById('channel-grid');
 const gridMob        = document.getElementById('channel-grid-mobile');
+const ytIframePC     = document.getElementById('youtube-iframe-pc');
+const ytIframeMob    = document.getElementById('youtube-iframe-mobile');
 
 /* =================== UTILS =================== */
 function showLoading(show, msg = '연결 중...') {
@@ -360,12 +371,38 @@ function createCard(ch) {
 }
 
 function getNetStyle(n) {
-  const m = { 'KBS1': { bg: '#005596', color: '#fff' }, 'KBS2': { bg: '#e4002b', color: '#fff' }, 'MBC': { bg: '#111', color: '#fff' }, 'SBS': { bg: '#222', color: '#fff' }, 'TVN': { bg: '#e4002b', color: '#fff' }, 'MNET': { bg: '#000', color: '#fff' } };
+  const m = { 
+    'KBS1': { bg: '#005596', color: '#fff' }, 
+    'KBS2': { bg: '#e4002b', color: '#fff' }, 
+    'MBC': { bg: '#111', color: '#fff' }, 
+    'SBS': { bg: '#222', color: '#fff' }, 
+    'TVN': { bg: '#e4002b', color: '#fff' }, 
+    'MNET': { bg: '#000', color: '#fff' },
+    'KBADUK': { bg: '#1A362B', color: '#3CD070' },
+    'PBA': { bg: '#0B2046', color: '#FFD700' },
+    'GOLFZON': { bg: '#0A5C36', color: '#8CE08C' },
+    'LCK': { bg: '#0F172A', color: '#E2E8F0' },
+    'FISHING': { bg: '#0F3A5F', color: '#68B6EF' }
+  };
   return m[n] || { bg: '#1e1e28', color: '#888' };
 }
 
 function getNetName(ch) {
-  const m = { 'TV_CHOSUN': 'TV\n조선', 'CHANNEL_A': '채널A', 'YONHAP': '연합\n뉴스', 'GS_SHOP': 'GS\nSHOP', 'CJ_SHOP': 'CJ\n온스타일', 'JOB_PLUS': '직업\nTV', 'OUN': '방송대\nTV', 'GUGAK_TV': '국악\nTV' };
+  const m = { 
+    'TV_CHOSUN': 'TV\n조선', 
+    'CHANNEL_A': '채널A', 
+    'YONHAP': '연합\n뉴스', 
+    'GS_SHOP': 'GS\nSHOP', 
+    'CJ_SHOP': 'CJ\n온스타일', 
+    'JOB_PLUS': '직업\nTV', 
+    'OUN': '방송대\nTV', 
+    'GUGAK_TV': '국악\nTV',
+    'KBADUK': 'K\n바둑',
+    'PBA': 'PBA\n당구',
+    'GOLFZON': '골프존\nTV',
+    'LCK': 'LCK\ne스포츠',
+    'FISHING': '낚시\n방송'
+  };
   return m[ch.network] || ch.name.substring(0, 5);
 }
 
@@ -379,15 +416,25 @@ async function playChannel(ch, urlIdx = 0) {
   if (hls) { hls.destroy(); hls = null; }
   if (playbackTimeout) clearTimeout(playbackTimeout);
 
+  // YouTube IFrame 리셋 및 숨기기
+  [ytIframePC, ytIframeMob].forEach(iframe => {
+    if (iframe) {
+      iframe.src = '';
+      iframe.classList.add('hidden');
+    }
+  });
+
   const target = isPC() ? videoEl : videoElMob;
   [videoEl, videoElMob, placeholder, placeholderMob].forEach(el => el?.classList.add('hidden'));
-  target.classList.remove('hidden');
 
-  // 기존 YouTube fallback UI 숨기기 (HLS 재생 시도 시) - 인라인 style 직접 제어
+  // 기존 YouTube fallback UI 숨기기 - 인라인 style 직접 제어
   ['yt-fallback-pc', 'yt-fallback-mobile'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+
+  // 유튜브 재생은 HLS URL들이 모두 실패한 뒤 tryNextUrl에서 폴백 처리됩니다.
+  target.classList.remove('hidden');
 
 
   // url(단수) 필드를 urls 배열로 정규화 (최초 1회)
@@ -457,12 +504,37 @@ function tryNextUrl(ch, currentIdx) {
   const urlList = ch.urls || (ch.url ? [ch.url] : []);
   if (currentIdx < urlList.length - 1) {
     playChannel(ch, currentIdx + 1);
+  } else if (ch.ytChannelId) {
+    // 모든 HLS URL 실패 및 유튜브 채널 ID 존재 → 유튜브 라이브 iframe 즉시 노출 및 재생
+    showYouTubeIframePlayback(ch);
   } else if (ch.ytHandle) {
-    // 모든 HLS URL 실패 → YouTube 라이브로 fallback
+    // 모든 HLS URL 실패 및 핸들만 존재 → 기존 YouTube 외부 링크 폴백 UI
     showYouTubeFallback(ch);
   } else {
     showLoading(true, '현재 채널 접속이 불안정합니다. 다른 채널을 선택해 주세요.');
   }
+}
+
+function showYouTubeIframePlayback(ch) {
+  showLoading(false);
+  if (hls) { hls.destroy(); hls = null; }
+  if (playbackTimeout) clearTimeout(playbackTimeout);
+
+  // 비디오 요소 숨기기
+  [videoEl, videoElMob, placeholder, placeholderMob].forEach(el => el?.classList.add('hidden'));
+
+  // 기존 YouTube fallback UI 숨기기 - 인라인 style 직접 제어
+  ['yt-fallback-pc', 'yt-fallback-mobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  const ytIframe = isPC() ? ytIframePC : ytIframeMob;
+  if (ytIframe) {
+    ytIframe.classList.remove('hidden');
+    ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0`;
+  }
+  updateTitle(`${ch.name} · YouTube Live`);
 }
 
 function showYouTubeFallback(ch) {
@@ -521,6 +593,15 @@ window.hideFallback = (id) => {
   const el = document.getElementById(id);
   if (el) el.style.display = 'none';
   [placeholder, placeholderMob].forEach(el => el?.classList.remove('hidden'));
+  
+  // YouTube IFrame 초기화
+  [ytIframePC, ytIframeMob].forEach(iframe => {
+    if (iframe) {
+      iframe.src = '';
+      iframe.classList.add('hidden');
+    }
+  });
+
   updateTitle('');
   activeChannelId = null;
   updateActiveUI();
@@ -643,7 +724,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderChannels();
   initControls(); // 컨트롤 초기화
   preloadWorkingUrls(); // 접속가능한 지상파 URL 사전 확인
-  await loadExternalPlaylist();
-  // 자동 재생 방지 - 사용자가 직접 클릭 시 재생되도록 처리
-  // if (CHANNELS.length > 0) playChannel(CHANNELS[0]);
+  // M3U 외부 리스트 로딩은 수천 개의 채널로 인해 렌더링 렉 및 브라우저 프리징을 유발하므로 자동 로드에서 제외
+  // await loadExternalPlaylist();
 });

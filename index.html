@@ -302,6 +302,9 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // Calculate the base path of the application (e.g. '/' or '/vibe/')
+        const APP_BASE = window.location.href.split('#')[0].split('?')[0].substring(0, window.location.href.split('#')[0].split('?')[0].lastIndexOf('/') + 1);
+
         let player;
         let isPlayerReady = false;
         let currentSong = null;
@@ -451,8 +454,8 @@
             if (!frame) return;
 
             try {
-                // Normalize URL for comparison
-                const targetUrl = new URL(url, window.location.origin).href;
+                // Normalize URL for comparison using APP_BASE instead of origin
+                const targetUrl = new URL(url, APP_BASE).href;
                 let currentUrl = "";
                 try {
                     currentUrl = frame.contentWindow ? frame.contentWindow.location.href : frame.src;
@@ -518,9 +521,8 @@
                     const frame = document.getElementById('contentFrame');
                     if (frame && frame.contentWindow) {
                         const fullUrl = frame.contentWindow.location.href;
-                        const origin = window.location.origin;
-                        if (fullUrl.startsWith(origin)) {
-                            const relPath = fullUrl.replace(origin + '/', '');
+                        if (fullUrl.startsWith(APP_BASE)) {
+                            const relPath = fullUrl.replace(APP_BASE, '');
                             if (relPath && !relPath.includes('about:blank')) {
                                 localStorage.setItem('vibe_last_path', relPath);
                                 // Also update UI based on sub-path
