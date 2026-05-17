@@ -98,6 +98,10 @@ const CHANNELS = [
   ]},
 
   // 방송/오락
+  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
+  { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
+  { id: 'mbc_on', name: 'MBC On', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
+  { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
   { id: 'tvn', name: 'tvN', network: 'TVN', category: '방송/오락', urls: [
     'http://moatv.net/live/tvn.m3u8',
     'https://tvn-live.akamaized.net/hls/live/2039202/tvn/playlist.m3u8'
