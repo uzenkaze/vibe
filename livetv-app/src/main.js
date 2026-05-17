@@ -98,10 +98,18 @@ const CHANNELS = [
   ]},
 
   // 방송/오락
-  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
-  { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
-  { id: 'mbc_on', name: 'MBC On', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
-  { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do', noPlayableHls: true, urls: [] },
+  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', urls: [
+    'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
+  ] },
+  { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', urls: [
+    'https://live2.mbcmpp.co.kr/etc1/_definst_/drama/playlist.m3u8'
+  ] },
+  { id: 'mbc_on', name: 'MBC On', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=3', urls: [
+    'https://live3.mbcmpp.co.kr/etc3/_definst_/on/playlist.m3u8'
+  ] },
+  { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=4', urls: [
+    'https://live3.mbcmpp.co.kr/etc4/_definst_/m/playlist.m3u8'
+  ] },
   { id: 'tvn', name: 'tvN', network: 'TVN', category: '방송/오락', urls: [
     'http://moatv.net/live/tvn.m3u8',
     'https://tvn-live.akamaized.net/hls/live/2039202/tvn/playlist.m3u8'
