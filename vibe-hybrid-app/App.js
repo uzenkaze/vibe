@@ -25,13 +25,15 @@ export default function App() {
   }
 
   // URL of the live server running the existing Vibe Music Box HTML version
-  const appUrl = `http://${localIp}:5500/hobby-app/www/index.html`;
+  // Add a boot-time cache buster query parameter to force new HTTP fetch on every app start
+  const [appUrl] = useState(() => `http://${localIp}:5500/hobby-app/www/index.html?t=${Date.now()}`);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1e293b" />
       <View style={styles.webviewContainer}>
         <WebView 
+          key={appUrl}
           source={{ uri: appUrl }} 
           style={styles.webview}
           allowsInlineMediaPlayback={true}
@@ -40,6 +42,8 @@ export default function App() {
           domStorageEnabled={true}
           originWhitelist={['*']}
           mixedContentMode="always"
+          cacheEnabled={false}
+          incognito={true}
         />
       </View>
     </SafeAreaView>
