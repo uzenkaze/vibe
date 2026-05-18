@@ -32,6 +32,36 @@ const CHANNELS = [
     'https://vod.obs.co.kr:444/live/obsstream1/tv.stream/playlist.m3u8'
   ] },
 
+  // 방송/오락
+  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', urls: [
+    'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
+  ] },
+  { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', urls: [
+    'https://live2.mbcmpp.co.kr/etc1/_definst_/drama/playlist.m3u8'
+  ] },
+  { id: 'mbc_on', name: 'MBC On', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=3', urls: [
+    'https://live3.mbcmpp.co.kr/etc3/_definst_/on/playlist.m3u8'
+  ] },
+  { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=4', urls: [
+    'https://live3.mbcmpp.co.kr/etc4/_definst_/m/playlist.m3u8'
+  ] },
+  { id: 'tvn', name: 'tvN', network: 'TVN', category: '방송/오락', urls: [
+    'http://moatv.net/live/tvn.m3u8',
+    'https://tvn-live.akamaized.net/hls/live/2039202/tvn/playlist.m3u8'
+  ]},
+  { id: 'mnet', name: 'Mnet', network: 'MNET', category: '방송/오락', urls: [
+    'http://moatv.net/live/mnet.m3u8',
+    'https://mnet-live.akamaized.net/hls/live/2039204/mnet/playlist.m3u8'
+  ]},
+  { id: 'kbs_joy', name: 'KBS Joy', network: 'KBS_JOY', category: '방송/오락', kbsApiCode: 'N92', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N92&ch_type=globalList', urls: [
+    'https://kbs-hls.gcdn.ntruss.com/kbs/kbsjoy/playlist.m3u8',
+    'https://624a79c87201d.streamlock.net/kbsjoy/live/playlist.m3u8'
+  ]},
+  { id: 'kbs_drama', name: 'KBS Drama', network: 'KBS_DRAMA', category: '방송/오락', urls: [
+    'https://kbs-hls.gcdn.ntruss.com/kbs/kbsdrama/playlist.m3u8',
+    'https://624a79c87201d.streamlock.net/kbsdrama/live/playlist.m3u8'
+  ]},
+
   // 종합편성
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
   { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'http://broadcast.tvchosun.com/onair/on.cstv', noPlayableHls: true, urls: [] },
@@ -95,36 +125,6 @@ const CHANNELS = [
   { id: 'w_shop', name: 'W쇼핑', network: 'W_SHOP', category: '쇼핑', urls: [
     'https://liveout.catenoid.net/live-05-wshopping/wshopping_1500k/playlist.m3u8',
     'https://liveout.catenoid.net/live-05-wshopping/wshopping_900k/playlist.m3u8'
-  ]},
-
-  // 방송/오락
-  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', urls: [
-    'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
-  ] },
-  { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', urls: [
-    'https://live2.mbcmpp.co.kr/etc1/_definst_/drama/playlist.m3u8'
-  ] },
-  { id: 'mbc_on', name: 'MBC On', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=3', urls: [
-    'https://live3.mbcmpp.co.kr/etc3/_definst_/on/playlist.m3u8'
-  ] },
-  { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=4', urls: [
-    'https://live3.mbcmpp.co.kr/etc4/_definst_/m/playlist.m3u8'
-  ] },
-  { id: 'tvn', name: 'tvN', network: 'TVN', category: '방송/오락', urls: [
-    'http://moatv.net/live/tvn.m3u8',
-    'https://tvn-live.akamaized.net/hls/live/2039202/tvn/playlist.m3u8'
-  ]},
-  { id: 'mnet', name: 'Mnet', network: 'MNET', category: '방송/오락', urls: [
-    'http://moatv.net/live/mnet.m3u8',
-    'https://mnet-live.akamaized.net/hls/live/2039204/mnet/playlist.m3u8'
-  ]},
-  { id: 'kbs_joy', name: 'KBS Joy', network: 'KBS_JOY', category: '방송/오락', urls: [
-    'https://kbs-hls.gcdn.ntruss.com/kbs/kbsjoy/playlist.m3u8',
-    'https://624a79c87201d.streamlock.net/kbsjoy/live/playlist.m3u8'
-  ]},
-  { id: 'kbs_drama', name: 'KBS Drama', network: 'KBS_DRAMA', category: '방송/오락', urls: [
-    'https://kbs-hls.gcdn.ntruss.com/kbs/kbsdrama/playlist.m3u8',
-    'https://624a79c87201d.streamlock.net/kbsdrama/live/playlist.m3u8'
   ]},
   // 스포츠
   { id: 'kbs_n_sports', name: 'KBS N Sports', network: 'KBS_SPORTS', category: '스포츠', urls: [
