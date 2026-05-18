@@ -41,6 +41,12 @@ const CHANNELS = [
     'https://kbs-hls.gcdn.ntruss.com/kbs/kbsdrama/playlist.m3u8',
     'https://624a79c87201d.streamlock.net/kbsdrama/live/playlist.m3u8'
   ]},
+  { id: 'kbs_story', name: 'KBS Story', network: 'KBS_STORY', category: '방송/오락', kbsApiCode: 'N94', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N94&ch_type=globalList', urls: [] },
+  { id: 'kbs_life', name: 'KBS Life', network: 'KBS_LIFE', category: '방송/오락', kbsApiCode: 'N93', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N93&ch_type=globalList', urls: [] },
+  { id: 'kbs_kids', name: 'KBS Kids', network: 'KBS_KIDS', category: '방송/오락', kbsApiCode: 'N96', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N96&ch_type=globalList', urls: [] },
+  { id: 'kbs_world', name: 'KBS World', network: 'KBS_WORLD', category: '방송/오락', kbsApiCode: '14', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=14&ch_type=globalList', urls: [
+    'https://liveh12.vtvprime.vn/hls/KBS/03.m3u8'
+  ]},
   { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', urls: [
     'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
   ] },
@@ -404,6 +410,43 @@ function getChannelCardStyleAndContent(ch, active) {
           <div class="absolute w-20 h-20 rounded-full bg-white/20 -top-8 -left-8"></div>
         </div>
         <div class="flex items-center gap-1 z-10"><span class="font-black text-white text-base tracking-tighter drop-shadow-md">KBS <span class="font-light">drama</span></span></div>
+      `
+    },
+    'kbs_story': {
+      bg: 'linear-gradient(135deg, #f43f5e 0%, #881337 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-15 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-24 h-24 rounded-full border border-white -top-6 -right-6"></div>
+        </div>
+        <div class="flex items-center gap-1 z-10"><span class="font-black text-white text-base tracking-tighter drop-shadow-md">KBS <span class="font-light text-rose-300">story</span></span></div>
+      `
+    },
+    'kbs_life': {
+      bg: 'linear-gradient(135deg, #0d9488 0%, #115e59 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-15 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-36 h-2 bg-white/10 rotate-12 -top-2 -left-2"></div>
+        </div>
+        <div class="flex items-center gap-1 z-10"><span class="font-black text-white text-base tracking-tighter drop-shadow-md">KBS <span class="font-light text-teal-300">life</span></span></div>
+      `
+    },
+    'kbs_kids': {
+      bg: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-20 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-16 h-16 rounded-full bg-white/20 -bottom-6 -right-6"></div>
+        </div>
+        <div class="flex items-center gap-1 z-10"><span class="font-black text-white text-base tracking-tighter drop-shadow-md">KBS <span class="font-light text-yellow-300">kids</span></span></div>
+      `
+    },
+    'kbs_world': {
+      bg: 'linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-15 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-24 h-24 rounded-full border border-white/20 -top-10 -right-10"></div>
+          <div class="absolute w-24 h-24 rounded-full border border-white/20 -bottom-10 -left-10"></div>
+        </div>
+        <div class="flex items-center gap-1 z-10"><span class="font-black text-white text-base tracking-tighter drop-shadow-md">KBS <span class="font-light text-sky-300">world</span></span></div>
       `
     },
     'mbc': {
