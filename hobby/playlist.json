@@ -50,6 +50,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_3cVroylPpvg",
+      "title": "[#2025MAMA] Netflix Kpop Demon Hunters HUNTR/X (feat. BABYMONSTER) | Mnet 251129 방송",
+      "artist": "Mnet K-POP",
+      "youtubeId": "3cVroylPpvg",
+      "duration": "4:16",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: Mnet K-POP\n길이: 4:16"
+    },
+    {
       "id": "global_UPkyursCTfE",
       "title": "BABYMONSTER (베이비몬스터) - CHOOM (춤) | Show! MusicCore | MBC260509방송",
       "artist": "MBCkpop",
@@ -164,15 +173,7 @@
       "youtubeId": "IHt4kgF-Ytk",
       "isGlobal": true,
       "lyrics": "(연관 추천곡) - 힐링트리뮤직 Healing Tree Music & Sounds"
-    },
-    {
-      "id": "global_ru4DicGUCY0",
-      "title": "𝐏𝐥𝐚𝐲𝐥𝐢𝐬𝐭 지금 가장 핫하고 최신 노래들 🎶  감성힙합R&B인디 플레이리스트 바로 듣기! 🎧",
-      "artist": "감정 음악",
-      "youtubeId": "ru4DicGUCY0",
-      "isGlobal": true,
-      "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
     }
   ],
-  "lastSync": "2026-05-18T06:42:19.768Z"
+  "lastSync": "2026-05-18T06:42:30.725Z"
 }
