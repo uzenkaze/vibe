@@ -59,14 +59,6 @@ const CHANNELS = [
   { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=4', urls: [
     'https://live3.mbcmpp.co.kr/etc4/_definst_/m/playlist.m3u8'
   ] },
-  { id: 'tvn', name: 'tvN', network: 'TVN', category: '방송/오락', urls: [
-    'http://moatv.net/live/tvn.m3u8',
-    'https://tvn-live.akamaized.net/hls/live/2039202/tvn/playlist.m3u8'
-  ]},
-  { id: 'mnet', name: 'Mnet', network: 'MNET', category: '방송/오락', urls: [
-    'http://moatv.net/live/mnet.m3u8',
-    'https://mnet-live.akamaized.net/hls/live/2039204/mnet/playlist.m3u8'
-  ]},
 
   // 정주행 24
   { id: 'ssam_my_way', name: '쌈, 마이웨이', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod1', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod1&ch_type=globalList', urls: [] },
