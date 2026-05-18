@@ -72,16 +72,16 @@ const CHANNELS = [
   { id: 'jtbc4', name: 'JTBC4', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
 
   // 뉴스/경제
-  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChLGqe01qeG0QnPsJXLTojg', officialUrl: 'https://www.ytn.co.kr/live/', urls: [
+  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', officialUrl: 'https://www.ytn.co.kr/live/', urls: [
     'https://ytn-live.akamaized.net/hls/live/2038573/ytn/playlist.m3u8',
     'https://ytnlive-lh.akamaihd.net/i/ytn_1@300295/master.m3u8',
     'http://ytndmb.ytn.co.kr:1935/live/ytn/playlist.m3u8'
   ]},
-  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', urls: [
+  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', urls: [
     'https://yonhapnewstv.akamaized.net/hls/live/2039234/yonhapnewstv/playlist.m3u8',
     'https://yonhapnewstv-lh.akamaihd.net/i/yonhapnewstv_1@300303/master.m3u8'
   ]},
-  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytChannelId: 'UC34z1u3F9Z8_q1QJ6g_8-Xw', urls: [
+  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', officialUrl: 'https://news.mtn.co.kr/live/onair.html', urls: [
     'http://183.110.27.87/mtnlive/720/playlist.m3u8',
     'http://live.mtn.co.kr/hls/mtn/playlist.m3u8'
   ]},
@@ -726,7 +726,7 @@ function showYouTubeFallback(ch) {
     <div style="text-align:center;">
       <div style="font-size:2.5rem;margin-bottom:8px;">📺</div>
       <div style="color:#fff;font-weight:800;font-size:1.1rem;margin-bottom:6px;">${ch.name}</div>
-      <div style="color:#9ca3af;font-size:0.8rem;margin-bottom:20px;">HLS 스트림 연결 실패 · 아래 경로로 시청해 보세요</div>
+      <div style="color:#9ca3af;font-size:0.8rem;margin-bottom:20px;line-height:1.5;">HLS 스트림 연결 실패 또는 방송사 보안 정책으로 인해<br>공식 홈페이지에서 안전하게 감상하실 수 있습니다.</div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
         ${buttonsHtml}
       </div>
