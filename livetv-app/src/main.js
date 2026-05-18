@@ -658,6 +658,13 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   currentUrlIdx = urlIdx;
   isYouTubeMode = false;
 
+  if (!isPC()) {
+    const mobPlayer = document.querySelector('.mobile-player-fixed');
+    if (mobPlayer) {
+      mobPlayer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   updateActiveUI();
 
   if (ch.noPlayableHls) {
