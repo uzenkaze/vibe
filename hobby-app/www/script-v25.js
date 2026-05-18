@@ -190,7 +190,9 @@ const audioModeArt = document.getElementById('audioModeArt');
 // Real-time clock update
 function updateTime() {
     const now = new Date();
-    currentTimeEl.textContent = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    currentTimeEl.textContent = `${hours}:${minutes}`;
 }
 
 // Start app
