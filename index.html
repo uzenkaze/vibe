@@ -453,9 +453,15 @@
             const frame = document.getElementById('contentFrame');
             if (!frame) return;
 
+            // 로컬 개발 환경(localhost/127.0.0.1) 지원을 위해 livetv/ 경로를 livetv-app/으로 내부 매핑
+            let resolvedUrl = url;
+            if (url.startsWith('livetv/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                resolvedUrl = url.replace('livetv/', 'livetv-app/');
+            }
+
             try {
                 // Normalize URL for comparison using APP_BASE instead of origin
-                const targetUrl = new URL(url, APP_BASE).href;
+                const targetUrl = new URL(resolvedUrl, APP_BASE).href;
                 let currentUrl = "";
                 try {
                     currentUrl = frame.contentWindow ? frame.contentWindow.location.href : frame.src;
@@ -463,11 +469,11 @@
                     currentUrl = frame.src;
                 }
                 
-                if (currentUrl !== targetUrl && !currentUrl.endsWith(url)) {
-                    frame.src = url;
+                if (currentUrl !== targetUrl && !currentUrl.endsWith(resolvedUrl)) {
+                    frame.src = resolvedUrl;
                 }
             } catch(e) {
-                frame.src = url;
+                frame.src = resolvedUrl;
             }
             
             // Update URL hash for clean routing
@@ -522,8 +528,12 @@
                     if (frame && frame.contentWindow) {
                         const fullUrl = frame.contentWindow.location.href;
                         if (fullUrl.startsWith(APP_BASE)) {
-                            const relPath = fullUrl.replace(APP_BASE, '');
+                            let relPath = fullUrl.replace(APP_BASE, '');
                             if (relPath && !relPath.includes('about:blank')) {
+                                // 로컬 개발 환경에서 역방향 매핑 (livetv-app/ ➡️ livetv/)
+                                if (relPath.startsWith('livetv-app/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                                    relPath = relPath.replace('livetv-app/', 'livetv/');
+                                }
                                 localStorage.setItem('vibe_last_path', relPath);
                                 // Also update UI based on sub-path
                                 updatePortalUI(relPath);
