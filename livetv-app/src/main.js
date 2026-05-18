@@ -33,10 +33,10 @@ const CHANNELS = [
   ] },
 
   // 방송/오락
-  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', urls: [
+  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', urls: [
     'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
   ] },
-  { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', urls: [
+  { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', ytHandle: '@mbc_drama', urls: [
     'https://live2.mbcmpp.co.kr/etc1/_definst_/drama/playlist.m3u8'
   ] },
   { id: 'mbc_on', name: 'MBC On', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=3', urls: [
@@ -521,8 +521,8 @@ function tryNextUrl(ch, currentIdx) {
   } else if (ch.ytChannelId) {
     // 모든 HLS URL 실패 및 유튜브 채널 ID 존재 → 유튜브 라이브 iframe 즉시 노출 및 재생
     showYouTubeIframePlayback(ch);
-  } else if (ch.ytHandle) {
-    // 모든 HLS URL 실패 및 핸들만 존재 → 기존 YouTube 외부 링크 폴백 UI
+  } else if (ch.ytHandle || ch.officialUrl) {
+    // 모든 HLS URL 실패 및 핸들 혹은 공식 URL 존재 → 폴백 UI
     showYouTubeFallback(ch);
   } else {
     showLoading(true, '현재 채널 접속이 불안정합니다. 다른 채널을 선택해 주세요.');
