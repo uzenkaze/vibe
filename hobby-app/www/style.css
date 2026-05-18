@@ -1241,6 +1241,63 @@ body {
         overflow: visible; /* Prevents internal scrolling */
     }
 
+    .song-item {
+        padding: 8px 10px !important;
+        gap: 5px !important;
+    }
+
+    .song-number {
+        min-width: 15px !important;
+        font-size: 0.75rem !important;
+    }
+
+    .song-thumbnail {
+        width: 60px !important;
+        height: 42px !important;
+        margin: 0 8px !important;
+    }
+
+    .song-info {
+        flex: 1 !important;
+        min-width: 0 !important;
+        padding-right: 5px !important;
+    }
+
+    .song-title {
+        font-size: 0.9rem !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        word-break: break-all !important;
+    }
+
+    .song-artist {
+        font-size: 0.75rem !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .song-actions {
+        display: flex !important;
+        gap: 4px !important;
+        flex-shrink: 0 !important;
+        align-items: center !important;
+    }
+
+    .icon-action-btn {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 0.95rem !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 50% !important;
+    }
+
 
     .lyrics-container {
         max-height: none;
