@@ -333,7 +333,7 @@ function renderChannels() {
       section.innerHTML = `<h3 class="text-white/40 text-[11px] font-bold px-4 mb-3 uppercase tracking-widest">${cat}</h3>`;
       const row = document.createElement('div');
       row.className = 'channel-row no-scrollbar';
-      row.style.cssText = 'display:flex; flex-wrap:nowrap; gap:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 14px 15px; touch-action: pan-x;';
+      row.style.cssText = 'display:flex; flex-wrap:nowrap; gap:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 14px 15px; touch-action: pan-x pan-y;';
       chs.forEach(ch => row.appendChild(createCard(ch)));
       section.appendChild(row);
       container.appendChild(section);
