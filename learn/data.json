@@ -132,12 +132,12 @@
   "memos": [
     {
       "id": "memo_mpawsdf8_yuhdw",
-      "title": "",
-      "content": "",
+      "title": "윈도우설치 프로그램",
+      "content": "윈도우11 프로\n",
       "color": "#fef9c3",
       "folderId": "folder_default",
       "createdAt": "2026-05-18T07:55:01.748Z",
-      "updatedAt": "2026-05-18T07:55:21.049Z",
+      "updatedAt": "2026-05-18T07:55:30.654Z",
       "isFavorite": true,
       "isPinned": true
     },
