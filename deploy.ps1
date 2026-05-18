@@ -68,6 +68,7 @@ if (Test-Path "home.html") {
     Write-Host "> home.html 복사 중..."
     Copy-Item "home.html" $deployDir 
 }
+if (Test-Path "livetv-favicon.png") { Copy-Item "livetv-favicon.png" $deployDir }
 # 포털 메인 카드 이미지 파일(vibe_*.png) 복사
 Write-Host "> vibe_*.png 이미지 파일 복사 중..."
 Get-ChildItem -Path . -Filter vibe_*.png | Copy-Item -Destination $deployDir

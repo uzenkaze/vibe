@@ -504,6 +504,23 @@
             const shellHeader = document.querySelector('.shell-header');
             const scribble = document.querySelector('.scribble-bg');
 
+            // 브라우저 탭 타이틀 및 파비콘 동적 변경 (iframe 극복)
+            let faviconLink = document.querySelector("link[rel~='icon']");
+            if (!faviconLink) {
+                faviconLink = document.createElement('link');
+                faviconLink.rel = 'icon';
+                faviconLink.type = 'image/png';
+                document.head.appendChild(faviconLink);
+            }
+
+            if (url && (url.includes('livetv/') || url.includes('livetv-app/'))) {
+                document.title = 'Fun Enjoy Play';
+                faviconLink.href = APP_BASE + 'livetv-favicon.png';
+            } else {
+                document.title = 'Vibe Portal';
+                faviconLink.href = '';
+            }
+
             if (url && (url.includes('home.html') || url === './' || url === '/')) {
                 if (shellHeader) shellHeader.style.display = 'flex';
                 if (scribble) scribble.style.display = 'block';
