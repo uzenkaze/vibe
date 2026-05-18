@@ -469,15 +469,20 @@ function getChannelCardStyleAndContent(ch, active) {
 function createCard(ch) {
   const active = activeChannelId === ch.id;
   const cardStyle = getChannelCardStyleAndContent(ch, active);
+  const isRealtime = !ch.noPlayableHls && ((ch.urls && ch.urls.length > 0) || ch.kbsApiCode || ch.url);
+  const onAirBadgeHtml = isRealtime ? `
+    <div class="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-red-600/90 text-[7px] font-extrabold rounded text-white flex items-center gap-0.5 uppercase tracking-wider z-20">
+      <span class="w-1 h-1 bg-white rounded-full animate-pulse"></span>ON AIR
+    </div>
+  ` : '';
+
   const card = document.createElement('div');
   card.className = 'flex-shrink-0 w-36 sm:w-40 cursor-pointer group channel-card';
   card.onclick = () => playChannel(ch);
   card.innerHTML = `
     <div data-id="${ch.id}" style="background:${cardStyle.bg};" class="channel-card-inner relative rounded-2xl aspect-video flex items-center justify-center border-2 ${active ? 'border-indigo-500 shadow-indigo-500/20' : 'border-white/5 shadow-black/40'} transition-all duration-300 group-hover:border-white/20 shadow-lg overflow-hidden">
       ${cardStyle.html}
-      <div class="absolute top-2 right-2 px-2 py-0.5 bg-red-600/90 text-[8px] font-extrabold rounded-full shadow-sm text-white flex items-center gap-1 uppercase tracking-widest z-20">
-        <span class="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>ON AIR
-      </div>
+      ${onAirBadgeHtml}
       <!-- Hover / Active Play Button Overlay -->
       <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 ${active ? 'opacity-100 bg-black/30' : ''} transition-opacity duration-300 z-10">
         <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
