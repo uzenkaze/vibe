@@ -304,6 +304,7 @@
     <script>
         // Calculate the base path of the application (e.g. '/' or '/vibe/')
         const APP_BASE = window.location.href.split('#')[0].split('?')[0].substring(0, window.location.href.split('#')[0].split('?')[0].lastIndexOf('/') + 1);
+        const BASE_PATH = window.location.pathname.startsWith('/vibe/') ? '/vibe/' : '/';
 
         let player;
         let isPlayerReady = false;
@@ -458,6 +459,26 @@
             if (url.startsWith('livetv/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
                 resolvedUrl = url.replace('livetv/', 'livetv-app/');
             }
+            // 레거시 HTML hobby/ 경로를 신규 리액트 기반인 hobby-app/www/index.html로 자동 포워딩 매핑
+            if (url.includes('hobby/')) {
+                resolvedUrl = url.replace('hobby/', 'hobby-app/www/index.html');
+            }
+            // mPlay 경로 요청 시 로컬/배포 환경에 따라 실경로 매핑
+            if (url.startsWith('mPlay/') || url === 'mPlay') {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'hobby-app/www/index.html';
+                } else {
+                    resolvedUrl = 'mPlay/index.html';
+                }
+            }
+            // learn 경로 요청 시 로컬 환경(Live Server)에서 컴파일된 dist/index.html을 찾아 로드
+            if (url.startsWith('learn/') || url === 'learn') {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'learn/dist/index.html';
+                } else {
+                    resolvedUrl = 'learn/index.html';
+                }
+            }
 
             try {
                 // Normalize URL for comparison using APP_BASE instead of origin
@@ -470,16 +491,17 @@
                 }
                 
                 if (currentUrl !== targetUrl && !currentUrl.endsWith(resolvedUrl)) {
-                    frame.src = resolvedUrl;
+                    frame.src = targetUrl;
                 }
             } catch(e) {
-                frame.src = resolvedUrl;
+                frame.src = new URL(resolvedUrl, APP_BASE).href;
             }
             
-            // Update URL hash for clean routing
+            // Update URL using History API instead of hash
             if (updateHash) {
-                const hashPath = url.replace('home.html', '').replace('./', '');
-                window.location.hash = hashPath ? '/' + hashPath : '';
+                const cleanPath = url.replace('home.html', '').replace('./', '');
+                const targetUrl = BASE_PATH + cleanPath;
+                history.pushState(null, '', targetUrl);
             }
 
             // Save path for refresh persistence
@@ -492,11 +514,11 @@
             startAudioKeepAlive();
         }
 
-        // Listen for hash changes to support browser back/forward and clean URLs
-        window.addEventListener('hashchange', () => {
-            let hash = window.location.hash.replace('#/', '');
-            if (!hash || hash === '/') hash = 'home.html';
-            navigateTo(hash, false);
+        // Listen for popstate to support browser back/forward buttons on clean URLs
+        window.addEventListener('popstate', () => {
+            let path = window.location.pathname.replace(BASE_PATH, '');
+            if (!path || path === 'index.html') path = 'home.html';
+            navigateTo(path, false);
         });
 
         function updatePortalUI(url) {
@@ -530,7 +552,7 @@
                 if (scribble) scribble.style.display = 'none';
             }
 
-            if (url && url.includes('hobby/')) {
+            if (url && (url.includes('hobby/') || url.includes('hobby-app/') || url.includes('mPlay/'))) {
                 if (currentSong) player.classList.add('active');
             } else {
                 player.classList.remove('active');
@@ -566,9 +588,27 @@
         // Initialize state from storage
         window.addEventListener('DOMContentLoaded', () => {
             const lastSong = JSON.parse(localStorage.getItem('vibe_last_song'));
-            let initialPath = window.location.hash.replace('#/', '');
-            if (!initialPath || initialPath === '/') {
-                initialPath = 'home.html';
+            
+            // Check for redirect parameter from 404.html first, then fall back to hash, then default
+            const urlParams = new URLSearchParams(window.location.search);
+            let initialPath = urlParams.get('p');
+            
+            if (!initialPath) {
+                initialPath = window.location.hash.replace('#/', '');
+            }
+            
+            if (!initialPath || initialPath === '/' || initialPath === 'index.html') {
+                const subRoute = window.location.pathname.replace(BASE_PATH, '');
+                if (subRoute && subRoute !== 'index.html' && subRoute !== 'home.html') {
+                    initialPath = subRoute;
+                } else {
+                    initialPath = 'home.html';
+                }
+            }
+
+            if (urlParams.get('p')) {
+                // Clean the search query param from the URL immediately so the address bar is clean
+                history.replaceState(null, '', BASE_PATH + initialPath);
             }
             
             const frame = document.getElementById('contentFrame');
@@ -583,7 +623,7 @@
                 document.getElementById('globalArtist').textContent = lastSong.artist;
                 document.getElementById('globalThumb').src = `https://img.youtube.com/vi/${lastSong.youtubeId}/default.jpg`;
                 
-                if (frame.src.includes('hobby/')) {
+                if (frame.src.includes('hobby/') || frame.src.includes('hobby-app/') || frame.src.includes('mPlay/')) {
                     player.classList.add('active');
                 }
             }
@@ -602,7 +642,7 @@
                 // Ensure it only shows if we are on the hobby page
                 const frame = document.getElementById('contentFrame');
                 const player = document.getElementById('globalPlayer');
-                if (!frame.src.includes('hobby/')) {
+                if (!frame.src.includes('hobby/') && !frame.src.includes('hobby-app/') && !frame.src.includes('mPlay/')) {
                     player.classList.remove('active');
                 }
             }

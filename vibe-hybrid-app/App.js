@@ -25,7 +25,7 @@ export default function App() {
   }
 
   // URL of the live server running the existing Vibe Music Box HTML version
-  const appUrl = `http://${localIp}:5500/hobby/index.html`;
+  const appUrl = `http://${localIp}:5500/hobby-app/www/index.html`;
 
   return (
     <SafeAreaView style={styles.container}>

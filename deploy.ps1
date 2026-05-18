@@ -34,15 +34,19 @@ Set-Location ..
 
 
 # 4. 기타 정적 폴더 복사 (Asset, task, hobby 등)
-$staticFolders = @("Asset", "task", "hobby", "livetv-app", "vibe-hybrid-app")
+$staticFolders = @("Asset", "task", "hobby-app", "livetv-app", "vibe-hybrid-app")
 foreach ($folder in $staticFolders) {
     if (Test-Path $folder) {
-        # livetv-app 폴더는 배포 시 간단한 'livetv' 경로로 매핑
+        # livetv-app 폴더는 배포 시 간단한 'livetv' 경로로 매핑, hobby-app은 'mPlay'로 매핑
         $targetFolder = $folder
         if ($folder -eq "livetv-app") { $targetFolder = "livetv" }
+        if ($folder -eq "hobby-app") { $targetFolder = "mPlay" }
 
         Write-Host "> $folder 폴더 복사 중 (node_modules 제외)... ($targetFolder 경로로 복사)"
-        if ($folder -eq "vibe-hybrid-app" -or $folder -eq "livetv-app") {
+        if ($folder -eq "hobby-app") {
+            New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
+            Copy-Item -Path "$folder/www/*" -Destination "$deployDir/$targetFolder" -Recurse -Force
+        } elseif ($folder -eq "vibe-hybrid-app" -or $folder -eq "livetv-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {
                 New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
@@ -73,6 +77,10 @@ if (Test-Path "index.html") {
 if (Test-Path "home.html") { 
     Write-Host "> home.html 복사 중..."
     Copy-Item "home.html" $deployDir 
+}
+if (Test-Path "404.html") { 
+    Write-Host "> 404.html 복사 중..."
+    Copy-Item "404.html" $deployDir 
 }
 if (Test-Path "livetv-favicon.png") { Copy-Item "livetv-favicon.png" $deployDir }
 # 포털 메인 카드 이미지 파일(vibe_*.png) 복사

@@ -138,6 +138,18 @@ const loadMoreBtn = document.getElementById('loadMoreBtn');
 
 const lyricsContainer = document.getElementById('lyricsContainer');
 
+window.handleImageError = function(img, videoId) {
+    if (img.dataset.failed === "2") {
+        img.onerror = null;
+        img.src = 'music_placeholder.png';
+    } else if (img.dataset.failed === "1") {
+        img.dataset.failed = "2";
+        img.src = `https://images.weserv.nl/?url=https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    } else {
+        img.dataset.failed = "1";
+        img.src = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+    }
+};
 
 const lyricsTitle = document.getElementById('lyricsTitle');
 const lyricsContent = document.getElementById('lyricsContent');
@@ -150,6 +162,9 @@ const currentSongInfo = document.getElementById('currentSongInfo');
 const currentTitle = document.getElementById('currentTitle');
 const currentArtist = document.getElementById('currentArtist');
 const currentTimeEl = document.getElementById('currentTime');
+const mainAlbumArt = document.getElementById('mainAlbumArt');
+const mainThumb = document.getElementById('mainThumb');
+const mainMusicIcon = document.getElementById('mainMusicIcon');
 const playerControls = document.getElementById('playerControls');
 const audioOnlyOverlay = document.getElementById('audioOnlyOverlay');
 const prevBtn = document.getElementById('prevBtn');
@@ -175,7 +190,7 @@ const audioModeArt = document.getElementById('audioModeArt');
 // Real-time clock update
 function updateTime() {
     const now = new Date();
-    currentTimeEl.textContent = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    currentTimeEl.textContent = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 // Start app
@@ -236,6 +251,39 @@ async function init() {
     updatePlaylistBadge();
     setupEventListeners();
     await renderHome();
+
+    // 3. Restore last played song (Persistence)
+    const lastSong = JSON.parse(localStorage.getItem('vibe_last_song'));
+    if (lastSong && !currentPlayingSong) {
+        // Pre-set UI but don't auto-play (browser policy)
+        currentPlayingSong = lastSong;
+        activeSongId = lastSong.id;
+        currentTitle.textContent = lastSong.title;
+        currentArtist.textContent = lastSong.artist;
+        currentSongInfo.style.display = 'flex';
+        playerEmptyState.style.display = 'none';
+        playerControls.style.display = 'flex';
+        document.getElementById('seekbarContainer').style.display = 'flex';
+
+        // Update Main Album Art
+        if (lastSong.youtubeId) {
+            mainThumb.src = `https://img.youtube.com/vi/${lastSong.youtubeId}/hqdefault.jpg`;
+            mainThumb.style.display = 'block';
+            mainMusicIcon.style.display = 'none';
+        } else {
+            mainThumb.style.display = 'none';
+            mainMusicIcon.style.display = 'block';
+        }
+
+        syncMiniPlayer(lastSong);
+        updateLikeBtnUI(myPlaylistIds.includes(lastSong.id));
+        
+        if (lastSong.youtubeId) {
+            audioModeThumb.src = `https://img.youtube.com/vi/${lastSong.youtubeId}/hqdefault.jpg`;
+            audioModeThumb.style.display = 'block';
+            audioModeIcon.style.display = 'none';
+        }
+    }
 }
 
 
@@ -423,98 +471,89 @@ async function handleGlobalSearch(customQuery = null, limit = 100) {
     noResults.style.display = 'none';
     loading.style.display = 'flex';
 
-    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
-    
-    // Proxy functions that return a promise
-    const fetchFromProxy = async (proxyUrl) => {
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Proxy failed');
-        
-        let html;
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('json')) {
-            const json = await response.json();
-            html = json.contents || json;
-        } else {
-            html = await response.text();
+    // 최우선 순위: 빠르고 정확한 Piped API 병렬 검색
+    try {
+        const pipedResults = await fetchFromPipedAPI(cleanQ, 'global_');
+        if (pipedResults && pipedResults.length > 0) {
+            searchCache.set(query, pipedResults);
+            renderSongsFromCache(query, limit);
+            return;
         }
-        
-        if (!html || typeof html !== 'string') throw new Error('Invalid HTML');
-        
-        const jsonMatch = html.match(/ytInitialData\s*=\s*({.+?});/);
-        if (!jsonMatch) throw new Error('No ytInitialData');
-        
-        const ytData = JSON.parse(jsonMatch[1]);
-        let sections = [];
-        try {
-            sections = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents;
-        } catch (e) {
-            sections = ytData.contents.sectionListRenderer.contents;
-        }
+    } catch (pipedErr) {
+        console.warn("Piped API failed, falling back to HTML proxies:", pipedErr);
+    }
 
-        const results = [];
-        if (sections && Array.isArray(sections)) {
-            sections.forEach(section => {
-                const items = section.itemSectionRenderer ? section.itemSectionRenderer.contents : [];
-                if (!Array.isArray(items)) return;
-
-                items.forEach(item => {
-                    if (item.videoRenderer) {
-                        const v = item.videoRenderer;
-                        const videoId = v.videoId;
-                        if (!videoId) return;
-
-                        // --- 🚀 PLAYABILITY FILTER: Skip items that are historically unplayable in iframe ---
-                        const durationText = v.lengthText ? v.lengthText.simpleText : null;
-                        const viewCountText = (v.viewCountText && v.viewCountText.simpleText) ? v.viewCountText.simpleText : "";
-                        
-                        // 1. Skip Live Streams (Often unplayable in local iframe)
-                        const isLive = (v.badges && v.badges.some(b => 
-                            b.metadataBadgeRenderer && 
-                            (b.metadataBadgeRenderer.label === "LIVE" || b.metadataBadgeRenderer.style === "BADGE_STYLE_TYPE_LIVE_NOW")
-                        )) || viewCountText.toLowerCase().includes("live");
-
-                        // 2. Skip Shorts or Very Short clips (Usually not songs, often no duration text)
-                        if (!durationText || isLive) return;
-
-                        results.push({
-                            id: 'global_' + videoId,
-                            title: v.title.runs[0].text,
-                            artist: v.ownerText.runs[0].text,
-                            youtubeId: videoId,
-                            duration: durationText, // Save duration for info
-                            isGlobal: true,
-                            lyrics: `(유튜브 검색 결과)\n업로더: ${v.ownerText.runs[0].text}\n길이: ${durationText}`
-                        });
-                    }
-                });
-            });
-        }
-
-
-
-        if (results.length === 0) throw new Error('No videos found');
-        return results;
-    };
-
-    // Parallel Proxy Requests (The fastest winning one returns first)
+    // 2순위: HTML 파싱 프록시 (Piped 모두 실패 시 백업)
+    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanQ)}`;
     const proxyUrls = [
-        // 1. CORSProxy.io (Highly reliable)
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(ytUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(ytUrl)}`,
-        // 2. AllOrigins (JSON wrapper)
-        `https://api.allorigins.win/get?url=${encodeURIComponent(ytUrl)}`,
-        // 3. CodeTabs (Fast but sometimes limited)
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(ytUrl)}`,
-        // 4. ThingProxy (Fallback)
-        `https://thingproxy.freeboard.io/fetch/${ytUrl}`
+        `https://api.codetabs.com/v1/proxy?quest=${ytUrl}`
     ];
 
+    const fetchFromProxy = async (proxyUrl) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 7000);
+        try {
+            const response = await fetch(proxyUrl, { method: 'GET', signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error('Proxy failed');
+            
+            let html;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('json')) {
+                const json = await response.json();
+                html = json.contents || json;
+            } else { html = await response.text(); }
+            
+            const jsonMatch = html.match(/ytInitialData\s*=\s*({.+?});/);
+            if (!jsonMatch) throw new Error('No ytInitialData');
+            
+            const ytData = JSON.parse(jsonMatch[1]);
+            let sections = [];
+            try { sections = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents; }
+            catch (e) { sections = ytData.contents.sectionListRenderer.contents; }
+
+            const results = [];
+            if (sections && Array.isArray(sections)) {
+                sections.forEach(section => {
+                    const items = section.itemSectionRenderer ? section.itemSectionRenderer.contents : [];
+                    if (!Array.isArray(items)) return;
+                    items.forEach(item => {
+                        if (item.videoRenderer) {
+                            const v = item.videoRenderer;
+                            const videoId = v.videoId;
+                            if (!videoId) return;
+
+                            const durationText = v.lengthText ? v.lengthText.simpleText : null;
+                            const viewCountText = (v.viewCountText && v.viewCountText.simpleText) ? v.viewCountText.simpleText : "";
+                            const isLive = (v.badges && v.badges.some(b => b.metadataBadgeRenderer && (b.metadataBadgeRenderer.label === "LIVE" || b.metadataBadgeRenderer.style === "BADGE_STYLE_TYPE_LIVE_NOW"))) || viewCountText.toLowerCase().includes("live");
+
+                            if (!durationText || isLive) return;
+
+                            results.push({
+                                id: 'global_' + videoId,
+                                title: v.title.runs[0].text,
+                                artist: v.ownerText.runs[0].text,
+                                youtubeId: videoId,
+                                duration: durationText,
+                                isGlobal: true,
+                                lyrics: `(유튜브 검색 결과)\n업로더: ${v.ownerText.runs[0].text}\n길이: ${durationText}`
+                            });
+                        }
+                    });
+                });
+            }
+            if (results.length === 0) throw new Error('No videos found');
+            return results;
+        } catch(e) {
+            clearTimeout(timeoutId);
+            throw e;
+        }
+    };
+
     try {
-        // Promise.any takes the first one that SUCCEEDS.
-        // We wrap fetchFromProxy to ensure slow but failing results don't block.
         const fastestResults = await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
-        
-        // Save to cache
         searchCache.set(query, fastestResults);
         renderSongsFromCache(query, limit);
     } catch (err) {
@@ -572,8 +611,10 @@ let visibleCount = 15;
 
 // Render the song list
 function renderSongs(songsToRender, resetPaging = true) {
+    if (!songsToRender || !Array.isArray(songsToRender)) songsToRender = [];
     if (resetPaging) visibleCount = 15;
     
+    if (!songList) return;
     songList.innerHTML = '';
     
     if (currentTab === 'search') {
@@ -712,6 +753,16 @@ function setupEventListeners() {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleGlobalSearch();
+            
+            // --- Critical Hybrid App Fix: Prevent keyboard from dismissing on Enter ---
+            // Small delay to ensure the event cycle finishes, then refocus
+            setTimeout(() => {
+                searchInput.focus();
+                // Ensure cursor is at the end
+                const val = searchInput.value;
+                searchInput.value = '';
+                searchInput.value = val;
+            }, 10);
         }
     });
 
@@ -721,7 +772,21 @@ function setupEventListeners() {
 
 
     if (globalSearchBtn) {
-        globalSearchBtn.addEventListener('click', () => handleGlobalSearch());
+        globalSearchBtn.addEventListener('click', () => {
+            handleGlobalSearch();
+            // Force focus back on mobile after clicking the button
+            if (window.innerWidth < 900) searchInput.focus();
+        });
+    }
+
+    // --- Critical Hybrid App Fix: Ensure focus when clicking any part of the search box ---
+    const searchBox = document.querySelector('.search-box');
+    if (searchBox && searchInput) {
+        searchBox.addEventListener('click', (e) => {
+            if (e.target !== searchInput && e.target !== globalSearchBtn && !globalSearchBtn.contains(e.target)) {
+                searchInput.focus();
+            }
+        });
     }
 
     // Settings listeners
@@ -902,13 +967,7 @@ function setupEventListeners() {
 
     if (togglePlayBtn) {
         togglePlayBtn.addEventListener('click', () => {
-            if (!player) return;
-            const state = player.getPlayerState();
-            if (state === YT.PlayerState.PLAYING) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
-            }
+            togglePlay();
         });
     }
 
@@ -1017,7 +1076,7 @@ function setupEventListeners() {
             currentTab = 'search';
             tabSearch.classList.add('active');
             tabPlaylist.classList.remove('active');
-            if (player) player.stopVideo();
+            // player.stopVideo() removed to keep music playing when going home
             stopProgressUpdate();
             youtubePlayerContainer.style.display = 'none';
             audioOnlyOverlay.style.display = 'none';
@@ -1162,8 +1221,47 @@ function setupMediaSession(song) {
         navigator.mediaSession.setActionHandler('seekto', (d) => {
             if (player && d.seekTime != null) player.seekTo(d.seekTime, true);
         });
-    } catch(e) { /* 일부 구형 브라우저 미지원 */ }
+    } catch(e) { console.warn('MediaSession seek handlers failed', e); }
 }
+
+const isInShell = window.parent !== window && window.parent.postMessage;
+
+function togglePlay() {
+    if (isInShell) {
+        if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({ type: 'TOGGLE_PLAY' }, '*');
+        }
+    } else if (player && typeof player.getPlayerState === 'function') {
+        try {
+            const state = player.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        } catch(e) { console.warn("Local player control failed", e); }
+    }
+}
+
+// Listen for global control messages from parent shell
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'NEXT_SONG') {
+        playNext();
+    } else if (event.data.type === 'PREV_SONG') {
+        playPrevious();
+    } else if (event.data.type === 'TIME_UPDATE') {
+        // Sync local UI with parent's playback time
+        const { currentTime, duration } = event.data;
+        const percent = (currentTime / duration) * 100;
+        updateSeekUI(percent, currentTime, duration);
+    } else if (event.data.type === 'PLAYER_STATE_CHANGE') {
+        // Update local play/pause buttons
+        const isPlaying = event.data.state === 1; // 1 = PLAYING
+        if (togglePlayBtn) togglePlayBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        if (mainAlbumArt) mainAlbumArt.classList.toggle('playing', isPlaying);
+        updateMiniIcons(isPlaying);
+    }
+});
 
 // Handle Song Selection
 async function handleSongClick(songOrId, mode = null) {
@@ -1179,11 +1277,28 @@ async function handleSongClick(songOrId, mode = null) {
     activeSongId = song.id;
     if (mode) currentMode = mode;
 
+    // ⚡ GLOBAL SHELL SYNC: If in shell, delegate playback to parent
+    if (isInShell) {
+        window.parent.postMessage({
+            type: 'PLAY_SONG',
+            song: {
+                id: song.id,
+                title: song.title,
+                artist: song.artist,
+                youtubeId: song.youtubeId
+            }
+        }, '*');
+    }
+
     // ⚡ INSTANT PLAY: Start loading the video as the high-priority first step
-    if (isPlayerReady && player && song.youtubeId) {
-        player.loadVideoById(song.youtubeId);
-    } else if (song.youtubeId) {
-        setTimeout(() => handleSongClick(song, mode), 500);
+    if (!isInShell) {
+        if (isPlayerReady && player && typeof player.loadVideoById === 'function' && song.youtubeId) {
+            player.loadVideoById(song.youtubeId);
+        } else if (song.youtubeId) {
+            // Do not loop infinitely. If player isn't ready, just wait.
+            // onYouTubeIframeAPIReady will pick up activeSongId when it loads.
+            console.log("Player not ready yet, waiting...");
+        }
     }
 
     // 📱 UX: Robust Scroll to top for all layout types
@@ -1241,6 +1356,17 @@ async function handleSongClick(songOrId, mode = null) {
     playerControls.style.display = 'flex';
     document.getElementById('seekbarContainer').style.display = 'flex';
 
+    // Update Main Album Art
+    if (song.youtubeId) {
+        mainThumb.src = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+        mainThumb.style.display = 'block';
+        mainMusicIcon.style.display = 'none';
+        mainThumb.onerror = function() { window.handleImageError(this, song.youtubeId); };
+    } else {
+        mainThumb.style.display = 'none';
+        mainMusicIcon.style.display = 'block';
+    }
+
     // Update Heart State
     updateLikeBtnUI(myPlaylistIds.includes(song.id));
 
@@ -1288,6 +1414,9 @@ async function handleSongClick(songOrId, mode = null) {
 
     // Add to Recently Played
     addRecentSong(song);
+
+    // Save as last played for persistence
+    localStorage.setItem('vibe_last_song', JSON.stringify(song));
 }
 
 
@@ -1311,6 +1440,22 @@ function addRecentSong(song) {
     syncWithGitHub('upload');
 }
 
+window.removeRecentSong = function(videoId) {
+    if (!confirm("이 곡을 다시 듣기 목록에서 삭제할까요?")) return;
+    let history = JSON.parse(localStorage.getItem(RECENTLY_PLAYED_KEY) || '[]');
+    history = history.filter(s => s.youtubeId !== videoId);
+    localStorage.setItem(RECENTLY_PLAYED_KEY, JSON.stringify(history));
+    renderHome(); // Refresh home UI
+    syncWithGitHub('upload');
+};
+
+window.clearRecentSongs = function() {
+    if (!confirm("다시 듣기 목록을 모두 삭제하시겠습니까?")) return;
+    localStorage.removeItem(RECENTLY_PLAYED_KEY);
+    renderHome(); // Refresh home UI
+    syncWithGitHub('upload');
+};
+
 
 async function renderHome() {
     const discoveryDashboard = document.getElementById('discoveryDashboard');
@@ -1332,12 +1477,15 @@ async function renderHome() {
     // 1. Try Local Cache First for Instant Loading
     const cached = localStorage.getItem(HOME_CACHE_KEY);
     if (cached) {
-        const { timestamp, sections } = JSON.parse(cached);
-        const ageInMin = (Date.now() - timestamp) / 60000;
-        if (ageInMin < 15) { // Reduced to 15 minutes for fresher content
-            renderDiscoveryFromData(sections);
-            return;
-        }
+        try {
+            const { timestamp, sections } = JSON.parse(cached);
+            const ageInMin = (Date.now() - timestamp) / 60000;
+            // TTL 5 minutes for freshness
+            if (ageInMin < 5 && sections && sections.trending) {
+                renderDiscoveryFromData(sections);
+                return;
+            }
+        } catch(e) { localStorage.removeItem(HOME_CACHE_KEY); }
     }
 
 
@@ -1361,29 +1509,42 @@ async function renderHome() {
             <div class="card-scroller" id="scrollerTrending"><div class="loading-state small"><div class="spinner"></div></div></div>
         </div>
         <div class="home-section">
+            <div class="section-header"><h2>최신 국내 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller" id="scrollerLatest"><div class="loading-state small"><div class="spinner"></div></div></div>
+        </div>
+        <div class="home-section">
+            <div class="section-header"><h2>Pop - 글로벌 히트 🌎</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller" id="scrollerPop"><div class="loading-state small"><div class="spinner"></div></div></div>
+        </div>
+        <div class="home-section">
             <div class="section-header"><h2>잔잔한 음악 🌿</h2> <span class="more-btn">더보기</span></div>
             <div class="card-scroller" id="scrollerSuggested"><div class="loading-state small"><div class="spinner"></div></div></div>
         </div>
-        <div class="home-section">
-            <div class="section-header"><h2>최신 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller" id="scrollerLatest"><div class="loading-state small"><div class="spinner"></div></div></div>
-        </div>
     `;
 
+    // Calculate recent 6 months query
+    function getRecent6MonthsQuery() {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+        // e.g., "2025년 10월 ~ 2026년 3월 최신 국내 가요 신곡"
+        return `${start.getFullYear()}년 ${start.getMonth() + 1}월 ~ ${now.getFullYear()}년 ${now.getMonth() + 1}월 최신 국내 가요 신곡`;
+    }
 
     // 3. Fetch from Network in Parallel
     try {
-        const [trending, suggested, latest] = await Promise.all([
-            fetchCategorySongs("실시간 인기 차트 TOP 20", "scrollerTrending", 12),
-            fetchCategorySongs("잔잔하고 편안한 수면 명상 음악", "scrollerSuggested", 12),
-            fetchCategorySongs(new Date().getFullYear() + " 신곡 최신 발매", "scrollerLatest", 12)
+        const todayStr = new Date().toLocaleDateString();
+        const [trending, latest, pop, suggested] = await Promise.all([
+            fetchCategorySongs(`실시간 인기 차트 TOP 20 ${todayStr}`, "scrollerTrending", 12),
+            fetchCategorySongs(`${getRecent6MonthsQuery()} 최신곡`, "scrollerLatest", 12),
+            fetchCategorySongs(`Trending Global Pop Hits ${new Date().getFullYear()} Hot 100`, "scrollerPop", 12),
+            fetchCategorySongs(`잔잔하고 편안한 수면 명상 음악 스트리밍`, "scrollerSuggested", 12)
         ]);
 
 
-        if (trending && suggested && latest) {
+        if (trending && latest && pop && suggested) {
             const cacheData = {
                 timestamp: Date.now(),
-                sections: { trending, suggested, latest }
+                sections: { trending, latest, pop, suggested }
             };
             localStorage.setItem(HOME_CACHE_KEY, JSON.stringify(cacheData));
         }
@@ -1391,24 +1552,20 @@ async function renderHome() {
         console.warn("Network discovery failed, showing fallbacks.", e);
         // If everything fails, pick from the first few hardcoded songs
         const fallback = songs.slice(0, 10).map(s => ({...s, youtubeId: s.youtubeId || 'dQw4w9WgXcQ'}));
-        renderDiscoveryFromData({ trending: fallback, suggested: fallback, latest: fallback });
+        renderDiscoveryFromData({ trending: fallback, latest: fallback, pop: fallback, suggested: fallback });
     }
 }
 
-// PERIODIC AUTO-REFRESH (Every 30 mins)
+// PERIODIC AUTO-REFRESH (Every 15 mins)
 function setupAutoHomeRefresh() {
     setInterval(() => {
         const discoveryDashboard = document.getElementById('discoveryDashboard');
-        // Refresh only if the dashboard is active and visible
         if (discoveryDashboard && discoveryDashboard.style.display !== 'none' && currentTab === 'search') {
             console.log("Auto-refreshing Home contents for fresh music...");
-            // Force refresh by ignoring cache inside the call if needed, 
-            // but simply re-calling renderHome with the 15-min TTL is often enough.
-            // If we want a guaranteed "latest" refresh, we can clear the cache first.
             localStorage.removeItem(HOME_CACHE_KEY);
             renderHome();
         }
-    }, 30 * 60000); // 30 mins
+    }, 15 * 60000); // 15 mins
 }
 
 
@@ -1420,8 +1577,14 @@ function renderDiscoveryFromData(sections) {
     if (recentSongs.length > 0) {
         recentSectionHtml = `
             <div class="home-section" id="sectionRecently">
-                <div class="section-header"><h2>다시 듣기 🕒</h2> <span class="more-btn">모두 보기</span></div>
-                <div class="card-scroller">${renderCardList(recentSongs)}</div>
+                <div class="section-header">
+                    <h2>다시 듣기 🕒</h2> 
+                    <div style="display:flex; gap:10px;">
+                        <span class="more-btn delete-all" onclick="clearRecentSongs()" style="color:var(--danger); border-color:var(--danger);"><i class="fas fa-trash-alt"></i> 전체 삭제</span>
+                        <span class="more-btn">모두 보기</span>
+                    </div>
+                </div>
+                <div class="card-scroller">${renderCardList(recentSongs, true)}</div>
             </div>
         `;
     }
@@ -1433,32 +1596,44 @@ function renderDiscoveryFromData(sections) {
             <div class="card-scroller">${renderCardList(sections.trending)}</div>
         </div>
         <div class="home-section">
-            <div class="section-header"><h2>잔잔한 음악 🌿</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller">${renderCardList(sections.suggested)}</div>
+            <div class="section-header"><h2>최신 국내 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller">${renderCardList(sections.latest)}</div>
         </div>
         <div class="home-section">
-            <div class="section-header"><h2>최신 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller">${renderCardList(sections.latest)}</div>
+            <div class="section-header"><h2>Pop - 글로벌 히트 🌎</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller">${renderCardList(sections.pop)}</div>
+        </div>
+        <div class="home-section">
+            <div class="section-header"><h2>잔잔한 음악 🌿</h2> <span class="more-btn">더보기</span></div>
+            <div class="card-scroller">${renderCardList(sections.suggested)}</div>
         </div>
     `;
 }
 
 
 
-function renderCardList(songsList) {
+function renderCardList(songsList, isRecent = false) {
     if (!songsList) return '';
-    return songsList.map(song => `
-        <div class="music-card" onclick="handleSongClick(${JSON.stringify(song).replace(/"/g, '&quot;')}, 'audio')">
-            <div class="card-thumb-wrapper">
-                <img src="https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg" loading="lazy">
-                <div class="card-play-overlay"><i class="fas fa-play"></i></div>
+    return songsList.map(song => {
+        const primaryThumb = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+        
+        return `
+            <div class="music-card" onclick="handleSongClick(${JSON.stringify(song).replace(/"/g, '&quot;')}, 'audio')">
+                <div class="card-thumb-wrapper">
+                    <img src="${primaryThumb}" 
+                         onerror="window.handleImageError(this, '${song.youtubeId}')" 
+                         loading="lazy"
+                         alt="${song.title}">
+                    <div class="card-play-overlay"><i class="fas fa-play"></i></div>
+                    ${isRecent ? `<div class="card-delete-btn" onclick="event.stopPropagation(); removeRecentSong('${song.youtubeId}')" title="삭제"><i class="fas fa-times"></i></div>` : ''}
+                </div>
+                <div class="card-info">
+                    <h4>${song.title}</h4>
+                    <p>${song.artist}</p>
+                </div>
             </div>
-            <div class="card-info">
-                <h4>${song.title}</h4>
-                <p>${song.artist}</p>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 async function fetchCategorySongs(query, scrollerId, limit = 12) {
@@ -1469,12 +1644,14 @@ async function fetchCategorySongs(query, scrollerId, limit = 12) {
             const list = results.slice(0, limit);
             scroller.innerHTML = renderCardList(list);
             return list;
+        } else {
+            throw new Error("No results found for " + query);
         }
     } catch(e) {
         const scroller = document.getElementById(scrollerId);
         if (scroller) scroller.innerHTML = '<p style="font-size:0.8rem; opacity:0.5; padding:20px;">정보를 불러올 수 없습니다.</p>';
+        throw e; // Re-throw to trigger renderHome's fallback
     }
-    return null;
 }
 
 
@@ -1651,18 +1828,91 @@ function playPrevious() {
     }
 }
 
+/**
+ * Clean search query to prevent proxy/encoding errors
+ */
+function cleanSearchQuery(text) {
+    if (!text) return "";
+    let clean = text.split(/[|│\/\[\(]/)[0].trim();
+    clean = clean.replace(/[^\w\sㄱ-ㅎ가-힣]/g, ' ').replace(/\s+/g, ' ').trim();
+    return clean || text.substring(0, 50); 
+}
+
+/**
+ * Piped API Fallback Loader - Extremely robust alternative to HTML scraping.
+ */
+async function fetchFromPipedAPI(query, idPrefix = 'global_') {
+    const pipedNodes = [
+        'https://pipedapi.kavin.rocks',
+        'https://pipedapi.tokhmi.xyz',
+        'https://pipedapi.smnz.de',
+        'https://api.piped.victr.me',
+        'https://pipedapi.moomoo.me',
+        'https://piped-api.lunar.icu',
+        'https://piped-api.garudalinux.org'
+    ];
+
+    const fetchFromNode = async (node) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        try {
+            const res = await fetch(`${node}/search?q=${encodeURIComponent(query)}&filter=all`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            if (!res.ok) throw new Error('Node failed');
+            const data = await res.json();
+            if (!data.items || data.items.length === 0) throw new Error('No items');
+            
+            return data.items.filter(item => item.type === "stream" || (item.url && item.url.includes('?v='))).map(item => {
+                const videoId = item.url.split('?v=')[1] || item.url.split('/watch?v=')[1];
+                let durationText = "";
+                if (item.duration) {
+                    const mins = Math.floor(item.duration / 60);
+                    const secs = item.duration % 60;
+                    durationText = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }
+                return {
+                    id: idPrefix + videoId, 
+                    title: item.title,
+                    artist: item.uploaderName || 'YouTube Artist',
+                    youtubeId: videoId,
+                    duration: durationText,
+                    isGlobal: true,
+                    lyrics: `(API 자동 검색 결과)\n업로더: ${item.uploaderName || 'Unknown'}`
+                };
+            });
+        } catch(e) {
+            clearTimeout(timeoutId);
+            throw e;
+        }
+    };
+
+    try {
+        // Parallel fetch for extreme speed
+        return await Promise.any(pipedNodes.map(node => fetchFromNode(node)));
+    } catch(e) {
+        throw new Error("All piped nodes failed");
+    }
+}
+
 
 async function fetchRelatedSongs(query, timeoutMs = 7000) {
-    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
+    const cleanQ = cleanSearchQuery(query);
+    const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanQ)}`;
     
     const fetchFromProxy = async (proxyUrl) => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
         try {
-            const response = await fetch(proxyUrl, { signal: controller.signal });
+            const response = await fetch(proxyUrl, { 
+                method: 'GET',
+                signal: controller.signal 
+            });
+            
             clearTimeout(timeoutId);
-            if (!response.ok) throw new Error('Proxy failed');
+            if (!response.ok) throw new Error(`Proxy failed: ${response.status}`);
             
             let html;
             const contentType = response.headers.get('content-type');
@@ -1671,26 +1921,33 @@ async function fetchRelatedSongs(query, timeoutMs = 7000) {
                 html = json.contents || json;
             } else { html = await response.text(); }
             
+            if (!html || typeof html !== 'string') throw new Error('Invalid content');
+
             const jsonMatch = html.match(/ytInitialData\s*=\s*({.+?});/);
             if (!jsonMatch) throw new Error('No ytInitialData');
             const ytData = JSON.parse(jsonMatch[1]);
             
             let contents = [];
             try {
-                contents = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
-            } catch(e) {
-                contents = ytData.contents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
-            }
+                const primary = ytData.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents;
+                if (primary && primary.length > 0) {
+                    contents = primary[0].itemSectionRenderer?.contents || [];
+                } else if (ytData.contents?.sectionListRenderer?.contents) {
+                    contents = ytData.contents.sectionListRenderer.contents[0].itemSectionRenderer?.contents || [];
+                }
+            } catch(e) { console.warn("Parse path failed, fallback..."); }
             
+            if (!contents || contents.length === 0) return [];
+
             return contents.filter(item => item.videoRenderer).map(item => {
                 const v = item.videoRenderer;
                 return {
                     id: 'related_' + v.videoId,
                     title: v.title.runs[0].text,
-                    artist: v.ownerText.runs[0].text,
+                    artist: (v.ownerText && v.ownerText.runs) ? v.ownerText.runs[0].text : 'YouTube Artist',
                     youtubeId: v.videoId,
                     isGlobal: true,
-                    lyrics: `(연관 추천곡) - ${v.ownerText.runs[0].text}`
+                    lyrics: `(연관 추천곡) - ${v.ownerText?.runs[0]?.text || 'Youtube'}`
                 };
             });
         } catch (e) {
@@ -1700,12 +1957,24 @@ async function fetchRelatedSongs(query, timeoutMs = 7000) {
     };
 
     const proxyUrls = [
+        `https://api.codetabs.com/v1/proxy?quest=${ytUrl}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(ytUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(ytUrl)}`,
-        `https://api.allorigins.win/get?url=${encodeURIComponent(ytUrl)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(ytUrl)}`
+        `https://corsproxy.org/?${encodeURIComponent(ytUrl)}`,
+        `https://cors-anywhere.herokuapp.com/${ytUrl}`
     ];
 
-    return await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
+    try {
+        const results = await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
+        return results || [];
+    } catch (e) {
+        console.warn("All search proxies failed:", e);
+        try {
+            return await fetchFromPipedAPI(cleanQ, 'related_');
+        } catch (pipedErr) {
+            return [];
+        }
+    }
 }
 
 
@@ -1771,6 +2040,7 @@ function onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
             togglePlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
             updateMiniIcons(true);
+            if (mainAlbumArt) mainAlbumArt.classList.add('playing');
             if (currentMode === 'audio') equalizer.style.display = 'flex';
             if (audioModeIcon) audioModeIcon.classList.remove('paused');
             if (audioModeArt) audioModeArt.classList.remove('paused');
@@ -1782,6 +2052,7 @@ function onPlayerStateChange(event) {
         } else {
             togglePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
             updateMiniIcons(false);
+            if (mainAlbumArt) mainAlbumArt.classList.remove('playing');
             equalizer.style.display = 'none';
             if (audioModeIcon) audioModeIcon.classList.add('paused');
             if (audioModeArt) audioModeArt.classList.add('paused');
@@ -1896,7 +2167,12 @@ function handleSeekAction(e) {
     if (duration > 0) {
         const targetTime = percent * duration;
         updateSeekUI(percent * 100, targetTime, duration);
-        player.seekTo(targetTime, true);
+        
+        if (isInShell) {
+            window.parent.postMessage({ type: 'SEEK_TO', time: targetTime }, '*');
+        } else if (player) {
+            player.seekTo(targetTime, true);
+        }
     }
 }
 
@@ -1913,13 +2189,15 @@ function updateLikeBtnUI(isLiked) {
 
 
 
-// Inject YouTube API Script
-(function() {
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-})();
+// Inject YouTube API Script - Only when NOT in shell
+if (!isInShell) {
+    (function() {
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    })();
+}
 
 // Start app
 init();
@@ -2019,7 +2297,11 @@ function syncMiniPlayer(song) {
     const miniPlayerArtist = document.getElementById('miniPlayerArtist');
     if (miniPlayerImg) {
         if (song.youtubeId || song.thumbnail) {
-            miniPlayerImg.src = song.youtubeId ? 'https://i.ytimg.com/vi/' + song.youtubeId + '/mqdefault.jpg' : (song.thumbnail || 'music_placeholder.png');
+            const thumbUrl = song.youtubeId ? `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg` : (song.thumbnail || 'music_placeholder.png');
+            miniPlayerImg.src = thumbUrl;
+            if (song.youtubeId) {
+                miniPlayerImg.onerror = function() { window.handleImageError(this, song.youtubeId); };
+            }
         } else {
             miniPlayerImg.src = 'music_placeholder.png';
         }
@@ -2058,13 +2340,10 @@ function initMiniPlayer() {
         if (mainContent) scrollTop = mainContent.scrollTop;
         if (scrollTop === 0) scrollTop = window.scrollY; // fallback
         
-        // Show if scrolled down more than 50px
-        if (window.innerWidth <= 850) {
-            if (scrollTop > 50) {
-                miniPlayer.classList.add('visible');
-            } else {
-                miniPlayer.classList.remove('visible');
-            }
+        // Show if a song is active or scrolled down
+        const isSongActive = !!currentPlayingSong;
+        if (isSongActive || scrollTop > 50) {
+            miniPlayer.classList.add('visible');
         } else {
             miniPlayer.classList.remove('visible');
         }
@@ -2190,5 +2469,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-console.log('[Vibe] 백그라운드 재생 모듈 로드 완료');
+if (!isInShell) {
+    console.log('[Vibe] 백그라운드 재생 모듈 로드 완료');
+}
 

@@ -2,6 +2,12 @@
 <html lang="ko">
 
 <head>
+  <script type="text/javascript">
+    // Direct access to uncompiled source under Live Server (port 5500) redirect to portal
+    if (window.location.port === '5500' && window.self === window.top) {
+      window.location.replace('/?p=learn/');
+    }
+  </script>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./favicon.png" />
