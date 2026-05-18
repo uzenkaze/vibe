@@ -1350,7 +1350,7 @@ body {
     }
 
     .song-item {
-        padding: 16px 15px; /* More clickable surface on tall screens */
+        padding: 8px 10px !important; /* Keep it tight on mobile to prevent clipping */
         margin-bottom: 4px;
     }
 }
