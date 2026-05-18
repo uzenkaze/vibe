@@ -355,18 +355,137 @@ function updateActiveUI() {
   });
 }
 
+function getChannelCardStyleAndContent(ch, active) {
+  const m = {
+    'kbs1': {
+      bg: 'linear-gradient(135deg, #0b457e 0%, #002244 100%)',
+      html: `<span class="font-extrabold text-white text-base tracking-tight drop-shadow-md">KBS <span class="text-sky-400">1TV</span></span>`
+    },
+    'kbs2': {
+      bg: 'linear-gradient(135deg, #d3001e 0%, #7a000d 100%)',
+      html: `<span class="font-extrabold text-white text-base tracking-tight drop-shadow-md">KBS <span class="text-yellow-300">2TV</span></span>`
+    },
+    'kbs_24': {
+      bg: 'linear-gradient(135deg, #02235c 0%, #000c24 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-10 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-24 h-24 rounded-full border border-white -top-6 -right-6"></div>
+          <div class="absolute w-36 h-36 rounded-full border border-white -bottom-10 -left-10"></div>
+        </div>
+        <div class="flex items-center gap-1 z-10"><span class="font-black text-white text-lg tracking-tighter drop-shadow-md">KBS <span class="font-light">24</span></span></div>
+      `
+    },
+    'kbs_joy': {
+      bg: 'linear-gradient(135deg, #ffc03d 0%, #ff8c00 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-15 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-40 h-2 bg-white/30 rotate-12 top-6 -left-10"></div>
+          <div class="absolute w-40 h-3 bg-white/30 rotate-12 top-12 -left-10"></div>
+        </div>
+        <div class="flex items-center gap-1 z-10"><span class="font-black text-[#1a2c5b] text-lg tracking-tighter drop-shadow-md">KBS <span class="text-[#f43f5e] italic">joy</span></span></div>
+      `
+    },
+    'kbs_drama': {
+      bg: 'linear-gradient(135deg, #ff94b8 0%, #ff527b 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-20 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-20 h-20 rounded-full bg-white/20 -top-8 -left-8"></div>
+        </div>
+        <div class="flex items-center gap-1 z-10"><span class="font-black text-white text-base tracking-tighter drop-shadow-md">KBS <span class="font-light">drama</span></span></div>
+      `
+    },
+    'mbc': {
+      bg: 'linear-gradient(135deg, #222222 0%, #000000 100%)',
+      html: `<span class="font-black text-white text-xl tracking-widest italic drop-shadow-md">MBC</span>`
+    },
+    'mbc_every1': {
+      bg: 'linear-gradient(135deg, #e11d48 0%, #881337 100%)',
+      html: `<div class="text-center drop-shadow-md"><div class="text-[9px] text-white/70 font-extrabold uppercase tracking-widest">MBC</div><div class="text-[15px] font-black text-white italic">every1</div></div>`
+    },
+    'mbc_drama': {
+      bg: 'linear-gradient(135deg, #ec4899 0%, #500724 100%)',
+      html: `<div class="text-center drop-shadow-md"><div class="text-[9px] text-white/70 font-extrabold uppercase tracking-widest">MBC</div><div class="text-[15px] font-black text-white italic">Drama</div></div>`
+    },
+    'mbc_on': {
+      bg: 'linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%)',
+      html: `<div class="text-center drop-shadow-md"><div class="text-[9px] text-white/70 font-extrabold uppercase tracking-widest">MBC</div><div class="text-[15px] font-black text-white italic">On</div></div>`
+    },
+    'mbc_m': {
+      bg: 'linear-gradient(135deg, #a855f7 0%, #3b0764 100%)',
+      html: `<div class="text-center drop-shadow-md"><div class="text-[9px] text-white/70 font-extrabold uppercase tracking-widest">MBC</div><div class="text-[18px] font-black text-white italic tracking-tighter">M</div></div>`
+    },
+    'sbs': {
+      bg: 'linear-gradient(135deg, #111115 0%, #252530 100%)',
+      html: `
+        <div class="flex items-center gap-1.5 drop-shadow-md">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#ffcc00"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          <span class="font-extrabold text-white text-[16px] tracking-wider">SBS</span>
+        </div>
+      `
+    },
+    'tvn': {
+      bg: '#e11d48',
+      html: `<span class="font-black text-white text-[20px] tracking-tighter italic drop-shadow-md">tvN</span>`
+    },
+    'mnet': {
+      bg: '#000000',
+      html: `<span class="font-black text-[#ff007f] text-[18px] tracking-widest uppercase drop-shadow-md">Mnet</span>`
+    },
+    'jtbc': {
+      bg: 'linear-gradient(135deg, #1a1a24 0%, #0e0e12 100%)',
+      html: `<div class="flex flex-col items-center drop-shadow-md"><span class="font-black text-white text-[16px] tracking-tighter">JTBC</span><div class="h-1 w-8 bg-gradient-to-r from-red-500 via-yellow-400 to-blue-500 mt-1 rounded"></div></div>`
+    },
+    'tv_chosun': {
+      bg: 'linear-gradient(135deg, #ea580c 0%, #7c2d12 100%)',
+      html: `<span class="font-black text-white text-[16px] tracking-tighter drop-shadow-md">TV조선</span>`
+    },
+    'channel_a': {
+      bg: 'linear-gradient(135deg, #0284c7 0%, #0c4a6e 100%)',
+      html: `<span class="font-black text-white text-[16px] tracking-tighter drop-shadow-md">채널A</span>`
+    },
+    'mbn': {
+      bg: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+      html: `<span class="font-black text-white text-[18px] tracking-tighter drop-shadow-md">MBN</span>`
+    }
+  };
+
+  const matched = m[ch.id];
+  if (matched) return matched;
+
+  // Fallback hash-based gradients for any other channels
+  const hash = ch.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const colors = [
+    'linear-gradient(135deg, #4f46e5 0%, #2e2a85 100%)',
+    'linear-gradient(135deg, #10b981 0%, #064e3b 100%)',
+    'linear-gradient(135deg, #f59e0b 0%, #78350f 100%)',
+    'linear-gradient(135deg, #06b6d4 0%, #164e63 100%)',
+    'linear-gradient(135deg, #8b5cf6 0%, #4c1d95 100%)'
+  ];
+  const bg = colors[hash % colors.length];
+  const html = `<span class="font-extrabold text-white text-sm text-center px-2 drop-shadow-md truncate w-full">${ch.name}</span>`;
+  return { bg, html };
+}
+
 function createCard(ch) {
   const active = activeChannelId === ch.id;
-  const net = getNetStyle(ch.network);
+  const cardStyle = getChannelCardStyleAndContent(ch, active);
   const card = document.createElement('div');
-  card.className = 'flex-shrink-0 w-32 cursor-pointer group channel-card';
+  card.className = 'flex-shrink-0 w-36 sm:w-40 cursor-pointer group channel-card';
   card.onclick = () => playChannel(ch);
   card.innerHTML = `
-    <div data-id="${ch.id}" style="background:${net.bg};color:${net.color};" class="channel-card-inner relative rounded-2xl aspect-[3/4] flex items-center justify-center border-2 ${active ? 'border-indigo-500' : 'border-white/5'} transition-all group-hover:border-white/20 shadow-lg">
-      <div class="font-black text-lg text-center leading-tight drop-shadow-md">${getNetName(ch)}</div>
-      <div class="absolute top-2 left-2 px-2 py-0.5 bg-red-600 text-[8px] font-bold rounded shadow-sm">LIVE</div>
+    <div data-id="${ch.id}" style="background:${cardStyle.bg};" class="channel-card-inner relative rounded-2xl aspect-video flex items-center justify-center border-2 ${active ? 'border-indigo-500 shadow-indigo-500/20' : 'border-white/5 shadow-black/40'} transition-all duration-300 group-hover:border-white/20 shadow-lg overflow-hidden">
+      ${cardStyle.html}
+      <div class="absolute top-2 right-2 px-2 py-0.5 bg-red-600/90 text-[8px] font-extrabold rounded-full shadow-sm text-white flex items-center gap-1 uppercase tracking-widest z-20">
+        <span class="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>ON AIR
+      </div>
+      <!-- Hover / Active Play Button Overlay -->
+      <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 ${active ? 'opacity-100 bg-black/30' : ''} transition-opacity duration-300 z-10">
+        <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" class="ml-0.5"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
     </div>
-    <div class="channel-name-text mt-2 text-[11px] font-bold truncate px-1 ${active ? 'text-indigo-400' : 'text-gray-400 group-hover:text-white'}">${ch.name}</div>
+    <div class="channel-name-text mt-2 text-[11px] font-bold truncate px-1 text-center ${active ? 'text-indigo-400' : 'text-gray-400 group-hover:text-white'}">${ch.name}</div>
   `;
   return card;
 }
