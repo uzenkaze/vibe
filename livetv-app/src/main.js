@@ -176,6 +176,31 @@ let isYouTubeMode = false;
 let lastIsPC = window.innerWidth >= 1024;
 const isPC = () => window.innerWidth >= 1024;
 
+// 즐겨찾기 상태 및 기능 정의
+let favorites = JSON.parse(localStorage.getItem('vibe_tv_favorites') || '[]');
+
+function isFavorite(chId) {
+  return favorites.includes(chId);
+}
+
+function toggleFavorite(chId, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  const idx = favorites.indexOf(chId);
+  if (idx > -1) {
+    favorites.splice(idx, 1);
+  } else {
+    favorites.push(chId);
+  }
+  localStorage.setItem('vibe_tv_favorites', JSON.stringify(favorites));
+  renderCategories();
+  renderChannels();
+}
+
+window.toggleFavorite = toggleFavorite;
+
 
 /* =================== DOM REFS =================== */
 const videoEl        = document.getElementById('main-video');
@@ -244,7 +269,7 @@ async function loadExternalPlaylist() {
 
 /* =================== UI RENDERERS =================== */
 function renderCategories() {
-  const cats = ['전체', ...new Set(CHANNELS.map(c => c.category))];
+  const cats = ['전체', '즐겨찾기', ...new Set(CHANNELS.map(c => c.category))];
   [catContainerPC, catContainerMob].forEach(c => {
     if (!c) return;
     c.innerHTML = '';
@@ -253,9 +278,17 @@ function renderCategories() {
       btn.textContent = cat;
       const active = (activeCategoryFilter === cat) || (!activeCategoryFilter && cat === '전체');
       btn.className = `whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all ${
-        active ? 'bg-white text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'
+        active ? 'bg-white text-black font-semibold' : 'bg-white/5 text-gray-400 hover:bg-white/10'
       }`;
-      btn.onclick = () => { activeCategoryFilter = cat === '전체' ? null : cat; renderCategories(); renderChannels(); };
+      btn.onclick = () => { 
+        activeCategoryFilter = cat === '전체' ? null : cat; 
+        const tabName = cat === '즐겨찾기' ? 'favorites' : 'live';
+        if (typeof updateBottomBarActiveState === 'function') {
+          updateBottomBarActiveState(tabName);
+        }
+        renderCategories(); 
+        renderChannels(); 
+      };
       c.appendChild(btn);
     });
   });
@@ -316,8 +349,32 @@ function renderChannels() {
     if (catTitle) scrollPositions[catTitle] = row.scrollLeft;
   });
 
-  const filtered = activeCategoryFilter ? CHANNELS.filter(c => c.category === activeCategoryFilter) : CHANNELS;
-  
+  let filtered = [];
+  if (activeCategoryFilter === '즐겨찾기') {
+    filtered = CHANNELS.filter(c => favorites.includes(c.id));
+  } else {
+    filtered = activeCategoryFilter ? CHANNELS.filter(c => c.category === activeCategoryFilter) : CHANNELS;
+  }
+
+  // 즐겨찾기 비었을 때 화면 구성
+  if (activeCategoryFilter === '즐겨찾기' && filtered.length === 0) {
+    [gridPC, gridMob].forEach(container => {
+      if (!container) return;
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20 px-6 text-center text-gray-500 w-full col-span-full">
+          <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+            <svg class="text-yellow-400/60" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <h3 class="text-white font-bold text-sm mb-1">즐겨찾는 채널이 없습니다</h3>
+          <p class="text-xs text-gray-500 max-w-xs leading-relaxed">채널 카드의 왼쪽 위에 있는 별(⭐) 아이콘을 클릭하여 나만의 즐겨찾기 목록을 채워보세요!</p>
+        </div>
+      `;
+    });
+    return;
+  }
+
   [gridPC, gridMob].forEach(container => {
     if (!container) return;
     container.innerHTML = '';
@@ -597,6 +654,16 @@ function createCard(ch) {
     </div>
   ` : '';
 
+  const fav = isFavorite(ch.id);
+  const starColorClass = fav ? 'text-yellow-400 fill-yellow-400' : 'text-white/40 group-hover/fav:text-white/80';
+  const favoriteBtnHtml = `
+    <button onclick="window.toggleFavorite('${ch.id}', event)" class="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center border border-white/10 z-30 group/fav hover:scale-110 active:scale-95 transition-all">
+      <svg class="${starColorClass} transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </button>
+  `;
+
   const card = document.createElement('div');
   card.className = 'flex-shrink-0 w-36 sm:w-40 cursor-pointer group channel-card';
   card.onclick = () => playChannel(ch);
@@ -604,6 +671,7 @@ function createCard(ch) {
     <div data-id="${ch.id}" style="background:${cardStyle.bg};" class="channel-card-inner relative rounded-2xl aspect-video flex items-center justify-center border-2 ${active ? 'border-indigo-500 shadow-indigo-500/20' : 'border-white/5 shadow-black/40'} transition-all duration-300 group-hover:border-white/20 shadow-lg overflow-hidden">
       ${cardStyle.html}
       ${onAirBadgeHtml}
+      ${favoriteBtnHtml}
       <!-- Hover / Active Play Button Overlay -->
       <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 ${active ? 'opacity-100 bg-black/30' : ''} transition-opacity duration-300 z-10">
         <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
@@ -982,7 +1050,7 @@ function initControls() {
     document.getElementById('fullscreen-btn'), 
     document.getElementById('vol-btn'), 
     document.getElementById('vol-slider'),
-    document.getElementById('video-container')?.querySelector('.relative')
+    document.getElementById('video-inner-screen')
   );
 
   // Mobile
@@ -997,6 +1065,54 @@ function initControls() {
 
 /* =================== INIT =================== */
 window.handleYouTubeLogin = () => { window.location.href = 'youtube.html'; };
+
+function updateBottomBarActiveState(tabName) {
+  const btns = {
+    live: document.getElementById('tab-btn-live'),
+    favorites: document.getElementById('tab-btn-favorites')
+  };
+  Object.entries(btns).forEach(([k, btn]) => {
+    if (!btn) return;
+    if (k === tabName) {
+      btn.classList.add('text-indigo-400');
+      btn.classList.remove('text-gray-500', 'hover:text-white');
+    } else {
+      btn.classList.remove('text-indigo-400');
+      btn.classList.add('text-gray-500', 'hover:text-white');
+    }
+  });
+}
+window.updateBottomBarActiveState = updateBottomBarActiveState;
+
+window.switchTab = function(tabName) {
+  const btns = {
+    live: document.getElementById('tab-btn-live'),
+    favorites: document.getElementById('tab-btn-favorites')
+  };
+
+  Object.entries(btns).forEach(([k, btn]) => {
+    if (!btn) return;
+    if (k === tabName) {
+      btn.classList.add('text-indigo-400');
+      btn.classList.remove('text-gray-500', 'hover:text-white');
+    } else {
+      btn.classList.remove('text-indigo-400');
+      btn.classList.add('text-gray-500', 'hover:text-white');
+    }
+  });
+
+  if (tabName === 'live') {
+    activeCategoryFilter = null;
+    renderCategories();
+    renderChannels();
+  } else if (tabName === 'favorites') {
+    activeCategoryFilter = '즐겨찾기';
+    renderCategories();
+    renderChannels();
+  } else if (tabName === 'youtube') {
+    window.location.href = 'youtube.html';
+  }
+};
 
 async function preloadWorkingUrls() {
   const checkUrl = async (url) => {
@@ -1032,11 +1148,50 @@ async function preloadWorkingUrls() {
   }
 }
 
+function initHeaderStatus() {
+  const timeEl = document.getElementById('status-time');
+  const batteryBar = document.getElementById('battery-bar');
+  const batteryText = document.getElementById('battery-text');
+
+  function updateTime() {
+    const now = new Date();
+    const hrs = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    if (timeEl) timeEl.textContent = `${hrs}:${mins}`;
+  }
+
+  async function updateBattery() {
+    try {
+      const battery = await navigator.getBattery();
+      function updateInfo() {
+        const pct = Math.round(battery.level * 100);
+        if (batteryBar) batteryBar.style.width = `${pct}%`;
+        if (batteryText) batteryText.textContent = `${pct}%`;
+      }
+      updateInfo();
+      battery.addEventListener('levelchange', updateInfo);
+    } catch(e) {
+      if (batteryBar) batteryBar.style.width = '88%';
+      if (batteryText) batteryText.textContent = '88%';
+    }
+  }
+
+  updateTime();
+  setInterval(updateTime, 1000);
+  updateBattery();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   renderCategories();
   renderChannels();
   initControls(); // 컨트롤 초기화
   preloadWorkingUrls(); // 접속가능한 지상파 URL 사전 확인
-  // M3U 외부 리스트 로딩은 수천 개의 채널로 인해 렌더링 렉 및 브라우저 프리징을 유발하므로 자동 로드에서 제외
-  // await loadExternalPlaylist();
+  initHeaderStatus(); // 상단 헤더 시간/배터리 잔량 초기화
+
+  // URL 파라미터 체크로 즐겨찾기 초기 활성화 지원
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get('tab');
+  if (initialTab === 'favorites') {
+    window.switchTab('favorites');
+  }
 });

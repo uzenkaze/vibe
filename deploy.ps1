@@ -47,6 +47,12 @@ foreach ($folder in $staticFolders) {
             if (Test-Path "$folder/dist") {
                 New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
                 Copy-Item -Path "$folder/dist/*" -Destination "$deployDir/$targetFolder" -Recurse
+                # livetv-app인 경우, 빌드 dist에 빠진 youtube.html과 src/youtube.js를 직접 복사
+                if ($folder -eq "livetv-app") {
+                    Copy-Item -Path "$folder/youtube.html" -Destination "$deployDir/$targetFolder/"
+                    New-Item -ItemType Directory -Path "$deployDir/$targetFolder/src" -Force | Out-Null
+                    Copy-Item -Path "$folder/src/youtube.js" -Destination "$deployDir/$targetFolder/src/"
+                }
             } else {
                 # dist가 없으면 node_modules를 제외하고 복사
                 New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
