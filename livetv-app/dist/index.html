@@ -38,20 +38,14 @@
     </button>
   </header>
 
-  <div class="flex-1 flex flex-col lg:flex-row overflow-hidden lg:overflow-visible">
+  <div class="flex-1 flex flex-col overflow-y-auto no-scrollbar">
     
-    <!-- Sidebar (PC) -->
-    <aside class="hidden lg:flex w-80 flex-col border-r border-white/5 bg-[#0a0a0f] overflow-hidden flex-shrink-0">
-      <div class="p-4 overflow-x-auto no-scrollbar flex items-center gap-2" id="category-tabs-pc"></div>
-      <div id="channel-grid" class="flex-1 overflow-y-auto no-scrollbar p-2"></div>
-    </aside>
-
     <!-- Main Content -->
     <main class="flex-1 flex flex-col bg-black relative">
       
       <!-- PC Player -->
-      <div id="video-container" class="hidden lg:flex flex-1 flex-col bg-black overflow-y-auto no-scrollbar">
-        <div class="relative w-full aspect-video bg-black group">
+      <div id="video-container" class="hidden lg:flex w-full bg-[#030303] flex-col items-center justify-center py-6 flex-shrink-0 border-b border-white/5">
+        <div class="relative w-full max-w-6xl aspect-video bg-black group shadow-2xl">
           <video id="main-video" class="w-full h-full object-contain hidden" playsinline></video>
           <iframe id="youtube-iframe-pc" class="w-full h-full absolute inset-0 hidden z-30" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           
@@ -92,6 +86,12 @@
             <div id="now-playing-title" class="text-white font-bold text-lg drop-shadow-lg"></div>
           </div>
         </div>
+      </div>
+
+      <!-- PC Channels (Below Player) -->
+      <div class="hidden lg:flex flex-col w-full bg-[#08080c] border-t border-white/5 pb-24">
+        <div class="p-6 overflow-x-auto no-scrollbar flex items-center gap-3 border-b border-white/5" id="category-tabs-pc"></div>
+        <div id="channel-grid" class="p-6 flex-1"></div>
       </div>
 
       <!-- Mobile Content -->
