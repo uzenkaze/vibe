@@ -659,9 +659,14 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   isYouTubeMode = false;
 
   if (!isPC()) {
-    const mobPlayer = document.querySelector('.mobile-player-fixed');
-    if (mobPlayer) {
-      mobPlayer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 뷰포트(창) 스크롤을 항상 최상단(0,0)으로 고정하여 헤더가 주소창 영역 아래로 사라지지 않도록 보호
+    window.scrollTo({ top: 0 });
+    document.body.scrollTop = 0;
+
+    // 영상 영역 아래의 채널 리스트만 최상단으로 스크롤하여 상단 고정 플레이어와의 조화를 유지
+    const gridMob = document.getElementById('channel-grid-mobile');
+    if (gridMob) {
+      gridMob.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
