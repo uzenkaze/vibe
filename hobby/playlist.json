@@ -50,6 +50,15 @@
   ],
   "recentlyPlayed": [
     {
+      "id": "global_UPkyursCTfE",
+      "title": "BABYMONSTER (베이비몬스터) - CHOOM (춤) | Show! MusicCore | MBC260509방송",
+      "artist": "MBCkpop",
+      "youtubeId": "UPkyursCTfE",
+      "duration": "3:29",
+      "isGlobal": true,
+      "lyrics": "(유튜브 검색 결과)\n업로더: MBCkpop\n길이: 3:29"
+    },
+    {
       "id": "related_HoJl5uv5g8U",
       "title": "[최신가요연속듣기 2026] KPOP 노동요 🌎 2026년 1월 5일 2주차, 멜론차트 X, 노래모음 플레이리스트 멜론 종합차트",
       "artist": "Yeo Doll",
@@ -163,15 +172,7 @@
       "youtubeId": "ru4DicGUCY0",
       "isGlobal": true,
       "lyrics": "(유튜브 검색 결과)\n업로더: 감정 음악"
-    },
-    {
-      "id": "related_gnQcIfUp8Ao",
-      "title": "Fin de la journée,dormez de la musique dansune chambre confortable☁musique de traitementdel'insomnie",
-      "artist": "뮤직 메이트 Music Mate",
-      "youtubeId": "gnQcIfUp8Ao",
-      "isGlobal": true,
-      "lyrics": "(연관 추천곡) - 뮤직 메이트 Music Mate"
     }
   ],
-  "lastSync": "2026-05-18T06:22:13.747Z"
+  "lastSync": "2026-05-18T06:42:19.768Z"
 }
