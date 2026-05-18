@@ -62,6 +62,18 @@ const CHANNELS = [
     'https://mnet-live.akamaized.net/hls/live/2039204/mnet/playlist.m3u8'
   ]},
 
+  // 정주행 24
+  { id: 'ssam_my_way', name: '쌈, 마이웨이', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod1', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod1&ch_type=globalList', urls: [] },
+  { id: 'taejo_wanggeon', name: '태조 왕건', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod2', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod2&ch_type=globalList', urls: [] },
+  { id: 'queen_of_office', name: '직장의 신', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod3', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod3&ch_type=globalList', urls: [] },
+  { id: 'five_enough', name: '아이가 다섯', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod4', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod4&ch_type=globalList', urls: [] },
+  { id: 'king_of_baking', name: '제빵왕 김탁구', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod5', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod5&ch_type=globalList', urls: [] },
+  { id: 'one_night_two_days_24', name: '1박 2일', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod6', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod6&ch_type=globalList', urls: [] },
+  { id: 'my_daughter_seoyoung', name: '내 딸 서영이', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod7', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod7&ch_type=globalList', urls: [] },
+  { id: 'history_journal', name: '역사저널 그날', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod8', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod8&ch_type=globalList', urls: [] },
+  { id: 'screening_humanity', name: '인간극장', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod9', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod9&ch_type=globalList', urls: [] },
+  { id: 'kids_cartoon', name: '어린이 만화동산', network: 'KBS', category: '정주행 24', kbsApiCode: 'nvod10', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=nvod10&ch_type=globalList', urls: [] },
+
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
@@ -446,6 +458,80 @@ function getChannelCardStyleAndContent(ch, active) {
     'mbn': {
       bg: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
       html: `<span class="font-black text-white text-[18px] tracking-tighter drop-shadow-md">MBN</span>`
+    },
+    'ssam_my_way': {
+      bg: 'linear-gradient(135deg, #fda4af 0%, #e11d48 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-15 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-24 h-24 rounded-full border border-white -top-6 -right-6"></div>
+          <div class="absolute w-36 h-36 rounded-full border border-white -bottom-10 -left-10"></div>
+        </div>
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/70 font-extrabold tracking-widest uppercase">KBS 정주행</div><div class="text-[14px] font-black text-white leading-tight">쌈, 마이웨이</div></div>
+      `
+    },
+    'taejo_wanggeon': {
+      bg: 'linear-gradient(135deg, #d97706 0%, #451a03 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-20 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-40 h-2 bg-yellow-400/20 rotate-45 top-6 -left-10"></div>
+        </div>
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-yellow-300/80 font-extrabold tracking-widest uppercase">KBS 대하사극</div><div class="text-[15px] font-black text-yellow-100 leading-tight">태조 왕건</div></div>
+      `
+    },
+    'queen_of_office': {
+      bg: 'linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-15 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-32 h-32 rounded-full border border-white/20 -top-10 -left-10"></div>
+        </div>
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/70 font-extrabold tracking-widest uppercase">KBS 월화드라마</div><div class="text-[15px] font-black text-white leading-tight">직장의 신</div></div>
+      `
+    },
+    'five_enough': {
+      bg: 'linear-gradient(135deg, #fbbf24 0%, #b45309 100%)',
+      html: `
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/70 font-extrabold tracking-widest uppercase">KBS 주말드라마</div><div class="text-[15px] font-black text-white leading-tight">아이가 다섯</div></div>
+      `
+    },
+    'king_of_baking': {
+      bg: 'linear-gradient(135deg, #f97316 0%, #7c2d12 100%)',
+      html: `
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/70 font-extrabold tracking-widest uppercase">KBS 수목드라마</div><div class="text-[15px] font-black text-white leading-tight">제빵왕 김탁구</div></div>
+      `
+    },
+    'one_night_two_days_24': {
+      bg: 'linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)',
+      html: `
+        <div class="absolute inset-0 opacity-20 overflow-hidden pointer-events-none rounded-2xl">
+          <div class="absolute w-40 h-3 bg-white/20 -rotate-12 top-6 -left-10"></div>
+          <div class="absolute w-40 h-2 bg-white/20 -rotate-12 top-12 -left-10"></div>
+        </div>
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/80 font-extrabold tracking-widest uppercase">국민 예능</div><div class="text-[17px] font-black text-yellow-300 italic tracking-tighter">1박 2일</div></div>
+      `
+    },
+    'my_daughter_seoyoung': {
+      bg: 'linear-gradient(135deg, #c084fc 0%, #581c87 100%)',
+      html: `
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/70 font-extrabold tracking-widest uppercase">KBS 명품드라마</div><div class="text-[14px] font-black text-white leading-tight">내 딸 서영이</div></div>
+      `
+    },
+    'history_journal': {
+      bg: 'linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%)',
+      html: `
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/70 font-extrabold tracking-widest uppercase">KBS 역사교양</div><div class="text-[14px] font-black text-white leading-tight">역사저널 그날</div></div>
+      `
+    },
+    'screening_humanity': {
+      bg: 'linear-gradient(135deg, #0d9488 0%, #115e59 100%)',
+      html: `
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/70 font-extrabold tracking-widest uppercase">KBS 휴먼다큐</div><div class="text-[15px] font-black text-white leading-tight">인간극장</div></div>
+      `
+    },
+    'kids_cartoon': {
+      bg: 'linear-gradient(135deg, #4ade80 0%, #15803d 100%)',
+      html: `
+        <div class="text-center z-10 drop-shadow-lg"><div class="text-[9px] text-white/80 font-extrabold tracking-widest uppercase">어린이 명작 만화</div><div class="text-[14px] font-black text-yellow-200 leading-tight">만화동산</div></div>
+      `
     }
   };
 
