@@ -1459,6 +1459,41 @@ window.clearRecentSongs = function() {
 };
 
 
+const fallbackDiscoveryData = {
+    trending: [
+        { id: "local_trend1", title: "Supernova", artist: "aespa(에스파)", youtubeId: "JmD8_t0IuGg" },
+        { id: "local_trend2", title: "고민중독", artist: "QWER", youtubeId: "X_P3-X_v_U" },
+        { id: "local_trend3", title: "Ditto", artist: "NewJeans", youtubeId: "km_OnhPjD0o" },
+        { id: "local_trend4", title: "밤양갱", artist: "비비 (BIBI)", youtubeId: "v9gGfQy7-C4" },
+        { id: "local_trend5", title: "Magnetic", artist: "ILLIT (아일릿)", youtubeId: "Vk5-c_v4gMU" },
+        { id: "local_trend6", title: "HEYA (해야)", artist: "IVE (아이브)", youtubeId: "7WJ46OQ6C-4" }
+    ],
+    latest: [
+        { id: "local_latest1", title: "Armageddon", artist: "aespa(에스파)", youtubeId: "nFYwcndKlOY" },
+        { id: "local_latest2", title: "How Sweet", artist: "NewJeans", youtubeId: "Q3K0TOvTO5I" },
+        { id: "local_latest3", title: "Bubble Gum", artist: "NewJeans", youtubeId: "dJdqn5v4Dkw" },
+        { id: "local_latest4", title: "SPOT! (feat. JENNIE)", artist: "ZICO (지코)", youtubeId: "fEjqj6_H5cQ" },
+        { id: "local_latest5", title: "SHEESH", artist: "BABYMONSTER", youtubeId: "2wA_b78E3iE" },
+        { id: "local_latest6", title: "소나기 (Sudden Shower)", artist: "ECLIPSE (이클립스)", youtubeId: "H-P6pDqM0U4" }
+    ],
+    pop: [
+        { id: "local_pop1", title: "Cruel Summer", artist: "Taylor Swift", youtubeId: "ic8j13gFLzc" },
+        { id: "local_pop2", title: "Fortnight (feat. Post Malone)", artist: "Taylor Swift", youtubeId: "q3zqJs7k7c" },
+        { id: "local_pop3", title: "Espresso", artist: "Sabrina Carpenter", youtubeId: "eVli-tstM5E" },
+        { id: "local_pop4", title: "Greedy", artist: "Tate McRae", youtubeId: "T73h55z8xN0" },
+        { id: "local_pop5", title: "Too Sweet", artist: "Hozier", youtubeId: "aTg8_s6b_k0" },
+        { id: "local_pop6", title: "As It Was", artist: "Harry Styles", youtubeId: "HP-gSz1gGC4" }
+    ],
+    suggested: [
+        { id: "local_sug1", title: "빗소리와 함께 듣는 로파이 (Lofi Rain)", artist: "Lofi Vibes", youtubeId: "5wRWniH70r8" },
+        { id: "local_sug2", title: "잔잔한 어쿠스틱 피아노 명상 음악", artist: "Peaceful Music", youtubeId: "bO1fS-Z49fA" },
+        { id: "local_sug3", title: "Sleep Lullaby (수면 힐링 음악)", artist: "Sleep Oasis", youtubeId: "hTWKbfoikeg" },
+        { id: "local_sug4", title: "카페에서 듣기 좋은 산뜻한 보사노바", artist: "Cafe Jazz", youtubeId: "17l_B1UvU-A" },
+        { id: "local_sug5", title: "Relaxing Forest Rain & Wind Sounds", artist: "Nature Healing", youtubeId: "mPZkdNFkNps" },
+        { id: "local_sug6", title: "힐링 지브리 아쿠스틱 오르골 메들리", artist: "Orgel Melody", youtubeId: "e9SnaG89nO8" }
+    ]
+};
+
 async function renderHome() {
     const discoveryDashboard = document.getElementById('discoveryDashboard');
     const songList = document.getElementById('songList');
@@ -1475,87 +1510,50 @@ async function renderHome() {
     if (listIcon) listIcon.className = 'fas fa-compass';
     if (listTitleLabel) listTitleLabel.textContent = '탐색';
 
-
-    // 1. Try Local Cache First for Instant Loading
+    // 1. Render Local Curated fallback data OR cache instantly for zero delay
+    let initialData = fallbackDiscoveryData;
     const cached = localStorage.getItem(HOME_CACHE_KEY);
     if (cached) {
         try {
-            const { timestamp, sections } = JSON.parse(cached);
-            const ageInMin = (Date.now() - timestamp) / 60000;
-            // TTL 5 minutes for freshness
-            if (ageInMin < 5 && sections && sections.trending) {
-                renderDiscoveryFromData(sections);
-                return;
+            const { sections } = JSON.parse(cached);
+            if (sections && sections.trending) {
+                initialData = sections;
             }
         } catch(e) { localStorage.removeItem(HOME_CACHE_KEY); }
     }
-
-
-    // 2. Prepare Structure (Including Recently Played)
-    const recentSongs = JSON.parse(localStorage.getItem(RECENTLY_PLAYED_KEY) || '[]');
-    let recentSectionHtml = '';
-    
-    if (recentSongs.length > 0) {
-        recentSectionHtml = `
-            <div class="home-section" id="sectionRecently">
-                <div class="section-header"><h2>다시 듣기 🕒</h2> <span class="more-btn">모두 보기</span></div>
-                <div class="card-scroller">${renderCardList(recentSongs)}</div>
-            </div>
-        `;
-    }
-
-    discoveryDashboard.innerHTML = `
-        ${recentSectionHtml}
-        <div class="home-section">
-            <div class="section-header"><h2>실시간 인기 차트 🔥</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller" id="scrollerTrending"><div class="loading-state small"><div class="spinner"></div></div></div>
-        </div>
-        <div class="home-section">
-            <div class="section-header"><h2>최신 국내 발매 음악 🆕</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller" id="scrollerLatest"><div class="loading-state small"><div class="spinner"></div></div></div>
-        </div>
-        <div class="home-section">
-            <div class="section-header"><h2>Pop - 글로벌 히트 🌎</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller" id="scrollerPop"><div class="loading-state small"><div class="spinner"></div></div></div>
-        </div>
-        <div class="home-section">
-            <div class="section-header"><h2>잔잔한 음악 🌿</h2> <span class="more-btn">더보기</span></div>
-            <div class="card-scroller" id="scrollerSuggested"><div class="loading-state small"><div class="spinner"></div></div></div>
-        </div>
-    `;
+    renderDiscoveryFromData(initialData);
 
     // Calculate recent 6 months query
     function getRecent6MonthsQuery() {
         const now = new Date();
         const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-        // e.g., "2025년 10월 ~ 2026년 3월 최신 국내 가요 신곡"
         return `${start.getFullYear()}년 ${start.getMonth() + 1}월 ~ ${now.getFullYear()}년 ${now.getMonth() + 1}월 최신 국내 가요 신곡`;
     }
 
-    // 3. Fetch from Network in Parallel
-    try {
-        const todayStr = new Date().toLocaleDateString();
-        const [trending, latest, pop, suggested] = await Promise.all([
-            fetchCategorySongs(`실시간 인기 차트 TOP 20 ${todayStr}`, "scrollerTrending", 12),
-            fetchCategorySongs(`${getRecent6MonthsQuery()} 최신곡`, "scrollerLatest", 12),
-            fetchCategorySongs(`Trending Global Pop Hits ${new Date().getFullYear()} Hot 100`, "scrollerPop", 12),
-            fetchCategorySongs(`잔잔하고 편안한 수면 명상 음악 스트리밍`, "scrollerSuggested", 12)
-        ]);
+    // 2. Fetch fresh real-time categories in the background with short timeout
+    // This progressively enhances the UI if CORS permits, otherwise fails silently keeping the beautiful local card layout
+    setTimeout(async () => {
+        try {
+            const todayStr = new Date().toLocaleDateString();
+            const [trending, latest, pop, suggested] = await Promise.all([
+                fetchCategorySongs(`실시간 인기 차트 TOP 20 ${todayStr}`, "scrollerTrending", 12),
+                fetchCategorySongs(`${getRecent6MonthsQuery()} 최신곡`, "scrollerLatest", 12),
+                fetchCategorySongs(`Trending Global Pop Hits ${new Date().getFullYear()} Hot 100`, "scrollerPop", 12),
+                fetchCategorySongs(`잔잔하고 편안한 수면 명상 음악 스트리밍`, "scrollerSuggested", 12)
+            ]);
 
-
-        if (trending && latest && pop && suggested) {
-            const cacheData = {
-                timestamp: Date.now(),
-                sections: { trending, latest, pop, suggested }
-            };
-            localStorage.setItem(HOME_CACHE_KEY, JSON.stringify(cacheData));
+            if (trending && latest && pop && suggested) {
+                const cacheData = {
+                    timestamp: Date.now(),
+                    sections: { trending, latest, pop, suggested }
+                };
+                localStorage.setItem(HOME_CACHE_KEY, JSON.stringify(cacheData));
+                renderDiscoveryFromData({ trending, latest, pop, suggested });
+            }
+        } catch (e) {
+            console.log("Background discovery network refresh failed/blocked (using curated offline fallback).");
         }
-    } catch (e) {
-        console.warn("Network discovery failed, showing fallbacks.", e);
-        // If everything fails, pick from the first few hardcoded songs
-        const fallback = songs.slice(0, 10).map(s => ({...s, youtubeId: s.youtubeId || 'dQw4w9WgXcQ'}));
-        renderDiscoveryFromData({ trending: fallback, latest: fallback, pop: fallback, suggested: fallback });
-    }
+    }, 100);
 }
 
 // PERIODIC AUTO-REFRESH (Every 15 mins)

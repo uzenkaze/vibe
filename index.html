@@ -459,9 +459,13 @@
             if (url.startsWith('livetv/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
                 resolvedUrl = url.replace('livetv/', 'livetv-app/');
             }
-            // 레거시 HTML hobby/ 경로를 신규 리액트 기반인 hobby-app/www/index.html로 자동 포워딩 매핑
-            if (url.includes('hobby/')) {
-                resolvedUrl = url.replace('hobby/', 'hobby-app/www/index.html');
+            // 레거시 HTML hobby/ 경로를 신규 리액트 기반인 hobby-app/www/index.html 또는 실서버 hobby/index.html로 자동 포워딩 매핑
+            if (url.startsWith('hobby/') || url === 'hobby') {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'hobby-app/www/index.html';
+                } else {
+                    resolvedUrl = 'hobby/index.html';
+                }
             }
             // mPlay 경로 요청 시 로컬/배포 환경에 따라 실경로 매핑
             if (url.startsWith('mPlay/') || url === 'mPlay') {

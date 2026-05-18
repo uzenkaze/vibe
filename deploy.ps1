@@ -42,10 +42,13 @@ foreach ($folder in $staticFolders) {
         if ($folder -eq "livetv-app") { $targetFolder = "livetv" }
         if ($folder -eq "hobby-app") { $targetFolder = "mPlay" }
 
-        Write-Host "> $folder 폴더 복사 중 (node_modules 제외)... ($targetFolder 경로로 복사)"
+        Write-Host "> $folder 폴더 복사 중 (node_modules 제외)... ($targetFolder 및 hobby 경로로 복사)"
         if ($folder -eq "hobby-app") {
             New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
             Copy-Item -Path "$folder/www/*" -Destination "$deployDir/$targetFolder" -Recurse -Force
+            # 레거시 하이브리드 앱과의 완벽한 주소 호환을 위해 hobby 폴더에도 동시에 물리 복사하여 배포
+            New-Item -ItemType Directory -Path "$deployDir/hobby" -Force | Out-Null
+            Copy-Item -Path "$folder/www/*" -Destination "$deployDir/hobby" -Recurse -Force
         } elseif ($folder -eq "vibe-hybrid-app" -or $folder -eq "livetv-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {
