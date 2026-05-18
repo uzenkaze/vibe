@@ -112,16 +112,16 @@
 
       <!-- PC Player -->
       <div id="video-container"
-        class="hidden lg:flex w-full bg-[#06060a] flex-col items-center justify-center py-3 flex-shrink-0 border-b border-white/5">
+        class="hidden lg:flex w-full bg-black flex-col items-center justify-center flex-shrink-0 border-b border-white/5">
         
-        <!-- TV Bezel Frame Container (TV 외관 모서리 라운드 & 그라데이션) -->
-        <div class="relative p-3 bg-zinc-900/60 border border-white/10 rounded-[2.5rem] shadow-2xl shadow-black/80 mx-auto group" style="width: 96%; max-width: 1200px; aspect-ratio: 16/9; flex-shrink: 0;">
+        <!-- TV Bezel Frame Container (TV 외관 모서리 라운드 & 그라데이션) - 여백 없이 꽉 찬 화면으로 변경 -->
+        <div class="relative w-full aspect-video flex-shrink-0 group" id="video-bezel-frame">
           
-          <!-- TV Stand/Bottom Decor (TV 디자인 요소: 미세한 아랫단 입체감) -->
-          <div class="absolute inset-x-8 -bottom-1 h-2 bg-zinc-950/60 rounded-b-xl blur-[1px]"></div>
+          <!-- TV Stand/Bottom Decor (숨김 처리) -->
+          <div class="hidden"></div>
 
-          <!-- Inner Screen (내부 화면 영역) -->
-          <div id="video-inner-screen" class="w-full h-full rounded-[1.75rem] overflow-hidden bg-black relative">
+          <!-- Inner Screen (내부 화면 영역) - 라운드 제거 및 여백 없이 꽉 차게 변경 -->
+          <div id="video-inner-screen" class="w-full h-full overflow-hidden bg-black relative">
             <video id="main-video" class="w-full h-full object-cover hidden" playsinline></video>
             <iframe id="youtube-iframe-pc" class="w-full h-full absolute inset-0 hidden z-30" frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -188,13 +188,13 @@
       <!-- Mobile Content -->
       <div class="lg:hidden flex flex-col h-full bg-black overflow-hidden">
         <!-- Player (Mobile) -->
-        <div class="px-2 py-1.5 bg-black flex-shrink-0">
-          <div class="relative p-2 bg-zinc-900/60 border border-white/10 rounded-[1.75rem] shadow-lg shadow-black/60 w-[98%] mx-auto aspect-video flex-shrink-0 group/mob">
+        <div class="w-full bg-black flex-shrink-0 p-0">
+          <div class="relative w-full aspect-video flex-shrink-0 group/mob">
             
-            <!-- TV Stand/Bottom Decor (TV 디자인 요소: 미세한 아랫단 입체감) -->
-            <div class="absolute inset-x-6 -bottom-[2px] h-1.5 bg-zinc-950/60 rounded-b-lg blur-[0.5px]"></div>
+            <!-- TV Stand/Bottom Decor (숨김 처리) -->
+            <div class="hidden"></div>
 
-            <div class="mobile-player-fixed w-full h-full rounded-[1.25rem] overflow-hidden bg-black relative">
+            <div class="mobile-player-fixed w-full h-full overflow-hidden bg-black relative">
               <video id="main-video-mobile" class="w-full h-full object-cover bg-black hidden" playsinline
                 webkit-playsinline></video>
               <iframe id="youtube-iframe-mobile" class="w-full h-full absolute inset-0 hidden z-30" frameborder="0"
