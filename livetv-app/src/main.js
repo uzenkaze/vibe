@@ -72,12 +72,12 @@ const CHANNELS = [
   { id: 'jtbc4', name: 'JTBC4', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
 
   // 뉴스/경제
-  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChLGqe01qeG0QnPsJXLTojg', urls: [
+  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChLGqe01qeG0QnPsJXLTojg', officialUrl: 'https://www.ytn.co.kr/live/', urls: [
     'https://ytn-live.akamaized.net/hls/live/2038573/ytn/playlist.m3u8',
     'https://ytnlive-lh.akamaihd.net/i/ytn_1@300295/master.m3u8',
     'http://ytndmb.ytn.co.kr:1935/live/ytn/playlist.m3u8'
   ]},
-  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', urls: [
+  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', urls: [
     'https://yonhapnewstv.akamaized.net/hls/live/2039234/yonhapnewstv/playlist.m3u8',
     'https://yonhapnewstv-lh.akamaihd.net/i/yonhapnewstv_1@300303/master.m3u8'
   ]},
