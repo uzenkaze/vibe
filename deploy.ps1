@@ -37,16 +37,20 @@ Set-Location ..
 $staticFolders = @("Asset", "task", "hobby", "livetv-app", "vibe-hybrid-app")
 foreach ($folder in $staticFolders) {
     if (Test-Path $folder) {
-        Write-Host "> $folder 폴더 복사 중 (node_modules 제외)..."
+        # livetv-app 폴더는 배포 시 간단한 'livetv' 경로로 매핑
+        $targetFolder = $folder
+        if ($folder -eq "livetv-app") { $targetFolder = "livetv" }
+
+        Write-Host "> $folder 폴더 복사 중 (node_modules 제외)... ($targetFolder 경로로 복사)"
         if ($folder -eq "vibe-hybrid-app" -or $folder -eq "livetv-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {
-                New-Item -ItemType Directory -Path "$deployDir/$folder" -Force | Out-Null
-                Copy-Item -Path "$folder/dist/*" -Destination "$deployDir/$folder" -Recurse
+                New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
+                Copy-Item -Path "$folder/dist/*" -Destination "$deployDir/$targetFolder" -Recurse
             } else {
                 # dist가 없으면 node_modules를 제외하고 복사
-                New-Item -ItemType Directory -Path "$deployDir/$folder" -Force | Out-Null
-                Get-ChildItem -Path $folder -Exclude "node_modules", ".git", ".expo", ".vscode" | Copy-Item -Destination "$deployDir/$folder" -Recurse
+                New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
+                Get-ChildItem -Path $folder -Exclude "node_modules", ".git", ".expo", ".vscode" | Copy-Item -Destination "$deployDir/$targetFolder" -Recurse
             }
         } else {
             Copy-Item -Path $folder -Destination $deployDir -Recurse
