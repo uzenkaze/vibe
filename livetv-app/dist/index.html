@@ -68,8 +68,28 @@
       color: #000;
       font-weight: 600;
     }
+
+    /* 모바일 가로 모드 최적화: 디바이스 해상도에 맞추고 잘림(Cropping) 방지 */
+    @media (max-width: 1023px) and (orientation: landscape) {
+      .mobile-player-fixed {
+        position: relative !important;
+      }
+      #mobile-player-wrapper {
+        height: calc(100dvh - 64px) !important; /* 헤더 높이 64px 제외 */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: #000 !important;
+      }
+      #mobile-player-wrapper > div {
+        aspect-ratio: 16/9 !important;
+        height: 100% !important;
+        width: auto !important;
+        max-width: 100vw !important;
+      }
+    }
   </style>
-  <script type="module" crossorigin src="./assets/index-kp0pti98.js"></script>
+  <script type="module" crossorigin src="./assets/index-rWE6Dl-R.js"></script>
 </head>
 
 <body class="h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-[#030307] p-0">
@@ -113,17 +133,17 @@
 
       <!-- PC Player -->
       <div id="video-container"
-        class="hidden lg:flex w-full bg-[#06060a] flex-col items-center justify-center py-3 flex-shrink-0 border-b border-white/5">
+        class="hidden lg:flex w-full bg-black flex-col items-center justify-center flex-shrink-0 border-b border-white/5">
         
-        <!-- TV Bezel Frame Container (TV 외관 모서리 라운드 & 그라데이션) -->
-        <div class="relative p-3 bg-zinc-900/60 border border-white/10 rounded-[2.5rem] shadow-2xl shadow-black/80 mx-auto group" style="width: 96%; max-width: 1200px; aspect-ratio: 16/9; flex-shrink: 0;">
+        <!-- TV Bezel Frame Container (TV 외관 모서리 라운드 & 그라데이션) - 여백 없이 꽉 찬 화면으로 변경 -->
+        <div class="relative w-full aspect-video flex-shrink-0 group" id="video-bezel-frame">
           
-          <!-- TV Stand/Bottom Decor (TV 디자인 요소: 미세한 아랫단 입체감) -->
-          <div class="absolute inset-x-8 -bottom-1 h-2 bg-zinc-950/60 rounded-b-xl blur-[1px]"></div>
+          <!-- TV Stand/Bottom Decor (숨김 처리) -->
+          <div class="hidden"></div>
 
-          <!-- Inner Screen (내부 화면 영역) -->
-          <div id="video-inner-screen" class="w-full h-full rounded-[1.75rem] overflow-hidden bg-black relative">
-            <video id="main-video" class="w-full h-full object-cover hidden" playsinline></video>
+          <!-- Inner Screen (내부 화면 영역) - 라운드 제거 및 여백 없이 꽉 차게 변경 -->
+          <div id="video-inner-screen" class="w-full h-full overflow-hidden bg-black relative">
+            <video id="main-video" class="w-full h-full object-contain hidden" playsinline></video>
             <iframe id="youtube-iframe-pc" class="w-full h-full absolute inset-0 hidden z-30" frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen></iframe>
@@ -159,6 +179,28 @@
                     class="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-indigo-500">
                 </div>
 
+                <!-- Quality Selection (화질 선택) -->
+                <div class="relative" id="quality-select-pc-wrapper">
+                  <button id="quality-btn" class="text-white/70 hover:text-white transition-colors flex items-center gap-1.5 text-[11px] font-bold bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-xl backdrop-blur-md hover:bg-white/10" title="화질 선택">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <circle cx="12" cy="12" r="3"/>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    <span id="quality-label">Auto</span>
+                  </button>
+                  <div id="quality-menu" class="hidden absolute bottom-10 right-0 mb-2 w-32 bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col z-[100] p-1.5 gap-1 animate-fade-in">
+                    <!-- Options dynamically loaded -->
+                  </div>
+                </div>
+
+                <!-- Picture-in-Picture (Popup Play) -->
+                <button id="pip-btn" class="text-white/70 hover:text-white transition-colors" title="팝업 플레이">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <rect x="13" y="11" width="7" height="5" rx="1" fill="currentColor" />
+                  </svg>
+                </button>
+
                 <!-- Fullscreen -->
                 <button id="fullscreen-btn" class="text-white/70 hover:text-white transition-colors">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -189,14 +231,14 @@
       <!-- Mobile Content -->
       <div class="lg:hidden flex flex-col h-full bg-black overflow-hidden">
         <!-- Player (Mobile) -->
-        <div class="px-2 py-1.5 bg-black flex-shrink-0">
-          <div class="relative p-2 bg-zinc-900/60 border border-white/10 rounded-[1.75rem] shadow-lg shadow-black/60 w-[98%] mx-auto aspect-video flex-shrink-0 group/mob">
+        <div class="w-full bg-black flex-shrink-0 p-0" id="mobile-player-wrapper">
+          <div class="relative w-full aspect-video flex-shrink-0 group/mob">
             
-            <!-- TV Stand/Bottom Decor (TV 디자인 요소: 미세한 아랫단 입체감) -->
-            <div class="absolute inset-x-6 -bottom-[2px] h-1.5 bg-zinc-950/60 rounded-b-lg blur-[0.5px]"></div>
+            <!-- TV Stand/Bottom Decor (숨김 처리) -->
+            <div class="hidden"></div>
 
-            <div class="mobile-player-fixed w-full h-full rounded-[1.25rem] overflow-hidden bg-black relative">
-              <video id="main-video-mobile" class="w-full h-full object-cover bg-black hidden" playsinline
+            <div class="mobile-player-fixed w-full h-full overflow-hidden bg-black relative">
+              <video id="main-video-mobile" class="w-full h-full object-contain bg-black hidden" playsinline
                 webkit-playsinline></video>
               <iframe id="youtube-iframe-mobile" class="w-full h-full absolute inset-0 hidden z-30" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -216,6 +258,29 @@
                       <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
                     </svg>
                   </button>
+                  
+                  <!-- Quality Selection (화질 선택 Mobile) -->
+                  <div class="relative" id="quality-select-mob-wrapper">
+                    <button id="quality-btn-mobile" class="text-white/70 flex items-center gap-1 text-[9px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded-lg backdrop-blur-md" title="화질 선택">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                      </svg>
+                      <span id="quality-label-mobile">Auto</span>
+                    </button>
+                    <div id="quality-menu-mobile" class="hidden absolute bottom-8 right-0 mb-2 w-28 bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col z-[100] p-1 gap-1">
+                      <!-- Options dynamically loaded -->
+                    </div>
+                  </div>
+
+                  <!-- Picture-in-Picture (Popup Play) -->
+                  <button id="pip-btn-mobile" class="text-white/70" title="팝업 플레이">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="4" width="20" height="16" rx="2" />
+                      <rect x="13" y="11" width="7" height="5" rx="1" fill="currentColor" />
+                    </svg>
+                  </button>
+
                   <button id="fullscreen-btn-mobile" class="text-white/70">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path

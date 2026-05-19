@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vibe Portal</title>
+    <script type="text/javascript">
+        // Capture the path and redirect to the root index.html with a query param 'p'
+        var pathSegmentsToKeep = window.location.pathname.startsWith('/vibe/') ? 1 : 0;
+        var basePath = window.location.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/';
+        window.location.replace(basePath + '?p=hobby/');
+    </script>
+</head>
+<body>
+    Redirecting to Vibe Portal...
+</body>
+</html>

@@ -75,23 +75,24 @@ const CHANNELS = [
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
-  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'http://broadcast.tvchosun.com/onair/on.cstv', noPlayableHls: true, urls: [] },
-  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', officialUrl: 'https://www.ichannela.com/com/onair.do', noPlayableHls: true, urls: [] },
-  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@MBN_NEWS', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/onair/', noPlayableHls: true, urls: [] },
-  { id: 'jtbc2', name: 'JTBC2', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
-  { id: 'jtbc4', name: 'JTBC4', network: 'JTBC', category: '종합편성', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
+  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', noPlayableHls: true, urls: [] },
+  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', noPlayableHls: true, urls: [] },
+  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', noPlayableHls: true, urls: [] },
 
   // 뉴스/경제
-  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', officialUrl: 'https://www.ytn.co.kr/live/', urls: [
+  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', officialUrl: 'https://www.ytn.co.kr/live/', urls: [
     'https://ytn-live.akamaized.net/hls/live/2038573/ytn/playlist.m3u8',
     'https://ytnlive-lh.akamaihd.net/i/ytn_1@300295/master.m3u8',
     'http://ytndmb.ytn.co.kr:1935/live/ytn/playlist.m3u8'
   ]},
-  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', urls: [
+  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', urls: [
     'https://yonhapnewstv.akamaized.net/hls/live/2039234/yonhapnewstv/playlist.m3u8',
     'https://yonhapnewstv-lh.akamaihd.net/i/yonhapnewstv_1@300303/master.m3u8'
   ]},
-  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', officialUrl: 'https://news.mtn.co.kr/live/onair.html', urls: [
+  { id: 'sbsbiz', name: 'SBS Biz', network: 'SBS_BIZ', category: '뉴스/경제', ytHandle: '@SBSBiz2021', ytChannelId: 'UCbMjg2EvXs_RUGW-KrdM3pw', officialUrl: 'https://biz.sbs.co.kr/onair.html', urls: [
+    'https://onair.sbs.co.kr/media/sbsbiz/playlist.m3u8'
+  ]},
+  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytHandle: '@mtn', ytChannelId: 'UCaQREsefLy-W8ruWcJ7IDtg', officialUrl: 'https://www.mtn.co.kr/tv-live', urls: [
     'http://183.110.27.87/mtnlive/720/playlist.m3u8',
     'http://live.mtn.co.kr/hls/mtn/playlist.m3u8'
   ]},
@@ -726,6 +727,12 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   currentUrlIdx = urlIdx;
   isYouTubeMode = false;
 
+  // 화질 선택 버튼 초기 상태는 숨김 처리
+  const qualWrapperPC = document.getElementById('quality-select-pc-wrapper');
+  const qualWrapperMob = document.getElementById('quality-select-mob-wrapper');
+  if (qualWrapperPC) qualWrapperPC.style.display = 'none';
+  if (qualWrapperMob) qualWrapperMob.style.display = 'none';
+
   if (!isPC()) {
     // 뷰포트(창) 스크롤을 항상 최상단(0,0)으로 고정하여 헤더가 주소창 영역 아래로 사라지지 않도록 보호
     window.scrollTo({ top: 0 });
@@ -741,7 +748,11 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   updateActiveUI();
 
   if (ch.noPlayableHls) {
-    showYouTubeFallback(ch);
+    if (ch.ytChannelId || ch.ytHandle) {
+      showYouTubeIframePlayback(ch);
+    } else {
+      showYouTubeFallback(ch);
+    }
     return;
   }
 
@@ -803,6 +814,12 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   };
 
   if (Hls.isSupported()) {
+    // HLS 재생 가능 시 화질 선택 버튼 활성화
+    const qualWrapperPC = document.getElementById('quality-select-pc-wrapper');
+    const qualWrapperMob = document.getElementById('quality-select-mob-wrapper');
+    if (qualWrapperPC) qualWrapperPC.style.display = 'block';
+    if (qualWrapperMob) qualWrapperMob.style.display = 'block';
+
     hls = new Hls({ 
       manifestLoadingTimeOut: 3000, 
       manifestLoadingMaxRetry: 0,
@@ -816,6 +833,13 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
       if (startTime > 0) target.currentTime = startTime;
       startPlayback();
+      // 화질 메뉴 로드 및 리스트 파싱
+      updateQualitySelector(isPC());
+    });
+
+    hls.on(Hls.Events.LEVEL_LOADED, () => {
+      // 비동기로 화질 높이 해상도 메타데이터가 파싱/로딩되면 리스트 실시간 업데이트
+      updateQualitySelector(isPC());
     });
 
     hls.on(Hls.Events.ERROR, (e, data) => { 
@@ -854,8 +878,8 @@ function tryNextUrl(ch, currentIdx) {
   }
 }
 
-function showYouTubeIframePlayback(ch) {
-  showLoading(false);
+async function showYouTubeIframePlayback(ch) {
+  showLoading(true, '유튜브 라이브 스트림 연결 중...');
   if (hls) { hls.destroy(); hls = null; }
   if (playbackTimeout) clearTimeout(playbackTimeout);
 
@@ -871,7 +895,59 @@ function showYouTubeIframePlayback(ch) {
   const ytIframe = isPC() ? ytIframePC : ytIframeMob;
   if (ytIframe) {
     ytIframe.classList.remove('hidden');
-    ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0`;
+    
+    // 1단계: 실시간 유튜브 라이브 비디오 ID 동적 분석 시도
+    let liveVideoId = null;
+    if (ch.ytHandle) {
+      try {
+        const handle = ch.ytHandle.replace('@', '');
+        const url = `https://www.youtube.com/@${handle}/live`;
+        const proxies = [
+          u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+          u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+          u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+        ];
+
+        for (const getProxyUrl of proxies) {
+          try {
+            const proxyUrl = getProxyUrl(url);
+            console.log(`[YouTube Live Playback] 시도 프록시: ${proxyUrl}`);
+            const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
+            let html = "";
+            if (proxyUrl.includes('allorigins')) {
+              const data = await res.json();
+              html = data.contents || "";
+            } else {
+              html = await res.text();
+            }
+
+            if (html) {
+              let match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
+              if (match?.[1]) { liveVideoId = match[1]; break; }
+
+              match = html.match(/embed\/([a-zA-Z0-9_-]{11})/);
+              if (match?.[1]) { liveVideoId = match[1]; break; }
+
+              match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+              if (match?.[1]) { liveVideoId = match[1]; break; }
+            }
+          } catch (err) {
+            console.warn(`[YouTube Live Playback] 프록시 실패:`, err);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    showLoading(false);
+    if (liveVideoId) {
+      console.log(`[YouTube Live Playback] 동적 실시간 라이브 비디오 ID 획득: ${liveVideoId}`);
+      ytIframe.src = `https://www.youtube-nocookie.com/embed/${liveVideoId}?autoplay=1&mute=0&rel=0`;
+    } else {
+      console.log(`[YouTube Live Playback] 동적 ID 분석 실패, 채널 ID 기반 라이브 스트림 주입`);
+      ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0`;
+    }
   }
   updateTitle(`${ch.name} · YouTube Live`);
 }
@@ -991,9 +1067,309 @@ window.addEventListener('resize', () => {
 
 
 
+/* =================== TOAST NOTIFICATION SYSTEM =================== */
+function showToast(message) {
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none px-4 w-full max-w-sm';
+    document.body.appendChild(toastContainer);
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = 'bg-zinc-950/80 backdrop-blur-md border border-white/10 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0';
+  toast.innerHTML = `
+    <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-ping"></div>
+    <span class="flex-1 text-left">${message}</span>
+  `;
+  
+  toastContainer.appendChild(toast);
+  
+  // Trigger reflow & animate in
+  requestAnimationFrame(() => {
+    toast.classList.remove('translate-y-2', 'opacity-0');
+  });
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    toast.classList.add('translate-y-2', 'opacity-0');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+window.showToast = showToast;
+
+/* =================== DYNAMIC QUALITY LEVEL SELECTOR =================== */
+function updateQualitySelector(isPCPlatform) {
+  const menu = document.getElementById(isPCPlatform ? 'quality-menu' : 'quality-menu-mobile');
+  const label = document.getElementById(isPCPlatform ? 'quality-label' : 'quality-label-mobile');
+  const wrapper = document.getElementById(isPCPlatform ? 'quality-select-pc-wrapper' : 'quality-select-mob-wrapper');
+  if (!menu || !label) return;
+
+  menu.innerHTML = '';
+
+  if (!hls || !hls.levels || hls.levels.length === 0) {
+    if (wrapper) wrapper.style.display = 'none';
+    label.textContent = 'Auto';
+    return;
+  }
+
+  // 1. 유효한 비디오 화질 해상도(height > 0 또는 attrs.RESOLUTION 파싱) 필터링
+  const validLevels = hls.levels
+    .map((level, index) => {
+      let height = level.height;
+      if ((!height || height <= 0) && level.attrs && level.attrs.RESOLUTION) {
+        const parts = level.attrs.RESOLUTION.split('x');
+        if (parts.length === 2) {
+          height = parseInt(parts[1], 10);
+        }
+      }
+      return { level, originalIndex: index, height };
+    })
+    .filter(({ height }) => height && height > 0);
+
+  // 2. 해상도 기준 내림차순(고화질 -> 저화질) 정렬
+  validLevels.sort((a, b) => b.height - a.height);
+
+  // 3. 해상도(height) 중복 제거 (동일 해상도 다른 비트레이트 방지)
+  const uniqueLevels = [];
+  const seenHeights = new Set();
+  for (const item of validLevels) {
+    if (!seenHeights.has(item.height)) {
+      seenHeights.add(item.height);
+      uniqueLevels.push(item);
+    }
+  }
+
+  // 4. 선택 가능한 화질 종류가 아예 없는 경우에만 버튼 숨김
+  if (uniqueLevels.length === 0) {
+    if (wrapper) wrapper.style.display = 'none';
+    label.textContent = 'Auto';
+    return;
+  }
+
+  // 선택 가능한 화질이 존재하므로 노출
+  if (wrapper) wrapper.style.display = 'block';
+
+  // 5. 현재 활성화된 화질 해상도 라벨 갱신
+  if (hls.currentLevel === -1) {
+    label.textContent = 'Auto';
+  } else {
+    const activeLevel = hls.levels[hls.currentLevel];
+    let activeHeight = activeLevel ? activeLevel.height : 0;
+    if ((!activeHeight || activeHeight <= 0) && activeLevel && activeLevel.attrs && activeLevel.attrs.RESOLUTION) {
+      const parts = activeLevel.attrs.RESOLUTION.split('x');
+      if (parts.length === 2) {
+        activeHeight = parseInt(parts[1], 10);
+      }
+    }
+    if (activeHeight && activeHeight > 0) {
+      label.textContent = `${activeHeight}p`;
+    } else {
+      label.textContent = 'Auto';
+    }
+  }
+
+  // 6. 자동 (Auto) 선택지 생성
+  const autoBtn = document.createElement('button');
+  autoBtn.className = 'w-full text-left px-2.5 py-1.5 rounded-lg text-[10px] font-extrabold transition-colors flex items-center justify-between ' +
+    (hls.loadLevel === -1 ? 'bg-indigo-600/30 text-indigo-400 border border-indigo-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5');
+  autoBtn.innerHTML = `
+    <span>자동 (Auto)</span>
+    ${hls.loadLevel === -1 ? '<span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>' : ''}
+  `;
+  autoBtn.onclick = (e) => {
+    e.stopPropagation();
+    hls.currentLevel = -1;
+    label.textContent = 'Auto';
+    showToast('화질이 자동으로 변경되었습니다.');
+    updateQualitySelector(isPCPlatform);
+    menu.classList.add('hidden');
+  };
+  menu.appendChild(autoBtn);
+
+  // 7. 해상도 기준 개별 버튼 생성 (1080p, 720p 등)
+  uniqueLevels.forEach(({ level, originalIndex, height }) => {
+    const labelText = `${height}p`;
+    const isSelected = hls.currentLevel === originalIndex;
+    
+    const btn = document.createElement('button');
+    btn.className = 'w-full text-left px-2.5 py-1.5 rounded-lg text-[10px] font-extrabold transition-colors flex items-center justify-between ' +
+      (isSelected ? 'bg-indigo-600/30 text-indigo-400 border border-indigo-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5');
+    
+    btn.innerHTML = `
+      <span>${labelText}</span>
+      ${isSelected ? '<span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>' : ''}
+    `;
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      hls.currentLevel = originalIndex;
+      label.textContent = labelText;
+      showToast(`화질이 ${labelText}로 변경되었습니다.`);
+      updateQualitySelector(isPCPlatform);
+      menu.classList.add('hidden');
+    };
+    menu.appendChild(btn);
+  });
+}
+window.updateQualitySelector = updateQualitySelector;
+
+/* =================== WEB PAGE POPUP PLAY (PICTURE IN PICTURE) =================== */
+async function toggleWebpagePiP(container, video, isMobile) {
+  // 1. 브라우저가 최신 Document Picture-in-Picture API를 지원하는 경우 (Chrome, Edge, Whale 등)
+  if ('documentPictureInPicture' in window) {
+    // 이미 Document PiP 창이 열려 있는 경우 닫기
+    if (window.documentPictureInPicture.window) {
+      window.documentPictureInPicture.window.close();
+      return;
+    }
+
+    try {
+      const pipWindow = await window.documentPictureInPicture.requestWindow({
+        width: 800,
+        height: 450,
+      });
+
+      // 부모 창의 모든 스타일(Tailwind CSS 포함)을 복사
+      [...document.styleSheets].forEach((styleSheet) => {
+        try {
+          const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join('');
+          const style = document.createElement('style');
+          style.textContent = cssRules;
+          pipWindow.document.head.appendChild(style);
+        } catch (e) {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.type = styleSheet.type;
+          link.media = styleSheet.media;
+          link.href = styleSheet.href;
+          pipWindow.document.head.appendChild(link);
+        }
+      });
+
+      // 태그 명시적 복사 (Tailwind CDN 스크립트 및 폰트)
+      document.querySelectorAll('link[rel="stylesheet"], style, link[href*="fonts.googleapis.com"]').forEach((el) => {
+        pipWindow.document.head.appendChild(el.cloneNode(true));
+      });
+
+      // Document PiP 창의 body 스타일링
+      pipWindow.document.body.style.margin = '0';
+      pipWindow.document.body.style.padding = '0';
+      pipWindow.document.body.style.backgroundColor = '#000';
+      pipWindow.document.body.style.overflow = 'hidden';
+      pipWindow.document.body.style.width = '100vw';
+      pipWindow.document.body.style.height = '100vh';
+
+      // 원래 위치에 플레이스홀더 배치
+      const placeholderId = isMobile ? 'player-placeholder-temp-mobile' : 'player-placeholder-temp';
+      const oldPlaceholder = document.getElementById(placeholderId);
+      if (oldPlaceholder) oldPlaceholder.remove();
+
+      const tempPlaceholder = document.createElement('div');
+      tempPlaceholder.id = placeholderId;
+      tempPlaceholder.className = 'w-full h-full bg-zinc-950 flex flex-col items-center justify-center text-white/50 text-xs font-bold gap-3 relative border border-white/5';
+      tempPlaceholder.innerHTML = `
+        <div class="relative flex items-center justify-center">
+          <div class="w-12 h-12 rounded-full border border-indigo-500/30 flex items-center justify-center animate-pulse">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <rect x="13" y="11" width="7" height="5" rx="1" fill="#6366f1" />
+            </svg>
+          </div>
+          <span class="absolute w-2 h-2 bg-indigo-500 rounded-full -top-1 -right-1 animate-ping"></span>
+        </div>
+        <span class="tracking-widest">영상이 팝업 플레이(PiP) 창에서 재생 중입니다.</span>
+        <button onclick="window.closeDocumentPiP()" class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[10px] font-bold tracking-wider shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">팝업 창 닫기</button>
+      `;
+      
+      container.parentNode.insertBefore(tempPlaceholder, container);
+
+      // 플레이어 컨테이너를 PiP 창으로 이동
+      pipWindow.document.body.appendChild(container);
+
+      // PiP 내부에서 화면에 가득 차도록 인라인 스타일 강제 설정
+      container.style.width = '100vw';
+      container.style.height = '100vh';
+      container.style.maxWidth = 'none';
+      container.style.maxHeight = 'none';
+      container.style.borderRadius = '0';
+
+      // 임시 글로벌 닫기 함수 제공
+      window.closeDocumentPiP = () => {
+        if (pipWindow) pipWindow.close();
+      };
+
+      showToast('웹페이지 팝업 플레이가 시작되었습니다.');
+
+      // PiP 창이 닫힐 때 원래 위치로 복구
+      pipWindow.addEventListener('pagehide', (event) => {
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container.style.maxWidth = '';
+        container.style.maxHeight = '';
+        container.style.borderRadius = '';
+
+        const placeholderEl = document.getElementById(placeholderId);
+        if (placeholderEl) {
+          placeholderEl.parentNode.insertBefore(container, placeholderEl);
+          placeholderEl.remove();
+        }
+        showToast('팝업 플레이가 종료되었습니다.');
+      });
+
+    } catch (err) {
+      console.error('Document PiP Error:', err);
+      // 권한 거부 등의 에러 시 표준 PiP로 폴백
+      fallbackToStandardPiP(video, container, isMobile);
+    }
+  } else {
+    // 2. Document PiP를 지원하지 않는 브라우저 (Firefox, Safari 등) 또는 모바일인 경우 표준 비디오 PiP 실행
+    fallbackToStandardPiP(video, container, isMobile);
+  }
+}
+
+// 표준 PiP 및 별도 팝업창(유튜브 전용) 폴백 함수
+async function fallbackToStandardPiP(video, container, isMobile) {
+  if (isYouTubeMode) {
+    // 유튜브인 경우 별도 팝업 창(window.open) 기동
+    const activeCh = CHANNELS.find(c => c.id === activeChannelId);
+    if (activeCh) {
+      showToast('유튜브 채널은 전용 팝업 창으로 재생합니다.');
+      const popupUrl = `https://www.youtube.com/embed/live_stream?channel=${activeCh.ytChannelId}&autoplay=1&mute=0`;
+      window.open(
+        popupUrl, 
+        'LiveTVPopupPlayer', 
+        'width=800,height=450,menubar=no,toolbar=no,location=no,status=no,resizable=yes'
+      );
+    } else {
+      showToast('유튜브 재생 팝업을 실행할 수 없습니다.');
+    }
+    return;
+  }
+
+  // HLS/일반 비디오 재생의 경우 표준 requestPictureInPicture 호출
+  if (!video) return;
+  try {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+      showToast('팝업 플레이를 종료합니다.');
+    } else {
+      if (video.requestPictureInPicture) {
+        await video.requestPictureInPicture();
+        showToast('팝업 플레이를 시작합니다.');
+      } else {
+        showToast('이 브라우저는 팝업 플레이를 지원하지 않습니다.');
+      }
+    }
+  } catch (err) {
+    console.error('Standard PiP Error:', err);
+    showToast('팝업 플레이를 실행하지 못했습니다.');
+  }
+}
+
 /* =================== VIDEO CONTROLS =================== */
 function initControls() {
-  const setup = (video, fsBtn, volBtn, volSlider, container) => {
+  const setup = (video, fsBtn, volBtn, volSlider, container, pipBtn) => {
     if (!video || !fsBtn) return;
     
     // Fullscreen
@@ -1042,6 +1418,16 @@ function initControls() {
         updateVolIcon();
       };
     }
+
+    // Picture-in-Picture (Popup Play)
+    if (pipBtn) {
+      pipBtn.onclick = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isMobile = pipBtn.id === 'pip-btn-mobile';
+        await toggleWebpagePiP(container, video, isMobile);
+      };
+    }
   };
 
   // PC
@@ -1050,7 +1436,8 @@ function initControls() {
     document.getElementById('fullscreen-btn'), 
     document.getElementById('vol-btn'), 
     document.getElementById('vol-slider'),
-    document.getElementById('video-inner-screen')
+    document.getElementById('video-inner-screen'),
+    document.getElementById('pip-btn')
   );
 
   // Mobile
@@ -1059,8 +1446,43 @@ function initControls() {
     document.getElementById('fullscreen-btn-mobile'),
     document.getElementById('vol-btn-mobile'),
     null,
-    document.querySelector('.mobile-player-fixed')
+    document.querySelector('.mobile-player-fixed'),
+    document.getElementById('pip-btn-mobile')
   );
+
+  // Quality Selection Toggle (PC)
+  const qualityBtn = document.getElementById('quality-btn');
+  const qualityMenu = document.getElementById('quality-menu');
+  if (qualityBtn && qualityMenu) {
+    qualityBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const mobMenu = document.getElementById('quality-menu-mobile');
+      if (mobMenu) mobMenu.classList.add('hidden');
+      qualityMenu.classList.toggle('hidden');
+      updateQualitySelector(true);
+    };
+  }
+
+  // Quality Selection Toggle (Mobile)
+  const qualityBtnMob = document.getElementById('quality-btn-mobile');
+  const qualityMenuMob = document.getElementById('quality-menu-mobile');
+  if (qualityBtnMob && qualityMenuMob) {
+    qualityBtnMob.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const pcMenu = document.getElementById('quality-menu');
+      if (pcMenu) pcMenu.classList.add('hidden');
+      qualityMenuMob.classList.toggle('hidden');
+      updateQualitySelector(false);
+    };
+  }
+
+  // Close menus when clicking outside
+  document.addEventListener('click', () => {
+    if (qualityMenu) qualityMenu.classList.add('hidden');
+    if (qualityMenuMob) qualityMenuMob.classList.add('hidden');
+  });
 }
 
 /* =================== INIT =================== */

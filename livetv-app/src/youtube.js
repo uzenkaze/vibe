@@ -3,7 +3,7 @@
 // Pre-loaded popular Korean channels
 const DEFAULT_CHANNELS = [
   { id: 'UCsJ6RuBiGBq6CmSGsajv2EA', name: 'JTBC News', handle: '@JTBC_news', cat: 'news' },
-  { id: 'UCnEf8KmOPMIbB0saJPMvA7A', name: 'YTN', handle: '@YTN_news24', cat: 'news' },
+  { id: 'UChlgI3UHCOnwUGzWzbJ3H5w', name: 'YTN', handle: '@ytnnews24', cat: 'news' },
   { id: 'UCddiUEpeqJcYeBxX1IVBKvQ', name: 'MBC News', handle: '@mbcnews', cat: 'news' },
   { id: 'UCPNFgbGLbpLXMRWKPnZ5Ong', name: 'KBS News', handle: '@KBSnews', cat: 'news' },
   { id: 'UCWsVpQ3FNjDGcqrP0gkApfQ', name: 'SBS News', handle: '@SBSnews8', cat: 'news' },
@@ -69,14 +69,49 @@ function closeAddModal() { document.getElementById('add-modal').classList.remove
 async function resolveChannelId(input) {
   input = input.trim();
   if (/^UC[\w-]{22}$/.test(input)) return input;
-  try {
-    const url = input.includes('youtube.com') ? input : `https://www.youtube.com/@${input.replace('@','')}`;
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
-    const data = await res.json();
-    const match = data.contents?.match(/"channelId":"(UC[\w-]{22})"/);
-    return match?.[1] || null;
-  } catch { return null; }
+  
+  const handle = input.replace('@', '');
+  const url = `https://www.youtube.com/@${handle}`;
+  
+  // CORS 프록시 풀 (allorigins, corsproxy.io, codetabs)
+  const proxies = [
+    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+  ];
+
+  for (const getProxyUrl of proxies) {
+    try {
+      const proxyUrl = getProxyUrl(url);
+      console.log(`[YouTube Resolver] 시도 중인 프록시: ${proxyUrl}`);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+      let html = "";
+      
+      if (proxyUrl.includes('allorigins')) {
+        const data = await res.json();
+        html = data.contents || "";
+      } else {
+        html = await res.text();
+      }
+
+      if (html) {
+        // 패턴 1: JSON channelId 매칭
+        let match = html.match(/"channelId":"(UC[\w-]{22})"/);
+        if (match?.[1]) return match[1];
+
+        // 패턴 2: canonical 또는 og:url (/channel/UC...) 매칭
+        match = html.match(/channel\/(UC[\w-]{22})/);
+        if (match?.[1]) return match[1];
+
+        // 패턴 3: itemprop="channelId" 매칭
+        match = html.match(/itemprop="channelId" content="(UC[\w-]{22})"/);
+        if (match?.[1]) return match[1];
+      }
+    } catch (e) {
+      console.warn(`[YouTube Resolver] 프록시 실패:`, e);
+    }
+  }
+  return null;
 }
 
 async function addChannel() {
