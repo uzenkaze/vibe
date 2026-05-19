@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Portal</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+        
+        :root {
+            --bg-color: #0a0a0a;
+            --accent-color: #bef264;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Shell Background */
+        .shell-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-color: var(--bg-color);
+            overflow: hidden;
+        }
+
+        .scribble-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* Top Header */
+        .shell-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .star-icon {
+            color: var(--accent-color);
+            pointer-events: auto;
+        }
+
+        /* Content Frame */
+        #contentFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 10;
+        }
+
+        /* Persistent Player UI (Mini Player) */
+        .global-player {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            width: 92%;
+            max-width: 450px;
+            background: rgba(20, 20, 20, 0.88);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .global-player.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Mobile Optimization for Z Flip 6 and others */
+        @media (max-width: 640px) {
+            .shell-header {
+                padding: 12px 20px;
+            }
+            .logo {
+                font-size: 1.4rem;
+            }
+            .star-icon {
+                display: none;
+            }
+            #contentFrame {
+                /* 모바일에서 포털 로고 공간 확보를 위해 약간의 상단 여백 고려 가능 */
+            }
+            .global-player {
+                bottom: 15px;
+                width: 94%;
+                padding: 8px 12px;
+                gap: 10px;
+                border-radius: 16px;
+            }
+            .player-thumb {
+                width: 42px;
+                height: 42px;
+                border-radius: 10px;
+            }
+            .player-title {
+                font-size: 0.85rem;
+            }
+            .player-artist {
+                font-size: 0.7rem;
+            }
+            .control-btn {
+                font-size: 1.1rem;
+            }
+        }
+
+        .player-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #222;
+        }
+
+        .player-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .player-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-artist {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--accent-color);
+        }
+
+        .play-pause-btn {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: #000;
+        }
+
+        .play-pause-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        /* YouTube Hidden Player */
+        #ytPlayerContainer {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            top: -100px;
+            left: -100px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Back Button for Sub-pages */
+        .home-back-btn {
+            position: fixed;
+            top: 25px;
+            left: 150px;
+            z-index: 1001;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .home-back-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="shell-bg">
+        <svg class="scribble-bg" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 500C100 500 300 200 500 500C700 800 900 500 900 500" stroke="#bef264" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
+            <path d="M200 800C200 800 400 600 600 800C800 1000 1000 800 1000 800" stroke="#bef264" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" opacity="0.1"/>
+        </svg>
+    </div>
+
+    <header class="shell-header">
+        <div class="logo" onclick="navigateTo('home.html')">Vibe</div>
+        <div class="star-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L14.5 9H21.5L16 13.5L18.5 20.5L12 16L5.5 20.5L8 13.5L2.5 9H9.5L12 2Z"/>
+            </svg>
+        </div>
+    </header>
+
+    <iframe id="contentFrame" src="home.html"></iframe>
+
+    <!-- Global Player UI -->
+    <div id="globalPlayer" class="global-player">
+        <div class="player-thumb">
+            <img id="globalThumb" src="" alt="thumb">
+        </div>
+        <div class="player-info">
+            <div id="globalTitle" class="player-title">노래를 선택하세요</div>
+            <div id="globalArtist" class="player-artist">Vibe Music</div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn" onclick="globalPrev()"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M4 4a.5.5 0 0 1 1 0v3.248l6.267-3.636c.52-.302 1.166.113 1.166.696v7.384c0 .583-.647.998-1.166.696L5 8.752V12a.5.5 0 0 1-1 0V4zm7 4.544V5.456L6.5 8.016 11 10.559v-2.015z"/></svg></button>
+            <button id="globalPlayPause" class="control-btn play-pause-btn" onclick="toggleGlobalPlay()">
+                <svg id="playIcon" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+                <svg id="pauseIcon" style="display:none" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>
+            </button>
+            <button class="control-btn" onclick="globalNext()"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.713 3.31 4.067 3.725 4.067 4.308v7.384c0 .583.647.998 1.166.696L11.5 8.752V12a.5.5 0 0 0 1 0V4zm-7 4.544V5.456l4.5 2.56-4.5 2.543v-2.015z"/></svg></button>
+        </div>
+    </div>
+
+    <div id="ytPlayerContainer"><div id="ytPlayer"></div></div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // Calculate the base path of the application (e.g. '/' or '/vibe/')
+        const APP_BASE = window.location.href.split('#')[0].split('?')[0].substring(0, window.location.href.split('#')[0].split('?')[0].lastIndexOf('/') + 1);
+        const BASE_PATH = window.location.pathname.startsWith('/vibe/') ? '/vibe/' : '/';
+
+        let player;
+        let isPlayerReady = false;
+        let currentSong = null;
+        let progressInterval;
+        let _audioCtx = null;
+        let _keepAliveSource = null;
+
+        function startAudioKeepAlive() {
+            try {
+                if (!_audioCtx) {
+                    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (_audioCtx.state === 'suspended') {
+                    _audioCtx.resume();
+                }
+                if (_keepAliveSource) return;
+                const oscillator = _audioCtx.createOscillator();
+                const gainNode = _audioCtx.createGain();
+                gainNode.gain.value = 0.0001;
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 1;
+                oscillator.connect(gainNode);
+                gainNode.connect(_audioCtx.destination);
+                oscillator.start();
+                _keepAliveSource = oscillator;
+                console.log('[Portal] Audio session kept alive');
+            } catch(e) { console.warn('[Portal] Keep-alive failed', e); }
+        }
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytPlayer', {
+                height: '0',
+                width: '0',
+                videoId: '',
+                playerVars: { 'origin': window.location.origin },
+                events: {
+                    'onReady': () => { isPlayerReady = true; },
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            if (event.data == YT.PlayerState.PLAYING) {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+                startProgressSync();
+                startAudioKeepAlive();
+            } else {
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                if (event.data != YT.PlayerState.BUFFERING) stopProgressSync();
+            }
+            if (event.data == YT.PlayerState.ENDED) {
+                globalNext();
+            }
+            const frame = document.getElementById('contentFrame');
+            if (frame && frame.contentWindow) {
+                frame.contentWindow.postMessage({ type: 'PLAYER_STATE_CHANGE', state: event.data }, '*');
+            }
+        }
+
+        function startProgressSync() {
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                if (player && isPlayerReady && player.getCurrentTime) {
+                    const frame = document.getElementById('contentFrame');
+                    if (frame && frame.contentWindow) {
+                        frame.contentWindow.postMessage({
+                            type: 'TIME_UPDATE',
+                            currentTime: player.getCurrentTime(),
+                            duration: player.getDuration()
+                        }, '*');
+                    }
+                }
+            }, 500);
+        }
+
+        function stopProgressSync() {
+            if (progressInterval) clearInterval(progressInterval);
+        }
+
+        function playGlobalMusic(song) {
+            currentSong = song;
+            const thumbUrl = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+            const proxyThumb = `https://images.weserv.nl/?url=${encodeURIComponent(thumbUrl)}`;
+            
+            document.getElementById('globalTitle').textContent = song.title;
+            document.getElementById('globalArtist').textContent = song.artist;
+            
+            const thumbImg = document.getElementById('globalThumb');
+            thumbImg.dataset.failed = "0";
+            thumbImg.src = thumbUrl;
+            thumbImg.onerror = function() {
+                if (this.dataset.failed === "2") {
+                    this.onerror = null;
+                    this.src = 'music_placeholder.png'; 
+                } else if (this.dataset.failed === "1") {
+                    this.dataset.failed = "2";
+                    this.src = `https://images.weserv.nl/?url=https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`; 
+                } else {
+                    this.dataset.failed = "1";
+                    this.src = `https://i.ytimg.com/vi/${song.youtubeId}/mqdefault.jpg`;
+                }
+            };
+            
+            document.getElementById('globalPlayer').classList.add('active');
+            
+            if (player && isPlayerReady) {
+                player.loadVideoById(song.youtubeId);
+                startAudioKeepAlive();
+            }
+
+            // Save for persistence
+            localStorage.setItem('vibe_last_song', JSON.stringify(song));
+        }
+
+        function toggleGlobalPlay() {
+            if (!player) return;
+            const state = player.getPlayerState();
+            if (state == YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                // Restore last song if player is empty
+                if (player.getVideoData && !player.getVideoData().video_id && currentSong) {
+                    player.loadVideoById(currentSong.youtubeId);
+                }
+                player.playVideo();
+                startAudioKeepAlive();
+            }
+        }
+
+        function globalNext() {
+            const frame = document.getElementById('contentFrame');
+            frame.contentWindow.postMessage({ type: 'NEXT_SONG' }, '*');
+        }
+
+        function globalPrev() {
+            const frame = document.getElementById('contentFrame');
+            frame.contentWindow.postMessage({ type: 'PREV_SONG' }, '*');
+        }
+
+        function navigateTo(url, updateHash = true) {
+            const frame = document.getElementById('contentFrame');
+            if (!frame) return;
+
+            // 로컬 개발 환경(localhost/127.0.0.1) 지원을 위해 livetv/ 경로를 livetv-app/으로 내부 매핑
+            let resolvedUrl = url;
+            if (url.startsWith('livetv/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                resolvedUrl = url.replace('livetv/', 'livetv-app/');
+            }
+            // 레거시 HTML hobby/ 경로를 신규 리액트 기반인 hobby-app/www/index.html 또는 실서버 hobby/index.html로 자동 포워딩 매핑
+            if (url.startsWith('hobby/') || url === 'hobby') {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'hobby-app/www/index.html';
+                } else {
+                    resolvedUrl = 'hobby/index.html';
+                }
+            }
+            // mPlay 경로 요청 시 로컬/배포 환경에 따라 실경로 매핑
+            if (url.startsWith('mPlay/') || url === 'mPlay') {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'hobby-app/www/index.html';
+                } else {
+                    resolvedUrl = 'mPlay/index.html';
+                }
+            }
+            // learn 경로 요청 시 로컬 환경(Live Server)에서 컴파일된 dist/index.html을 찾아 로드
+            if (url.startsWith('learn/') || url === 'learn') {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'learn/dist/index.html';
+                } else {
+                    resolvedUrl = 'learn/index.html';
+                }
+            }
+
+            try {
+                // Normalize URL for comparison using APP_BASE instead of origin
+                const targetUrl = new URL(resolvedUrl, APP_BASE).href;
+                let currentUrl = "";
+                try {
+                    currentUrl = frame.contentWindow ? frame.contentWindow.location.href : frame.src;
+                } catch(e) {
+                    currentUrl = frame.src;
+                }
+                
+                if (currentUrl !== targetUrl && !currentUrl.endsWith(resolvedUrl)) {
+                    frame.src = targetUrl;
+                }
+            } catch(e) {
+                frame.src = new URL(resolvedUrl, APP_BASE).href;
+            }
+            
+            // Update URL using History API instead of hash
+            if (updateHash) {
+                const cleanPath = url.replace('home.html', '').replace('./', '');
+                const targetUrl = BASE_PATH + cleanPath;
+                history.pushState(null, '', targetUrl);
+            }
+
+            // Save path for refresh persistence
+            localStorage.setItem('vibe_last_path', url);
+            
+            // UI state management
+            updatePortalUI(url);
+
+            // Ensure audio session doesn't drop during navigation
+            startAudioKeepAlive();
+        }
+
+        // Listen for popstate to support browser back/forward buttons on clean URLs
+        window.addEventListener('popstate', () => {
+            let path = window.location.pathname.replace(BASE_PATH, '');
+            if (!path || path === 'index.html') path = 'home.html';
+            navigateTo(path, false);
+        });
+
+        function updatePortalUI(url) {
+            const player = document.getElementById('globalPlayer');
+            const shellHeader = document.querySelector('.shell-header');
+            const scribble = document.querySelector('.scribble-bg');
+
+            // 브라우저 탭 타이틀 및 파비콘 동적 변경 (iframe 극복)
+            let faviconLink = document.querySelector("link[rel~='icon']");
+            if (!faviconLink) {
+                faviconLink = document.createElement('link');
+                faviconLink.rel = 'icon';
+                faviconLink.type = 'image/png';
+                document.head.appendChild(faviconLink);
+            }
+
+            if (url && (url.includes('livetv/') || url.includes('livetv-app/'))) {
+                document.title = 'PlayTime';
+                faviconLink.href = APP_BASE + 'livetv-favicon.png';
+            } else {
+                document.title = 'Vibe Portal';
+                faviconLink.href = '';
+            }
+
+            if (url && (url.includes('home.html') || url === './' || url === '/')) {
+                if (shellHeader) shellHeader.style.display = 'flex';
+                if (scribble) scribble.style.display = 'block';
+            } else {
+                // 서브 페이지에서는 포털 헤더를 숨겨서 서브 앱의 메뉴 접근 방해 금지
+                if (shellHeader) shellHeader.style.display = 'none';
+                if (scribble) scribble.style.display = 'none';
+            }
+
+            if (url && (url.includes('hobby/') || url.includes('hobby-app/') || url.includes('mPlay/'))) {
+                if (currentSong) player.classList.add('active');
+            } else {
+                player.classList.remove('active');
+            }
+        }
+
+        // Periodically sync the internal iframe path to localStorage
+        function startPathSync() {
+            setInterval(() => {
+                try {
+                    const frame = document.getElementById('contentFrame');
+                    if (frame && frame.contentWindow) {
+                        const fullUrl = frame.contentWindow.location.href;
+                        if (fullUrl.startsWith(APP_BASE)) {
+                            let relPath = fullUrl.replace(APP_BASE, '');
+                            if (relPath && !relPath.includes('about:blank')) {
+                                // 로컬 개발 환경에서 역방향 매핑 (livetv-app/ ➡️ livetv/)
+                                if (relPath.startsWith('livetv-app/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                                    relPath = relPath.replace('livetv-app/', 'livetv/');
+                                }
+                                localStorage.setItem('vibe_last_path', relPath);
+                                // Also update UI based on sub-path
+                                updatePortalUI(relPath);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // Cross-origin or other issues, ignore
+                }
+            }, 1000);
+        }
+
+        // Initialize state from storage
+        window.addEventListener('DOMContentLoaded', () => {
+            const lastSong = JSON.parse(localStorage.getItem('vibe_last_song'));
+            
+            // Check for redirect parameter from 404.html first, then fall back to hash, then default
+            const urlParams = new URLSearchParams(window.location.search);
+            let initialPath = urlParams.get('p');
+            
+            if (!initialPath) {
+                initialPath = window.location.hash.replace('#/', '');
+            }
+            
+            if (!initialPath || initialPath === '/' || initialPath === 'index.html') {
+                const subRoute = window.location.pathname.replace(BASE_PATH, '');
+                if (subRoute && subRoute !== 'index.html' && subRoute !== 'home.html') {
+                    initialPath = subRoute;
+                } else {
+                    initialPath = 'home.html';
+                }
+            }
+
+            if (urlParams.get('p')) {
+                // Clean the search query param from the URL immediately so the address bar is clean
+                history.replaceState(null, '', BASE_PATH + initialPath);
+            }
+            
+            const frame = document.getElementById('contentFrame');
+            const player = document.getElementById('globalPlayer');
+
+            // Set initial UI state
+            updatePortalUI(initialPath);
+
+            if (lastSong) {
+                currentSong = lastSong;
+                document.getElementById('globalTitle').textContent = lastSong.title;
+                document.getElementById('globalArtist').textContent = lastSong.artist;
+                document.getElementById('globalThumb').src = `https://img.youtube.com/vi/${lastSong.youtubeId}/default.jpg`;
+                
+                if (frame.src.includes('hobby/') || frame.src.includes('hobby-app/') || frame.src.includes('mPlay/')) {
+                    player.classList.add('active');
+                }
+            }
+
+            // Restore path from URL hash or default
+            navigateTo(initialPath, true);
+
+            // Start background sync
+            startPathSync();
+        });
+
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'PLAY_SONG') {
+                playGlobalMusic(event.data.song);
+                
+                // Ensure it only shows if we are on the hobby page
+                const frame = document.getElementById('contentFrame');
+                const player = document.getElementById('globalPlayer');
+                if (!frame.src.includes('hobby/') && !frame.src.includes('hobby-app/') && !frame.src.includes('mPlay/')) {
+                    player.classList.remove('active');
+                }
+            }
+            if (event.data.type === 'SEEK_TO') {
+                if (player && player.seekTo) {
+                    player.seekTo(event.data.time, true);
+                }
+            }
+            if (event.data.type === 'TOGGLE_PLAY') {
+                toggleGlobalPlay();
+            }
+        });
+    </script>
+</body>
+</html>
