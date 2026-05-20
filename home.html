@@ -142,38 +142,7 @@
         .glow-text-purple { text-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
         .glow-text-rose { text-shadow: 0 0 10px rgba(251, 113, 133, 0.4); }
 
-        /* Soundwave animations */
-        .wave-bar {
-            animation: bounce 1.2s ease-in-out infinite alternate;
-        }
-        @keyframes bounce {
-            0% { height: 4px; }
-            100% { height: 28px; }
-        }
 
-        /* LP/CD Record Spin Keyframe */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Zoom Panning Animation for Live Video Feed */
-        @keyframes zoomPanning {
-            0% { transform: scale(1.0); }
-            100% { transform: scale(1.15) translate(-3px, -2px); }
-        }
-
-        /* News Ticker Scrolling Marquee Animation */
-        @keyframes marquee {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
-        }
-
-        .animate-marquee {
-            display: inline-block;
-            white-space: nowrap;
-            animation: marquee 14s linear infinite;
-        }
 
         @media (max-width: 1024px) {
             body {
@@ -455,7 +424,7 @@
                     <!-- Vinyl circle with pulsing gradient -->
                     <div class="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
                         <!-- Vinyl record itself spinning infinitely -->
-                        <div class="w-20 h-20 rounded-full bg-neutral-900 border-[3px] border-white/10 flex items-center justify-center relative shadow-lg animate-spin" style="animation-duration: 6s">
+                        <div class="w-20 h-20 rounded-full bg-neutral-900 border-[3px] border-white/10 flex items-center justify-center relative shadow-lg animate-lp-spin" style="animation-duration: 6s">
                             <!-- Inner grooves -->
                             <div class="absolute inset-2.5 rounded-full border border-dashed border-white/10"></div>
                             <div class="absolute inset-5 rounded-full border border-dashed border-white/5"></div>
@@ -609,5 +578,51 @@
             </div>
         </div>
     </main>
+
+    <script>
+        // Dynamically inject custom animation keyframes and classes
+        // to bypass Tailwind CSS v4 in-browser DOM compiler stripping/rewriting
+        const customStyle = document.createElement('style');
+        customStyle.innerHTML = `
+            /* Soundwave bounce animations */
+            .wave-bar {
+                animation: bounce 1.2s ease-in-out infinite alternate;
+            }
+            @keyframes bounce {
+                0% { height: 4px; }
+                100% { height: 28px; }
+            }
+
+            /* Unique LP/CD Record Spin Keyframe to avoid Tailwind collisions */
+            @keyframes lpSpin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+
+            .animate-lp-spin {
+                animation: lpSpin 6s linear infinite !important;
+            }
+
+            /* Live TV Zoom Panning Video Background */
+            @keyframes zoomPanning {
+                0% { transform: scale(1.0); }
+                100% { transform: scale(1.15) translate(-3px, -2px); }
+            }
+
+            /* Live TV Ticker Scrolling News Marquee */
+            @keyframes marquee {
+                0% { transform: translate3d(0, 0, 0); }
+                100% { transform: translate3d(-100%, 0, 0); }
+            }
+
+            .animate-marquee {
+                display: inline-block;
+                white-space: nowrap;
+                animation: marquee 14s linear infinite !important;
+            }
+        `;
+        document.head.appendChild(customStyle);
+        console.log('[Portal] Successfully injected animation layer bypassing Tailwind.');
+    </script>
 </body>
 </html>

@@ -89,13 +89,14 @@
       }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-rWE6Dl-R.js"></script>
+  <script type="module" crossorigin src="./assets/main-DHBgyJY2.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 
 <body class="h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-[#030307] p-0">
 
   <!-- Main Portal Device Container (PC 브라우저 가운데 정렬 및 스마트 셋톱/콘솔 룩) -->
-  <div id="app-container" class="relative w-full h-[100dvh] lg:max-w-[1280px] xl:max-w-[1440px] bg-black rounded-none border-none lg:border-x lg:border-white/10 lg:shadow-[0_0_80px_rgba(99,102,241,0.08)] flex flex-col overflow-hidden mx-auto">
+  <div id="app-container" class="relative w-full h-[100dvh] lg:max-w-[88.88vh] bg-black rounded-none border-none lg:border-x lg:border-white/10 lg:shadow-[0_0_80px_rgba(99,102,241,0.08)] flex flex-col overflow-hidden mx-auto">
 
     <!-- Header -->
     <header class="glass-nav h-16 flex items-center justify-between px-6 z-50 flex-shrink-0 border-b border-white/10 bg-zinc-950/40 backdrop-blur-md">
@@ -133,10 +134,10 @@
 
       <!-- PC Player -->
       <div id="video-container"
-        class="hidden lg:flex w-full bg-black flex-col items-center justify-center flex-shrink-0 border-b border-white/5">
+        class="hidden lg:flex w-full lg:h-[50dvh] lg:max-h-[50dvh] bg-black flex-col items-center justify-center flex-shrink-0 border-b border-white/5">
         
         <!-- TV Bezel Frame Container (TV 외관 모서리 라운드 & 그라데이션) - 여백 없이 꽉 찬 화면으로 변경 -->
-        <div class="relative w-full aspect-video flex-shrink-0 group" id="video-bezel-frame">
+        <div class="relative h-full aspect-video flex-shrink-0 group" id="video-bezel-frame">
           
           <!-- TV Stand/Bottom Decor (숨김 처리) -->
           <div class="hidden"></div>
@@ -158,7 +159,7 @@
 
             <!-- Custom Controls (PC) -->
             <div id="video-controls"
-              class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between z-40">
+              class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-start gap-8 z-40">
               <div class="flex items-center gap-6">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
@@ -246,7 +247,7 @@
 
               <!-- Custom Controls (Mobile) -->
               <div id="video-controls-mobile"
-                class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover/mob:opacity-100 transition-opacity duration-300 flex items-center justify-between z-40">
+                class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover/mob:opacity-100 transition-opacity duration-300 flex items-center justify-start gap-6 z-40">
                 <div class="flex items-center gap-4">
                   <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
                   <span class="text-[9px] font-bold text-white/80 uppercase tracking-tighter">Live</span>
@@ -319,7 +320,7 @@
   <!-- Sticky Bottom Navigation Bar (고정바) -->
   <div class="absolute bottom-0 inset-x-0 h-16 bg-zinc-950/80 backdrop-blur-lg border-t border-white/10 z-50 flex items-center justify-around px-6 pb-safe">
     <!-- 홈 (Home) -->
-    <button onclick="parent.navigateTo('home.html')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
+    <button onclick="safeNavigate('home.html')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
         <polyline points="9 22 9 12 15 12 15 22"/>
@@ -355,7 +356,32 @@
   </div>
 
   </div> <!-- End app-container -->
-
+
+  <script>
+    function safeNavigate(url) {
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'NAVIGATE', url: url }, '*');
+          return;
+        }
+      } catch (e) {
+        console.warn('[PlayTime] postMessage navigation failed:', e);
+      }
+      try {
+        if (window.parent && typeof window.parent.navigateTo === 'function') {
+          window.parent.navigateTo(url);
+          return;
+        }
+      } catch (e) {
+        console.warn('[PlayTime] Direct parent navigation failed:', e);
+      }
+      let targetUrl = url;
+      if (window.location.pathname.includes('/livetv-app/') || window.location.pathname.includes('/livetv/')) {
+        targetUrl = '../' + url;
+      }
+      window.location.href = targetUrl;
+    }
+  </script>
 </body>
 
 </html>

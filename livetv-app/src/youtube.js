@@ -1,44 +1,66 @@
 // Han's Play - YouTube Page Logic
 
-// Pre-loaded popular Korean channels
-const DEFAULT_CHANNELS = [
-  { id: 'UCsJ6RuBiGBq6CmSGsajv2EA', name: 'JTBC News', handle: '@JTBC_news', cat: 'news' },
-  { id: 'UChlgI3UHCOnwUGzWzbJ3H5w', name: 'YTN', handle: '@ytnnews24', cat: 'news' },
-  { id: 'UCddiUEpeqJcYeBxX1IVBKvQ', name: 'MBC News', handle: '@mbcnews', cat: 'news' },
-  { id: 'UCPNFgbGLbpLXMRWKPnZ5Ong', name: 'KBS News', handle: '@KBSnews', cat: 'news' },
-  { id: 'UCWsVpQ3FNjDGcqrP0gkApfQ', name: 'SBS News', handle: '@SBSnews8', cat: 'news' },
-  { id: 'UCFZj5R7KIBVeMEEvYFgHHTA', name: 'MBC Entertainment', handle: '@MBCentertain', cat: 'entertainment' },
-  { id: 'UCPF2a3-_3kzLpqLepRb-Ueg', name: 'SBS Entertainment', handle: '@SBSentertain', cat: 'entertainment' },
-];
+// Pre-loaded popular Korean channels (Removed default channels to only show custom added channels)
+const DEFAULT_CHANNELS = [];
 
 let allChannels = [];
 let allVideos = [];
 let currentFilter = 'all';
 
 async function fetchChannelVideos(channelId, channelName, channelCat) {
-  try {
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-    const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-    const data = await res.json();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents || '', 'text/xml');
-    const entries = [...xml.querySelectorAll('entry')].slice(0, 8);
-    return entries.map(e => {
-      const videoId = e.querySelector('videoId')?.textContent || '';
-      const published = e.querySelector('published')?.textContent || '';
-      return {
-        videoId,
-        title: e.querySelector('title')?.textContent || '',
-        channelId,
-        channelName,
-        channelCat,
-        thumb: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-        published,
-        timeAgo: timeAgo(published),
-      };
-    }).filter(v => v.videoId);
-  } catch { return []; }
+  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  
+  // CORS 프록시 풀 (올오리진, corsproxy.io, codetabs)
+  const proxies = [
+    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+  ];
+
+  for (const getProxyUrl of proxies) {
+    try {
+      const proxyUrl = getProxyUrl(rssUrl);
+      console.log(`[YouTube RSS] RSS 피드 요청 중: ${proxyUrl}`);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+      
+      let contents = "";
+      if (proxyUrl.includes('allorigins')) {
+        const data = await res.json();
+        contents = data.contents || "";
+      } else {
+        contents = await res.text();
+      }
+
+      if (contents && (contents.includes('<entry>') || contents.includes('&lt;entry&gt;'))) {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(contents, 'text/xml');
+        const entries = [...xml.querySelectorAll('entry')].slice(0, 8);
+        
+        if (entries.length > 0) {
+          return entries.map(e => {
+            // 다양한 네임스페이스 및 브라우저 파서 대응을 위한 다중 셀렉터 적용
+            const videoId = e.querySelector('videoId')?.textContent || 
+                            e.getElementsByTagName('yt:videoId')?.[0]?.textContent || 
+                            e.querySelector('yt\\:videoId')?.textContent || '';
+            const published = e.querySelector('published')?.textContent || '';
+            return {
+              videoId,
+              title: e.querySelector('title')?.textContent || '',
+              channelId,
+              channelName,
+              channelCat,
+              thumb: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+              published,
+              timeAgo: timeAgo(published),
+            };
+          }).filter(v => v.videoId);
+        }
+      }
+    } catch (e) {
+      console.warn(`[YouTube RSS] RSS 프록시 실패 (${getProxyUrl.name}):`, e);
+    }
+  }
+  return [];
 }
 
 function timeAgo(isoStr) {
@@ -73,18 +95,71 @@ async function resolveChannelId(input) {
   const handle = input.replace('@', '');
   const url = `https://www.youtube.com/@${handle}`;
   
-  // CORS 프록시 풀 (allorigins, corsproxy.io, codetabs)
-  const proxies = [
-    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+  // [1단계] 초고속 YouTube 공식 oEmbed 직접 요청 (무프록시, 100ms 미만)
+  try {
+    const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/@${handle}&format=json`;
+    console.log(`[YouTube Resolver] oEmbed 직접 연결 시도: ${oembedUrl}`);
+    const res = await fetch(oembedUrl, { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const json = await res.json();
+      const authorUrl = json.author_url || "";
+      const match = authorUrl.match(/channel\/(UC[\w-]{22})/);
+      if (match?.[1]) {
+        console.log(`[YouTube Resolver] oEmbed 직접 연결 대성공: ${match[1]}`);
+        return match[1];
+      }
+    }
+  } catch (e) {
+    console.warn(`[YouTube Resolver] oEmbed 직접 연결 실패 (프록시 단계 전환):`, e);
+  }
+
+  // [2단계] 초경량 oEmbed JSON을 CORS 프록시로 우회 요청 (약 300~500ms)
+  const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/@${handle}&format=json`;
+  const fastProxies = [
     u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`
   ];
 
-  for (const getProxyUrl of proxies) {
+  for (const getProxyUrl of fastProxies) {
+    try {
+      const proxyUrl = getProxyUrl(oembedUrl);
+      console.log(`[YouTube Resolver] oEmbed 프록시 시도: ${proxyUrl}`);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(4000) });
+      let contents = "";
+      if (proxyUrl.includes('allorigins')) {
+        const data = await res.json();
+        contents = data.contents || "";
+      } else {
+        contents = await res.text();
+      }
+
+      if (contents) {
+        const json = typeof contents === 'string' ? JSON.parse(contents) : contents;
+        const authorUrl = json.author_url || "";
+        const match = authorUrl.match(/channel\/(UC[\w-]{22})/);
+        if (match?.[1]) {
+          console.log(`[YouTube Resolver] oEmbed 프록시 성공: ${match[1]}`);
+          return match[1];
+        }
+      }
+    } catch (e) {
+      console.warn(`[YouTube Resolver] oEmbed 프록시 실패:`, e);
+    }
+  }
+
+  // [3단계] 최후의 보루 - 채널 전체 HTML 획득 분석 (속도순 프록시 정렬: corsproxy.io 최우선)
+  const htmlProxies = [
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`
+  ];
+
+  for (const getProxyUrl of htmlProxies) {
     try {
       const proxyUrl = getProxyUrl(url);
-      console.log(`[YouTube Resolver] 시도 중인 프록시: ${proxyUrl}`);
-      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+      console.log(`[YouTube Resolver] HTML 프록시 분석 시도: ${proxyUrl}`);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
       let html = "";
       
       if (proxyUrl.includes('allorigins')) {
@@ -95,20 +170,17 @@ async function resolveChannelId(input) {
       }
 
       if (html) {
-        // 패턴 1: JSON channelId 매칭
         let match = html.match(/"channelId":"(UC[\w-]{22})"/);
         if (match?.[1]) return match[1];
 
-        // 패턴 2: canonical 또는 og:url (/channel/UC...) 매칭
         match = html.match(/channel\/(UC[\w-]{22})/);
         if (match?.[1]) return match[1];
 
-        // 패턴 3: itemprop="channelId" 매칭
         match = html.match(/itemprop="channelId" content="(UC[\w-]{22})"/);
         if (match?.[1]) return match[1];
       }
     } catch (e) {
-      console.warn(`[YouTube Resolver] 프록시 실패:`, e);
+      console.warn(`[YouTube Resolver] HTML 프록시 실패:`, e);
     }
   }
   return null;
@@ -205,6 +277,78 @@ function renderGrid(videos, title) {
   main.appendChild(grid);
 }
 
+function renderChannelList() {
+  const main = document.getElementById('yt-main');
+  
+  // 기존에 렌더링된 채널 목록 섹션 제거
+  let chListSection = document.getElementById('custom-channel-list-section');
+  if (chListSection) {
+    chListSection.remove();
+  }
+  
+  const customChannels = allChannels.filter(c => c.cat === 'custom');
+  if (customChannels.length === 0) return;
+  
+  chListSection = document.createElement('div');
+  chListSection.id = 'custom-channel-list-section';
+  chListSection.style.cssText = 'margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); padding-bottom: 40px;';
+  
+  chListSection.innerHTML = `
+    <div class="section-title" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 16px; font-weight: 800; color: #f1f1f1;">내가 추가한 채널</span>
+      <span style="font-size: 11px; color: #666; font-weight: normal;">총 ${customChannels.length}개</span>
+    </div>
+    <div class="yt-ch-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+    </div>
+  `;
+  
+  const listContainer = chListSection.querySelector('.yt-ch-list');
+  
+  customChannels.forEach(ch => {
+    const row = document.createElement('div');
+    row.className = 'yt-ch-row';
+    row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 12px; transition: background 0.2s;';
+    
+    row.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; min-width: 0;" onclick="filterByChannel('${ch.id}')">
+        <div class="yt-avatar" style="background:${strColor(ch.name)}; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: white; flex-shrink: 0;">
+          ${ch.name.charAt(0).toUpperCase()}
+        </div>
+        <div class="yt-ch-info" style="min-width: 0;">
+          <div class="yt-ch-title" style="font-size: 14px; font-weight: 600; color: #f1f1f1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ch.name}</div>
+          <div class="yt-ch-sub" style="font-size: 11px; color: #666; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ch.handle || '@'+ch.name}</div>
+        </div>
+      </div>
+      <button onclick="removeChannel(event, '${ch.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="채널 삭제">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        </svg>
+      </button>
+    `;
+    listContainer.appendChild(row);
+  });
+  
+  main.appendChild(chListSection);
+}
+
+window.filterByChannel = function(channelId) {
+  const ch = allChannels.find(c => c.id === channelId);
+  if (!ch) return;
+  const filtered = allVideos.filter(v => v.channelId === channelId);
+  renderGrid(filtered, `"${ch.name}" 채널 영상`);
+  renderChannelList();
+};
+
+window.removeChannel = function(event, channelId) {
+  event.stopPropagation();
+  if (!confirm('이 채널을 삭제하시겠습니까?')) return;
+  allChannels = allChannels.filter(c => c.id !== channelId);
+  saveChannels();
+  allVideos = allVideos.filter(v => v.channelId !== channelId);
+  renderContent();
+};
+
 function renderContent() {
   const filtered = currentFilter === 'all'
     ? allVideos
@@ -217,25 +361,36 @@ function renderContent() {
         <h3>채널이 없습니다</h3>
         <p>우측 상단 <strong>채널 추가</strong>를 눌러<br>원하는 YouTube 채널을 추가해 보세요<br><br>예: @JTBC_news · @YTN_news24 · @MBCentertain</p>
       </div>`;
+    renderChannelList();
     return;
   }
   renderGrid(filtered, currentFilter === 'all' ? '' : (CAT_MAP[currentFilter] || ''));
+  renderChannelList();
 }
 
 async function init() {
   document.getElementById('yt-main').innerHTML = '<div class="yt-loading"><div class="yt-spinner"></div><span>채널 영상을 불러오는 중...</span></div>';
   const saved = loadSavedChannels();
   allChannels = [...DEFAULT_CHANNELS, ...saved];
-  // Fetch all channels in parallel
   const results = await Promise.allSettled(
     allChannels.map(ch => fetchChannelVideos(ch.id, ch.name, ch.cat))
   );
   allVideos = results.flatMap((r, i) => r.status === 'fulfilled' ? r.value : []);
-  // Sort by published date
+  
+  // 내가 추가한 채널(custom)은 최근 한 달 이내 컨텐츠만 노출
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  
+  allVideos = allVideos.filter(v => {
+    if (v.channelCat === 'custom') {
+      return new Date(v.published) >= oneMonthAgo;
+    }
+    return true;
+  });
+
   allVideos.sort((a, b) => new Date(b.published) - new Date(a.published));
   renderContent();
 }
 
-// ESC to close player
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePlayer(); });
 init();

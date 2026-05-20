@@ -658,6 +658,9 @@
             if (event.data.type === 'TOGGLE_PLAY') {
                 toggleGlobalPlay();
             }
+            if (event.data.type === 'NAVIGATE') {
+                navigateTo(event.data.url);
+            }
         });
     </script>
 </body>

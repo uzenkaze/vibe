@@ -138,33 +138,6 @@ const CHANNELS = [
     'https://liveout.catenoid.net/live-05-wshopping/wshopping_1500k/playlist.m3u8',
     'https://liveout.catenoid.net/live-05-wshopping/wshopping_900k/playlist.m3u8'
   ]},
-  // 스포츠
-  { id: 'kbs_n_sports', name: 'KBS N Sports', network: 'KBS_SPORTS', category: '스포츠', urls: [
-    'https://kbs-hls.gcdn.ntruss.com/kbs/kbsnplus/playlist.m3u8',
-    'https://624a79c87201d.streamlock.net/kbsnplus/live/playlist.m3u8'
-  ]},
-  { id: 'kbaduk', name: 'K바둑', network: 'KBADUK', category: '스포츠', ytChannelId: 'UCfC7lLfshm-GGKengvBm_HQ', urls: [
-    'https://kbaduk.gscdn.com/kbaduk/live/playlist.m3u8'
-  ]},
-  { id: 'pba_tv', name: 'PBA 프로당구', network: 'PBA', category: '스포츠', ytChannelId: 'UC19P201D07j96D94y-uT1hQ', urls: [] },
-  { id: 'golfzone_tv', name: '골프존 TV', network: 'GOLFZON', category: '스포츠', ytChannelId: 'UCp3E0T2049e6f_1G-mFvX_Q', urls: [] },
-  { id: 'lck_esports', name: 'LCK e스포츠', network: 'LCK', category: '스포츠', ytChannelId: 'UC112c3fDqJqB-aYfH_QO1zQ', urls: [] },
-  { id: 'fishing_tv', name: '한국낚시방송', network: 'FISHING', category: '스포츠', urls: [
-    'https://fishingtv.gscdn.com/fishingtv/live/playlist.m3u8'
-  ]},
-  // 교육/교양
-  { id: 'job_plus', name: '한국직업방송', network: 'JOB_PLUS', category: '교육/교양', urls: [
-    'https://live.jobplustv.or.kr/live/wowtvlive1.sdp/playlist.m3u8',
-    'http://live.jobplustv.or.kr/live/wowtvlive1.sdp/playlist.m3u8'
-  ]},
-  { id: 'oun', name: '방송대학TV', network: 'OUN', category: '교육/교양', urls: [
-    'https://live.knou.ac.kr/knou1/live1/playlist.m3u8',
-    'http://live.knou.ac.kr/knou1/live1/playlist.m3u8'
-  ]},
-  { id: 'gugak_tv', name: '국악방송', network: 'GUGAK_TV', category: '교육/교양', urls: [
-    'https://mgugaklive.nowcdn.co.kr/gugakvideo/gugakvideo.stream/playlist.m3u8',
-    'http://mgugaklive.nowcdn.co.kr/gugakvideo/gugakvideo.stream/playlist.m3u8'
-  ]},
 ];
 
 /* =================== STATE =================== */
@@ -733,17 +706,7 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   if (qualWrapperPC) qualWrapperPC.style.display = 'none';
   if (qualWrapperMob) qualWrapperMob.style.display = 'none';
 
-  if (!isPC()) {
-    // 뷰포트(창) 스크롤을 항상 최상단(0,0)으로 고정하여 헤더가 주소창 영역 아래로 사라지지 않도록 보호
-    window.scrollTo({ top: 0 });
-    document.body.scrollTop = 0;
 
-    // 영상 영역 아래의 채널 리스트만 최상단으로 스크롤하여 상단 고정 플레이어와의 조화를 유지
-    const gridMob = document.getElementById('channel-grid-mobile');
-    if (gridMob) {
-      gridMob.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
 
   updateActiveUI();
 
