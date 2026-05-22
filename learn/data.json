@@ -62,6 +62,15 @@
       "id": "cat_mpbwd2m7_a1att",
       "createdAt": "2026-05-19T00:30:54.079Z",
       "order": 6
+    },
+    {
+      "name": "DevOps",
+      "description": "개발관련 정보모음",
+      "icon": "🌍",
+      "color": "#eab308",
+      "id": "cat_mpg914zt_udlci",
+      "createdAt": "2026-05-22T01:36:37.001Z",
+      "order": 7
     }
   ],
   "articles": [
