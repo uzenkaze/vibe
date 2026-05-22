@@ -68,7 +68,14 @@ while ($listener.IsListening) {
             if ($null -eq $contentType) { $contentType = "application/octet-stream" }
 
             $response.ContentType = $contentType
-            $bytes = [System.IO.File]::ReadAllBytes($filePath)
+            if ($ext -eq ".html") {
+                $htmlText = [System.IO.File]::ReadAllText($filePath, [System.Text.Encoding]::UTF8)
+                $timestamp = Get-Date -Format "yyyyMMddHHmmss"
+                $htmlText = $htmlText -replace "CACHE_BUST", $timestamp
+                $bytes = [System.Text.Encoding]::UTF8.GetBytes($htmlText)
+            } else {
+                $bytes = [System.IO.File]::ReadAllBytes($filePath)
+            }
             $response.ContentLength64 = $bytes.Length
             $response.OutputStream.Write($bytes, 0, $bytes.Length)
         } else {
