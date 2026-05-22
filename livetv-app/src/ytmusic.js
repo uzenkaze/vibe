@@ -118,9 +118,13 @@ async function searchMusic(query, setInput = true, isAppend = false) {
   }
 
   isSearchLoading = true;
-  const listEl   = document.getElementById('music-list');
-  const loadEl   = document.getElementById('loading-indicator');
-  loadEl.classList.add('active');
+  const listEl = document.getElementById('music-list');
+  const loadEl = isAppend ? document.getElementById('bottom-loading') : document.getElementById('loading-indicator');
+  
+  if (loadEl) {
+    if (isAppend) loadEl.style.display = 'block';
+    else loadEl.classList.add('active');
+  }
 
   const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
   const proxies = [
@@ -146,7 +150,10 @@ async function searchMusic(query, setInput = true, isAppend = false) {
 
   if (!html) {
     if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">검색 결과를 불러올 수 없습니다.<br>잠시 후 다시 시도해 주세요.</div>`;
-    loadEl.classList.remove('active');
+    if (loadEl) {
+      if (isAppend) loadEl.style.display = 'none';
+      else loadEl.classList.remove('active');
+    }
     isSearchLoading = false;
     return;
   }
@@ -155,7 +162,10 @@ async function searchMusic(query, setInput = true, isAppend = false) {
   const si = html.indexOf(prefix);
   if (si === -1) {
     if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">데이터 구조가 변경되었습니다.</div>`;
-    loadEl.classList.remove('active');
+    if (loadEl) {
+      if (isAppend) loadEl.style.display = 'none';
+      else loadEl.classList.remove('active');
+    }
     isSearchLoading = false;
     return;
   }
@@ -201,7 +211,10 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     console.error('Parse error', e);
     if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">결과 분석 중 오류가 발생했습니다.</div>`;
   }
-  loadEl.classList.remove('active');
+  if (loadEl) {
+    if (isAppend) loadEl.style.display = 'none';
+    else loadEl.classList.remove('active');
+  }
   isSearchLoading = false;
 }
 
@@ -211,10 +224,33 @@ function activatePill(el) {
   if (el) el.classList.add('active');
 }
 
-function loadTrending() {
+async function loadTrending() {
   activatePill(document.querySelector('.pill'));
   document.getElementById('search-input').value = '';
-  searchMusic('인기곡 플레이리스트', false);
+  
+  const cacheKey = 'ytm_trending_cache';
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (Date.now() - parsed.timestamp < 216000000) { // 2.5 days
+        currentSearchQuery = '인기곡 플레이리스트';
+        searchPageCount = 0;
+        currentPlaylist = parsed.songs;
+        renderMusicList(parsed.songs, false);
+        return;
+      }
+    } catch(e) {}
+  }
+  
+  await searchMusic('인기곡 플레이리스트', false);
+  
+  if (currentSearchQuery === '인기곡 플레이리스트' && currentPlaylist.length > 0) {
+    localStorage.setItem(cacheKey, JSON.stringify({
+      timestamp: Date.now(),
+      songs: currentPlaylist.slice(0, 50)
+    }));
+  }
 }
 
 function loadRecent() {
@@ -738,7 +774,7 @@ function initInfiniteScroll() {
       const nextQuery = currentSearchQuery + suffixes[(searchPageCount - 1) % suffixes.length];
       searchMusic(nextQuery, false, true);
     }
-  }, { rootMargin: '200px' });
+  }, { rootMargin: '400px' });
   
   const anchor = document.getElementById('scroll-anchor');
   if (anchor) observer.observe(anchor);
