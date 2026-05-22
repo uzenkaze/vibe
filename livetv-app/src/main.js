@@ -1591,8 +1591,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.switchTab('favorites');
   }
 
-  // 페이지 진입 시 첫 번째 채널 자동 재생 방지 (요청에 따라 비활성화)
-  // if (!activeChannelId && CHANNELS.length > 0) {
-  //   playChannel(CHANNELS[0]);
-  // }
+  // 페이지 진입 시 첫 번째 채널 자동 재생
+  if (!activeChannelId && CHANNELS.length > 0) {
+    playChannel(CHANNELS[0]);
+  }
 });

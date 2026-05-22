@@ -329,7 +329,7 @@ body {
 /* Album Art Area */
 .full-art-container {
   flex-shrink: 0;
-  padding: 12px 32px 0;
+  padding: 32px;
   position: relative;
 }
 .full-art-container img#full-art {
@@ -368,17 +368,21 @@ body {
   aspect-ratio: 1/1;
 }
 
-/* Song Info Row */
+/* Song Info */
 .full-info {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 16px 32px 0;
+  padding: 0 32px;
   flex-shrink: 0;
 }
-.full-info-left { flex: 1; min-width: 0; }
+.full-info-left {
+  flex: 1;
+  min-width: 0;
+}
 .full-title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -386,11 +390,12 @@ body {
   color: #fff;
 }
 .full-artist {
-  font-size: 14px;
+  font-size: 16px;
   color: #aaa;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 4px;
 }
 .like-btn {
   background: none;
@@ -477,7 +482,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px; height: 64px;
+  width: 72px; height: 72px;
   border-radius: 50%;
   transition: transform 0.15s;
   flex-shrink: 0;

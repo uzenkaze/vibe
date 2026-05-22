@@ -59,11 +59,10 @@
 
   <!-- Full Player Overlay -->
   <div class="full-player" id="full-player">
-    <div class="full-player-main" id="full-player-main">
     <!-- Full Player Header -->
     <div class="full-header">
       <button onclick="closeFullPlayer()" class="fp-close-btn" aria-label="닫기">
-        <svg width="28" height="28" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 8l8 8 8-8"/></svg>
       </button>
       <div class="full-header-tabs">
         <span class="active" id="tab-song" onclick="switchMode('song')">노래</span>
@@ -74,6 +73,7 @@
       </button>
     </div>
 
+    <div class="full-player-main" id="full-player-main">
     <!-- Album Art / Video -->
     <div class="full-art-container" id="full-art-wrapper">
       <img id="full-art" src="" alt="Album Art">
