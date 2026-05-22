@@ -14,6 +14,9 @@ let isRepeat        = false;   // false | 'one' | 'all'
 let repeatMode      = 0;       // 0=off, 1=all, 2=one
 let isLiked         = false;
 let activeBottomTab = 'next';
+let currentSearchQuery = '';
+let searchPageCount = 0;
+let isSearchLoading = false;
 
 /* ══════════════ YT IFRAME API ══════════════ */
 window.onYouTubeIframeAPIReady = function () {
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTrending();
   initProgressBar();
   initBottomSheet();
+  initInfiniteScroll();
 });
 
 /* ══════════════ LOGIN ══════════════ */
@@ -100,16 +104,22 @@ function updateLoginUI() {
 }
 
 /* ══════════════ SEARCH ══════════════ */
-async function searchMusic(query) {
+async function searchMusic(query, setInput = true, isAppend = false) {
+  if (isSearchLoading) return;
   if (!query) query = document.getElementById('search-input').value.trim();
-  else document.getElementById('search-input').value = query;
+  else if (setInput) document.getElementById('search-input').value = query;
   if (!query) return;
 
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  if (!isAppend) {
+    currentSearchQuery = query;
+    searchPageCount = 0;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('music-list').innerHTML = '';
+  }
 
+  isSearchLoading = true;
   const listEl   = document.getElementById('music-list');
   const loadEl   = document.getElementById('loading-indicator');
-  listEl.innerHTML = '';
   loadEl.classList.add('active');
 
   const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
@@ -134,17 +144,19 @@ async function searchMusic(query) {
     } catch (e) { /* try next */ }
   }
 
-  loadEl.classList.remove('active');
-
   if (!html) {
-    listEl.innerHTML = `<div class="tab-placeholder">검색 결과를 불러올 수 없습니다.<br>잠시 후 다시 시도해 주세요.</div>`;
+    if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">검색 결과를 불러올 수 없습니다.<br>잠시 후 다시 시도해 주세요.</div>`;
+    loadEl.classList.remove('active');
+    isSearchLoading = false;
     return;
   }
 
   const prefix = 'var ytInitialData = ';
   const si = html.indexOf(prefix);
   if (si === -1) {
-    listEl.innerHTML = `<div class="tab-placeholder">데이터 구조가 변경되었습니다.</div>`;
+    if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">데이터 구조가 변경되었습니다.</div>`;
+    loadEl.classList.remove('active');
+    isSearchLoading = false;
     return;
   }
   const ei = html.indexOf(';</script>', si);
@@ -177,12 +189,20 @@ async function searchMusic(query) {
       if (songs.length >= 50) break;
     }
 
-    currentPlaylist = songs;
-    renderMusicList(songs);
+    if (isAppend) {
+      const newSongs = songs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
+      currentPlaylist = currentPlaylist.concat(newSongs);
+      renderMusicList(newSongs, true);
+    } else {
+      currentPlaylist = songs;
+      renderMusicList(songs, false);
+    }
   } catch (e) {
     console.error('Parse error', e);
-    listEl.innerHTML = `<div class="tab-placeholder">결과 분석 중 오류가 발생했습니다.</div>`;
+    if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">결과 분석 중 오류가 발생했습니다.</div>`;
   }
+  loadEl.classList.remove('active');
+  isSearchLoading = false;
 }
 
 /* ══════════════ PILL / TABS ══════════════ */
@@ -193,7 +213,8 @@ function activatePill(el) {
 
 function loadTrending() {
   activatePill(document.querySelector('.pill'));
-  searchMusic('인기곡 플레이리스트');
+  document.getElementById('search-input').value = '';
+  searchMusic('인기곡 플레이리스트', false);
 }
 
 function loadRecent() {
@@ -224,17 +245,17 @@ function saveToRecent(song) {
 }
 
 /* ══════════════ RENDER LIST ══════════════ */
-function renderMusicList(songs) {
+function renderMusicList(songs, isAppend = false) {
   const listEl = document.getElementById('music-list');
-  listEl.innerHTML = '';
-  if (!songs.length) {
+  if (!isAppend) listEl.innerHTML = '';
+  if (!songs.length && !isAppend) {
     listEl.innerHTML = `<div class="tab-placeholder">결과가 없습니다.</div>`;
     return;
   }
-  songs.forEach((song, idx) => {
+  songs.forEach((song) => {
     const div = document.createElement('div');
     div.className = 'song-item' + (song.videoId === currentVideoId ? ' playing' : '');
-    div.onclick = () => playMusic(song, idx);
+    div.onclick = () => playMusic(song);
     div.innerHTML = `
       <img src="${song.thumb}" class="song-thumb" alt="" onerror="this.src=''">
       <div class="song-info">
@@ -706,4 +727,26 @@ function renderDrawerList() {
 function openInYouTube(event) {
   if (event) event.stopPropagation();
   if (currentVideoId) window.open(`https://music.youtube.com/watch?v=${currentVideoId}`, '_blank');
+}
+
+/* ══════════════ INFINITE SCROLL ══════════════ */
+function initInfiniteScroll() {
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !isSearchLoading && currentSearchQuery) {
+      searchPageCount++;
+      const suffixes = [' 추천', ' 모음', ' 핫라인', ' 플레이리스트', ' 라이브', ' 베스트', ' 모음집'];
+      const nextQuery = currentSearchQuery + suffixes[(searchPageCount - 1) % suffixes.length];
+      searchMusic(nextQuery, false, true);
+    }
+  }, { rootMargin: '200px' });
+  
+  const anchor = document.getElementById('scroll-anchor');
+  if (anchor) observer.observe(anchor);
+
+  // Periodically refresh list
+  setInterval(() => {
+    if (window.scrollY < 100 && !isPlaying && currentSearchQuery) {
+      searchMusic(currentSearchQuery, false, false);
+    }
+  }, 5 * 60 * 1000); // 5 minutes
 }
