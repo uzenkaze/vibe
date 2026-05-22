@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>YT Music - Vibe</title>
   <link rel="stylesheet" href="src/style.css">
-  <link rel="stylesheet" href="src/ytmusic.css">
+  <link rel="stylesheet" href="src/ytmusic.css?v=CACHE_BUST">
 </head>
 <body>
 
@@ -187,7 +187,7 @@
       </svg>
       <span style="font-size:10px; font-weight:700;">유튜브</span>
     </button>
-    <button class="active" onclick="window.location.href='ytmusic.html'">
+    <button class="active" onclick="window.location.href='ytmusic.html?v=CACHE_BUST'">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/>
       </svg>
@@ -202,6 +202,6 @@
   </div>
 
   <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="src/ytmusic.js"></script>
+  <script src="src/ytmusic.js?v=CACHE_BUST"></script>
 </body>
 </html>

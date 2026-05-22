@@ -8,6 +8,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         youtube: resolve(__dirname, 'youtube.html'),
+        ytmusic: resolve(__dirname, 'ytmusic.html'),
       }
     }
   }

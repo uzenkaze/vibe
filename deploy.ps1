@@ -55,14 +55,23 @@ foreach ($folder in $staticFolders) {
             # livetv-app은 빌드(dist)를 타지 않고 원본 정적 파일을 직접 복사하여 배포
             Write-Host "> livetv-app 원본 정적 소스 직접 복사 중..." -ForegroundColor Cyan
             New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
-            Copy-Item -Path "$folder/index.html" -Destination "$deployDir/$targetFolder/"
             
-            # youtube.html 복사 후 캐시 버스터 실시간 주입 (모바일 웹뷰 캐싱 철저 방어)
+            # youtube.html 및 ytmusic.html, index.html 복사 후 캐시 버스터 실시간 주입 (모바일 웹뷰 캐싱 철저 방어)
             $timestamp = Get-Date -Format "yyyyMMddHHmmss"
+
+            $idxHtmlPath = "$deployDir/$targetFolder/index.html"
+            Copy-Item -Path "$folder/index.html" -Destination $idxHtmlPath
+            (Get-Content -Path $idxHtmlPath) -replace "CACHE_BUST", $timestamp | Set-Content -Path $idxHtmlPath
+            Write-Host "> index.html 복사 완료 및 실시간 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
             $ytHtmlPath = "$deployDir/$targetFolder/youtube.html"
             Copy-Item -Path "$folder/youtube.html" -Destination $ytHtmlPath
             (Get-Content -Path $ytHtmlPath) -replace "CACHE_BUST", $timestamp | Set-Content -Path $ytHtmlPath
             Write-Host "> youtube.html 복사 완료 및 실시간 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
+
+            $ytMusicHtmlPath = "$deployDir/$targetFolder/ytmusic.html"
+            Copy-Item -Path "$folder/ytmusic.html" -Destination $ytMusicHtmlPath
+            (Get-Content -Path $ytMusicHtmlPath) -replace "CACHE_BUST", $timestamp | Set-Content -Path $ytMusicHtmlPath
+            Write-Host "> ytmusic.html 복사 완료 및 실시간 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
 
             Copy-Item -Path "$folder/favicon.png" -Destination "$deployDir/$targetFolder/"
             New-Item -ItemType Directory -Path "$deployDir/$targetFolder/src" -Force | Out-Null
