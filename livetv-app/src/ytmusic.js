@@ -174,7 +174,7 @@ async function searchMusic(query) {
         duration: v.lengthText?.simpleText || '',
         thumb:    v.thumbnail.thumbnails.slice(-1)[0].url.split('?')[0]
       });
-      if (songs.length >= 20) break;
+      if (songs.length >= 50) break;
     }
 
     currentPlaylist = songs;
@@ -269,7 +269,7 @@ function playMusic(song, index) {
   }
 
   // Mini player
-  const hqThumb = song.thumb.replace('mqdefault', 'hqdefault').replace('default', 'hqdefault');
+  const hqThumb = 'https://i.ytimg.com/vi/' + song.videoId + '/hqdefault.jpg';
   document.getElementById('mini-thumb').src  = song.thumb;
   document.getElementById('mini-title').textContent  = song.title;
   document.getElementById('mini-artist').textContent = song.artist;
@@ -588,7 +588,6 @@ function formatTime(sec) {
 /* ══════════════ BOTTOM SHEET INTERACTION ══════════════ */
 function initBottomSheet() {
   const sheet = document.getElementById('bottom-sheet');
-  const handleArea = document.getElementById('drag-handle-area');
   const tabs = document.getElementById('full-bottom-tabs');
   if (!sheet) return;
 
@@ -596,9 +595,9 @@ function initBottomSheet() {
   let currentY = 0;
   let isDragging = false;
   let sheetHeight = 0;
-  const collapsedHeight = 64; // Approx height of tabs + handle
+  const collapsedHeight = 48; // Height of tabs
 
-  const dragTargets = [handleArea, tabs];
+  const dragTargets = [tabs];
 
   dragTargets.forEach(target => {
     if (!target) return;
@@ -648,10 +647,12 @@ function initBottomSheet() {
     });
   });
 
-  // Tap handle area to toggle
-  if (handleArea) {
-    handleArea.addEventListener('click', () => {
-      sheet.classList.toggle('expanded');
+  // Tap tabs area to toggle when collapsed
+  if (tabs) {
+    tabs.addEventListener('click', (e) => {
+      if (!sheet.classList.contains('expanded') && !e.target.closest('button')) {
+        sheet.classList.add('expanded');
+      }
     });
   }
 }

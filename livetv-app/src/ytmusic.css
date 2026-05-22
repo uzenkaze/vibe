@@ -363,7 +363,10 @@ body {
   pointer-events: auto;
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 1/1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
 }
 
 /* Song Info Row */
@@ -496,7 +499,7 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 220;
-  transform: translateY(calc(100% - 64px));
+  transform: translateY(calc(100% - 48px)); /* 48px is the height of tabs */
   transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
 }
@@ -506,25 +509,11 @@ body {
 .bottom-sheet.dragging {
   transition: none;
 }
-.drag-handle-area {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20px;
-  cursor: pointer;
-  flex-shrink: 0;
-  touch-action: none;
-}
-.drag-handle {
-  width: 40px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-}
 
 .full-bottom-tabs {
   display: flex;
   flex-shrink: 0;
+  touch-action: none;
 }
 .bottom-tab-btn {
   flex: 1;
