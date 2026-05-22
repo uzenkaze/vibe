@@ -40,7 +40,7 @@ function Tooltip({ label, children }: TooltipProps) {
 }
 
 export default function MindmapPage() {
-  const { data, setMindmap, theme, showToast, dataSource, syncUp } = useStore();
+  const { data, setMindmap, theme, showToast, syncUp } = useStore();
   const mindmapStore = data.mindmap as MindmapStore;
 
   const [localMindmap, setLocalMindmap] = useState<MindmapStore>(mindmapStore);

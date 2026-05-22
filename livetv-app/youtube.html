@@ -2,7 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob: android-webview-video-poster: https://*.ytimg.com https://*.youtube.com https://i.ytimg.com https://i3.ytimg.com https://img.youtube.com; media-src * data: blob:;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>PlayTime - YouTube</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,6 +12,11 @@
     body{background:#0f0f0f;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:80px;}
     /* Header */
     .yt-header{position:sticky;top:0;z-index:100;background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:12px;padding:12px 16px}
+    @media (max-width: 1023px) {
+      .yt-header {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 28px) !important;
+      }
+    }
     .yt-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
     .yt-logo svg{flex-shrink:0}
     .yt-logo-text{font-size:17px;font-weight:800;color:#fff}
@@ -37,7 +43,8 @@
     .yt-card{cursor:pointer;border-radius:12px;overflow:hidden;transition:transform 0.15s}
     .yt-card:hover{transform:scale(1.02)}
     .yt-thumb{position:relative;aspect-ratio:16/9;background:#1a1a1a;border-radius:10px;overflow:hidden;margin-bottom:10px}
-    .yt-thumb img{width:100%;height:100%;object-fit:cover}
+    .yt-thumb-fallback{position:absolute;inset:0;background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#818cf8;font-size:11px;font-weight:800;letter-spacing:1px;border-radius:10px;z-index:1;text-transform:uppercase}
+    .yt-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:10px;transition:opacity 0.3s ease}
     .yt-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#16213e)}
     .yt-duration{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.85);color:#fff;font-size:11px;font-weight:600;padding:2px 5px;border-radius:4px}
     .yt-live-badge{position:absolute;bottom:6px;right:6px;background:#FF0000;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:0.05em}
@@ -53,13 +60,71 @@
     .yt-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.08);border-top-color:#FF0000;border-radius:50%;animation:spin 0.8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     /* Player Overlay */
-    .yt-player-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.95);flex-direction:column}
+    /* Player Overlay (Full Screen) */
+    .yt-player-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.95);flex-direction:column;transition:all 0.3s ease}
     .yt-player-overlay.open{display:flex}
     .yt-player-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;flex-shrink:0}
     .yt-player-title{font-size:15px;font-weight:600;color:#f1f1f1;flex:1;margin:0 16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .yt-close-btn{width:36px;height:36px;background:rgba(255,255,255,0.08);border:none;border-radius:50%;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .yt-player-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:#ccc;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+    .yt-player-btn:hover{background:rgba(255,255,255,0.15);color:#fff}
     .yt-player-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:0 0 20px}
     .yt-player-wrap iframe{width:100%;max-width:960px;aspect-ratio:16/9;border:none;border-radius:12px}
+    
+    /* Safe Area Padding for Full Screen Header on Mobile */
+    @media (max-width: 1023px) {
+      .yt-player-overlay:not(.pip-mode) .yt-player-header {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 28px) !important;
+      }
+    }
+
+    /* PIP Mode (Floating Mini Player) */
+    .yt-player-overlay.pip-mode {
+      display: flex;
+      position: fixed;
+      inset: auto;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 76px);
+      right: 16px;
+      width: 220px;
+      height: 160px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      background: #18181f;
+      z-index: 180;
+      overflow: hidden;
+      cursor: move;
+    }
+    .yt-player-overlay.pip-mode .yt-player-header {
+      padding: 6px 10px !important;
+      height: 36px;
+      background: #121216;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .yt-player-overlay.pip-mode .yt-player-title {
+      font-size: 11px;
+      margin: 0 8px;
+    }
+    .yt-player-overlay.pip-mode .yt-player-btn {
+      width: 24px;
+      height: 24px;
+    }
+    .yt-player-overlay.pip-mode .yt-player-btn svg {
+      width: 13px;
+      height: 13px;
+    }
+    .yt-player-overlay.pip-mode .yt-player-wrap {
+      padding: 0;
+    }
+    .yt-player-overlay.pip-mode .yt-player-wrap iframe {
+      border-radius: 0;
+      height: calc(100% - 1px);
+    }
+    
+    /* Show/Hide specific buttons in PIP / Normal modes */
+    .yt-player-btn.restore-btn-overlay { display: none; }
+    .yt-player-overlay.pip-mode .yt-player-btn.restore-btn-overlay { display: flex; }
+    .yt-player-overlay.pip-mode .yt-player-btn.back-btn-overlay { display: none; }
+    .yt-player-overlay.pip-mode .yt-player-btn.pip-btn-overlay { display: none; }
     /* Add Channel Modal */
     .add-modal{display:none;position:fixed;inset:0;z-index:300;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px)}
     .add-modal.open{display:flex}
@@ -132,43 +197,53 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="yt-header" style="background: rgba(12, 12, 18, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-    <!-- PlayTime Logo & Title (Identical to LiveTV index.html) -->
-    <a href="index.html" class="flex items-center gap-3 group/logo cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0">
-      <div class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover/logo:scale-105 transition-transform duration-300">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-          <path d="M2 8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8Z" />
-          <path d="m9 8 6 4-6 4V8Z" fill="white" />
-        </svg>
+  <!-- Sticky Header & Category Wrapper (통합 고정 상단바) -->
+  <div style="position: sticky; top: 0; z-index: 100; background: #0f0f0f; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+    <!-- Header -->
+    <header class="yt-header" style="background: transparent; border-bottom: none;">
+      <!-- PlayTime Logo & Title (Identical to LiveTV index.html) -->
+      <a href="index.html" class="flex items-center gap-3 group/logo cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0">
+        <div class="w-10 h-10 bg-gradient-to-tr from-amber-400 via-yellow-400 to-yellow-500 rounded-[12px] flex items-center justify-center shadow-lg shadow-yellow-500/20 group-hover/logo:scale-105 transition-transform duration-300">
+          <div class="w-7 h-7 bg-zinc-900 rounded-[8px] flex items-center justify-center">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <polygon points="6 3 20 12 6 21 6 3" fill="#fbbf24" />
+            </svg>
+          </div>
+        </div>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-yellow-100 to-amber-300 font-extrabold text-xl tracking-tight drop-shadow-md">PlayTime</span>
+      </a>
+
+      <!-- Middle Search Bar -->
+      <div class="yt-search">
+        <input type="text" id="search-input" placeholder="검색" onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="yt-search-btn" onclick="doSearch()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
       </div>
-      <span class="text-white font-extrabold text-xl tracking-tight drop-shadow-md">PlayTime</span>
-    </a>
 
-    <!-- Middle Search Bar -->
-    <div class="yt-search">
-      <input type="text" id="search-input" placeholder="검색" onkeydown="if(event.key==='Enter')doSearch()">
-      <button class="yt-search-btn" onclick="doSearch()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      </button>
+      <!-- Right Aligned Actions (Channel Add & Login) -->
+      <div class="yt-header-actions" style="margin-left: auto;">
+        <button id="login-ui-btn" class="yt-add-btn" style="background: rgba(255,255,255,0.1); color: #fff; margin-right: 8px;" onclick="openLoginModal()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          로그인
+        </button>
+        <button class="yt-add-btn" onclick="openAddModal()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          채널 추가
+        </button>
+      </div>
+    </header>
+
+    <!-- Category Tabs -->
+    <div class="yt-cats" id="cat-tabs" style="border-bottom: none; padding-top: 4px; padding-bottom: 12px;">
+      <button class="yt-cat active" onclick="filterCat('all',this)">전체</button>
+      <button class="yt-cat" onclick="filterCat('custom',this)">내 채널</button>
+      <button class="yt-cat" onclick="filterCat('news',this)">뉴스</button>
+      <button class="yt-cat" onclick="filterCat('opinion',this)">시사</button>
+      <button class="yt-cat" onclick="filterCat('movie',this)">영화</button>
+      <button class="yt-cat" onclick="filterCat('entertainment',this)">오락/예능</button>
+      <button class="yt-cat" onclick="filterCat('music',this)">음악</button>
     </div>
-
-    <!-- Right Aligned Actions (Channel Add) -->
-    <div class="yt-header-actions" style="margin-left: auto;">
-      <button class="yt-add-btn" onclick="openAddModal()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        채널 추가
-      </button>
-    </div>
-  </header>
-
-  <!-- Category Tabs (Hidden as only custom channels are shown) -->
-  <div class="yt-cats" id="cat-tabs" style="display: none;">
-    <button class="yt-cat active" onclick="filterCat('all',this)">전체</button>
-    <button class="yt-cat" onclick="filterCat('custom',this)">내 채널</button>
-    <button class="yt-cat" onclick="filterCat('news',this)">뉴스</button>
-    <button class="yt-cat" onclick="filterCat('entertainment',this)">오락/예능</button>
-    <button class="yt-cat" onclick="filterCat('music',this)">음악</button>
   </div>
 
   <!-- Main Content -->
@@ -182,12 +257,49 @@
   <!-- Video Player Overlay -->
   <div class="yt-player-overlay" id="player-overlay">
     <div class="yt-player-header">
-      <button class="yt-close-btn" onclick="closePlayer()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-      <div class="yt-player-title" id="player-title"></div>
+      <!-- Left: Back Button & Title -->
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <button class="yt-player-btn back-btn-overlay" onclick="closePlayer()" title="이전으로">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="yt-player-title" id="player-title"></div>
+      </div>
+      
+      <!-- Right: PIP Button & Expand Button & Close Button -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Restore / Expand Button (Visible only in PIP mode) -->
+        <button class="yt-player-btn restore-btn-overlay" onclick="restoreFromPIP()" title="전체화면">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+          </svg>
+        </button>
+        
+        <!-- Open in YouTube Button -->
+        <button class="yt-player-btn" onclick="openInYouTube()" title="유튜브 웹에서 열기">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+          </svg>
+        </button>
+        
+        <!-- PIP / Mini-Player Button -->
+        <button class="yt-player-btn pip-btn-overlay" onclick="togglePIP()" title="미니 플레이어 (PIP) / 팝업">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <rect x="11" y="11" width="8" height="8" rx="1"/>
+          </svg>
+        </button>
+        
+        <!-- Close Button -->
+        <button class="yt-player-btn close-btn-overlay" onclick="closePlayer()" title="닫기">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
     </div>
-    <div class="yt-player-wrap">
+    <div class="yt-player-wrap" id="player-wrap">
       <iframe id="yt-iframe" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
     </div>
   </div>
@@ -206,24 +318,31 @@
     </div>
   </div>
 
+  <!-- Login Modal -->
+  <div class="add-modal" id="login-modal">
+    <div class="add-box">
+      <h3>YouTube 로그인 안내</h3>
+      <p>프리미엄 혜택(광고 제거) 및 연령 제한/비공개 영상 시청을 위해 유튜브 계정으로 로그인합니다.</p>
+      <p style="font-size: 11px; color: #818cf8; margin-bottom: 16px; line-height: 1.4;">
+        * 로그인 화면이 열리면 로그인을 진행해 주세요.<br>
+        * 이미 로그인이 되어 있거나, 로그인을 완료하여 유튜브 메인 화면이 보인다면 <b>열려있는 해당 새 창(또는 탭)을 닫고 원래 앱 화면으로 돌아오시면</b> 혜택이 자동 적용됩니다.
+      </p>
+      <div class="add-actions">
+        <button class="btn-cancel" onclick="closeLoginModal()">취소</button>
+        <button class="btn-add" onclick="proceedYouTubeLogin()" style="background: #3b82f6;">로그인 하러가기</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Sticky Bottom Navigation Bar (고정바) -->
   <div class="bottom-bar">
     <!-- 홈 (Home) -->
-    <button onclick="safeNavigate('home.html')">
+    <button onclick="window.location.href='index.html'">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
         <polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
       <span style="font-size:10px; font-weight:700;">홈</span>
-    </button>
-
-    <!-- 실시간 TV (Live) -->
-    <button onclick="window.location.href='index.html'">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M2 8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8Z" />
-        <path d="m9 8 6 4-6 4V8Z" />
-      </svg>
-      <span style="font-size:10px; font-weight:700;">실시간</span>
     </button>
 
     <!-- 유튜브 (YouTube) -->
@@ -233,6 +352,14 @@
         <polygon points="9.75 15.02 15.5 11.5 9.75 7.98 9.75 15.02"/>
       </svg>
       <span style="font-size:10px; font-weight:700;">유튜브</span>
+    </button>
+
+    <!-- YT Music -->
+    <button onclick="window.location.href='ytmusic.html'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/>
+      </svg>
+      <span style="font-size:10px; font-weight:700;">YT Music</span>
     </button>
 
     <!-- 즐겨찾기 (Favorites) -->
@@ -269,6 +396,6 @@
       window.location.href = targetUrl;
     }
   </script>
-  <script type="module" src="src/youtube.js"></script>
+  <script type="module" src="src/youtube.js?v=CACHE_BUST"></script>
 </body>
 </html>

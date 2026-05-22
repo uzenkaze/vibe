@@ -182,6 +182,7 @@ const videoElMob     = document.getElementById('main-video-mobile');
 const placeholder    = document.getElementById('player-placeholder');
 const placeholderMob = document.getElementById('player-placeholder-mobile');
 const loadingOverlay = document.getElementById('loading-overlay');
+const loadingOverlayMob = document.getElementById('loading-overlay-mobile');
 const nowPlayingPC   = document.getElementById('now-playing-title');
 const nowPlayingMob  = document.getElementById('now-playing-title-mobile');
 const catContainerPC = document.getElementById('category-tabs-pc');
@@ -193,11 +194,13 @@ const ytIframeMob    = document.getElementById('youtube-iframe-mobile');
 
 /* =================== UTILS =================== */
 function showLoading(show, msg = '연결 중...') {
-  if (!loadingOverlay) return;
-  const t = loadingOverlay.querySelector('span');
-  if (t) t.textContent = msg;
-  loadingOverlay.classList.toggle('hidden', !show);
-  loadingOverlay.style.display = show ? 'flex' : 'none';
+  [loadingOverlay, loadingOverlayMob].forEach(overlay => {
+    if (!overlay) return;
+    const t = overlay.querySelector('span');
+    if (t) t.textContent = msg;
+    overlay.classList.toggle('hidden', !show);
+    overlay.style.display = show ? 'flex' : 'none';
+  });
 }
 
 function updateTitle(title) {
@@ -208,10 +211,10 @@ function updateTitle(title) {
 /* =================== DYNAMIC FETCHERS =================== */
 async function fetchWithProxy(url) {
   try {
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const proxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
     const res = await fetch(proxy);
-    const data = await res.json();
-    return data.contents;
+    if (!res.ok) return null;
+    return await res.text();
   } catch(e) { return null; }
 }
 
@@ -743,7 +746,6 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   });
 
   // 유튜브 재생은 HLS URL들이 모두 실패한 뒤 tryNextUrl에서 폴백 처리됩니다.
-  target.classList.remove('hidden');
 
 
   // url(단수) 필드를 urls 배열로 정규화 (최초 1회)
@@ -773,6 +775,7 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
 
   target.onplaying = () => {
     if (playbackTimeout) clearTimeout(playbackTimeout);
+    target.classList.remove('hidden');
     showLoading(false);
   };
 
@@ -857,7 +860,6 @@ async function showYouTubeIframePlayback(ch) {
 
   const ytIframe = isPC() ? ytIframePC : ytIframeMob;
   if (ytIframe) {
-    ytIframe.classList.remove('hidden');
     
     // 1단계: 실시간 유튜브 라이브 비디오 ID 동적 분석 시도
     let liveVideoId = null;
@@ -903,7 +905,10 @@ async function showYouTubeIframePlayback(ch) {
       }
     }
 
-    showLoading(false);
+    ytIframe.onload = () => {
+      showLoading(false);
+      ytIframe.classList.remove('hidden');
+    };
     if (liveVideoId) {
       console.log(`[YouTube Live Playback] 동적 실시간 라이브 비디오 ID 획득: ${liveVideoId}`);
       ytIframe.src = `https://www.youtube-nocookie.com/embed/${liveVideoId}?autoplay=1&mute=0&rel=0`;
@@ -1504,11 +1509,12 @@ async function preloadWorkingUrls() {
     try {
       const c = new AbortController();
       const t = setTimeout(() => c.abort(), 2500);
-      const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const proxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
       const res = await fetch(proxy, { signal: c.signal });
       clearTimeout(t);
-      const data = await res.json();
-      return data && data.contents && data.contents.includes('#EXTM3U');
+      if (!res.ok) return false;
+      const text = await res.text();
+      return text && text.includes('#EXTM3U');
     } catch (e) {
       return false;
     }
@@ -1526,6 +1532,11 @@ async function preloadWorkingUrls() {
             ch.urls[0] = ch.urls[1];
             ch.urls[1] = temp;
             console.log(`[Preload] URL 순서 교체: ${ch.name}`);
+            
+            // 만약 현재 이 채널이 에러로 멈춰있다면 갱신된 URL로 재시작
+            if (activeChannelId === ch.id && currentUrlIdx === 0) {
+              playChannel(ch, 0);
+            }
           }
         });
       }
@@ -1578,5 +1589,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const initialTab = urlParams.get('tab');
   if (initialTab === 'favorites') {
     window.switchTab('favorites');
+  }
+
+  // 페이지 진입 시 첫 번째 채널 자동 재생
+  if (!activeChannelId && CHANNELS.length > 0) {
+    playChannel(CHANNELS[0]);
   }
 });

@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Plus, Trash2, StickyNote, X, RotateCcw, Trash, GripVertical,
   Pin, Star, Folder, ChevronDown, ChevronUp, FolderPlus,
@@ -97,6 +98,7 @@ export default function MemoPage() {
     addMemoFolder, removeMemoFolder, editMemoFolder
   } = useStore();
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [selectedFolderId, setSelectedFolderId] = useState<string>('all');
   const [isAdding, setIsAdding] = useState(false);
@@ -112,6 +114,22 @@ export default function MemoPage() {
 
   // Edit State
   const [selectedMemo, setSelectedMemo] = useState<Memo | null>(null);
+
+  useEffect(() => {
+    const memoId = searchParams.get('id');
+    if (memoId && data.memos) {
+      const targetMemo = data.memos.find(m => m.id === memoId);
+      if (targetMemo) {
+        setSelectedFolderId(targetMemo.folderId || 'folder_default');
+        setSelectedMemo(targetMemo);
+        // Clear param immediately to avoid popups on refresh/back-navigation
+        setSearchParams((prev) => {
+          prev.delete('id');
+          return prev;
+        }, { replace: true });
+      }
+    }
+  }, [searchParams, data.memos, setSearchParams]);
 
   const activeMemos = data.memos || [];
   const trashMemos = data.trash || [];

@@ -57,7 +57,7 @@
 
   <!-- Full Player Overlay -->
   <div class="full-player" id="full-player">
-
+    <div class="full-player-main" id="full-player-main">
     <!-- Full Player Header -->
     <div class="full-header">
       <button onclick="closeFullPlayer()" class="fp-close-btn" aria-label="닫기">
@@ -126,17 +126,25 @@
         </svg>
       </button>
     </div>
+    </div> <!-- /full-player-main -->
 
-    <!-- Bottom Tabs: 다음트랙 | 가사 | 관련항목 -->
-    <div class="full-bottom-tabs" id="full-bottom-tabs">
-      <button class="bottom-tab-btn active" id="btab-next" onclick="switchBottomTab('next')">다음 트랙</button>
-      <button class="bottom-tab-btn" id="btab-lyrics" onclick="switchBottomTab('lyrics')">가사</button>
-      <button class="bottom-tab-btn" id="btab-related" onclick="switchBottomTab('related')">관련 항목</button>
-    </div>
+    <!-- Bottom Sheet -->
+    <div class="bottom-sheet" id="bottom-sheet">
+      <div class="drag-handle-area" id="drag-handle-area">
+        <div class="drag-handle"></div>
+      </div>
+      
+      <!-- Bottom Tabs: 다음트랙 | 가사 | 관련항목 -->
+      <div class="full-bottom-tabs" id="full-bottom-tabs">
+        <button class="bottom-tab-btn active" id="btab-next" onclick="switchBottomTab('next')">다음 트랙</button>
+        <button class="bottom-tab-btn" id="btab-lyrics" onclick="switchBottomTab('lyrics')">가사</button>
+        <button class="bottom-tab-btn" id="btab-related" onclick="switchBottomTab('related')">관련 항목</button>
+      </div>
 
-    <!-- Bottom Tab Content -->
-    <div class="full-bottom-content" id="full-bottom-content">
-      <!-- dynamically filled -->
+      <!-- Bottom Tab Content -->
+      <div class="full-bottom-content" id="full-bottom-content">
+        <!-- dynamically filled -->
+      </div>
     </div>
 
   </div>

@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLoginUI();
   loadTrending();
   initProgressBar();
+  initBottomSheet();
 });
 
 /* ══════════════ LOGIN ══════════════ */
@@ -582,6 +583,77 @@ function formatTime(sec) {
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${s < 10 ? '0' + s : s}`;
+}
+
+/* ══════════════ BOTTOM SHEET INTERACTION ══════════════ */
+function initBottomSheet() {
+  const sheet = document.getElementById('bottom-sheet');
+  const handleArea = document.getElementById('drag-handle-area');
+  const tabs = document.getElementById('full-bottom-tabs');
+  if (!sheet) return;
+
+  let startY = 0;
+  let currentY = 0;
+  let isDragging = false;
+  let sheetHeight = 0;
+  const collapsedHeight = 64; // Approx height of tabs + handle
+
+  const dragTargets = [handleArea, tabs];
+
+  dragTargets.forEach(target => {
+    if (!target) return;
+    target.addEventListener('touchstart', e => {
+      // Prevent interference if scrolling content
+      if (e.target.closest('.full-bottom-content')) return;
+      
+      startY = e.touches[0].clientY;
+      sheetHeight = sheet.getBoundingClientRect().height;
+      isDragging = true;
+      sheet.classList.add('dragging');
+    });
+
+    target.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      const deltaY = e.touches[0].clientY - startY;
+      
+      const isExpanded = sheet.classList.contains('expanded');
+      const maxTranslate = sheetHeight - collapsedHeight;
+      let newTranslateY = 0;
+
+      if (isExpanded) {
+        newTranslateY = Math.max(0, deltaY); // drag down
+      } else {
+        newTranslateY = Math.max(0, maxTranslate + deltaY); // drag up (deltaY is negative)
+      }
+
+      newTranslateY = Math.min(Math.max(0, newTranslateY), maxTranslate);
+      sheet.style.transform = `translateY(${newTranslateY}px)`;
+    });
+
+    target.addEventListener('touchend', e => {
+      if (!isDragging) return;
+      isDragging = false;
+      sheet.classList.remove('dragging');
+      
+      const currentTranslateY = parseFloat(sheet.style.transform.replace('translateY(', '').replace('px)', '')) || 0;
+      const maxTranslate = sheetHeight - collapsedHeight;
+      const threshold = maxTranslate * 0.25; // 25% to trigger state change
+
+      if (sheet.classList.contains('expanded')) {
+        if (currentTranslateY > threshold) sheet.classList.remove('expanded');
+      } else {
+        if (currentTranslateY < maxTranslate - threshold) sheet.classList.add('expanded');
+      }
+      sheet.style.transform = ''; // Clear inline style
+    });
+  });
+
+  // Tap handle area to toggle
+  if (handleArea) {
+    handleArea.addEventListener('click', () => {
+      sheet.classList.toggle('expanded');
+    });
+  }
 }
 
 /* ══════════════ PLAYLIST DRAWER ══════════════ */

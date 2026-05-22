@@ -1,5 +1,9 @@
 {
 	"appId": "com.example.livetv",
 	"appName": "Live TV",
-	"webDir": "dist"
+	"webDir": "dist",
+	"server": {
+		"url": "https://uzenkaze.github.io/vibe/livetv/",
+		"cleartext": true
+	}
 }

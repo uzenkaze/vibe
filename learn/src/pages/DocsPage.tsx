@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Search, BookOpen, SlidersHorizontal, X, FolderOpen } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import ArticleCard from '../components/ArticleCard';
+import ArticleEditor from '../components/ArticleEditor';
 
 export default function DocsPage() {
   const { data } = useStore();
@@ -11,6 +12,7 @@ export default function DocsPage() {
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'latest' | 'oldest' | 'title'>('latest');
   const [showFilters, setShowFilters] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
 
   // All unique tags
   const allTags = useMemo(() => {
@@ -84,18 +86,34 @@ export default function DocsPage() {
             </div>
           </div>
 
-          {/* Filter toggle button */}
-          <button
-            onClick={() => setShowFilters(v => !v)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all"
-            style={showFilters
-              ? { background: 'rgba(255,255,255,0.3)', color: '#ffffff', backdropFilter: 'blur(6px)' }
-              : { background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(6px)' }
-            }
-          >
-            <SlidersHorizontal size={15} />
-            필터 / 정렬
-          </button>
+          {/* Action Button Group */}
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setShowEditor(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                color: '#0891b2',
+                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <span>✏️</span>
+              새 아티클
+            </button>
+
+            {/* Filter toggle button */}
+            <button
+              onClick={() => setShowFilters(v => !v)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all"
+              style={showFilters
+                ? { background: 'rgba(255,255,255,0.3)', color: '#ffffff', backdropFilter: 'blur(6px)' }
+                : { background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(6px)' }
+              }
+            >
+              <SlidersHorizontal size={15} />
+              필터 / 정렬
+            </button>
+          </div>
         </div>
       </div>
 
@@ -199,6 +217,12 @@ export default function DocsPage() {
           ))}
         </div>
       )}
+
+      {/* Article Editor Modal */}
+      <ArticleEditor
+        isOpen={showEditor}
+        onClose={() => setShowEditor(false)}
+      />
     </div>
   );
 }

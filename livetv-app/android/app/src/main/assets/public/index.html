@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <!-- 강력한 모바일 브라우저 캐시 무효화 (Cache-Busting) 적용 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
@@ -39,6 +39,15 @@
       background: rgba(12, 12, 18, 0.8);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+      height: calc(4rem + env(safe-area-inset-top)) !important;
+    }
+
+    @media (max-width: 1023px) {
+      .glass-nav {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 28px) !important;
+        height: calc(4.5rem + env(safe-area-inset-top)) !important;
+      }
     }
 
     /* 모바일 플레이어 영역 고정 스타일 */
@@ -111,19 +120,8 @@
         <span class="text-white font-extrabold text-xl tracking-tight drop-shadow-md">PlayTime</span>
       </a>
 
-      <!-- Status Bar Area (Clock & Battery) -->
+      <!-- Status Bar Area (Clock & Battery) 완전히 빈 태그로 비워둠 -->
       <div class="flex items-center gap-4">
-        <!-- Time (24h) -->
-        <span id="status-time" class="text-sm font-bold text-white tracking-wider bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 backdrop-blur-md">13:20</span>
-
-        <!-- Battery Status Capsule -->
-        <div class="lg:hidden flex items-center gap-2 bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg backdrop-blur-md">
-          <span id="battery-text" class="text-[11px] font-bold text-gray-400">88%</span>
-          <div class="relative w-6 h-3.5 border border-white/40 rounded-sm p-[2px] flex items-center">
-            <div id="battery-bar" class="bg-emerald-400 h-full rounded-[1px] transition-all duration-500" style="width: 88%;"></div>
-            <div class="absolute -right-[3px] top-[4px] w-[2px] h-[4px] bg-white/40 rounded-r-[1px]"></div>
-          </div>
-        </div>
       </div>
     </header>
 

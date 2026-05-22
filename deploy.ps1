@@ -14,11 +14,16 @@ New-Item -ItemType Directory -Path $deployDir | Out-Null
 
 # 2. 'learn' 프로젝트 빌드
 Write-Host "> 'learn' 프로젝트 빌드 중..." -ForegroundColor Yellow
-Set-Location learn
-npm.cmd run build
-# 빌드 결과물에서 불필요한 .git 폴더 제거 (GitHub Pages 간섭 방지)
-if (Test-Path "dist/.git") { Remove-Item -Recurse -Force "dist/.git" }
-Set-Location ..
+try {
+    Set-Location learn
+    npm.cmd run build
+    # 빌드 결과물에서 불필요한 .git 폴더 제거 (GitHub Pages 간섭 방지)
+    if (Test-Path "dist/.git") { Remove-Item -Recurse -Force "dist/.git" }
+    Set-Location ..
+} catch {
+    Write-Host "> 'learn' 프로젝트 빌드 실패 (기존 dist 복사 시도)" -ForegroundColor Red
+    Set-Location ..
+}
 
 # 3. 'learn' 빌드 결과물 복사
 Write-Host "> 'learn' 빌드 결과물 복사 중..."
@@ -26,11 +31,8 @@ if (Test-Path "$deployDir/learn") { Remove-Item -Recurse -Force "$deployDir/lear
 New-Item -ItemType Directory -Path "$deployDir/learn" | Out-Null
 Copy-Item -Path "learn/dist/*" -Destination "$deployDir/learn" -Recurse -Force
 
-# 3-2. 'livetv-app' 프로젝트 빌드
-Write-Host "> 'livetv-app' 프로젝트 빌드 중..." -ForegroundColor Yellow
-Set-Location livetv-app
-npm.cmd run build
-Set-Location ..
+# 3-2. 'livetv-app' 프로젝트 빌드 (건너뛰고 정적 직접 복사 방식 사용)
+Write-Host "> 'livetv-app' 프로젝트 빌드는 건너뜁니다 (정적 소스 직접 복사)" -ForegroundColor Yellow
 
 
 # 4. 기타 정적 폴더 복사 (Asset, task, hobby 등)
@@ -49,17 +51,27 @@ foreach ($folder in $staticFolders) {
             # 레거시 하이브리드 앱과의 완벽한 주소 호환을 위해 hobby 폴더에도 동시에 물리 복사하여 배포
             New-Item -ItemType Directory -Path "$deployDir/hobby" -Force | Out-Null
             Copy-Item -Path "$folder/www/*" -Destination "$deployDir/hobby" -Recurse -Force
-        } elseif ($folder -eq "vibe-hybrid-app" -or $folder -eq "livetv-app") {
+        } elseif ($folder -eq "livetv-app") {
+            # livetv-app은 빌드(dist)를 타지 않고 원본 정적 파일을 직접 복사하여 배포
+            Write-Host "> livetv-app 원본 정적 소스 직접 복사 중..." -ForegroundColor Cyan
+            New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
+            Copy-Item -Path "$folder/index.html" -Destination "$deployDir/$targetFolder/"
+            
+            # youtube.html 복사 후 캐시 버스터 실시간 주입 (모바일 웹뷰 캐싱 철저 방어)
+            $timestamp = Get-Date -Format "yyyyMMddHHmmss"
+            $ytHtmlPath = "$deployDir/$targetFolder/youtube.html"
+            Copy-Item -Path "$folder/youtube.html" -Destination $ytHtmlPath
+            (Get-Content -Path $ytHtmlPath) -replace "CACHE_BUST", $timestamp | Set-Content -Path $ytHtmlPath
+            Write-Host "> youtube.html 복사 완료 및 실시간 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
+
+            Copy-Item -Path "$folder/favicon.png" -Destination "$deployDir/$targetFolder/"
+            New-Item -ItemType Directory -Path "$deployDir/$targetFolder/src" -Force | Out-Null
+            Copy-Item -Path "$folder/src/*" -Destination "$deployDir/$targetFolder/src/" -Recurse -Force
+        } elseif ($folder -eq "vibe-hybrid-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {
                 New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
                 Copy-Item -Path "$folder/dist/*" -Destination "$deployDir/$targetFolder" -Recurse
-                # livetv-app인 경우, 빌드 dist에 빠진 youtube.html과 src/youtube.js를 직접 복사
-                if ($folder -eq "livetv-app") {
-                    Copy-Item -Path "$folder/youtube.html" -Destination "$deployDir/$targetFolder/"
-                    New-Item -ItemType Directory -Path "$deployDir/$targetFolder/src" -Force | Out-Null
-                    Copy-Item -Path "$folder/src/youtube.js" -Destination "$deployDir/$targetFolder/src/"
-                }
             } else {
                 # dist가 없으면 node_modules를 제외하고 복사
                 New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null

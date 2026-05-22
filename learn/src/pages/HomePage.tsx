@@ -6,6 +6,7 @@ import { getRecentArticles } from '../services/storage';
 import CategoryCard from '../components/CategoryCard';
 import ArticleCard from '../components/ArticleCard';
 import CategoryModal from '../components/CategoryModal';
+import ArticleEditor from '../components/ArticleEditor';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function HomePage() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const { data, addCategory, reorderCategories } = useStore();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showArticleEditor, setShowArticleEditor] = useState(false);
   const recentArticles = getRecentArticles(data, 6);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
@@ -132,6 +134,17 @@ export default function HomePage() {
               }}
             >
               <Plus size={16} /> New Category
+            </button>
+            <button
+              onClick={() => setShowArticleEditor(true)}
+              className="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold hover:scale-105 transition-all w-full sm:w-auto justify-center"
+              style={{
+                background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                color: '#fff',
+                boxShadow: '0 8px 24px rgba(6,182,212,0.4)',
+              }}
+            >
+              <span>✏️</span> New Article
             </button>
             <button
               onClick={() => navigate('/docs')}
@@ -401,9 +414,23 @@ export default function HomePage() {
       {/* Recent Articles */}
       {recentArticles.length > 0 && (
         <section id="articles-section" className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-          <div className="flex items-center gap-3 mb-6 px-4 sm:px-0">
-            <BookOpen size={16} className="text-accent-cyan" />
-            <h2 className="text-lg font-bold text-text-primary">최근 아티클</h2>
+          <div className="flex items-center justify-between mb-6 px-4 sm:px-0">
+            <div className="flex items-center gap-3">
+              <BookOpen size={16} className="text-accent-cyan" />
+              <h2 className="text-lg font-bold text-text-primary">최근 아티클</h2>
+            </div>
+            <button
+              onClick={() => setShowArticleEditor(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, #ede9fe, #e0f2fe)',
+                color: '#7c3aed',
+                border: '1px solid rgba(139,92,246,0.15)',
+              }}
+            >
+              <Plus size={13} />
+              새 아티클
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children px-4 sm:px-0">
@@ -683,6 +710,12 @@ export default function HomePage() {
         isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         onSave={addCategory}
+      />
+
+      {/* Article Editor Modal */}
+      <ArticleEditor
+        isOpen={showArticleEditor}
+        onClose={() => setShowArticleEditor(false)}
       />
     </div>
   );

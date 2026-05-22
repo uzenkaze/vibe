@@ -120,16 +120,27 @@ export function renderMarkdown(markdown: string): string {
   const lines = markdown.split('\n');
   const html: string[] = [];
   let inCodeBlock = false;
+  let inHtmlPre = false;
   let codeContent: string[] = [];
   let currentLinkGroup: string[] = [];
   let inList = false;
   let listType: 'ul' | 'ol' = 'ul';
+  let currentParagraph: string[] = [];
+  let emptyLineCount = 0;
 
   function closeList() {
     if (inList) {
       html.push(`</${listType}>`);
       inList = false;
     }
+  }
+
+  function flushParagraph() {
+    if (currentParagraph.length > 0) {
+      html.push(`<p>${currentParagraph.join('<br />')}</p>`);
+      currentParagraph = [];
+    }
+    emptyLineCount = 0;
   }
 
   function flushLinkGroup() {
@@ -148,9 +159,30 @@ export function renderMarkdown(markdown: string): string {
     const stripped = line.replace(/<[^>]+>/g, '').trim();
     const mdLinkMatch = line.trim().match(/^\[([^\]]*)\]\((https?:\/\/[^\s]+)\)$/);
 
+    const hasPreStart = /<pre\b/i.test(line);
+    const hasPreEnd = /<\/pre>/i.test(line);
+
+    if (inHtmlPre) {
+      html.push(parseInline(line));
+      if (hasPreEnd) {
+        inHtmlPre = false;
+      }
+      continue;
+    }
+
+    if (hasPreStart && !hasPreEnd) {
+      inHtmlPre = true;
+      flushLinkGroup();
+      closeList();
+      flushParagraph();
+      html.push(parseInline(line));
+      continue;
+    }
+
     // Code block
     if (line.trimStart().startsWith('```')) {
       flushLinkGroup();
+      flushParagraph();
       if (inCodeBlock) {
         // ── 코드 블록 닫힘 ──
         const raw = codeContent.slice(1);           // __LANG__ 마커 제외
@@ -181,7 +213,20 @@ export function renderMarkdown(markdown: string): string {
     if (/<iframe/i.test(line)) {
       flushLinkGroup();
       closeList();
+      flushParagraph();
       html.push(makeIframeResponsive(line));
+      continue;
+    }
+
+    // 0-1. 블록 HTML 태그가 포함된 줄 → 인라인 파싱만 수행하고 단락(<p>) 감싸기 건너뜀
+    const htmlBlockRegex = /^\s*<\/?(table|tr|td|th|thead|tbody|tfoot|details|summary|div|p|ul|ol|li|pre|code|blockquote|h[1-6]|hr|img|a|input|br|em|strong|iframe|section|article|header|footer)\b/i;
+    const isMdBlock = /^(#{1,6}\s+|>\s+|[-*+]\s+|\d+\.\s+|(-{3,}|\*{3,}|_{3,})$)/.test(line.trim());
+
+    if (htmlBlockRegex.test(line) && !isMdBlock) {
+      flushLinkGroup();
+      closeList();
+      flushParagraph();
+      html.push(parseInline(line));
       continue;
     }
 
@@ -198,6 +243,7 @@ export function renderMarkdown(markdown: string): string {
       }
       
       closeList();
+      flushParagraph();
       currentLinkGroup.push(getPreviewHtml(url));
       continue;
     }
@@ -209,6 +255,7 @@ export function renderMarkdown(markdown: string): string {
     const headingMatch = line.match(/^(#{1,6})\s+(.+)/);
     if (headingMatch) {
       closeList();
+      flushParagraph();
       const level = headingMatch[1].length;
       html.push(`<h${level}>${parseInline(headingMatch[2])}</h${level}>`);
       continue;
@@ -217,16 +264,19 @@ export function renderMarkdown(markdown: string): string {
     // HR (Solid, Dashed, Dotted)
     if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
       closeList();
+      flushParagraph();
       html.push('<hr />');
       continue;
     }
     if (/^-{3,}\.$/.test(line.trim())) {
       closeList();
+      flushParagraph();
       html.push('<hr class="dashed" />');
       continue;
     }
     if (/^-{3,}\*$/.test(line.trim())) {
       closeList();
+      flushParagraph();
       html.push('<hr class="dotted" />');
       continue;
     }
@@ -234,6 +284,7 @@ export function renderMarkdown(markdown: string): string {
     // Blockquote
     if (line.trimStart().startsWith('> ')) {
       closeList();
+      flushParagraph();
       html.push(`<blockquote><p>${parseInline(line.replace(/^>\s*/, ''))}</p></blockquote>`);
       continue;
     }
@@ -243,6 +294,7 @@ export function renderMarkdown(markdown: string): string {
     if (ulMatch) {
       if (!inList || listType !== 'ul') {
         closeList();
+        flushParagraph();
         html.push('<ul>');
         inList = true;
         listType = 'ul';
@@ -256,6 +308,7 @@ export function renderMarkdown(markdown: string): string {
     if (olMatch) {
       if (!inList || listType !== 'ol') {
         closeList();
+        flushParagraph();
         html.push('<ol>');
         inList = true;
         listType = 'ol';
@@ -269,15 +322,25 @@ export function renderMarkdown(markdown: string): string {
 
     // Empty line
     if (line.trim() === '') {
+      emptyLineCount++;
       continue;
     }
 
+    // Process accumulated empty lines
+    if (emptyLineCount > 0) {
+      if (emptyLineCount >= 2) {
+        flushParagraph();
+      }
+      emptyLineCount = 0;
+    }
+
     // Paragraph
-    html.push(`<p>${parseInline(line)}</p>`);
+    currentParagraph.push(parseInline(line));
   }
 
   // Close any open blocks
   flushLinkGroup();
+  flushParagraph();
   if (inCodeBlock) {
     const raw = codeContent.slice(1); // skip __LANG__ marker
     const lang = (codeContent[0] || '').replace('__LANG__', '') || 'code';
@@ -338,9 +401,12 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
       // 이미 버튼 주입됐으면 skip
       if (pre.querySelector('.code-fullscreen-btn')) return;
 
-      // overflow 스타일 강제 적용
+      // overflow 및 반응형 스타일 강제 적용
       pre.style.overflow = 'hidden';
       pre.style.position = 'relative';
+      pre.style.maxWidth = '100%';
+      pre.style.width = '100%';
+      pre.style.boxSizing = 'border-box';
 
       const code = pre.querySelector('code');
       if (code) {

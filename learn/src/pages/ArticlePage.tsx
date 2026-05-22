@@ -45,6 +45,15 @@ export default function ArticlePage() {
   const { data, removeArticle, editArticle } = useStore();
   const [showEditor, setShowEditor] = useState(false);
   const [fabHovered, setFabHovered] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+
+  const handleSaveTitle = () => {
+    if (article && editedTitle.trim() && editedTitle.trim() !== article.title) {
+      editArticle(article.id, { title: editedTitle.trim() });
+    }
+    setIsEditingTitle(false);
+  };
 
   const article = id ? getArticleById(data, id) : undefined;
   const category = article ? getCategoryById(data, article.categoryId) : undefined;
@@ -69,12 +78,23 @@ export default function ArticlePage() {
 
   const togglePin = () => editArticle(article.id, { isPinned: !article.isPinned });
 
-  // Hero color: article color → category color → default indigo
-  const heroColor = article.color || category?.color || '#6366f1';
+  // Hero color: category color → default indigo
+  const heroColor = category?.color || '#6366f1';
   const textMode = getTextColor(heroColor);
   const isLight = textMode === 'dark';
   const textPrimary = isLight ? '#111827' : '#ffffff';
   const textMuted = isLight ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.72)';
+
+  // Content background color
+  const contentBgColor = article.color || 'var(--color-bg-elevated)';
+  const isContentBgLight = contentBgColor.startsWith('#') ? getTextColor(contentBgColor) === 'dark' : false;
+  const contentOverrideStyles = contentBgColor.startsWith('#') ? {
+    background: contentBgColor,
+    '--color-text-primary': isContentBgLight ? '#111827' : '#ffffff',
+    '--color-text-secondary': isContentBgLight ? '#374151' : '#e5e7eb',
+    '--color-text-muted': isContentBgLight ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.7)',
+    '--color-border': isContentBgLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)',
+  } as React.CSSProperties : {};
 
   return (
     <div className="py-6 sm:py-8 w-full space-y-6 sm:space-y-8 overflow-hidden px-4 sm:px-0">
@@ -125,12 +145,44 @@ export default function ArticlePage() {
           </div>
 
           {/* Title */}
-          <h1
-            className="text-2xl sm:text-3xl font-black leading-tight tracking-tight mb-4"
-            style={{ color: textPrimary, textShadow: '0 2px 12px rgba(0,0,0,0.15)' }}
-          >
-            {article.title}
-          </h1>
+          {isEditingTitle ? (
+            <div className="mb-4">
+              <input
+                autoFocus
+                type="text"
+                value={editedTitle}
+                onChange={e => setEditedTitle(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleSaveTitle();
+                  else if (e.key === 'Escape') setIsEditingTitle(false);
+                }}
+                onBlur={handleSaveTitle}
+                className="w-full bg-white/10 border-b-2 border-white/40 focus:border-white outline-none py-1 px-2 rounded-xl font-black text-2xl sm:text-3xl transition-all"
+                style={{ color: textPrimary }}
+              />
+            </div>
+          ) : (
+            <div 
+              onClick={() => {
+                setEditedTitle(article.title);
+                setIsEditingTitle(true);
+              }}
+              className="group flex items-center gap-3 cursor-pointer mb-4 select-none max-w-fit"
+            >
+              <h1
+                className="text-2xl sm:text-3xl font-black leading-tight tracking-tight group-hover:opacity-90 transition-all"
+                style={{ color: textPrimary, textShadow: '0 2px 12px rgba(0,0,0,0.15)' }}
+              >
+                {article.title}
+              </h1>
+              <div 
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center flex-shrink-0"
+                title="제목 수정"
+              >
+                <Edit3 size={14} style={{ color: textPrimary }} />
+              </div>
+            </div>
+          )}
 
           {/* Meta row */}
           <div className="flex items-center gap-4 flex-wrap">
@@ -151,13 +203,17 @@ export default function ArticlePage() {
       {/* ── Content ── */}
       <div
         className="animate-slide-up rounded-3xl border border-border p-5 sm:p-10"
-        style={{ background: 'var(--color-bg-elevated)', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}
+        style={{ 
+          background: 'var(--color-bg-elevated)', 
+          boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
+          ...contentOverrideStyles
+        }}
       >
         {article.content ? (
           <MarkdownRenderer content={article.content} />
         ) : (
           <div className="text-center py-12">
-            <p className="text-text-muted text-sm italic">내용이 없습니다.</p>
+            <p className="text-text-muted text-sm italic" style={{ color: 'var(--color-text-muted)' }}>내용이 없습니다.</p>
             <button
               onClick={() => setShowEditor(true)}
               className="mt-3 px-5 py-2.5 rounded-2xl text-sm font-bold text-white transition-all"

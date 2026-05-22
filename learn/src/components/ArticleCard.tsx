@@ -23,6 +23,13 @@ function darken(hex: string, amount = 0.2): string {
   return '#' + m.map(v => Math.max(0, Math.round(parseInt(v, 16) * (1 - amount))).toString(16).padStart(2, '0')).join('');
 }
 
+function getTextColor(hex: string): 'white' | 'dark' {
+  const m = hex.replace('#', '').match(/.{2}/g);
+  if (!m) return 'white';
+  const [r, g, b] = m.map(v => parseInt(v, 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 ? 'dark' : 'white';
+}
+
 function getTimeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
@@ -45,6 +52,12 @@ export default function ArticleCard({ article, showCategory = false }: ArticleCa
   const category = data.categories.find(c => c.id === article.categoryId);
 
   const cardColor = article.color || category?.color || '#6366f1';
+  const isLight = cardColor.startsWith('#') ? getTextColor(cardColor) === 'dark' : false;
+  const textColor = isLight ? '#111827' : '#ffffff';
+  const textMutedColor = isLight ? 'rgba(17, 24, 39, 0.72)' : 'rgba(255, 255, 255, 0.75)';
+  const textSubtleColor = isLight ? 'rgba(17, 24, 39, 0.55)' : 'rgba(255, 255, 255, 0.6)';
+  const badgeBg = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.2)';
+  const tagBg = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.18)';
 
   const preview = article.content
     .replace(/<[^>]+>/g, '')
@@ -97,17 +110,17 @@ export default function ArticleCard({ article, showCategory = false }: ArticleCa
           <div className="flex items-start justify-between mb-3 gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               {article.isPinned && (
-                <Pin size={12} className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.8)' }} />
+                <Pin size={12} className="flex-shrink-0" style={{ color: textMutedColor }} />
               )}
               <h3
                 className="text-sm font-black leading-snug tracking-tight line-clamp-2"
-                style={{ color: '#ffffff' }}
+                style={{ color: textColor }}
               >
                 {article.title}
               </h3>
             </div>
             {article.references.length > 0 && (
-              <ExternalLink size={12} className="flex-shrink-0 mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }} />
+              <ExternalLink size={12} className="flex-shrink-0 mt-0.5" style={{ color: textSubtleColor }} />
             )}
           </div>
 
@@ -115,7 +128,7 @@ export default function ArticleCard({ article, showCategory = false }: ArticleCa
           {preview && (
             <p
               className="text-xs leading-relaxed line-clamp-2 mb-4"
-              style={{ color: 'rgba(255,255,255,0.75)' }}
+              style={{ color: textMutedColor }}
             >
               {preview}
             </p>
@@ -128,7 +141,7 @@ export default function ArticleCard({ article, showCategory = false }: ArticleCa
               {showCategory && category && (
                 <span
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                  style={{ background: 'rgba(255,255,255,0.2)', color: '#ffffff' }}
+                  style={{ background: badgeBg, color: textColor }}
                 >
                   {category.icon} {category.name}
                 </span>
@@ -139,7 +152,7 @@ export default function ArticleCard({ article, showCategory = false }: ArticleCa
                 <span
                   key={tag}
                   className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                  style={{ background: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.9)' }}
+                  style={{ background: tagBg, color: textMutedColor }}
                 >
                   #{tag}
                 </span>
@@ -148,10 +161,10 @@ export default function ArticleCard({ article, showCategory = false }: ArticleCa
 
             {/* Time */}
             <div className="flex items-center gap-1 flex-shrink-0">
-              <Clock size={10} style={{ color: 'rgba(255,255,255,0.5)' }} />
+              <Clock size={10} style={{ color: textSubtleColor }} />
               <span
                 className="text-[10px] font-medium"
-                style={{ color: 'rgba(255,255,255,0.6)' }}
+                style={{ color: textMutedColor }}
               >
                 {getTimeAgo(article.updatedAt)}
               </span>

@@ -144,29 +144,65 @@ export type SearchResult =
   | { type: 'category', data: Category }
   | { type: 'memo', data: Memo };
 
+// 한-영 동적 키워드 사전 정의
+const BILINGUAL_MAP: Record<string, string> = {
+  '디자인': 'design',
+  'design': '디자인',
+  '개발': 'dev',
+  'dev': '개발',
+  'development': '개발',
+  '코딩': 'code',
+  'code': '코딩',
+  '마인드맵': 'mind',
+  'mind': '마인드맵',
+  '메모': 'memo',
+  'memo': '메모',
+};
+
 export function globalSearch(data: AppData, query: string): SearchResult[] {
   const q = query.toLowerCase().trim();
   if (!q) return [];
   
+  // 연관 영문/한글 매핑 키워드 획득
+  const mappedKeywords = Object.entries(BILINGUAL_MAP)
+    .filter(([key]) => key.includes(q) || q.includes(key))
+    .map(([, val]) => val);
+
+  const isMatched = (text: string) => {
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes(q)) return true;
+    return mappedKeywords.some(kw => lowerText.includes(kw));
+  };
+  
   const results: SearchResult[] = [];
   
-  // Search Articles
-  data.articles.forEach(a => {
-    if (a.title.toLowerCase().includes(q) || a.content.toLowerCase().includes(q)) {
-      results.push({ type: 'article', data: a });
+  // Search Categories first (so we can associate articles later)
+  const matchedCategoryIds = new Set<string>();
+  data.categories.forEach(c => {
+    if (isMatched(c.name) || isMatched(c.description || '')) {
+      results.push({ type: 'category', data: c });
+      matchedCategoryIds.add(c.id);
     }
   });
-  
-  // Search Categories
-  data.categories.forEach(c => {
-    if (c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)) {
-      results.push({ type: 'category', data: c });
+
+  // Search Articles
+  data.articles.forEach(a => {
+    // 제목, 내용 매칭 검사
+    const contentMatch = isMatched(a.title) || isMatched(a.content);
+    // 아티클의 카테고리가 이미 매칭되었거나, 카테고리명 자체가 매칭되는지 검사
+    const categoryMatch = matchedCategoryIds.has(a.categoryId) || (() => {
+      const cat = data.categories.find(c => c.id === a.categoryId);
+      return cat ? isMatched(cat.name) : false;
+    })();
+
+    if (contentMatch || categoryMatch) {
+      results.push({ type: 'article', data: a });
     }
   });
   
   // Search Memos
   data.memos.forEach(m => {
-    if ((m.title?.toLowerCase().includes(q)) || m.content.toLowerCase().includes(q)) {
+    if (isMatched(m.title || '') || isMatched(m.content)) {
       results.push({ type: 'memo', data: m });
     }
   });

@@ -269,6 +269,16 @@ body {
 }
 .full-player.open { transform: translateY(0); }
 
+.full-player-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 64px; /* Space for collapsed tabs */
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.full-player-main::-webkit-scrollbar { display: none; }
+
 /* Header */
 .full-header {
   display: flex;
@@ -473,10 +483,47 @@ body {
 .play-circle-btn:hover { transform: scale(1.05); }
 .play-circle-btn svg { fill: #000; }
 
-/* Bottom Tabs */
+/* Bottom Sheet & Tabs */
+.bottom-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% - 70px);
+  background: #1c1c1e;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  z-index: 220;
+  transform: translateY(calc(100% - 64px));
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
+}
+.bottom-sheet.expanded {
+  transform: translateY(0);
+}
+.bottom-sheet.dragging {
+  transition: none;
+}
+.drag-handle-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+  touch-action: none;
+}
+.drag-handle {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
 .full-bottom-tabs {
   display: flex;
-  border-top: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
 .bottom-tab-btn {
