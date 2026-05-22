@@ -9,7 +9,10 @@ body {
   background-color: #030303;
   color: #fff;
   font-family: 'Roboto', sans-serif;
+  height: auto;
+  min-height: 100dvh;
   overflow-x: hidden;
+  overflow-y: auto;
   padding-top: 60px;
   padding-bottom: 140px;
 }
