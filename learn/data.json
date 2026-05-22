@@ -152,13 +152,13 @@
     {
       "categoryId": "cat_mpbwd2m7_a1att",
       "title": "IntelliJ 설정",
-      "content": "== VM 옵션\n\n-Xms2048m\n-Xmx8192m\n-XX:MetaspaceSize=256m \n-XX:MaxMetaspaceSize=512m\n-XX:+AlwaysPreTouch\n-XX:SoftRefLRUPolicyMSPerMB=50\n-XX:+UseCodeCacheFlushing\n-XX:CICompilerCount=4\n-XX:+UseG1GC\n-XX:+UseStringDeduplication\n-Dsun.io.useCanonCaches=false\n\n---\n\n== Minjun\n-server\n-Xms4096m\n-Xmx8192m\n-XX:MetaspaceSize=512m\n-XX:MaxMetaspaceSize=1024m\n-XX:NewRatio=3\n-Xss2m\n-XX:+AlwaysPreTouch\n-XX:+TieredCompilation\n-XX:SoftRefLRUPolicyMSPerMB=50\n-XX:ReservedCodeCacheSize=512m\n-XX:+UseCodeCacheFlushing\n-Dsun.io.useCanonCaches=false\n-ea\n-Djava.net.preferIPv4Stack=true\n-Dfile.encoding=UTF-8\n-XX:+UseG1GC\n-XX:MaxGCPauseMillis=200\n-XX:ParallelGCThreads=4\n-XX:ConcGCThreads=2\n-XX:+HeapDumpOnOutOfMemoryError",
+      "content": "# 사용자지정 VM 옵션 #\n\n== 25.3.5 버전에서 정상 작동함(AI로 최적화)\n\n-Xms2048m\n-Xmx8192m\n-XX:MetaspaceSize=256m \n-XX:MaxMetaspaceSize=512m\n-XX:+AlwaysPreTouch\n-XX:SoftRefLRUPolicyMSPerMB=50\n-XX:+UseCodeCacheFlushing\n-XX:CICompilerCount=4\n-XX:+UseG1GC\n-XX:+UseStringDeduplication\n-Dsun.io.useCanonCaches=false\n\n---\n\n== Minjun\n-server\n-Xms4096m\n-Xmx8192m\n-XX:MetaspaceSize=512m\n-XX:MaxMetaspaceSize=1024m\n-XX:NewRatio=3\n-Xss2m\n-XX:+AlwaysPreTouch\n-XX:+TieredCompilation\n-XX:SoftRefLRUPolicyMSPerMB=50\n-XX:ReservedCodeCacheSize=512m\n-XX:+UseCodeCacheFlushing\n-Dsun.io.useCanonCaches=false\n-ea\n-Djava.net.preferIPv4Stack=true\n-Dfile.encoding=UTF-8\n-XX:+UseG1GC\n-XX:MaxGCPauseMillis=200\n-XX:ParallelGCThreads=4\n-XX:ConcGCThreads=2\n-XX:+HeapDumpOnOutOfMemoryError",
       "references": [],
       "tags": [],
       "isPinned": false,
       "id": "art_mpbwu2gi_oio0p",
       "createdAt": "2026-05-19T00:44:07.026Z",
-      "updatedAt": "2026-05-22T00:41:21.514Z"
+      "updatedAt": "2026-05-22T00:43:58.854Z"
     },
     {
       "categoryId": "cat_mow9cwul_5q7uw",
