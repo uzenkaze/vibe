@@ -1,9 +1,9 @@
 {
-	"appId": "com.example.livetv",
-	"appName": "Live TV",
+	"appId": "com.playtime.livetv",
+	"appName": "PlayTime",
 	"webDir": "dist",
-	"server": {
-		"url": "https://uzenkaze.github.io/vibe/livetv/",
-		"cleartext": true
+	"android": {
+		"allowMixedContent": true,
+		"backgroundColor": "#000000"
 	}
 }

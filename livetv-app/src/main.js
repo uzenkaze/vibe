@@ -147,8 +147,15 @@ let activeCategoryFilter = null;
 let playbackTimeout = null;
 let currentUrlIdx = 0;
 let isYouTubeMode = false;
-let lastIsPC = window.innerWidth >= 1024;
-const isPC = () => window.innerWidth >= 1024;
+
+// TV/빔프로젝터 환경 감지 (index.html의 인라인 스크립트가 먼저 실행됨)
+// window.__IS_TV__: TV 환경 감지 플래그 (HTML 파싱 전에 설정됨)
+const IS_TV_ENV = window.__IS_TV__ === true || document.documentElement.classList.contains('tv-mode');
+
+// PC 레이아웃 감지: TV 환경이거나 뷰포트 너비 1024px 이상
+let lastIsPC = IS_TV_ENV || window.innerWidth >= 1024;
+const isPC = () => IS_TV_ENV || window.innerWidth >= 1024;
+
 
 // 즐겨찾기 상태 및 기능 정의
 let favorites = JSON.parse(localStorage.getItem('vibe_tv_favorites') || '[]');
@@ -699,6 +706,9 @@ function getNetName(ch) {
 
 /* =================== PLAYBACK ENGINE =================== */
 async function playChannel(ch, urlIdx = 0, startTime = 0) {
+  if (typeof isWebPiPActive !== 'undefined' && isWebPiPActive) {
+    disableWebPiP(!isPC());
+  }
   activeChannelId = ch.id;
   currentUrlIdx = urlIdx;
   isYouTubeMode = false;
@@ -1109,8 +1119,8 @@ function updateQualitySelector(isPCPlatform) {
     }
   }
 
-  // 4. 선택 가능한 화질 종류가 아예 없는 경우에만 버튼 숨김
-  if (uniqueLevels.length === 0) {
+  // 4. 선택 가능한 화질 종류가 1개 이하인 경우 (선택의 여지가 없는 경우) 버튼 숨김
+  if (uniqueLevels.length <= 1) {
     if (wrapper) wrapper.style.display = 'none';
     label.textContent = 'Auto';
     return;
@@ -1296,6 +1306,129 @@ async function toggleWebpagePiP(container, video, isMobile) {
   }
 }
 
+// Web-PiP 팝업 플레이 상태 변수
+let isWebPiPActive = false;
+let webPiPContainer = null;
+let webPiPPlaceholder = null;
+let webPiPOriginalStyles = {};
+
+// 인앱 팝업 플레이(Web-PiP) 활성화 함수
+function enableWebPiP(video, container, isMobile) {
+  if (isWebPiPActive) {
+    disableWebPiP(isMobile);
+    return;
+  }
+
+  isWebPiPActive = true;
+  webPiPContainer = container;
+
+  // 1. 플레이스홀더 생성 및 원래 자리에 임시 삽입
+  const placeholderId = isMobile ? 'player-placeholder-web-temp-mobile' : 'player-placeholder-web-temp';
+  const oldPlaceholder = document.getElementById(placeholderId);
+  if (oldPlaceholder) oldPlaceholder.remove();
+
+  webPiPPlaceholder = document.createElement('div');
+  webPiPPlaceholder.id = placeholderId;
+  webPiPPlaceholder.className = 'w-full h-full bg-zinc-950 flex flex-col items-center justify-center text-white/50 text-[10px] font-bold gap-3 relative border border-white/5';
+  webPiPPlaceholder.innerHTML = `
+    <div class="relative flex items-center justify-center">
+      <div class="w-10 h-10 rounded-full border border-indigo-500/30 flex items-center justify-center animate-pulse">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <rect x="13" y="11" width="7" height="5" rx="1" fill="#6366f1" />
+        </svg>
+      </div>
+    </div>
+    <span class="tracking-widest">인앱 팝업 플레이(Web-PiP)가 활성화되었습니다.</span>
+    <button id="restore-web-pip-btn" class="mt-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[9px] font-bold tracking-wider shadow-lg active:scale-95 transition-all">팝업 창 닫기</button>
+  `;
+
+  container.parentNode.insertBefore(webPiPPlaceholder, container);
+
+  webPiPPlaceholder.querySelector('#restore-web-pip-btn').onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    disableWebPiP(isMobile);
+  };
+
+  // 2. 오리지널 스타일 보관 및 우하단 fixed 플로팅 스타일링
+  webPiPOriginalStyles = {
+    position: container.style.position,
+    bottom: container.style.bottom,
+    right: container.style.right,
+    width: container.style.width,
+    height: container.style.height,
+    zIndex: container.style.zIndex,
+    boxShadow: container.style.boxShadow,
+    border: container.style.border,
+    borderRadius: container.style.borderRadius,
+    overflow: container.style.overflow
+  };
+
+  const pipWidth = isMobile ? '200px' : '320px';
+  const pipHeight = isMobile ? '112.5px' : '180px';
+
+  container.style.setProperty('position', 'fixed', 'important');
+  container.style.setProperty('bottom', '80px', 'important'); // 바텀 네비게이션 고려 높이 조정
+  container.style.setProperty('right', '16px', 'important');
+  container.style.setProperty('width', pipWidth, 'important');
+  container.style.setProperty('height', pipHeight, 'important');
+  container.style.setProperty('zIndex', '9999', 'important');
+  container.style.setProperty('boxShadow', '0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5)', 'important');
+  container.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.15)', 'important');
+  container.style.setProperty('borderRadius', '12px', 'important');
+  container.style.setProperty('overflow', 'hidden', 'important');
+
+  // 3. 플로팅 창 내부 우상단 닫기 버튼 오버레이 추가
+  const closeBtnId = 'web-pip-close-btn';
+  const oldCloseBtn = document.getElementById(closeBtnId);
+  if (oldCloseBtn) oldCloseBtn.remove();
+
+  const closeBtn = document.createElement('button');
+  closeBtn.id = closeBtnId;
+  closeBtn.className = 'absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full z-50 transition-colors shadow-md';
+  closeBtn.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  `;
+  closeBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    disableWebPiP(isMobile);
+  };
+  container.appendChild(closeBtn);
+
+  showToast('인앱 팝업 플레이가 실행되었습니다.');
+}
+
+// 인앱 팝업 플레이(Web-PiP) 종료 및 복원 함수
+function disableWebPiP(isMobile) {
+  if (!isWebPiPActive || !webPiPContainer) return;
+
+  if (webPiPOriginalStyles) {
+    Object.keys(webPiPOriginalStyles).forEach(key => {
+      webPiPContainer.style[key] = webPiPOriginalStyles[key];
+    });
+  }
+
+  const closeBtn = document.getElementById('web-pip-close-btn');
+  if (closeBtn) closeBtn.remove();
+
+  if (webPiPPlaceholder) {
+    webPiPPlaceholder.parentNode.insertBefore(webPiPContainer, webPiPPlaceholder);
+    webPiPPlaceholder.remove();
+  }
+
+  isWebPiPActive = false;
+  webPiPContainer = null;
+  webPiPPlaceholder = null;
+  webPiPOriginalStyles = {};
+
+  showToast('팝업 플레이가 종료되었습니다.');
+}
+
 // 표준 PiP 및 별도 팝업창(유튜브 전용) 폴백 함수
 async function fallbackToStandardPiP(video, container, isMobile) {
   if (isYouTubeMode) {
@@ -1326,12 +1459,14 @@ async function fallbackToStandardPiP(video, container, isMobile) {
         await video.requestPictureInPicture();
         showToast('팝업 플레이를 시작합니다.');
       } else {
-        showToast('이 브라우저는 팝업 플레이를 지원하지 않습니다.');
+        // 비지원 모바일 브라우저인 경우 인앱 Web-PiP로 대응
+        enableWebPiP(video, container, isMobile);
       }
     }
   } catch (err) {
     console.error('Standard PiP Error:', err);
-    showToast('팝업 플레이를 실행하지 못했습니다.');
+    // 보안 문제(HTTP insecure origin) 등으로 네이티브 PiP 거부 시 인앱 Web-PiP로 완벽 폴백
+    enableWebPiP(video, container, isMobile);
   }
 }
 
@@ -1451,6 +1586,76 @@ function initControls() {
     if (qualityMenu) qualityMenu.classList.add('hidden');
     if (qualityMenuMob) qualityMenuMob.classList.add('hidden');
   });
+
+  const setupAutoHide = (video, controls, wrapper) => {
+    if (!video || !controls || !wrapper) return;
+    let timeout = null;
+
+    const show = () => {
+      // 영상 엘리먼트가 숨김 상태(재생 전/에러 상태)라면 컨트롤을 무조건 숨김
+      if (video.classList.contains('hidden')) {
+        hide();
+        return;
+      }
+      controls.classList.remove('opacity-0', 'pointer-events-none');
+      controls.classList.add('opacity-100', 'pointer-events-auto');
+      if (timeout) clearTimeout(timeout);
+      if (!video.paused) {
+        timeout = setTimeout(hide, 5000);
+      }
+    };
+
+    const hide = () => {
+      controls.classList.remove('opacity-100', 'pointer-events-auto');
+      controls.classList.add('opacity-0', 'pointer-events-none');
+      if (timeout) clearTimeout(timeout);
+    };
+
+    wrapper.addEventListener('click', (e) => {
+      if (controls.contains(e.target)) return;
+      // 재생 중이 아닐 때는 클릭 토글 방지
+      if (video.classList.contains('hidden')) return;
+
+      const isVisible = controls.classList.contains('opacity-100');
+      if (isVisible) {
+        hide();
+      } else {
+        show();
+      }
+    });
+
+    controls.addEventListener('click', (e) => {
+      e.stopPropagation();
+      show();
+    });
+    
+    controls.addEventListener('mousemove', () => {
+      show();
+    });
+
+    video.addEventListener('play', () => {
+      show();
+    });
+
+    video.addEventListener('pause', () => {
+      show();
+    });
+
+    // 최초 진입 시에는 완전히 숨김 처리
+    hide();
+  };
+
+  setupAutoHide(
+    videoEl,
+    document.getElementById('video-controls'),
+    document.getElementById('video-inner-screen')
+  );
+
+  setupAutoHide(
+    videoElMob,
+    document.getElementById('video-controls-mobile'),
+    document.querySelector('.mobile-player-fixed')
+  );
 }
 
 /* =================== INIT =================== */
