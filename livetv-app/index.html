@@ -11,16 +11,34 @@
       var w = window.screen ? window.screen.width : window.innerWidth;
       var h = window.screen ? window.screen.height : window.innerHeight;
       var ua = navigator.userAgent || '';
+      
+      // 모바일 디바이스 여부 강력히 판단 (터치 장치 및 모바일 UA)
+      var isMobileUA = /Mobile|Android.*Mobile|iPhone|iPod|IEMobile|BlackBerry|Opera Mini/i.test(ua);
+      var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      
+      // 명확한 TV 기기 키워드 탐색
+      var hasTVKeyword = /Android TV|SmartTV|SMART-TV|HbbTV|Tizen|WebOS|VIDAA|Vizio|Roku|Fire TV|TV Build|television/i.test(ua);
+      
       // TV/빔프로젝터 감지 조건:
-      // 1) 실제 화면 해상도가 1280px 이상 (HD/FHD TV)
-      // 2) User-Agent에 TV 키워드 포함
-      // 3) Android TV 환경
-      var isTV = (
-        w >= 1280 ||
-        /Android TV|SmartTV|SMART-TV|HbbTV|Tizen|WebOS|VIDAA|Vizio|Roku|Fire TV|TV Build|television/i.test(ua) ||
-        (typeof window.matchMedia === 'function' && window.matchMedia('(device-width: 1920px)').matches) ||
-        (w > 0 && h > 0 && Math.max(w, h) >= 1280 && !('ontouchstart' in window) && !/Mobile|Android.*Mobile/i.test(ua))
-      );
+      // 모바일 UA가 아니며 터치 기기가 아님을 기본 전제로 하고, TV 키워드가 있거나 대화면 데스크톱 스타일이어야 함.
+      var isTV = false;
+      
+      if (hasTVKeyword) {
+        isTV = true;
+      } else if (!isMobileUA && !isTouchDevice) {
+        // 모바일/터치 기기가 아닌 순수 대화면 스마트TV / 빔프로젝터 환경 타겟
+        isTV = (
+          w >= 1280 ||
+          (typeof window.matchMedia === 'function' && window.matchMedia('(device-width: 1920px)').matches) ||
+          (w > 0 && h > 0 && Math.max(w, h) >= 1280)
+        );
+      }
+      
+      // Z플립, 갤럭시 울트라 등 고해상도 스마트폰인 경우 절대 TV 모드로 오동작하지 않도록 완벽히 방어 차단
+      if (isMobileUA || isTouchDevice) {
+        isTV = false;
+      }
+      
       // TV 감지 시 html 태그에 클래스 추가하여 CSS에서 활용
       if (isTV) {
         document.documentElement.classList.add('tv-mode');
