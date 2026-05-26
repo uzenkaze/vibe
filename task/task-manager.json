@@ -204,7 +204,7 @@
     "status": "progress",
     "work_no": "43903",
     "task_no": "59616",
-    "product_no": "0006093757  구독상품(스팩)\n0057074798 [운영상품]",
+    "product_no": "0006093757  구독상품(스팩)\n0057074798 [운영상품]\n0057074856 [운영상품]",
     "task_content": "Rev : 26.05.20\n\n안녕하세요.\nECPD팀 김진홍입니다.\n\n43903 [상품상세] 스펙별랭킹 등 상품추천 모듈에 구독상품 추천 로직 반영요청\n\n아래와 같이 색인 조회하면 됩니다.\n\nMap<String, String> searchParam = new HashMap<String, String>()\nsearchParam.put(\"subscribeYn\", \"Y\"); //구독상품여부\nsearchParam.put(\"subsPriceStart\", \"100\"); //구독료 최소\nsearchParam.put(\"subsPriceEnd\", \"100000\"); //구독료 최대\nHashMap<String, Object> goodsMap = searchService.search_mc_main(searchParam);\n또는 \nHashMap<String, Object> goodsMap = searchService.search_mc(searchParam);",
     "dev_deploy_date": "2026-05-21",
     "deploy_date": "",
@@ -213,7 +213,7 @@
     "start_date": "2026-02-20",
     "end_date": "2026-03-04",
     "reference": "안녕하세요.\nPD팀 김진홍입니다.\n\n수석님 잘 쉬고 오셨나요~ 복귀를 축하드립니다! ㅎㅎㅎ\n전 19일이 연차라 미리 선물을 드리려고 해요~\n바로 적응하실 수 있게 일감을 준비했습니다!\n\n배포일은 3/10(화) 입니다!\n\n업무번호 : [43903] [상품상세]스펙별랭킹 등 상품추천 모듈에 구독상품 추천 로직 반영요청\nSB 경로 : \\\\10.154.6.250\\2.e커머스_하이마트팀\\01.운영업무\\11.2026년운영요건\\001.운영업무\\13. [43903][상품상세] 스펙별랭킹 등 상품추천 모듈에 구독상품 추천 로직 반영요청\\02 SB\n\n[ branch ]\n/feature-59318\n\n[ html ]\n/04_FrontMobile/WebContent/resources/html/pub/goods/HMN_PRO_01_046.html\n\n[ 주석 ]\n<!-- 43903_상품추천 모듈 구독상품 추천 로직 반영 -->\n<!-- //43903_상품추천 모듈 구독상품 추천 로직 반영 -->\n\n[ css ]\n/04_FrontMobile/WebContent/resources/native/assets/css/detail.css\n\n[ 확인 url ]\nhttp://10.154.90.198:3001/resources/html/pub/goods/HMN_PRO_01_046.html\n\n그럼 20일에 뵐게요~!\n\n감사합니다.",
-    "updated_at": "2026-05-26T07:18:30.760Z"
+    "updated_at": "2026-05-26T07:53:02.214Z"
   },
   {
     "title": "[APP,PC]온라인 구독 케어 서비스 혜택 강조 노출 개발 요청",
