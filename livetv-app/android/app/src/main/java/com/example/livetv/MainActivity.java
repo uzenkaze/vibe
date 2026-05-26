@@ -1,5 +1,6 @@
 package com.example.livetv;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
@@ -26,6 +28,19 @@ public class MainActivity extends BridgeActivity {
 
         // WebView 성능 최적화
         optimizeWebView();
+
+        // 안드로이드 13 이상이면 알림 권한 요청
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+        }
+
+        // 포그라운드 서비스 시작
+        Intent serviceIntent = new Intent(this, BackgroundAudioService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
     }
 
     @Override
@@ -95,5 +110,14 @@ public class MainActivity extends BridgeActivity {
 
         // DOM Storage 활성화 (즐겨찾기 localStorage 사용)
         settings.setDomStorageEnabled(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // 백그라운드에서 WebView가 멈추지 않게 하여 오디오 재생 유지
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            getBridge().getWebView().onResume();
+        }
     }
 }

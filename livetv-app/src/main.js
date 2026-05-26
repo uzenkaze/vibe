@@ -47,7 +47,7 @@ const CHANNELS = [
   { id: 'kbs_world', name: 'KBS World', network: 'KBS_WORLD', category: '방송/오락', kbsApiCode: '14', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=14&ch_type=globalList', urls: [
     'https://liveh12.vtvprime.vn/hls/KBS/03.m3u8'
   ]},
-  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', urls: [
+  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', noPlayableHls: true, urls: [
     'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
   ] },
   { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', ytHandle: '@mbc_drama', urls: [
@@ -948,7 +948,7 @@ function showYouTubeFallback(ch) {
   if (!fallbackEl) {
     fallbackEl = document.createElement('div');
     fallbackEl.id = containerId;
-    fallbackEl.style.cssText = 'position:absolute;inset:0;z-index:30;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;';
+    fallbackEl.style.cssText = 'position:absolute;inset:0;z-index:50;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px 24px 80px 24px;pointer-events:auto;';
 
     const parent = isPC()
       ? document.querySelector('#video-container .relative')
@@ -960,7 +960,7 @@ function showYouTubeFallback(ch) {
   if (ch.officialUrl) {
     buttonsHtml += `
       <a href="${ch.officialUrl}" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#4F46E5;color:#fff;font-weight:700;font-size:0.9rem;padding:12px 24px;border-radius:9999px;text-decoration:none;transition:opacity 0.2s;margin-bottom:10px;width:240px;text-align:center;"
+         style="display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#4F46E5;color:#fff;font-weight:700;font-size:0.8rem;padding:8px 20px;border-radius:9999px;text-decoration:none;transition:opacity 0.2s;margin-bottom:10px;width:200px;text-align:center;position:relative;z-index:60;"
          onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
         🌐 공식 홈페이지 온에어 시청
       </a>
@@ -969,10 +969,10 @@ function showYouTubeFallback(ch) {
   if (ch.ytHandle) {
     buttonsHtml += `
       <a href="${ytLiveUrl}" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#FF0000;color:#fff;font-weight:700;font-size:0.9rem;padding:12px 24px;border-radius:9999px;text-decoration:none;transition:opacity 0.2s;width:240px;text-align:center;"
+         style="display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#FF0000;color:#fff;font-weight:700;font-size:0.8rem;padding:8px 20px;border-radius:9999px;text-decoration:none;transition:opacity 0.2s;margin-bottom:10px;width:200px;text-align:center;position:relative;z-index:60;"
          onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
         <svg width="18" height="12" viewBox="0 0 24 17" fill="white"><path d="M23.5 2.5a3 3 0 0 0-2.1-2.1C19.5 0 12 0 12 0S4.5 0 2.6.4A3 3 0 0 0 .5 2.5C0 4.4 0 8.5 0 8.5s0 4.1.5 6a3 3 0 0 0 2.1 2.1C4.5 17 12 17 12 17s7.5 0 9.4-.4a3 3 0 0 0 2.1-2.1C24 12.6 24 8.5 24 8.5s0-4.1-.5-6zM9.5 12V5l6.5 3.5L9.5 12z"/></svg>
-        YouTube 실시간 라이브 시청
+        Youtube 라이브
       </a>
     `;
   }

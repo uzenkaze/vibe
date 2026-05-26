@@ -36,6 +36,9 @@ function onPlayerStateChange(event) {
     isPlaying = true;
     updatePlayPauseIcon();
     startProgressTimer();
+    try {
+      if (ytPlayer.setPlaybackQuality) ytPlayer.setPlaybackQuality('highres');
+    } catch(e) {}
   } else if (event.data === YT.PlayerState.PAUSED) {
     isPlaying = false;
     updatePlayPauseIcon();
@@ -127,25 +130,40 @@ async function searchMusic(query, setInput = true, isAppend = false) {
   }
 
   const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
-  const proxies = [
-    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`
-  ];
-
+  const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
+  
   let html = '';
-  for (const makeProxy of proxies) {
-    try {
-      const res = await fetch(makeProxy(targetUrl));
-      if (!res.ok) continue;
-      if (makeProxy(targetUrl).includes('allorigins')) {
-        const data = await res.json();
-        html = data.contents;
-      } else {
-        html = await res.text();
-      }
-      if (html && html.includes('ytInitialData')) break;
-    } catch (e) { /* try next */ }
+  const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  try {
+    if (isCapacitor) {
+      const res = await fetch(targetUrl);
+      if (res.ok) html = await res.text();
+    } else if (isLocal) {
+      const res = await fetch('/yt-proxy' + pathUrl);
+      if (res.ok) html = await res.text();
+    }
+  } catch (e) {}
+
+  if (!html || !html.includes('ytInitialData')) {
+    const proxies = [
+      u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+      u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+      u => `https://corsproxy.io/?${encodeURIComponent(u)}`
+    ];
+    for (const makeProxy of proxies) {
+      try {
+        const res = await fetch(makeProxy(targetUrl));
+        if (!res.ok) continue;
+        if (makeProxy(targetUrl).includes('allorigins')) {
+          html = (await res.json()).contents;
+        } else {
+          html = await res.text();
+        }
+        if (html && html.includes('ytInitialData')) break;
+      } catch (e) { /* try next */ }
+    }
   }
 
   if (!html) {
@@ -426,6 +444,11 @@ function toggleLike() {
 /* ══════════════ OPEN / CLOSE FULL PLAYER ══════════════ */
 function openFullPlayer() {
   document.getElementById('full-player').classList.add('open');
+  const sheet = document.getElementById('bottom-sheet');
+  if (sheet) {
+    sheet.classList.remove('expanded', 'dragging');
+    sheet.style.transform = '';
+  }
   refreshNextTrackList();
 }
 function closeFullPlayer() {
@@ -453,7 +476,7 @@ function switchMode(mode) {
 }
 
 /* ══════════════ BOTTOM TABS ══════════════ */
-function switchBottomTab(tab) {
+function switchBottomTab(tab, expandSheet = false) {
   activeBottomTab = tab;
   document.querySelectorAll('.bottom-tab-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById(`btab-${tab}`);
@@ -461,8 +484,16 @@ function switchBottomTab(tab) {
 
   const content = document.getElementById('full-bottom-content');
   if (tab === 'next')    renderNextTracks(content);
-  else if (tab === 'lyrics')  renderLyrics(content);
   else if (tab === 'related') renderRelated(content);
+
+  if (expandSheet) {
+    const sheet = document.getElementById('bottom-sheet');
+    if (sheet) {
+      sheet.classList.add('expanded');
+      sheet.classList.remove('dragging');
+      sheet.style.transform = '';
+    }
+  }
 }
 
 function renderNextTracks(container) {
@@ -484,20 +515,17 @@ function renderNextTracks(container) {
       </div>`;
     container.appendChild(div);
   });
-  // Scroll to current
+  // Scroll to current only if the sheet is expanded
   const playing = container.querySelector('.next-track-playing');
-  if (playing) playing.scrollIntoView({ block: 'nearest' });
+  if (playing) {
+    const sheet = document.getElementById('bottom-sheet');
+    if (sheet && sheet.classList.contains('expanded')) {
+      playing.scrollIntoView({ block: 'nearest' });
+    }
+  }
 }
 
-function renderLyrics(container) {
-  container.innerHTML = `<div class="tab-placeholder">
-    <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-    </svg><br>
-    현재 가사 데이터를 지원하지 않습니다.<br>
-    <span style="font-size:12px; color:#444;">YouTube Music 앱에서 확인하실 수 있습니다.</span>
-  </div>`;
-}
+
 
 function renderRelated(container) {
   if (!currentVideoId) {
@@ -521,19 +549,40 @@ async function searchRelated(videoId, container) {
   if (!song) return;
   const query = `${song.artist} 관련 음악`;
   const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
-  const proxies = [
-    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-    u => `https://corsproxy.io/?${encodeURIComponent(u)}`
-  ];
-
+  const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
+  
   let html = '';
-  for (const makeProxy of proxies) {
-    try {
-      const res = await fetch(makeProxy(targetUrl));
-      if (!res.ok) continue;
-      html = await res.text();
-      if (html?.includes('ytInitialData')) break;
-    } catch {}
+  const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  try {
+    if (isCapacitor) {
+      const res = await fetch(targetUrl);
+      if (res.ok) html = await res.text();
+    } else if (isLocal) {
+      const res = await fetch('/yt-proxy' + pathUrl);
+      if (res.ok) html = await res.text();
+    }
+  } catch (e) {}
+
+  if (!html || !html.includes('ytInitialData')) {
+    const proxies = [
+      u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+      u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+      u => `https://corsproxy.io/?${encodeURIComponent(u)}`
+    ];
+    for (const makeProxy of proxies) {
+      try {
+        const res = await fetch(makeProxy(targetUrl));
+        if (!res.ok) continue;
+        if (makeProxy(targetUrl).includes('allorigins')) {
+          html = (await res.json()).contents;
+        } else {
+          html = await res.text();
+        }
+        if (html && html.includes('ytInitialData')) break;
+      } catch (e) { /* try next */ }
+    }
   }
 
   if (!html) {
@@ -665,13 +714,19 @@ function initBottomSheet() {
       startY = e.touches[0].clientY;
       sheetHeight = sheet.getBoundingClientRect().height;
       isDragging = true;
-      sheet.classList.add('dragging');
     });
 
     target.addEventListener('touchmove', e => {
       if (!isDragging) return;
       const deltaY = e.touches[0].clientY - startY;
       
+      // Add a small threshold (5px) to differentiate a tap from a drag
+      if (Math.abs(deltaY) < 5) return;
+      
+      if (!sheet.classList.contains('dragging')) {
+        sheet.classList.add('dragging');
+      }
+
       const isExpanded = sheet.classList.contains('expanded');
       const maxTranslate = sheetHeight - collapsedHeight;
       let newTranslateY = 0;
@@ -689,6 +744,11 @@ function initBottomSheet() {
     target.addEventListener('touchend', e => {
       if (!isDragging) return;
       isDragging = false;
+      
+      if (!sheet.classList.contains('dragging')) {
+        return; // It was a tap, let the click event proceed naturally
+      }
+      
       sheet.classList.remove('dragging');
       
       const currentTranslateY = parseFloat(sheet.style.transform.replace('translateY(', '').replace('px)', '')) || 0;

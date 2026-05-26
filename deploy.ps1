@@ -1,5 +1,21 @@
 # d:\VibeCoding\deploy.ps1
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+$Utf8NoBom = New-Object System.Text.UTF8Encoding $false
+
+function Read-TextUtf8([string]$Path) {
+    return [System.IO.File]::ReadAllText($Path, $Utf8NoBom)
+}
+
+function Write-TextUtf8([string]$Path, [string]$Content) {
+    [System.IO.File]::WriteAllText($Path, $Content, $Utf8NoBom)
+}
+
+function Copy-HtmlWithCacheBust([string]$Source, [string]$Dest, [string]$Timestamp) {
+    $text = Read-TextUtf8 $Source
+    $text = $text -replace 'CACHE_BUST', $Timestamp
+    Write-TextUtf8 $Dest $text
+}
 
 $deployDir = "deploy_dist"
 
@@ -59,23 +75,11 @@ foreach ($folder in $staticFolders) {
             # youtube.html 및 ytmusic.html, index.html 복사 후 캐시 버스터 실시간 주입 (모바일 웹뷰 캐싱 철저 방어)
             $timestamp = Get-Date -Format "yyyyMMddHHmmss"
 
-            $idxHtmlPath = "$deployDir/$targetFolder/index.html"
-            Copy-Item -Path "$folder/index.html" -Destination $idxHtmlPath
-            (Get-Content -Path $idxHtmlPath) -replace "CACHE_BUST", $timestamp | Set-Content -Path $idxHtmlPath
-            Write-Host "> index.html 복사 완료 및 실시간 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
-            $ytHtmlPath = "$deployDir/$targetFolder/youtube.html"
-            Copy-Item -Path "$folder/youtube.html" -Destination $ytHtmlPath
-            (Get-Content -Path $ytHtmlPath) -replace "CACHE_BUST", $timestamp | Set-Content -Path $ytHtmlPath
-            Write-Host "> youtube.html 복사 완료 및 실시간 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
-
-            $ytMusicHtmlPath = "$deployDir/$targetFolder/ytmusic.html"
-            Copy-Item -Path "$folder/ytmusic.html" -Destination $ytMusicHtmlPath
-            (Get-Content -Path $ytMusicHtmlPath) -replace "CACHE_BUST", $timestamp | Set-Content -Path $ytMusicHtmlPath
-            Write-Host "> ytmusic.html 복사 완료 및 실시간 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
-
-            Copy-Item -Path "$folder/favicon.png" -Destination "$deployDir/$targetFolder/"
-            New-Item -ItemType Directory -Path "$deployDir/$targetFolder/src" -Force | Out-Null
-            Copy-Item -Path "$folder/src/*" -Destination "$deployDir/$targetFolder/src/" -Recurse -Force
+            Write-Host "> livetv UTF-8 copy (Node)..." -ForegroundColor Cyan
+            $env:CACHE_BUST = $timestamp
+            node "$PSScriptRoot/scripts/deploy-livetv-utf8.js"
+            if ($LASTEXITCODE -ne 0) { throw "livetv UTF-8 copy failed" }
+            Write-Host "> livetv 복사 및 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
         } elseif ($folder -eq "vibe-hybrid-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {

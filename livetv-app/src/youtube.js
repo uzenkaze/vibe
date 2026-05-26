@@ -1,221 +1,52 @@
-// Han's Play - YouTube Page Logic
+// PlayTime - YouTube Page Logic
 
-// Pre-loaded popular Korean channels (Í∏∞Î≥∏ ?∏Ï∂ú??ÏµúÏã† ?∏Í∏∞ Î∞©ÏÜ° Ï±ÑÎÑê??
 const DEFAULT_CHANNELS = [
-  // ?¥Ïä§
   { id: 'UCsU-I-vHLiaMfV_ceaYz5rQ', name: 'JTBC News', handle: '@jtbc_news', cat: 'news' },
   { id: 'UChlgI3UHCOnwUGzWzbJ3H5w', name: 'YTN News', handle: '@ytnnews24', cat: 'news' },
-  { id: 'UC83AqmaH33x59139C7C5CXA', name: 'SBS ?¥Ïä§', handle: '@sbsnews8', cat: 'news' },
-  // ?úÏÇ¨
-  { id: 'UCsJ6RuBi65JHJkZYO1MECIA', name: '?àÏπ¥?îÎìú', handle: '@syukaworld', cat: 'opinion' },
-  { id: 'UCO850F-GqB3hSpR3M7z182A', name: '?ºÌîÑÎ°úTV', handle: '@3proTV', cat: 'opinion' },
-  // ?ÅÌôî
-  { id: 'UC3K0_A1vpyN8SLeJ_0S5yfg', name: 'ÏßÄÎ¨¥ÎπÑ', handle: '@G-Movie', cat: 'movie' },
-  { id: 'UCaHGGHs_R54KGDpy7IdFmew', name: 'Í≥†Î™Ω', handle: '@gomong', cat: 'movie' },
-  { id: 'UCQ27n_iHn0D2c5kH5vms_qA', name: '?êÎß®', handle: '@bbiman', cat: 'movie' },
-  // ?§ÎùΩ/?àÎä•
-  { id: 'UCja972fEZg2w3RLs20wS58A', name: 'MBC ?àÎä•', handle: '@MBCentertain', cat: 'entertainment' },
-  { id: 'UCsw9H2x4ZfnbK7L1D61f0LQ', name: '?åÌÅ¨Îß?, handle: '@workman', cat: 'entertainment' },
-  { id: 'UCg__zD5FrXzTch_5T-j8LpA', name: '?ºÏãù?Ä??, handle: '@psickuniv', cat: 'entertainment' },
-  // ?åÏïÖ
-  { id: 'UC51C_fIOXpxGZk6L34sJb8g', name: '?©Í≥† ÎÆ§ÏßÅ', handle: '@dingo.music', cat: 'music' },
+  { id: 'UC83AqmaH33x59139C7C5CXA', name: 'SBS \ub274\uc2a4', handle: '@sbsnews8', cat: 'news' },
+  { id: 'UCsJ6RuBi65JHJkZYO1MECIA', name: '\uc288\uce74\uc6d4\ub4dc', handle: '@syukaworld', cat: 'opinion' },
+  { id: 'UCO850F-GqB3hSpR3M7z182A', name: '\uc0bc\ud504\ub85cTV', handle: '@3proTV', cat: 'opinion' },
+  { id: 'UC3K0_A1vpyN8SLeJ_0S5yfg', name: '\uc9c0\ubb34\ube44', handle: '@G-Movie', cat: 'movie' },
+  { id: 'UCaHGGHs_R54KGDpy7IdFmew', name: '\uace0\ubabd', handle: '@gomong', cat: 'movie' },
+  { id: 'UCQ27n_iHn0D2c5kH5vms_qA', name: '\ube44\ubc00', handle: '@bbiman', cat: 'movie' },
+  { id: 'UCja972fEZg2w3RLs20wS58A', name: 'MBC \uc608\ub2a5', handle: '@MBCentertain', cat: 'entertainment' },
+  { id: 'UCsw9H2x4ZfnbK7L1D61f0LQ', name: '\uc6cc\ud06c\ub9e8', handle: '@workman', cat: 'entertainment' },
+  { id: 'UCg__zD5FrXzTch_5T-j8LpA', name: '\uc2dd\uc0ac\ub300', handle: '@psickuniv', cat: 'entertainment' },
+  { id: 'UC51C_fIOXpxGZk6L34sJb8g', name: '\ub529\uace0 \ubba4\uc9c1', handle: '@dingo.music', cat: 'music' },
   { id: 'UC3IZKseVpdzPSBaWxBxundA', name: 'Stone Music', handle: '@stonemusicdev', cat: 'music' },
   { id: 'UCpGDZUXVpP9vsp6gP21Fk-w', name: 'KBS Kpop', handle: '@kbskpop', cat: 'music' }
 ];
 
-// Pre-loaded premium fallback videos for YouTube RSS outages (?•Ïï† ?Ä?ëÏö© Î™ÖÌíà Î∞±ÏóÖ ÎπÑÎîî???∞Ïù¥??
 const FALLBACK_VIDEOS = [
-  // ?¥Ïä§
-  {
-    videoId: '3Vq58h_8l90',
-    title: '[?ºÏù¥Î∏? JTBC ?¥Ïä§Î£?- ?§ÏãúÍ∞??µÏã¨ ?¥Ïä§ Î∏åÎ¶¨??,
-    channelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ',
-    channelName: 'JTBC News',
-    channelCat: 'news',
-    thumb: 'https://i.ytimg.com/vi/3Vq58h_8l90/mqdefault.jpg',
-    published: '2026-05-22T00:00:00Z',
-    timeAgo: '?§ÏãúÍ∞?,
-    views: 1250000
-  },
-  {
-    videoId: 'zW8C_m4R2aQ',
-    title: '[?ºÏù¥Î∏? YTN ?¥Ïä§ ?§ÏãúÍ∞??§Ìä∏Î¶¨Î∞ç - 24?úÍ∞Ñ ?ùÎ∞©???¥Ïä§',
-    channelId: 'UChlgI3UHCOnwUGzWzbJ3H5w',
-    channelName: 'YTN News',
-    channelCat: 'news',
-    thumb: 'https://i.ytimg.com/vi/zW8C_m4R2aQ/mqdefault.jpg',
-    published: '2026-05-22T00:00:00Z',
-    timeAgo: '?§ÏãúÍ∞?,
-    views: 3420000
-  },
-  {
-    videoId: 'wD1nvy9wP-U',
-    title: '[?ºÏù¥Î∏? SBS ?¥Ïä§ - 24?úÍ∞Ñ ?§ÏãúÍ∞??ùÎ∞©???¥Ïä§ ?§Ìä∏Î¶¨Î∞ç',
-    channelId: 'UC83AqmaH33x59139C7C5CXA',
-    channelName: 'SBS ?¥Ïä§',
-    channelCat: 'news',
-    thumb: 'https://i.ytimg.com/vi/wD1nvy9wP-U/mqdefault.jpg',
-    published: '2026-05-22T00:00:00Z',
-    timeAgo: '?§ÏãúÍ∞?,
-    views: 2150000
-  },
-  // ?úÏÇ¨
-  {
-    videoId: '6p6_fI-f6jQ',
-    title: '?∞Î¶¨Í∞Ä Î™∞Îûê???∏Í≥Ñ???¥Î©¥Í≥??àÎ°ú??Í≤ΩÏ†ú ?∏Î†å???¨Ï∏µ Î∂ÑÏÑù',
-    channelId: 'UCsJ6RuBi65JHJkZYO1MECIA',
-    channelName: '?àÏπ¥?îÎìú',
-    channelCat: 'opinion',
-    thumb: 'https://i.ytimg.com/vi/6p6_fI-f6jQ/mqdefault.jpg',
-    published: '2026-05-21T18:00:00Z',
-    timeAgo: '1????,
-    views: 1480000
-  },
-  {
-    videoId: 'sW8C-w_e4v0',
-    title: '???∏Í≥Ñ ?êÏÇ∞ ?úÏû•???ÄÍ≤©Î?, ?∞Î¶¨??ÏßÄÍ∏??¥Îîî?????àÎäîÍ∞Ä?',
-    channelId: 'UCsJ6RuBi65JHJkZYO1MECIA',
-    channelName: '?àÏπ¥?îÎìú',
-    channelCat: 'opinion',
-    thumb: 'https://i.ytimg.com/vi/sW8C-w_e4v0/mqdefault.jpg',
-    published: '2026-05-20T18:00:00Z',
-    timeAgo: '2????,
-    views: 1100000
-  },
-  {
-    videoId: '_M3uH84bE6A',
-    title: '[?¨Ï∏µÎ∂ÑÏÑù] Í∏ÄÎ°úÎ≤å Í±∞ÏãúÍ≤ΩÏ†ú ?ÑÎßùÍ≥??úÍµ≠ Ï¶ùÏãú ?Ä?ÑÎßù',
-    channelId: 'UCO850F-GqB3hSpR3M7z182A',
-    channelName: '?ºÌîÑÎ°úTV',
-    channelCat: 'opinion',
-    thumb: 'https://i.ytimg.com/vi/_M3uH84bE6A/mqdefault.jpg',
-    published: '2026-05-22T02:00:00Z',
-    timeAgo: '6?úÍ∞Ñ ??,
-    views: 420000
-  },
-  {
-    videoId: 'wK9tWp9l4Q4',
-    title: '?∏Ìîå?àÏù¥??Ï¢ÖÏãùÍ≥?Í∏àÎ¶¨ ?∏Ìïò Íµ?©¥, ?úÏû•???êÎèÑÍ∞Ä Î∞îÎÄêÎã§',
-    channelId: 'UCO850F-GqB3hSpR3M7z182A',
-    channelName: '?ºÌîÑÎ°úTV',
-    channelCat: 'opinion',
-    thumb: 'https://i.ytimg.com/vi/wK9tWp9l4Q4/mqdefault.jpg',
-    published: '2026-05-21T07:00:00Z',
-    timeAgo: '1????,
-    views: 380000
-  },
-  // ?ÅÌôî
-  {
-    videoId: 'hXW5-4dE6cQ',
-    title: '???∏Í≥ÑÎ•??§Ìùî?????Í∏?Î∞òÏ†ÑÍ≥?ÎØ∏Ïπú Î™∞ÏûÖÍ∞êÏùò ?®Í≤®Ïß?Î™ÖÏûë ?ÅÌôî ?åÍ∞ú',
-    channelId: 'UC3K0_A1vpyN8SLeJ_0S5yfg',
-    channelName: 'ÏßÄÎ¨¥ÎπÑ',
-    channelCat: 'movie',
-    thumb: 'https://i.ytimg.com/vi/hXW5-4dE6cQ/mqdefault.jpg',
-    published: '2026-05-20T10:00:00Z',
-    timeAgo: '2????,
-    views: 2350000
-  },
-  {
-    videoId: 'c-H922_c948',
-    title: 'Ï£ºÏù∏Í≥µÏù¥ ?àÎ? ?¥ÏïÑ?®ÏùÑ ???ÜÎäî ÏµúÏïÖ???∞Ïä§Í≤åÏûÑ??Í∞áÌòî?????ºÏñ¥?òÎäî ??,
-    channelId: 'UC3K0_A1vpyN8SLeJ_0S5yfg',
-    channelName: 'ÏßÄÎ¨¥ÎπÑ',
-    channelCat: 'movie',
-    thumb: 'https://i.ytimg.com/vi/c-H922_c948/mqdefault.jpg',
-    published: '2026-05-18T10:00:00Z',
-    timeAgo: '4????,
-    views: 1980000
-  },
-  {
-    videoId: '2u8O4X2w5M8',
-    title: '?ÑÎ¨¥???àÏÉÅ?òÏ? Î™ªÌñà????? ÏµúÍ≥† ?úÏ≤≠Î•†Ïùò ?êÌ?ÏßÄ ?§Î¶¥???úÎùºÎß??ÑÌé∏ ?îÏïΩ',
-    channelId: 'UCaHGGHs_R54KGDpy7IdFmew',
-    channelName: 'Í≥†Î™Ω',
-    channelCat: 'movie',
-    thumb: 'https://i.ytimg.com/vi/2u8O4X2w5M8/mqdefault.jpg',
-    published: '2026-05-21T09:00:00Z',
-    timeAgo: '1????,
-    views: 1890000
-  },
-  {
-    videoId: 'wK9tWp9l4Q4',
-    title: 'Î™®ÎëêÎ•??åÎ¶Ñ?ºÏπòÍ≤?ÎßåÎì† SF ?îÏä§?†Ìîº??Î™ÖÏûë ?ÅÌôî??ÎπÑÎ? ?§Ï†ï??,
-    channelId: 'UCQ27n_iHn0D2c5kH5vms_qA',
-    channelName: '?êÎß®',
-    channelCat: 'movie',
-    thumb: 'https://i.ytimg.com/vi/wK9tWp9l4Q4/mqdefault.jpg',
-    published: '2026-05-19T11:00:00Z',
-    timeAgo: '3????,
-    views: 1450000
-  },
-  // ?§ÎùΩ/?àÎä•
-  {
-    videoId: 'L0l80j01h2o',
-    title: '?àÎä• ?àÏ†Ñ???ÉÏùå Ï∞∏Í∏∞ Ï±åÎ¶∞ÏßÄ - ???Í∏?Ïß§Î∞© Î™®Ïùå ?ÄÎ∞©Ï∂ú',
-    channelId: 'UCja972fEZg2w3RLs20wS58A',
-    channelName: 'MBC ?àÎä•',
-    channelCat: 'entertainment',
-    thumb: 'https://i.ytimg.com/vi/L0l80j01h2o/mqdefault.jpg',
-    published: '2026-05-21T12:00:00Z',
-    timeAgo: '1????,
-    views: 3200000
-  },
-  {
-    videoId: 'aAsS-4dE6cQ',
-    title: '?òÎ£® ?ºÎãπ 50ÎßåÏõê?! ?ÅÏÉÅ Ï¥àÏõî Í≥†ÎÇú?¥ÎèÑ ?¥ÏÉâ ?åÎ∞î Í∑πÌïú Ï≤¥ÌóòÍ∏?,
-    channelId: 'UCsw9H2x4ZfnbK7L1D61f0LQ',
-    channelName: '?åÌÅ¨Îß?,
-    channelCat: 'entertainment',
-    thumb: 'https://i.ytimg.com/vi/aAsS-4dE6cQ/mqdefault.jpg',
-    published: '2026-05-19T09:00:00Z',
-    timeAgo: '3????,
-    views: 2750000
-  },
-  {
-    videoId: 's_Uq2o48v2M',
-    title: '[?ºÏãù?? ?îÎìú?§Ì? Í≤åÏä§??Ï¥àÏ≤≠! Î∞∞ÍºΩ ?°Îäî Í∏ÄÎ°úÎ≤å ?ÅÏñ¥ ?†ÌÅ¨??,
-    channelId: 'UCg__zD5FrXzTch_5T-j8LpA',
-    channelName: '?ºÏãù?Ä??,
-    channelCat: 'entertainment',
-    thumb: 'https://i.ytimg.com/vi/s_Uq2o48v2M/mqdefault.jpg',
-    published: '2026-05-20T10:00:00Z',
-    timeAgo: '2????,
-    views: 2450000
-  },
-  // ?åÏïÖ
-  {
-    videoId: 'wD1nvy9wP-U',
-    title: '[?¨ÎßÅ Î≥¥Ïù¥?? ?åÏõê Ï∞®Ìä∏ ?¨ÌÇ¨! ?Ä?úÎ?Íµ?ÏµúÍ≥† Î≥¥Ïª¨???òÏÉÅ?ÅÏù∏ ?ºÏù¥Î∏?Î©îÎì§Î¶?,
-    channelId: 'UC51C_fIOXpxGZk6L34sJb8g',
-    channelName: '?©Í≥† ÎÆ§ÏßÅ',
-    channelCat: 'music',
-    thumb: 'https://i.ytimg.com/vi/wD1nvy9wP-U/mqdefault.jpg',
-    published: '2026-05-21T09:00:00Z',
-    timeAgo: '1????,
-    views: 5600000
-  },
-  {
-    videoId: 'aAsS-4dE6cQ',
-    title: '[ÎÆ§ÏßÅÎ±ÖÌÅ¨] ?Ä??Í∏ÄÎ°úÎ≤å ?ÑÏù¥??Í∑∏Î£π???îÎ†§?òÍ≥† ?ÑÎ≤Ω??Ïª¥Î∞± Î¨¥Î?',
-    channelId: 'UCpGDZUXVpP9vsp6gP21Fk-w',
-    channelName: 'KBS Kpop',
-    channelCat: 'music',
-    thumb: 'https://i.ytimg.com/vi/aAsS-4dE6cQ/mqdefault.jpg',
-    published: '2026-05-22T08:00:00Z',
-    timeAgo: '?§ÏãúÍ∞?,
-    views: 1200000
-  }
+  { videoId: '3Vq58h_8l90', title: '[\ub77c\uc774\ube0c] JTBC \ub274\uc2a4\ub8f8', channelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', channelName: 'JTBC News', channelCat: 'news', thumb: 'https://i.ytimg.com/vi/3Vq58h_8l90/mqdefault.jpg', published: '2026-05-22T00:00:00Z', timeAgo: '\uc2e4\uc2dc\uac04', views: 1250000 },
+  { videoId: 'zW8C_m4R2aQ', title: '[\ub77c\uc774\ube0c] YTN \ub274\uc2a4', channelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', channelName: 'YTN News', channelCat: 'news', thumb: 'https://i.ytimg.com/vi/zW8C_m4R2aQ/mqdefault.jpg', published: '2026-05-22T00:00:00Z', timeAgo: '\uc2e4\uc2dc\uac04', views: 3420000 },
+  { videoId: '6p6_fI-f6jQ', title: '\uacbd\uc81c \ube0c\ub9ac\ud551', channelId: 'UCsJ6RuBi65JHJkZYO1MECIA', channelName: '\uc288\uce74\uc6d4\ub4dc', channelCat: 'opinion', thumb: 'https://i.ytimg.com/vi/6p6_fI-f6jQ/mqdefault.jpg', published: '2026-05-21T18:00:00Z', timeAgo: '1\uc77c \uc804', views: 1480000 },
+  { videoId: 'hXW5-4dE6cQ', title: '\uc601\ud654 \ub9ac\ubdf0', channelId: 'UC3K0_A1vpyN8SLeJ_0S5yfg', channelName: '\uc9c0\ubb34\ube44', channelCat: 'movie', thumb: 'https://i.ytimg.com/vi/hXW5-4dE6cQ/mqdefault.jpg', published: '2026-05-20T10:00:00Z', timeAgo: '2\uc77c \uc804', views: 2350000 },
+  { videoId: 'L0l80j01h2o', title: '\uc608\ub2a5 \ud558\uc774\ub77c\uc774\ud2b8', channelId: 'UCja972fEZg2w3RLs20wS58A', channelName: 'MBC \uc608\ub2a5', channelCat: 'entertainment', thumb: 'https://i.ytimg.com/vi/L0l80j01h2o/mqdefault.jpg', published: '2026-05-21T12:00:00Z', timeAgo: '1\uc77c \uc804', views: 3200000 },
+  { videoId: 'wD1nvy9wP-U', title: 'K-Pop \uc2a4\ud14c\uc774\uc9c0', channelId: 'UC51C_fIOXpxGZk6L34sJb8g', channelName: '\ub529\uace0 \ubba4\uc9c1', channelCat: 'music', thumb: 'https://i.ytimg.com/vi/wD1nvy9wP-U/mqdefault.jpg', published: '2026-05-21T09:00:00Z', timeAgo: '1\uc77c \uc804', views: 5600000 }
 ];
 
 let allChannels = [];
 let allVideos = [];
 let currentFilter = 'all';
+let currentPlayingVideoId = null;
+let playerHistoryPushed = false;
+let currentFilteredVideos = [];
+let renderedVideoCount = 0;
+const ITEMS_PER_PAGE = 16;
+let scrollObserver = null;
+
+const CAT_MAP = {
+  news: '\ub274\uc2a4',
+  opinion: '\uc2dc\uc0ac',
+  movie: '\uc601\ud654',
+  entertainment: '\uc624\ub77d/\uc608\ub2a5',
+  music: '\uc74c\uc545',
+  custom: '\uc9c1\uc811 \ucd94\uac00'
+};
 
 async function fetchChannelVideos(channelId, channelName, channelCat) {
   const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-  
-  // CORS ?ÑÎ°ù???Ä (?¨Ïò§Î¶¨ÏßÑ, corsproxy.io, codetabs)
   const proxies = [
     u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
     u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
@@ -225,92 +56,64 @@ async function fetchChannelVideos(channelId, channelName, channelCat) {
   for (const getProxyUrl of proxies) {
     try {
       const proxyUrl = getProxyUrl(rssUrl);
-      console.log(`[YouTube RSS] RSS ?ºÎìú ?îÏ≤≠ Ï§? ${proxyUrl}`);
       const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
-      
-      let contents = "";
+      let contents = '';
       if (proxyUrl.includes('allorigins')) {
         const data = await res.json();
-        contents = data.contents || "";
+        contents = data.contents || '';
       } else {
         contents = await res.text();
       }
 
-      if (contents && (contents.includes('<entry>') || contents.includes('&lt;entry&gt;'))) {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(contents, 'text/xml');
-        let entries = [...xml.querySelectorAll('entry')];
-        if (!entries.length) {
-          entries = [...xml.getElementsByTagName('entry')];
-        }
-        entries = entries.slice(0, 8);
-        
-        if (entries.length > 0) {
-          return entries.map(e => {
-            try {
-              // ?§Ïñë???§ÏûÑ?§Ìéò?¥Ïä§ Î∞?Î∏åÎùº?∞Ï? ?åÏÑú ?Ä?ëÏùÑ ?ÑÌïú ?§Ï§ë ?Ä?âÌÑ∞ ?ÅÏö©
-              const videoId = e.querySelector('videoId')?.textContent || 
-                              e.getElementsByTagName('yt:videoId')?.[0]?.textContent || 
-                              e.querySelector('yt\\:videoId')?.textContent || '';
-              if (!videoId) return null;
+      if (!contents || (!contents.includes('<entry>') && !contents.includes('&lt;entry&gt;'))) continue;
 
-              const published = e.querySelector('published')?.textContent || '';
-              
-              // Ï°∞Ìöå???∞Ïù¥???åÏã± ?§Îã®Í≥??¨Ï∏µ ?êÏÉâ & ?àÏô∏ Î∞©Ïñ¥
-              let views = 0;
-              try {
-                const statistics = e.querySelector('statistics') || 
-                                   e.getElementsByTagName('media:statistics')?.[0] || 
-                                   e.querySelector('media\\:statistics') ||
-                                   e.getElementsByTagName('media:community')?.[0]?.getElementsByTagName('media:statistics')?.[0];
-                if (statistics) {
-                  const viewAttr = statistics.getAttribute('views');
-                  if (viewAttr) views = parseInt(viewAttr, 10) || 0;
-                }
-              } catch (viewsErr) {
-                console.warn('[YouTube Parser] Failed to parse views for video ' + videoId, viewsErr);
-              }
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(contents, 'text/xml');
+      let entries = [...xml.querySelectorAll('entry')];
+      if (!entries.length) entries = [...xml.getElementsByTagName('entry')];
+      entries = entries.slice(0, 8);
+      if (!entries.length) continue;
 
-              return {
-                videoId,
-                title: e.querySelector('title')?.textContent || '',
-                channelId,
-                channelName,
-                channelCat,
-                thumb: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
-                published,
-                timeAgo: timeAgo(published),
-                views
-              };
-            } catch (entryErr) {
-              console.warn('[YouTube Parser] Skipping malformed entry', entryErr);
-              return null;
+      const parsedVideos = entries.map(e => {
+        try {
+          const videoId =
+            e.querySelector('videoId')?.textContent ||
+            e.getElementsByTagName('yt:videoId')?.[0]?.textContent ||
+            e.querySelector('yt\\:videoId')?.textContent ||
+            '';
+          if (!videoId) return null;
+          const published = e.querySelector('published')?.textContent || '';
+          let views = 0;
+          try {
+            const statistics =
+              e.querySelector('statistics') ||
+              e.getElementsByTagName('media:statistics')?.[0] ||
+              e.querySelector('media\\:statistics');
+            if (statistics) {
+              const viewAttr = statistics.getAttribute('views');
+              if (viewAttr) views = parseInt(viewAttr, 10) || 0;
             }
-          }).filter(v => v && v.videoId);
-          
-          // ÎπÑÍ≥µÍ∞???†ú???ÅÏÉÅ(?∏ÎÑ§??404) ?ÑÌÑ∞Îß?(HEAD ?îÏ≤≠ Î≥ëÎ†¨ Ï≤òÎ¶¨)
-          const validVideos = [];
-          await Promise.all(parsedVideos.map(async (v) => {
-            try {
-              const headRes = await fetch(v.thumb, { method: 'HEAD', signal: AbortSignal.timeout(3000) });
-              if (headRes.ok) {
-                validVideos.push(v);
-              } else {
-                console.log(`[YouTube Filter] ?¨ÏÉù Î∂àÍ? ?ÅÏÉÅ ?úÏô∏: ${v.title} (${v.videoId})`);
-              }
-            } catch (err) {
-              // ?§Ìä∏?åÌÅ¨ ?êÎü¨ ???àÏ†Ñ?òÍ≤å ?†Ï?
-              validVideos.push(v);
-            }
-          }));
-          
-          // ?êÎûò ÏµúÏã†???ïÎ†¨ ?†Ï?
-          validVideos.sort((a, b) => new Date(b.published) - new Date(a.published));
-          return validVideos;
+          } catch (_) { /* ignore */ }
+          return {
+            videoId,
+            title: e.querySelector('title')?.textContent || '',
+            channelId,
+            channelName,
+            channelCat,
+            thumb: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+            published,
+            timeAgo: timeAgo(published),
+            views
+          };
+        } catch {
+          return null;
         }
-      }
+      }).filter(v => v && v.videoId);
+
+      parsedVideos.sort((a, b) => new Date(b.published) - new Date(a.published));
+      return parsedVideos;
     } catch (e) {
-      console.warn(`[YouTube RSS] RSS ?ÑÎ°ù???§Ìå® (${getProxyUrl.name}):`, e);
+      console.warn('[YouTube RSS] \ud504\ub85d\uc2dc \uc2e4\ud328:', e);
     }
   }
   return [];
@@ -319,31 +122,25 @@ async function fetchChannelVideos(channelId, channelName, channelCat) {
 function timeAgo(isoStr) {
   if (!isoStr) return '';
   const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
-  if (diff < 3600) return Math.floor(diff / 60) + 'Î∂???;
-  if (diff < 86400) return Math.floor(diff / 3600) + '?úÍ∞Ñ ??;
-  if (diff < 2592000) return Math.floor(diff / 86400) + '????;
-  return Math.floor(diff / 2592000) + 'Í∞úÏõî ??;
+  if (diff < 3600) return Math.floor(diff / 60) + '\uBD84 \uC804';
+  if (diff < 86400) return Math.floor(diff / 3600) + '\uC2DC\uAC04 \uC804';
+  if (diff < 2592000) return Math.floor(diff / 86400) + '\uC77C \uC804';
+  return Math.floor(diff / 2592000) + '\uAC1C\uC6D4 \uC804';
 }
-
-let playerHistoryPushed = false;
-
-let currentPlayingVideoId = null;
 
 function playVideo(videoId, title) {
   currentPlayingVideoId = videoId;
-  const player = document.getElementById('full-player');
-  document.getElementById('yt-iframe').src = https://www.youtube.com/embed/ + videoId + ?autoplay=1&rel=0;
-  
-  // Set UI elements
-  document.getElementById('full-title').textContent = title;
-  const v = allVideos.find(x => x.videoId === videoId);
-  document.getElementById('full-artist').textContent = v ? v.channelName : 'YouTube';
-  document.getElementById('full-art').src = https://i.ytimg.com/vi/ + videoId + /hqdefault.jpg;
-  
-  player.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  
-  // Push history state so system Back Button closes the player instead of leaving the page
+  const iframe = document.getElementById('yt-iframe');
+  if (iframe) {
+    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+  }
+  const titleEl = document.getElementById('player-title');
+  if (titleEl) titleEl.textContent = title;
+  const overlay = document.getElementById('player-overlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
   if (!playerHistoryPushed) {
     history.pushState({ playerOpen: true }, '');
     playerHistoryPushed = true;
@@ -351,562 +148,52 @@ function playVideo(videoId, title) {
 }
 
 function closePlayer(avoidPopState = false) {
-  const player = document.getElementById('full-player');
-  if(player) {
-      document.getElementById('yt-iframe').src = '';
-      player.classList.remove('open');
-      player.classList.remove('pip-mode');
-  }
+  const iframe = document.getElementById('yt-iframe');
+  if (iframe) iframe.src = '';
+  const overlay = document.getElementById('player-overlay');
+  if (overlay) overlay.classList.remove('open');
   document.body.style.overflow = '';
-  
-  // Pop history if user clicked close manually
   if (playerHistoryPushed && !avoidPopState) {
     history.back();
-    playerHistoryPushed = false;
-  } else {
-    playerHistoryPushed = false;
   }
+  playerHistoryPushed = false;
 }
 
-function closeFullPlayer() {
-    closePlayer();
-}
-
-let isPlaying = true;
-function togglePlay(e) {
-    if(e) e.stopPropagation();
-    isPlaying = !isPlaying;
-    const btn = document.getElementById('full-play-btn');
-    const svg = isPlaying ? <svg width="44" height="44" fill="currentColor" viewBox="0 0 24 24" id="full-icon-pause"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> 
-                          : <svg width="44" height="44" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>;
-    if(btn) btn.innerHTML = svg;
-    // For iframe without YT API, pause requires postMessage if possible, or just a dummy UI toggle
-    const iframe = document.getElementById('yt-iframe');
-    if(iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage('{"event":"command","func":"' + (isPlaying ? 'playVideo' : 'pauseVideo') + '","args":""}', '*');
-    }
-}
-
-function playNext() {
-    if(!allVideos || allVideos.length === 0) return;
-    let idx = allVideos.findIndex(v => v.videoId === currentPlayingVideoId);
-    if(idx >= 0 && idx < allVideos.length - 1) {
-        const nextV = allVideos[idx + 1];
-        playVideo(nextV.videoId, nextV.title);
-    }
-}
-
-function playPrev() {
-    if(!allVideos || allVideos.length === 0) return;
-    let idx = allVideos.findIndex(v => v.videoId === currentPlayingVideoId);
-    if(idx > 0) {
-        const prevV = allVideos[idx - 1];
-        playVideo(prevV.videoId, prevV.title);
-    }
-}
-
-let isLiked = false;
-function toggleLike() {
-  isLiked = !isLiked;
-  const btn = document.getElementById('like-btn');
-  if (btn) btn.classList.toggle('liked', isLiked);
-}
-
-let isShuffle = false;
-function toggleShuffle(event) {
-  if (event) event.stopPropagation();
-  isShuffle = !isShuffle;
-  const btn = document.getElementById('shuffle-btn');
-  if (btn) btn.classList.toggle('active', isShuffle);
-}
-
-let repeatMode = 0;
-function toggleRepeat(event) {
-  if (event) event.stopPropagation();
-  repeatMode = (repeatMode + 1) % 3;
-  const btn  = document.getElementById('repeat-btn');
-  const icon = document.getElementById('repeat-icon');
-  if (!btn) return;
-  if (repeatMode === 0) {
-    btn.classList.remove('active');
-    if (icon) icon.innerHTML = <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/>;
-  } else if (repeatMode === 1) {
-    btn.classList.add('active');
-    if (icon) icon.innerHTML = <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/>;
-  } else {
-    btn.classList.add('active');
-    if (icon) icon.innerHTML = <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/><text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" font-size="8" fill="currentColor" stroke="none">1</text>;
-  }
-}
-
-function switchMode(mode) {
-  const tabSong  = document.getElementById('tab-song');
-  const tabVideo = document.getElementById('tab-video');
-  const img      = document.getElementById('full-art');
-  const ytCon    = document.getElementById('yt-player-container');
-
-  if (mode === 'song') {
-    if(tabSong) tabSong.classList.add('active');
-    if(tabVideo) tabVideo.classList.remove('active');
-    if(img) img.style.display = 'block';
-    if(ytCon) ytCon.className = 'video-mode-hidden';
-  } else {
-    if(tabVideo) tabVideo.classList.add('active');
-    if(tabSong) tabSong.classList.remove('active');
-    if(img) img.style.display = 'none';
-    if(ytCon) ytCon.className = 'video-mode-active';
-  }
-}
-
-function switchBottomTab(tab) {
-  document.querySelectorAll('.bottom-tab-btn').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById('btab-' + tab);
-  if (btn) btn.classList.add('active');
-
-  const container = document.getElementById('full-bottom-content');
-  if(!container) return;
-  
-  if (tab === 'next') {
-      container.innerHTML = <div class="tab-placeholder">?§Ïùå ?ÅÏÉÅ Î™©Î°ù??Ï§ÄÎπ?Ï§ëÏûÖ?àÎã§.</div>;
-  } else if (tab === 'lyrics') {
-      container.innerHTML = <div class="tab-placeholder"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg><br>?ÑÏû¨ Í∞Ä???∞Ïù¥?∞Î? ÏßÄ?êÌïòÏßÄ ?äÏäµ?àÎã§.<br><span style="font-size:12px; color:#444;">YouTube Music ?±Ïóê???ïÏù∏?òÏã§ ???àÏäµ?àÎã§.</span></div>;
-  } else if (tab === 'related') {
-      container.innerHTML = <div class="tab-placeholder"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8l4 4-4 4"/></svg><br>Í¥Ä???ÅÏÉÅ Í≤Ä??Ï§?..<br><span style="font-size:12px; color:#444;">?†Ïãú ???êÎèô?ºÎ°ú Î°úÎìú?©Îãà??</span></div>;
-  }
-}
-
-function toggleDrawer() {
-  const drawer  = document.getElementById('playlist-drawer');
-  const overlay = document.getElementById('drawer-overlay');
-  if (!drawer) return;
-  const opening = drawer.classList.contains('hidden');
-  if (opening) {
-    drawer.classList.remove('hidden');
-    overlay.classList.remove('hidden');
-  } else {
-    drawer.classList.add('hidden');
-    overlay.classList.add('hidden');
-  }
-}
-
-function togglePIP() {
-  const player = document.getElementById('player-overlay');
-  if (player.classList.contains('pip-mode')) {
-    restoreFromPIP();
-  } else {
-    player.classList.remove('open');
-    player.classList.add('pip-mode');
-    document.body.style.overflow = ''; // allow page scrolling
-    
-    // Set default bottom-right floating position
-    player.style.left = '';
-    player.style.top = '';
-    player.style.right = '16px';
-    player.style.bottom = 'calc(env(safe-area-inset-bottom, 0px) + 76px)';
-    
-    // Pop history since page is browseable
-    if (playerHistoryPushed) {
-      history.back();
-      playerHistoryPushed = false;
-    }
-  }
-}
-
-function restoreFromPIP() {
-  const player = document.getElementById('player-overlay');
-  player.classList.remove('pip-mode');
-  player.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  
-  // Reset positions
-  player.style.left = '';
-  player.style.top = '';
-  player.style.right = '';
-  player.style.bottom = '';
-  
-  // Push history state again for back button integration
-  if (!playerHistoryPushed) {
-    history.pushState({ playerOpen: true }, '');
-    playerHistoryPushed = true;
-  }
-}
-
-function initDraggable() {
-  const el = document.getElementById('player-overlay');
-  let isDragging = false;
-  let startX, startY;
-  let initialX, initialY;
-  
-  el.addEventListener('mousedown', dragStart);
-  el.addEventListener('touchstart', dragStart, { passive: false });
-  
-  function dragStart(e) {
-    if (!el.classList.contains('pip-mode')) return;
-    if (e.target.closest('button') || e.target.closest('iframe')) return;
-    
-    isDragging = true;
-    
-    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-    
-    const rect = el.getBoundingClientRect();
-    initialX = rect.left;
-    initialY = rect.top;
-    
-    startX = clientX;
-    startY = clientY;
-    
-    document.addEventListener('mousemove', dragMove);
-    document.addEventListener('mouseup', dragEnd);
-    document.addEventListener('touchmove', dragMove, { passive: false });
-    document.addEventListener('touchend', dragEnd);
-    
-    if (e.type === 'touchstart') e.preventDefault();
-  }
-  
-  function dragMove(e) {
-    if (!isDragging) return;
-    
-    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-    
-    const dx = clientX - startX;
-    const dy = clientY - startY;
-    
-    const newLeft = initialX + dx;
-    const newTop = initialY + dy;
-    
-    const maxLeft = window.innerWidth - el.offsetWidth - 10;
-    const maxTop = window.innerHeight - el.offsetHeight - 10;
-    
-    const finalLeft = Math.max(10, Math.min(newLeft, maxLeft));
-    const finalTop = Math.max(10, Math.min(newTop, maxTop));
-    
-    el.style.left = `${finalLeft}px`;
-    el.style.top = `${finalTop}px`;
-    el.style.right = 'auto';
-    el.style.bottom = 'auto';
-    
-    if (e.type === 'touchmove') e.preventDefault();
-  }
-  
-  function dragEnd() {
-    isDragging = false;
-    document.removeEventListener('mousemove', dragMove);
-    document.removeEventListener('mouseup', dragEnd);
-    document.removeEventListener('touchmove', dragMove);
-    document.removeEventListener('touchend', dragEnd);
-  }
-}
-
-// Back Button popstate event listener
 window.addEventListener('popstate', () => {
-  const player = document.getElementById('player-overlay');
-  if (player.classList.contains('open') && !player.classList.contains('pip-mode')) {
-    closePlayer(true);
-  }
+  const overlay = document.getElementById('player-overlay');
+  if (overlay?.classList.contains('open')) closePlayer(true);
 });
-
-// Bind all necessary player handlers to window scope so they are callable from inline HTML onclicks
-window.closeFullPlayer = closeFullPlayer;
-window.switchMode = switchMode;
-window.toggleLike = toggleLike;
-window.toggleShuffle = toggleShuffle;
-window.toggleRepeat = toggleRepeat;
-window.togglePlay = togglePlay;
-window.playNext = playNext;
-window.playPrev = playPrev;
-window.switchBottomTab = switchBottomTab;
-window.toggleDrawer = toggleDrawer;
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize bottom sheet interaction
-  const sheet = document.getElementById('bottom-sheet');
-  const tabs = document.getElementById('full-bottom-tabs');
-  if (sheet && tabs) {
-      tabs.addEventListener('click', (e) => {
-        if (!sheet.classList.contains('expanded') && !e.target.closest('button')) {
-          sheet.classList.add('expanded');
-        } else if (sheet.classList.contains('expanded') && !e.target.closest('button')) {
-          sheet.classList.remove('expanded');
-        }
-      });
-  }
-});
-
-window.playVideo = playVideo;
-window.closePlayer = closePlayer;
-window.togglePIP = togglePIP;
-window.restoreFromPIP = restoreFromPIP;
-window.openAddModal = openAddModal;
-window.closeAddModal = closeAddModal;
-window.openLoginModal = openLoginModal;
-window.closeLoginModal = closeLoginModal;
-window.proceedYouTubeLogin = proceedYouTubeLogin;
-window.addChannel = addChannel;
-window.doSearch = doSearch;
-window.filterCat = filterCat;
-window.openInYouTube = function() {
-  if (currentPlayingVideoId) {
-    window.open(`https://www.youtube.com/watch?v=${currentPlayingVideoId}`, '_blank');
-  }
-};
-
-function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
-function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
-
-function openLoginModal() { document.getElementById('login-modal').classList.add('open'); }
-function closeLoginModal() { document.getElementById('login-modal').classList.remove('open'); }
-function proceedYouTubeLogin() {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const targetUrl = 'https://accounts.google.com/ServiceLogin?service=youtube&continue=https://www.youtube.com';
-  
-  if (isMobile) {
-    window.open(targetUrl, '_blank');
-  } else {
-    const w = 500;
-    const h = 650;
-    const left = (window.screen.width / 2) - (w / 2);
-    const top = (window.screen.height / 2) - (h / 2);
-    const popup = window.open(targetUrl, 'ytLogin', `width=${w},height=${h},top=${top},left=${left},scrollbars=yes`);
-    
-    if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-      window.open(targetUrl, '_blank');
-    }
-  }
-  
-  // Î°úÍ∑∏???úÎèÑ ??Î°úÏª¨?§ÌÜ†Î¶¨Ïóê ?ÅÌÉúÎ•??Ä?•Ìïò???úÍ∞Å?ÅÏúºÎ°?Î∞òÏòÅ (CORS ?úÍ≥Ñ Í∑πÎ≥µ UI)
-  localStorage.setItem('yt_logged_in', 'true');
-  updateLoginUI();
-  closeLoginModal();
-}
-
-function updateLoginUI() {
-  const btn = document.getElementById('login-ui-btn');
-  if (!btn) return;
-  const isLoggedIn = localStorage.getItem('yt_logged_in') === 'true';
-  if (isLoggedIn) {
-    btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ?ÑÎ¶¨ÎØ∏ÏóÑ`;
-    btn.style.color = '#bef264'; // ?∞Îëê???¨Ïù∏?∏Î°ú Í∞ïÏ°∞
-    btn.onclick = function() {
-      if(confirm('?¥Î? Î°úÍ∑∏???ÅÌÉúÎ°??§Ï†ï?òÏñ¥ ?àÏäµ?àÎã§.\\nÎ°úÍ∑∏?ÑÏõÉ(?ÅÌÉú Ï¥àÍ∏∞?? ?òÏãúÍ≤†Ïäµ?àÍπå?')) {
-        localStorage.removeItem('yt_logged_in');
-        updateLoginUI();
-      }
-    };
-  } else {
-    btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Î°úÍ∑∏??;
-    btn.style.color = '#fff';
-    btn.onclick = openLoginModal;
-  }
-}
-
-// ?îÎ©¥ ÏßÑÏûÖ ??UI Í∞±Ïã†
-document.addEventListener('DOMContentLoaded', updateLoginUI);
-
-async function resolveChannelId(input) {
-  input = input.trim();
-  
-  // 1. ÎßåÏïΩ ?¥Î? Ï±ÑÎÑê ID ?¨Îß∑(UCÎ°??úÏûë?òÍ≥† 24?êÎ¶¨)??ÏßÅÏ†ë ?ÖÎ†•??Í≤ΩÏö∞ Ï¶âÏãú Î∞òÌôò
-  if (/^UC[\w-]{22}$/.test(input)) {
-    return { id: input, name: input };
-  }
-  
-  // 2. ?ÖÎ†•Í∞?Î∂ÑÏÑù Î∞??Ä??URL ?ùÏÑ±
-  let targetUrl = "";
-  let fallbackName = "";
-  
-  // (1) channel/UC... ?ïÌÉú Í≤ÄÏ∂?
-  const channelIdMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/channel\/(UC[\w-]{22})/i);
-  if (channelIdMatch && channelIdMatch[1]) {
-    const channelId = channelIdMatch[1];
-    targetUrl = `https://www.youtube.com/channel/${channelId}`;
-    fallbackName = channelId;
-  }
-  // (2) @handle ?ïÌÉú Í≤ÄÏ∂?
-  else {
-    const handleMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/@([\w.-]+)/i);
-    const cMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/c\/([\w.-]+)/i);
-    const userMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/user\/([\w.-]+)/i);
-    
-    if (handleMatch && handleMatch[1]) {
-      targetUrl = `https://www.youtube.com/@${handleMatch[1]}`;
-      fallbackName = '@' + handleMatch[1];
-    } else if (cMatch && cMatch[1]) {
-      targetUrl = `https://www.youtube.com/c/${cMatch[1]}`;
-      fallbackName = cMatch[1];
-    } else if (userMatch && userMatch[1]) {
-      targetUrl = `https://www.youtube.com/user/${userMatch[1]}`;
-      fallbackName = userMatch[1];
-    } else {
-      // URL???ÑÎãà???ºÎ∞ò ?∏Îì§?¥ÎÇò Í≤Ä?âÏñ¥ ?ïÏãù??Í≤ΩÏö∞
-      if (input.includes('youtube.com')) {
-        // youtube.com???¨Ìï®?òÏñ¥ ?àÏúº???ÑÏùò ?¥Îñ†???ïÍ∑ú?ùÎèÑ ??ÎßûÏ? Í≤ΩÏö∞ (?? ?òÎ™ª Î≥µÏÇ¨??ÎßÅÌÅ¨ ??
-        return null;
-      }
-      const cleaned = input.replace('@', '').trim();
-      if (!cleaned) return null;
-      targetUrl = `https://www.youtube.com/@${cleaned}`;
-      fallbackName = '@' + cleaned;
-    }
-  }
-  
-  if (!targetUrl) return null;
-  console.log(`[YouTube Resolver] ÏµúÏ¢Ö Î∂ÑÏÑù ?Ä??Ï±ÑÎÑê URL: ${targetUrl}`);
-
-  // 3. CORS ?ÑÎ°ù???Ä (HTML ?çÎìù??
-  const htmlProxies = [
-    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`
-  ];
-  
-  for (const getProxyUrl of htmlProxies) {
-    try {
-      const proxyUrl = getProxyUrl(targetUrl);
-      console.log(`[YouTube Resolver] HTML ?ÑÎ°ù??Î∂ÑÏÑù ?úÎèÑ: ${proxyUrl}`);
-      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
-      if (!res.ok) continue;
-      
-      let html = "";
-      if (proxyUrl.includes('allorigins')) {
-        const data = await res.json();
-        html = data.contents || "";
-      } else {
-        html = await res.text();
-      }
-      
-      if (html) {
-        // Ï±ÑÎÑê ?¥Î¶Ñ Ï∂îÏ∂ú ?úÎèÑ
-        let chName = "";
-        let nameMatch = html.match(/<meta property="og:title" content="([^"]+)">/);
-        if (nameMatch && nameMatch[1]) {
-          chName = nameMatch[1].trim();
-        } else {
-          nameMatch = html.match(/<title>([^<]+) - YouTube<\/title>/);
-          if (nameMatch && nameMatch[1]) {
-            chName = nameMatch[1].trim();
-          }
-        }
-        
-        // Ï±ÑÎÑê ID Îß§Ïπ≠ ?úÎèÑ
-        let channelId = "";
-        let match = html.match(/"channelId":"(UC[\w-]{22})"/);
-        if (match?.[1]) channelId = match[1];
-        
-        if (!channelId) {
-          match = html.match(/channel\/(UC[\w-]{22})/);
-          if (match?.[1]) channelId = match[1];
-        }
-        
-        if (!channelId) {
-          match = html.match(/itemprop="channelId" content="(UC[\w-]{22})"/);
-          if (match?.[1]) channelId = match[1];
-        }
-        
-        if (!channelId) {
-          match = html.match(/"browseId":"(UC[\w-]{22})"/);
-          if (match?.[1]) channelId = match[1];
-        }
-
-        if (channelId) {
-          // 'YouTube'??Î∂àÌïÑ?îÌïú ?®Ïñ¥Í∞Ä ?¥Î¶Ñ???¨Ìï®??Í≤ΩÏö∞ ?§Îì¨?¥Ï§å
-          chName = chName.replace(' - YouTube', '').trim();
-          console.log(`[YouTube Resolver] ?±Í≥µ: ID=${channelId}, NAME=${chName}`);
-          return { id: channelId, name: chName || fallbackName };
-        }
-      }
-    } catch (e) {
-      console.warn(`[YouTube Resolver] HTML ?ÑÎ°ù???§Ìå®:`, e);
-    }
-  }
-  
-  // ÎßåÏïΩ URL ?êÏ≤¥Í∞Ä ?¥Î? Ï±ÑÎÑê IDÍ∞Ä ?¨Ìï®??/channel/ ?ïÌÉú?ÄÍ≥? ?ÑÎ°ù?úÍ? Î™®Îëê ÎßâÌûå Í≤ΩÏö∞
-  // ?¨Ïö©???∏ÏùòÎ•??ÑÌï¥ fallback?ºÎ°ú Ï±ÑÎÑê IDÎ•?Í∑∏Î?Î°??¥Î†§ Î∞òÌôò
-  if (targetUrl.includes('/channel/UC')) {
-    const match = targetUrl.match(/channel\/(UC[\w-]{22})/);
-    if (match?.[1]) {
-      return { id: match[1], name: fallbackName || match[1] };
-    }
-  }
-  
-  return null;
-}
-
-async function addChannel() {
-  const input = document.getElementById('ch-input').value.trim();
-  const statusEl = document.getElementById('add-status');
-  if (!input) { statusEl.textContent = 'Ï±ÑÎÑêÎ™ÖÏùÑ ?ÖÎ†•?òÏÑ∏??'; return; }
-  statusEl.style.color = '#888'; statusEl.textContent = '?îç Ï±ÑÎÑê??Í≤Ä??Ï§?..';
-  
-  const result = await resolveChannelId(input);
-  if (!result || !result.id) {
-    statusEl.style.color = '#f87171'; statusEl.textContent = '??Ï±ÑÎÑê??Ï∞æÏùÑ ???ÜÏäµ?àÎã§.';
-    return;
-  }
-  
-  const channelId = result.id;
-  const chName = result.name || input;
-  
-  if (allChannels.find(c => c.id === channelId)) {
-    statusEl.style.color = '#fbbf24'; statusEl.textContent = '?¥Î? Ï∂îÍ???Ï±ÑÎÑê?ÖÎãà??';
-    return;
-  }
-  
-  statusEl.textContent = '?ì° ?ÅÏÉÅ??Í∞Ä?∏Ïò§??Ï§?..';
-  const newCh = { id: channelId, name: chName, handle: input.startsWith('@') ? input : '@' + chName, cat: 'custom' };
-  allChannels.push(newCh);
-  saveChannels();
-  const videos = await fetchChannelVideos(channelId, chName, 'custom');
-  allVideos = [...videos, ...allVideos];
-  statusEl.style.color = '#4ade80'; statusEl.textContent = `??"${chName}" Ï±ÑÎÑê Ï∂îÍ? ?ÑÎ£å!`;
-  document.getElementById('ch-input').value = '';
-  renderContent();
-  setTimeout(closeAddModal, 1200);
-}
-
-function saveChannels() {
-  const custom = allChannels.filter(c => c.cat === 'custom');
-  localStorage.setItem('yt_channels_page', JSON.stringify(custom));
-}
-
-function loadSavedChannels() {
-  try { return JSON.parse(localStorage.getItem('yt_channels_page') || '[]'); } catch { return []; }
-}
 
 function formatViews(views) {
-  if (!views) return 'Ï°∞Ìöå???ÜÏùå';
-  if (views >= 100000000) {
-    return `Ï°∞Ìöå??${(views / 100000000).toFixed(1).replace('.0', '')}?µÌöå`;
-  }
-  if (views >= 10000) {
-    return `Ï°∞Ìöå??${(views / 10000).toFixed(1).replace('.0', '')}ÎßåÌöå`;
-  }
-  if (views >= 1000) {
-    return `Ï°∞Ìöå??${(views / 1000).toFixed(1).replace('.0', '')}Ï≤úÌöå`;
-  }
-  return `Ï°∞Ìöå??${views}??;
+  if (!views) return '\uc870\ud68c\uc218 \uc5c6\uc74c';
+  if (views >= 100000000) return `\uc870\ud68c\uc218 ${(views / 100000000).toFixed(1).replace('.0', '')}\uc5b5\ud68c`;
+  if (views >= 10000) return `\uc870\ud68c\uc218 ${(views / 10000).toFixed(1).replace('.0', '')}\ub9cc\ud68c`;
+  if (views >= 1000) return `\uc870\ud68c\uc218 ${(views / 1000).toFixed(1).replace('.0', '')}\ucc9c\ud68c`;
+  return `\uc870\ud68c\uc218 ${views}\ud68c`;
+}
+
+function strColor(str) {
+  const colors = ['#7c3aed', '#1d4ed8', '#059669', '#b45309', '#be185d', '#0891b2', '#dc2626'];
+  let h = 0;
+  for (const c of str) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff;
+  return colors[Math.abs(h) % colors.length];
 }
 
 function makeCard(v) {
   const card = document.createElement('div');
   card.className = 'yt-card';
   card.onclick = () => playVideo(v.videoId, v.title);
-  
   const viewStr = formatViews(v.views);
-  const infoText = viewStr ? `${viewStr} ??${v.timeAgo}` : v.timeAgo;
-
+  const infoText = viewStr ? `${viewStr} ? ${v.timeAgo}` : v.timeAgo;
   card.innerHTML = `
-    <div class="yt-thumb" style="position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:10px;">
-      <!-- Î∞∞Í≤Ω ?åÎ†à?¥Ïä§?Ä?? ?¥Î?ÏßÄÍ∞Ä Íπ®Ï?Í±∞ÎÇò ?ÜÏúºÎ©??êÎèô ?∏Ï∂ú -->
+    <div class="yt-thumb">
       <div class="yt-thumb-fallback">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#818cf8; opacity:0.85;">
-          <polygon points="6 3 20 12 6 21 6 3" fill="rgba(129, 140, 248, 0.15)"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#818cf8;opacity:0.85">
+          <polygon points="6 3 20 12 6 21 6 3" fill="rgba(129,140,248,0.15)"/>
         </svg>
-        <span style="opacity:0.7;">PlayTime</span>
+        <span style="opacity:0.7">PlayTime</span>
       </div>
-      <!-- ?ÑÎ©¥ ?∏ÎÑ§???¥Î?ÏßÄ (?∏Îùº??onerror ?úÍ±∞, Ï¥àÍ∏∞ opacity 0, ?òÏù¥?úÏù∏ ÏßÄ?êÏö© ?ÑÏö© ?¥Îûò???ëÏû¨) -->
-      <img class="yt-thumb-img" src="${v.thumb}" alt="${v.title}" loading="lazy" style="opacity:0; transition:opacity 0.3s ease;">
+      <img class="yt-thumb-img" src="${v.thumb}" alt="" loading="lazy" style="opacity:0;transition:opacity 0.3s ease" onload="this.style.opacity='1'" onerror="this.style.display='none'">
     </div>
     <div class="yt-card-info">
       <div class="yt-avatar" style="background:${strColor(v.channelName)}">${v.channelName.charAt(0)}</div>
@@ -919,14 +206,105 @@ function makeCard(v) {
   return card;
 }
 
-function strColor(str) {
-  const colors = ['#7c3aed','#1d4ed8','#059669','#b45309','#be185d','#0891b2','#dc2626'];
-  let h = 0;
-  for (let c of str) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff;
-  return colors[Math.abs(h) % colors.length];
+function renderGrid(videos, title) {
+  const main = document.getElementById('yt-main');
+  currentFilteredVideos = videos;
+  renderedVideoCount = 0;
+  main.innerHTML = title ? `<div class="section-title">${title}</div>` : '';
+  if (!videos.length) {
+    main.innerHTML += `<div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><h3>\uc601\uc0c1\uc774 \uc5c6\uc2b5\ub2c8\ub2e4</h3><p>\ucc44\ub110\uc744 \ucd94\uac00\ud558\uba74 \ucd5c\uc2e0 \uc601\uc0c1\uc774 \ud45c\uc2dc\ub429\ub2c8\ub2e4</p></div>`;
+    return;
+  }
+  const grid = document.createElement('div');
+  grid.className = 'yt-grid';
+  grid.id = 'yt-grid-container';
+  main.appendChild(grid);
+  const sentinel = document.createElement('div');
+  sentinel.id = 'scroll-sentinel';
+  sentinel.className = 'yt-loading';
+  sentinel.style.padding = '30px 20px';
+  sentinel.style.display = 'none';
+  sentinel.innerHTML = `<div class="yt-spinner" style="width:28px;height:28px;border-width:2px"></div><span style="font-size:13px;color:#888">\ub354 \ubd88\ub7ec\uc624\ub294 \uc911...</span>`;
+  main.appendChild(sentinel);
+  if (scrollObserver) scrollObserver.disconnect();
+  scrollObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) loadMoreVideos();
+  }, { rootMargin: '200px' });
+  scrollObserver.observe(sentinel);
+  loadMoreVideos();
 }
 
-const CAT_MAP = { news: '?¥Ïä§', opinion: '?úÏÇ¨', movie: '?ÅÌôî', entertainment: '?§ÎùΩ/?àÎä•', sports: '?§Ìè¨Ï∏?, music: '?åÏïÖ', edu: 'ÍµêÏú°', custom: 'ÏßÅÏ†ë Ï∂îÍ?' };
+function loadMoreVideos() {
+  const grid = document.getElementById('yt-grid-container');
+  const sentinel = document.getElementById('scroll-sentinel');
+  if (!grid || !sentinel) return;
+  let nextBatch = currentFilteredVideos.slice(renderedVideoCount, renderedVideoCount + ITEMS_PER_PAGE);
+  if (nextBatch.length === 0 && allVideos.length > 0) {
+    const shuffled = [...allVideos].sort(() => 0.5 - Math.random());
+    nextBatch = shuffled.slice(0, ITEMS_PER_PAGE);
+  }
+  if (!nextBatch.length) {
+    sentinel.style.display = 'none';
+    return;
+  }
+  sentinel.style.display = 'flex';
+  nextBatch.forEach(v => grid.appendChild(makeCard(v)));
+  renderedVideoCount += nextBatch.length;
+  sentinel.style.display = renderedVideoCount < currentFilteredVideos.length ? 'flex' : 'none';
+}
+
+function renderChannelList() {
+  const main = document.getElementById('yt-main');
+  document.getElementById('custom-channel-list-section')?.remove();
+  const customChannels = allChannels.filter(c => c.cat === 'custom');
+  if (!customChannels.length) return;
+  const section = document.createElement('div');
+  section.id = 'custom-channel-list-section';
+  section.style.cssText = 'margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08);padding-bottom:40px';
+  section.innerHTML = `
+    <div class="section-title" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+      <span>\ub0b4\uac00 \ucd94\uac00\ud55c \ucc44\ub110</span>
+      <span style="font-size:11px;color:#666;font-weight:normal">Ï¥ù ${customChannels.length}Í∞ú</span>
+    </div>
+    <div class="yt-ch-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>`;
+  const list = section.querySelector('.yt-ch-list');
+  customChannels.forEach(ch => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);padding:12px 16px;border-radius:12px';
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex:1;min-width:0" onclick="filterByChannel('${ch.id}')">
+        <div class="yt-avatar" style="background:${strColor(ch.name)}">${ch.name.charAt(0).toUpperCase()}</div>
+        <div style="min-width:0">
+          <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ch.name}</div>
+          <div style="font-size:11px;color:#666;margin-top:2px">${ch.handle || '@' + ch.name}</div>
+        </div>
+      </div>
+      <button type="button" onclick="removeChannel(event,'${ch.id}')" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:6px" title="\ucc44\ub110 \uc0ad\uc81c">\u2715</button>`;
+    list.appendChild(row);
+  });
+  main.appendChild(section);
+}
+
+function renderContent() {
+  let filtered = currentFilter === 'all' ? allVideos : allVideos.filter(v => v.channelCat === currentFilter);
+  if (currentFilter === 'all' || currentFilter === 'custom') {
+    filtered.sort((a, b) => new Date(b.published) - new Date(a.published));
+  } else {
+    filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+  }
+  if (!filtered.length && !allVideos.length) {
+    document.getElementById('yt-main').innerHTML = `
+      <div class="empty-state">
+        <svg width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <h3>\ucc44\ub110\uc774 \uc5c6\uc2b5\ub2c8\ub2e4</h3>
+        <p>\uc0c1\ub2e8 <strong>\ucc44\ub110 \ucd94\uac00</strong>\ub97c \ub20c\ub7ec YouTube \ucc44\ub110\uc744 \ucd94\uac00\ud574 \ubcf4\uc138\uc694</p>
+      </div>`;
+    renderChannelList();
+    return;
+  }
+  renderGrid(filtered, currentFilter === 'all' ? '' : (CAT_MAP[currentFilter] || ''));
+  renderChannelList();
+}
 
 function filterCat(cat, btn) {
   currentFilter = cat;
@@ -938,247 +316,189 @@ function filterCat(cat, btn) {
 function doSearch() {
   const q = document.getElementById('search-input')?.value?.trim().toLowerCase();
   if (!q) { renderContent(); return; }
-  const filtered = allVideos.filter(v => v.title.toLowerCase().includes(q) || v.channelName.toLowerCase().includes(q));
-  renderGrid(filtered, `"${q}" Í≤Ä??Í≤∞Í≥º`);
+  const filtered = allVideos.filter(v =>
+    v.title.toLowerCase().includes(q) || v.channelName.toLowerCase().includes(q)
+  );
+  renderGrid(filtered, `"${q}" \uac80\uc0c9 \uacb0\uacfc`);
+  renderChannelList();
 }
 
-let currentFilteredVideos = [];
-let renderedVideoCount = 0;
-const ITEMS_PER_PAGE = 16;
-let scrollObserver = null;
-
-function renderGrid(videos, title) {
-  const main = document.getElementById('yt-main');
-  currentFilteredVideos = videos;
-  renderedVideoCount = 0;
-  
-  main.innerHTML = title ? `<div class="section-title">${title}</div>` : '';
-  if (!videos.length) {
-    main.innerHTML += `<div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><h3>?ÅÏÉÅ???ÜÏäµ?àÎã§</h3><p>Ï±ÑÎÑê??Ï∂îÍ??òÎ©¥ ÏµúÏã† ?ÅÏÉÅ???úÏãú?©Îãà??/p></div>`;
-    return;
-  }
-  
-  const grid = document.createElement('div');
-  grid.className = 'yt-grid';
-  grid.id = 'yt-grid-container';
-  main.appendChild(grid);
-  
-  const sentinel = document.createElement('div');
-  sentinel.id = 'scroll-sentinel';
-  sentinel.className = 'yt-loading';
-  sentinel.style.padding = '30px 20px';
-  sentinel.style.display = 'none';
-  sentinel.innerHTML = `<div class="yt-spinner" style="width:28px; height:28px; border-width:2px;"></div><span style="font-size:13px; color:#888;">Í¥Ä???ÅÏÉÅ Î∂àÎü¨?§Îäî Ï§?..</span>`;
-  main.appendChild(sentinel);
-  
-  if (scrollObserver) scrollObserver.disconnect();
-  scrollObserver = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadMoreVideos();
+async function resolveChannelId(input) {
+  input = input.trim();
+  if (/^UC[\w-]{22}$/.test(input)) return { id: input, name: input };
+  let targetUrl = '';
+  let fallbackName = '';
+  const channelIdMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/channel\/(UC[\w-]{22})/i);
+  if (channelIdMatch?.[1]) {
+    targetUrl = `https://www.youtube.com/channel/${channelIdMatch[1]}`;
+    fallbackName = channelIdMatch[1];
+  } else {
+    const handleMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/@([\w.-]+)/i);
+    const cMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/c\/([\w.-]+)/i);
+    const userMatch = input.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/user\/([\w.-]+)/i);
+    if (handleMatch?.[1]) {
+      targetUrl = `https://www.youtube.com/@${handleMatch[1]}`;
+      fallbackName = '@' + handleMatch[1];
+    } else if (cMatch?.[1]) {
+      targetUrl = `https://www.youtube.com/c/${cMatch[1]}`;
+      fallbackName = cMatch[1];
+    } else if (userMatch?.[1]) {
+      targetUrl = `https://www.youtube.com/user/${userMatch[1]}`;
+      fallbackName = userMatch[1];
+    } else if (input.includes('youtube.com')) {
+      return null;
+    } else {
+      const cleaned = input.replace('@', '').trim();
+      if (!cleaned) return null;
+      targetUrl = `https://www.youtube.com/@${cleaned}`;
+      fallbackName = '@' + cleaned;
     }
-  }, { rootMargin: '200px' });
-  
-  scrollObserver.observe(sentinel);
-  loadMoreVideos();
+  }
+  if (!targetUrl) return null;
+  const htmlProxies = [
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`
+  ];
+  for (const getProxyUrl of htmlProxies) {
+    try {
+      const proxyUrl = getProxyUrl(targetUrl);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) continue;
+      let html = proxyUrl.includes('allorigins') ? (await res.json()).contents || '' : await res.text();
+      if (!html) continue;
+      let chName = html.match(/<meta property="og:title" content="([^"]+)">/)?.[1]?.trim() ||
+        html.match(/<title>([^<]+) - YouTube<\/title>/)?.[1]?.trim() || '';
+      chName = chName.replace(' - YouTube', '').trim();
+      let channelId = html.match(/"channelId":"(UC[\w-]{22})"/)?.[1] ||
+        html.match(/channel\/(UC[\w-]{22})/)?.[1] ||
+        html.match(/itemprop="channelId" content="(UC[\w-]{22})"/)?.[1] ||
+        html.match(/"browseId":"(UC[\w-]{22})"/)?.[1] || '';
+      if (channelId) return { id: channelId, name: chName || fallbackName };
+    } catch (e) {
+      console.warn('[YouTube Resolver]', e);
+    }
+  }
+  if (targetUrl.includes('/channel/UC')) {
+    const m = targetUrl.match(/channel\/(UC[\w-]{22})/);
+    if (m?.[1]) return { id: m[1], name: fallbackName || m[1] };
+  }
+  return null;
 }
 
-function loadMoreVideos() {
-  const grid = document.getElementById('yt-grid-container');
-  const sentinel = document.getElementById('scroll-sentinel');
-  if (!grid || !sentinel) return;
-  
-  let nextBatch = currentFilteredVideos.slice(renderedVideoCount, renderedVideoCount + ITEMS_PER_PAGE);
-  
-  // ?ºÎìúÍ∞Ä ?ùÎÇ¨???? ?ÑÏ≤¥(allVideos)?êÏÑú Î¨¥Ïûë?ÑÎ°ú Ï∂îÏ∂ú?òÏó¨ Î¨¥Ìïú Í¥Ä???ÅÏÉÅ ?úÍ≥µ
-  if (nextBatch.length === 0 && allVideos.length > 0) {
-    const shuffled = [...allVideos].sort(() => 0.5 - Math.random());
-    nextBatch = shuffled.slice(0, ITEMS_PER_PAGE);
-  }
-
-  if (nextBatch.length > 0) {
-    sentinel.style.display = 'flex';
-    setTimeout(() => {
-      nextBatch.forEach(v => grid.appendChild(makeCard(v)));
-      renderedVideoCount += nextBatch.length;
-      // Í∞ïÏ†úÎ°?Î¶¨ÌîåÎ°úÏö∞?òÏó¨ ?µÏ?Î≤ÑÍ? ÏßßÏ? Ïª®ÌÖêÏ∏†Ïóê Í≥ÑÏÜç ?∏Î¶¨Í±∞Îêò???ÑÏÉÅ ?úÏñ¥
-      if (renderedVideoCount < currentFilteredVideos.length) {
-         sentinel.style.display = 'flex';
-      }
-    }, 400); // Î∂Ä?úÎü¨???§ÌÅ¨Î°?ÏßÄ???®Í≥º
-  } else {
-    sentinel.style.display = 'none';
-  }
-}
-
-function renderChannelList() {
-  const main = document.getElementById('yt-main');
-  
-  // Í∏∞Ï°¥???åÎçîÎßÅÎêú Ï±ÑÎÑê Î™©Î°ù ?πÏÖò ?úÍ±∞
-  let chListSection = document.getElementById('custom-channel-list-section');
-  if (chListSection) {
-    chListSection.remove();
-  }
-  
-  const customChannels = allChannels.filter(c => c.cat === 'custom');
-  if (customChannels.length === 0) return;
-  
-  chListSection = document.createElement('div');
-  chListSection.id = 'custom-channel-list-section';
-  chListSection.style.cssText = 'margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); padding-bottom: 40px;';
-  
-  chListSection.innerHTML = `
-    <div class="section-title" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-size: 16px; font-weight: 800; color: #f1f1f1;">?¥Í? Ï∂îÍ???Ï±ÑÎÑê</span>
-      <span style="font-size: 11px; color: #666; font-weight: normal;">Ï¥?${customChannels.length}Í∞?/span>
-    </div>
-    <div class="yt-ch-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
-    </div>
-  `;
-  
-  const listContainer = chListSection.querySelector('.yt-ch-list');
-  
-  customChannels.forEach(ch => {
-    const row = document.createElement('div');
-    row.className = 'yt-ch-row';
-    row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 12px; transition: background 0.2s;';
-    
-    row.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; min-width: 0;" onclick="filterByChannel('${ch.id}')">
-        <div class="yt-avatar" style="background:${strColor(ch.name)}; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: white; flex-shrink: 0;">
-          ${ch.name.charAt(0).toUpperCase()}
-        </div>
-        <div class="yt-ch-info" style="min-width: 0;">
-          <div class="yt-ch-title" style="font-size: 14px; font-weight: 600; color: #f1f1f1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ch.name}</div>
-          <div class="yt-ch-sub" style="font-size: 11px; color: #666; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ch.handle || '@'+ch.name}</div>
-        </div>
-      </div>
-      <button onclick="removeChannel(event, '${ch.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Ï±ÑÎÑê ??†ú">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="3 6 5 6 21 6" />
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-        </svg>
-      </button>
-    `;
-    listContainer.appendChild(row);
-  });
-  
-  main.appendChild(chListSection);
-}
-
-window.filterByChannel = function(channelId) {
-  const ch = allChannels.find(c => c.id === channelId);
-  if (!ch) return;
-  const filtered = allVideos.filter(v => v.channelId === channelId);
-  renderGrid(filtered, `"${ch.name}" Ï±ÑÎÑê ?ÅÏÉÅ`);
-  renderChannelList();
-};
-
-window.removeChannel = function(event, channelId) {
-  event.stopPropagation();
-  if (!confirm('??Ï±ÑÎÑê????†ú?òÏãúÍ≤†Ïäµ?àÍπå?')) return;
-  allChannels = allChannels.filter(c => c.id !== channelId);
-  saveChannels();
-  allVideos = allVideos.filter(v => v.channelId !== channelId);
-  renderContent();
-};
-
-function renderContent() {
-  let filtered = currentFilter === 'all'
-    ? allVideos
-    : allVideos.filter(v => v.channelCat === currentFilter);
-
-  // Ïπ¥ÌÖåÍ≥†Î¶¨ ???¥Î¶≠ ??Ï°∞Ìöå???¥Î¶ºÏ∞®Ïàú(?∏Í∏∞ ?ÅÏÉÅ ?? ?ïÎ†¨
-  // ?? ?ÑÏ≤¥('all') Î∞???Ï±ÑÎÑê('custom') ??? ÏµúÏã† ?ÖÎ°ú???úÏúºÎ°??ïÎ†¨
-  if (currentFilter === 'all' || currentFilter === 'custom') {
-    filtered.sort((a, b) => new Date(b.published) - new Date(a.published));
-  } else {
-    filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
-  }
-
-  if (!filtered.length && allVideos.length === 0) {
-    document.getElementById('yt-main').innerHTML = `
-      <div class="empty-state">
-        <svg width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        <h3>Ï±ÑÎÑê???ÜÏäµ?àÎã§</h3>
-        <p>?∞Ï∏° ?ÅÎã® <strong>Ï±ÑÎÑê Ï∂îÍ?</strong>Î•??åÎü¨<br>?êÌïò??YouTube Ï±ÑÎÑê??Ï∂îÍ???Î≥¥ÏÑ∏??br><br>?? @JTBC_news ¬∑ @YTN_news24 ¬∑ @MBCentertain</p>
-      </div>`;
-    renderChannelList();
+async function addChannel() {
+  const input = document.getElementById('ch-input').value.trim();
+  const statusEl = document.getElementById('add-status');
+  if (!input) { statusEl.textContent = '\ucc44\ub110\uba85\uc744 \uc785\ub825\ud558\uc138\uc694.'; return; }
+  statusEl.style.color = '#888';
+  statusEl.textContent = '\ucc44\ub110\uc744 \uac80\uc0c9 \uc911...';
+  const result = await resolveChannelId(input);
+  if (!result?.id) {
+    statusEl.style.color = '#f87171';
+    statusEl.textContent = '\ucc44\ub110\uc744 \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
     return;
   }
-  renderGrid(filtered, currentFilter === 'all' ? '' : (CAT_MAP[currentFilter] || ''));
-  renderChannelList();
+  if (allChannels.find(c => c.id === result.id)) {
+    statusEl.style.color = '#fbbf24';
+    statusEl.textContent = '\uc774\ubbf8 \ucd94\uac00\ub41c \ucc44\ub110\uc785\ub2c8\ub2e4.';
+    return;
+  }
+  statusEl.textContent = '\uc601\uc0c1\uc744 \uac00\uc838\uc624\ub294 \uc911...';
+  const newCh = { id: result.id, name: result.name || input, handle: input.startsWith('@') ? input : '@' + (result.name || input), cat: 'custom' };
+  allChannels.push(newCh);
+  saveChannels();
+  const videos = await fetchChannelVideos(result.id, newCh.name, 'custom');
+  allVideos = [...videos, ...allVideos];
+  statusEl.style.color = '#4ade80';
+  statusEl.textContent = `"${newCh.name}" \ucc44\ub110 \ucd94\uac00 \uc644\ub8cc!`;
+  document.getElementById('ch-input').value = '';
+  renderContent();
+  setTimeout(closeAddModal, 1200);
+}
+
+function saveChannels() {
+  localStorage.setItem('yt_channels_page', JSON.stringify(allChannels.filter(c => c.cat === 'custom')));
+}
+
+function loadSavedChannels() {
+  try { return JSON.parse(localStorage.getItem('yt_channels_page') || '[]'); } catch { return []; }
+}
+
+function openAddModal() { document.getElementById('add-modal')?.classList.add('open'); }
+function closeAddModal() { document.getElementById('add-modal')?.classList.remove('open'); }
+function openLoginModal() { document.getElementById('login-modal')?.classList.add('open'); }
+function closeLoginModal() { document.getElementById('login-modal')?.classList.remove('open'); }
+
+function proceedYouTubeLogin() {
+  const targetUrl = 'https://accounts.google.com/ServiceLogin?service=youtube&continue=https://www.youtube.com';
+  window.open(targetUrl, '_blank');
+  localStorage.setItem('yt_logged_in', 'true');
+  updateLoginUI();
+  closeLoginModal();
+}
+
+function updateLoginUI() {
+  const btn = document.getElementById('login-ui-btn');
+  if (!btn) return;
+  const loggedIn = localStorage.getItem('yt_logged_in') === 'true';
+  if (loggedIn) {
+    btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="#bef264" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+    btn.setAttribute('aria-label', '\ud504\ub9ac\ubbf8\uc5c4');
+    btn.onclick = () => {
+      if (confirm('\ub85c\uadf8\uc544\uc6c3(\uc0c1\ud0dc \ucd08\uae30\ud654) \ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?')) {
+        localStorage.removeItem('yt_logged_in');
+        updateLoginUI();
+      }
+    };
+  } else {
+    btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    btn.setAttribute('aria-label', '\ub85c\uadf8\uc778');
+    btn.onclick = openLoginModal;
+  }
 }
 
 async function init() {
-  document.getElementById('yt-main').innerHTML = '<div class="yt-loading"><div class="yt-spinner"></div><span>Ï±ÑÎÑê ?ÅÏÉÅ??Î∂àÎü¨?§Îäî Ï§?..</span></div>';
+  document.getElementById('yt-main').innerHTML = '<div class="yt-loading"><div class="yt-spinner"></div><span>\ucc44\ub110 \uc601\uc0c1\uc744 \ubd88\ub7ec\uc624\ub294 \uc911...</span></div>';
   const saved = loadSavedChannels();
   allChannels = [...DEFAULT_CHANNELS, ...saved];
-  const results = await Promise.allSettled(
-    allChannels.map(ch => fetchChannelVideos(ch.id, ch.name, ch.cat))
-  );
-  allVideos = results.flatMap((r, i) => r.status === 'fulfilled' ? r.value : []);
-  
-  // ?†ÌäúÎ∏?Í≥µÏãù RSS ?ºÎìú ?•Ïï†(404/500 ??Î°??∏Ìï¥ Í∏∞Î≥∏ ?úÍ≥µ?òÎäî ?πÏ†ï Ïπ¥ÌÖåÍ≥†Î¶¨Í∞Ä ?ÑÏòà ÎπÑÏñ¥?àÎäî Í≤ΩÏö∞, 
-  // ?¥Ïû•??Î™ÖÌíà Î∞±ÏóÖ ?ôÏòÅ???∞Ïù¥??FALLBACK_VIDEOS)Î•??êÎèô?ºÎ°ú ÎØπÏä§??Mix-in)?òÏó¨ ?ÑÎ≤Ω Î≥¥ÏôÑ
-  const categories = ['news', 'opinion', 'movie', 'entertainment', 'music'];
-  categories.forEach(cat => {
-    const hasVideos = allVideos.some(v => v.channelCat === cat);
-    if (!hasVideos) {
-      console.log(`[YouTube Fallback] RSS ?•Ïï†Í∞Ä Í∞êÏ??òÏñ¥ "${cat}" Ïπ¥ÌÖåÍ≥†Î¶¨??Î∞±ÏóÖ ?∏Í∏∞ ?ÅÏÉÅ???úÏÑ±?îÌï©?àÎã§.`);
-      const backups = FALLBACK_VIDEOS.filter(v => v.channelCat === cat);
-      allVideos = [...allVideos, ...backups];
+  const results = await Promise.allSettled(allChannels.map(ch => fetchChannelVideos(ch.id, ch.name, ch.cat)));
+  allVideos = results.flatMap(r => (r.status === 'fulfilled' ? r.value : []));
+  ['news', 'opinion', 'movie', 'entertainment', 'music'].forEach(cat => {
+    if (!allVideos.some(v => v.channelCat === cat)) {
+      allVideos = [...allVideos, ...FALLBACK_VIDEOS.filter(v => v.channelCat === cat)];
     }
   });
-
   allVideos.sort((a, b) => new Date(b.published) - new Date(a.published));
   renderContent();
-  
-  // Initialize draggable PiP support
-  initDraggable();
 }
 
-// ?òÏù¥Î∏åÎ¶¨?????πÎ∑∞) Î≥¥Ïïà ?òÍ≤Ω??Í≥†Î†§???¥Î?ÏßÄ Î°úÎìú / ?êÎü¨ ?ÑÏó≠ Ï∫°Ï≤ò??
-// ?∏Îùº???¥Î≤§??onerror, onload) Ï∞®Îã® ?ïÏ±Ö???ÑÎ≤Ω???∞Ìöå?òÍ≥†, 3?®Í≥Ñ ?ÑÎ©î???êÍ? Î≥µÍµ¨ Í∏∞Îä•???ÅÏö©?©Îãà??
-document.addEventListener('load', function(e) {
-  if (e.target && e.target.classList && e.target.classList.contains('yt-thumb-img')) {
-    e.target.style.opacity = '1'; // ?±Í≥µ ??Î∂Ä?úÎü¨???òÏù¥?úÏù∏
-  }
-}, true); // Ï∫°Ï≤òÎß??®Í≥Ñ?êÏÑú ÎπÑÎ≤ÑÎ∏îÎßÅ load ?¥Î≤§???ïÏã§???¨Ï∞©
+window.filterByChannel = function (channelId) {
+  const ch = allChannels.find(c => c.id === channelId);
+  if (!ch) return;
+  renderGrid(allVideos.filter(v => v.channelId === channelId), `"${ch.name}" \ucc44\ub110 \uc601\uc0c1`);
+  renderChannelList();
+};
 
-document.addEventListener('error', function(e) {
-  if (e.target && e.target.classList && e.target.classList.contains('yt-thumb-img')) {
-    const img = e.target;
-    // 1Ï∞??§Ìå® ?? i.ytimg.com -> img.youtube.com ?ºÎ°ú ÍµêÏ≤¥?¥ÏÑú ?¨Ïãú??
-    if (img.src.includes('i.ytimg.com')) {
-      const fallbackUrl = img.src.replace('i.ytimg.com', 'img.youtube.com');
-      console.log(`[YouTube Thumbnail] 1Ï∞?Î°úÎìú ?§Ìå®, ?àÍ±∞???ÑÎ©î???ÑÌôò: ${fallbackUrl}`);
-      img.src = fallbackUrl;
-    } 
-    // 2Ï∞??§Ìå® ?? img.youtube.com -> i3.ytimg.com ?ºÎ°ú ÍµêÏ≤¥?¥ÏÑú ?¨Ïãú??
-    else if (img.src.includes('img.youtube.com')) {
-      const fallbackUrl2 = img.src.replace('img.youtube.com', 'i3.ytimg.com');
-      console.log(`[YouTube Thumbnail] 2Ï∞?Î°úÎìú ?§Ìå®, ?ÄÏ≤?CDN ?ÑÎ©î???ÑÌôò: ${fallbackUrl2}`);
-      img.src = fallbackUrl2;
-    }
-    // 3Ï∞?ÏµúÏ¢Ö ?§Ìå® ?? ?¨ÏÉù??Î∂àÍ??•Ìïú ??†ú/Ï∞®Îã® ÎπÑÎîî?§Î°ú ?êÎã®?òÏó¨ ÎπÑÎîî??Ïπ¥Îìú ?êÏ≤¥Î•?DOM?êÏÑú ?ÑÏ†Ñ ?åÎ©∏
-    else {
-      console.warn(`[YouTube Thumbnail] Î™®Îì† ?ÑÎ©î??Î°úÎìú ?§Ìå®. ?¨ÏÉù??Î∂àÍ????ÅÏÉÅ?ºÎ°ú ?êÎã®?òÏó¨ Ïπ¥Îìú ?úÍ±∞: ${img.src}`);
-      const card = img.closest('.yt-card');
-      if (card) {
-        card.remove();
-        
-        // Ïπ¥ÎìúÍ∞Ä ?ÑÏ†Ñ??ÏßÄ?åÏ†∏??ÎπÑÏñ¥?àÍ≤å ?òÎäî Í≤ΩÏö∞ "?ÅÏÉÅ???ÜÏäµ?àÎã§" ?åÎçîÎß?
-        const grid = document.querySelector('.yt-grid');
-        if (grid && grid.children.length === 0) {
-          const main = document.getElementById('yt-main');
-          const titleHtml = main.querySelector('.section-title') ? main.querySelector('.section-title').outerHTML : '';
-          main.innerHTML = titleHtml + `<div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><h3>?ÅÏÉÅ???ÜÏäµ?àÎã§</h3><p>Ï±ÑÎÑê??Ï∂îÍ??òÍ±∞???àÎ°úÍ≥†Ïπ®??Ï£ºÏÑ∏??/p></div>`;
-        }
-      }
-    }
-  }
-}, true); // Ï∫°Ï≤òÎß??®Í≥Ñ?êÏÑú ÎπÑÎ≤ÑÎ∏îÎßÅ error ?¥Î≤§???ïÏã§???¨Ï∞©
+window.removeChannel = function (event, channelId) {
+  event.stopPropagation();
+  if (!confirm('\uc774 \ucc44\ub110\uc744 \uc0ad\uc81c\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?')) return;
+  allChannels = allChannels.filter(c => c.id !== channelId);
+  allVideos = allVideos.filter(v => v.channelId !== channelId);
+  saveChannels();
+  renderContent();
+};
+
+window.playVideo = playVideo;
+window.closePlayer = closePlayer;
+window.openAddModal = openAddModal;
+window.closeAddModal = closeAddModal;
+window.openLoginModal = openLoginModal;
+window.closeLoginModal = closeLoginModal;
+window.proceedYouTubeLogin = proceedYouTubeLogin;
+window.addChannel = addChannel;
+window.doSearch = doSearch;
+window.filterCat = filterCat;
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePlayer(); });
+document.addEventListener('DOMContentLoaded', updateLoginUI);
 init();
-
