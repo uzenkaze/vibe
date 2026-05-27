@@ -3,10 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- TV 환경 감지 스크립트 -->
+  <script>
+    (function() {
+      var w = window.screen ? window.screen.width : window.innerWidth;
+      var h = window.screen ? window.screen.height : window.innerHeight;
+      var ua = navigator.userAgent || '';
+      var isMobileUA = /Mobile|Android.*Mobile|iPhone|iPod|IEMobile|BlackBerry|Opera Mini/i.test(ua);
+      var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      var hasTVKeyword = /Android TV|SmartTV|SMART-TV|HbbTV|Tizen|WebOS|VIDAA|Vizio|Roku|Fire TV|TV Build|television/i.test(ua);
+      var isTV = false;
+      if (hasTVKeyword) {
+        isTV = true;
+      } else if (!isMobileUA && !isTouchDevice) {
+        isTV = (w >= 1280 || (typeof window.matchMedia === 'function' && window.matchMedia('(device-width: 1920px)').matches) || (w > 0 && h > 0 && Math.max(w, h) >= 1280));
+      }
+      if (isMobileUA || isTouchDevice) {
+        isTV = false;
+      }
+      if (isTV) {
+        document.documentElement.classList.add('tv-mode');
+        var meta = document.querySelector('meta[name=viewport]');
+        if (meta) {
+          meta.content = 'width=' + Math.max(w, 1280) + ', initial-scale=1.0, user-scalable=no';
+        }
+      }
+      window.__IS_TV__ = isTV;
+    })();
+  </script>
   <title>PlayTime - YT Music</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="src/ytmusic.css?v=5">
+  <link rel="stylesheet" href="src/ytmusic.css?v=6">
 </head>
 <body>
 
@@ -191,7 +219,7 @@
       </svg>
       <span style="font-size:10px; font-weight:700;">유튜브</span>
     </button>
-    <button class="active" onclick="window.location.href='ytmusic.html?v=5'">
+    <button class="active" onclick="window.location.href='ytmusic.html?v=6'">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/>
       </svg>
@@ -206,6 +234,6 @@
   </div>
 
   <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="src/ytmusic.js?v=5"></script>
+  <script src="src/ytmusic.js?v=6"></script>
 </body>
 </html>

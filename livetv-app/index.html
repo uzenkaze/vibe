@@ -219,8 +219,48 @@
         <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-yellow-100 to-amber-300 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
       </a>
 
-      <!-- Status Bar Area (Clock & Battery) 완전히 빈 태그로 비워둠 -->
-      <div class="flex items-center gap-4">
+      <!-- 우측 상단: 시계 + 배터리 -->
+      <div class="flex items-center gap-2 mb-[10px]">
+        <!-- 시계 -->
+        <div id="header-clock" style="
+          font-size: 15px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          color: rgba(255,255,255,0.88);
+          font-variant-numeric: tabular-nums;
+          min-width: 38px;
+          text-align: right;
+        "></div>
+        <!-- 배터리 -->
+        <div id="header-battery" style="display:flex;align-items:center;gap:3px;">
+          <div style="position:relative;width:22px;height:11px;">
+            <div id="battery-body" style="
+              position:absolute;left:0;top:0;
+              width:19px;height:11px;
+              border:1.5px solid rgba(255,255,255,0.55);
+              border-radius:2.5px;
+              overflow:hidden;
+            ">
+              <div id="battery-fill" style="
+                position:absolute;left:0;top:0;bottom:0;
+                width:100%;
+                background:rgba(74,222,128,0.9);
+                border-radius:1.5px;
+                transition:width 0.5s, background 0.5s;
+              "></div>
+            </div>
+            <div style="
+              position:absolute;right:0;top:50%;transform:translateY(-50%);
+              width:2.5px;height:5px;
+              background:rgba(255,255,255,0.45);
+              border-radius:0 1px 1px 0;
+            "></div>
+          </div>
+          <!-- 충전 중일 때만 표시 -->
+          <svg id="battery-charging" width="9" height="12" viewBox="0 0 24 24" fill="#facc15" style="display:none">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
       </div>
     </header>
 
@@ -445,7 +485,7 @@
     </button>
 
     <!-- YT Music -->
-    <button onclick="window.location.href='ytmusic.html?v=CACHE_BUST'" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
+    <button onclick="window.location.href='ytmusic.html?v=6'" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/>
       </svg>
@@ -487,8 +527,63 @@
       }
       window.location.href = targetUrl;
     }
+
+    // 24시간 시계
+    (function() {
+      function updateClock() {
+        var el = document.getElementById('header-clock');
+        if (!el) return;
+        var now = new Date();
+        var h = String(now.getHours()).padStart(2, '0');
+        var m = String(now.getMinutes()).padStart(2, '0');
+        el.textContent = h + ':' + m;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    })();
+
+    // 배터리 잔량 표시
+    (function() {
+      function updateBattery(battery) {
+        var pct = Math.round(battery.level * 100);
+        var fill = document.getElementById('battery-fill');
+        var charging = document.getElementById('battery-charging');
+        var body = document.getElementById('battery-body');
+        if (!fill) return;
+
+        fill.style.width = pct + '%';
+
+        // 잔량에 따른 색상
+        if (pct <= 20) {
+          fill.style.background = 'rgba(239,68,68,0.9)';
+        } else if (pct <= 50) {
+          fill.style.background = 'rgba(251,191,36,0.9)';
+        } else {
+          fill.style.background = 'rgba(74,222,128,0.9)';
+        }
+
+        // 충전 중일 때만 번개 아이콘 표시
+        if (charging) charging.style.display = battery.charging ? 'inline' : 'none';
+        if (body) body.style.borderColor = battery.charging
+          ? 'rgba(250,204,21,0.7)' : 'rgba(255,255,255,0.55)';
+      }
+
+      if (navigator.getBattery) {
+        navigator.getBattery().then(function(battery) {
+          updateBattery(battery);
+          battery.addEventListener('levelchange', function() { updateBattery(battery); });
+          battery.addEventListener('chargingchange', function() { updateBattery(battery); });
+        }).catch(function() {
+          var el = document.getElementById('header-battery');
+          if (el) el.style.display = 'none';
+        });
+      } else {
+        var el = document.getElementById('header-battery');
+        if (el) el.style.display = 'none';
+      }
+    })();
   </script>
-  <script type="module" src="./src/main.js?v=CACHE_BUST"></script>
+  <script type="module" src="./src/main.js?v=3"></script>
 </body>
 
 </html>

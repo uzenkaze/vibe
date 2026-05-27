@@ -109,6 +109,9 @@ function updateLoginUI() {
 /* ══════════════ SEARCH ══════════════ */
 async function searchMusic(query, setInput = true, isAppend = false) {
   if (isSearchLoading) return;
+  
+  const isCustomSearch = !query;
+  
   if (!query) query = document.getElementById('search-input').value.trim();
   else if (setInput) document.getElementById('search-input').value = query;
   if (!query) return;
@@ -116,7 +119,9 @@ async function searchMusic(query, setInput = true, isAppend = false) {
   if (!isAppend) {
     currentSearchQuery = query;
     searchPageCount = 0;
-    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    if (isCustomSearch) {
+      document.querySelectorAll('.yt-cat').forEach(p => p.classList.remove('active'));
+    }
     document.getElementById('music-list').innerHTML = '';
   }
 
@@ -238,12 +243,12 @@ async function searchMusic(query, setInput = true, isAppend = false) {
 
 /* ══════════════ PILL / TABS ══════════════ */
 function activatePill(el) {
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.yt-cat').forEach(p => p.classList.remove('active'));
   if (el) el.classList.add('active');
 }
 
 async function loadTrending() {
-  activatePill(document.querySelector('.pill'));
+  activatePill(document.querySelector('.yt-cat'));
   document.getElementById('search-input').value = '';
   
   const cacheKey = 'ytm_trending_cache';
