@@ -11,11 +11,11 @@
     "dev_deploy_date": "",
     "deploy_date": "",
     "pub_content": "",
-    "remarks": "",
+    "remarks": "[작업파일]\nC:\\work\\workspace_git\\02_Application\\src\\main\\java\\ehimart\\app\\domain\\common\\HCodeConstants.java\nC:\\work\\workspace_git\\04_FrontMobile\\src\\main\\java\\ehimart\\webapp\\frontMobile\\goods\\ProductContorller.java\nC:\\work\\workspace_git\\04_FrontMobile\\WebContent\\WEB-INF\\jsp\\goods\\productReusePhoneDetail.jsp",
     "start_date": "",
     "end_date": "",
     "reference": "feature-00000",
-    "updated_at": "2026-05-27T23:50:04.671Z"
+    "updated_at": "2026-05-28T03:54:40.927Z"
   },
   {
     "id": "1778639112834",
