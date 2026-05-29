@@ -829,28 +829,90 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     target.onerror = () => tryNextUrl(ch, urlIdx);
   }
 
-  // 3초 내에 playing 이벤트가 발생하지 않으면 다음 URL로 전환
+  // 8초 내에 playing 이벤트가 발생하지 않으면 다음 URL로 전환
   playbackTimeout = setTimeout(() => {
     if (target.paused || target.currentTime === 0) {
-      console.warn(`3초 타임아웃 - 다음 URL 시도: ${ch.name} (index: ${urlIdx})`);
+      console.warn(`8초 타임아웃 - 다음 URL 시도: ${ch.name} (index: ${urlIdx})`);
       tryNextUrl(ch, urlIdx);
     }
-  }, 3000);
+  }, 8000);
 }
 
-function tryNextUrl(ch, currentIdx) {
+let isFetchingStreams = false;
+let lastFetchTime = 0;
+
+async function fetchLatestStreams() {
+  if (isFetchingStreams || Date.now() - lastFetchTime < 60000) return;
+  isFetchingStreams = true;
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kr.m3u');
+    if (!res.ok) throw new Error('Network error');
+    const text = await res.text();
+    const lines = text.split('\n');
+    let currentId = null;
+    let urlMap = {};
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith('#EXTINF:')) {
+        const name = line.substring(line.indexOf(',') + 1).toUpperCase();
+        if (name.includes('MBC') && !name.includes('DRAMA') && !name.includes('NET') && !name.includes('EVERY') && !name.includes('M') && !name.includes('ON')) currentId = 'mbc';
+        else if (name.includes('SBS') && !name.includes('BIZ') && !name.includes('MTV') && !name.includes('PLUS')) currentId = 'sbs';
+        else if (name.includes('EBS 1') || name.includes('EBS1')) currentId = 'ebs1';
+        else if (name.includes('EBS 2') || name.includes('EBS2')) currentId = 'ebs2';
+        else if (name.includes('KBS 1') || name.includes('KBS1')) currentId = 'kbs1';
+        else if (name.includes('KBS 2') || name.includes('KBS2')) currentId = 'kbs2';
+        else if (name.includes('YTN') && !name.includes('SCIENCE') && !name.includes('LIFE')) currentId = 'ytn';
+        else if (name.includes('YONHAP') || name.includes('연합뉴스')) currentId = 'yonhap';
+        else currentId = null;
+      } else if (line.startsWith('http') && currentId) {
+        if (!urlMap[currentId]) urlMap[currentId] = [];
+        urlMap[currentId].push(line);
+        currentId = null;
+      }
+    }
+
+    CHANNELS.forEach(ch => {
+      if (urlMap[ch.id]) {
+        // Add new URLs to the front to prioritize them
+        const newUrls = urlMap[ch.id].filter(u => !ch.urls.includes(u));
+        ch.urls.unshift(...newUrls);
+      }
+    });
+    lastFetchTime = Date.now();
+    console.log('[LiveTV] Updated channels with latest streams from iptv-org');
+  } catch (err) {
+    console.error('[LiveTV] Failed to fetch latest streams:', err);
+  } finally {
+    isFetchingStreams = false;
+  }
+}
+
+async function tryNextUrl(ch, currentIdx) {
   if (playbackTimeout) clearTimeout(playbackTimeout);
   const urlList = ch.urls || (ch.url ? [ch.url] : []);
   if (currentIdx < urlList.length - 1) {
     playChannel(ch, currentIdx + 1);
-  } else if (ch.ytChannelId) {
-    // 모든 HLS URL 실패 및 유튜브 채널 ID 존재 → 유튜브 라이브 iframe 즉시 노출 및 재생
-    showYouTubeIframePlayback(ch);
-  } else if (ch.ytHandle || ch.officialUrl) {
-    // 모든 HLS URL 실패 및 핸들 혹은 공식 URL 존재 → 폴백 UI
-    showYouTubeFallback(ch);
   } else {
-    showLoading(true, '현재 채널 접속이 불안정합니다. 다른 채널을 선택해 주세요.');
+    // If all URLs failed, attempt to fetch fresh streams
+    if (Date.now() - lastFetchTime > 10000) { // Allow refetch if 10 seconds passed
+      showLoading(true, '새로운 라이브 주소를 찾는 중입니다...');
+      const oldLen = ch.urls.length;
+      await fetchLatestStreams();
+      if (ch.urls.length > oldLen) {
+        // Play with the newly discovered URL at index 0
+        playChannel(ch, 0);
+        return;
+      }
+    }
+
+    if (ch.ytChannelId) {
+      showYouTubeIframePlayback(ch);
+    } else if (ch.ytHandle || ch.officialUrl) {
+      showYouTubeFallback(ch);
+    } else {
+      showLoading(true, '현재 채널 접속이 불안정합니다. 다른 채널을 선택해 주세요.');
+    }
   }
 }
 
@@ -1679,6 +1741,7 @@ function updateBottomBarActiveState(tabName) {
 }
 window.updateBottomBarActiveState = updateBottomBarActiveState;
 
+
 window.switchTab = function(tabName) {
   const btns = {
     live: document.getElementById('tab-btn-live'),
@@ -1708,46 +1771,6 @@ window.switchTab = function(tabName) {
     window.location.href = 'youtube.html';
   }
 };
-
-async function preloadWorkingUrls() {
-  const checkUrl = async (url) => {
-    try {
-      const c = new AbortController();
-      const t = setTimeout(() => c.abort(), 2500);
-      const proxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
-      const res = await fetch(proxy, { signal: c.signal });
-      clearTimeout(t);
-      if (!res.ok) return false;
-      const text = await res.text();
-      return text && text.includes('#EXTM3U');
-    } catch (e) {
-      return false;
-    }
-  };
-
-  // urls가 여러 개인 모든 채널 대상으로 첫 번째 URL 사전 검증
-  const multiUrlChannels = CHANNELS.filter(c => c.urls && c.urls.length > 1);
-  for (const ch of multiUrlChannels) {
-    checkUrl(ch.urls[0]).then(isOk => {
-      if (!isOk) {
-        // 첫 URL 실패 시 두 번째 URL 검증 후 순서 교체
-        checkUrl(ch.urls[1]).then(isOk2 => {
-          if (isOk2) {
-            const temp = ch.urls[0];
-            ch.urls[0] = ch.urls[1];
-            ch.urls[1] = temp;
-            console.log(`[Preload] URL 순서 교체: ${ch.name}`);
-            
-            // 만약 현재 이 채널이 에러로 멈춰있다면 갱신된 URL로 재시작
-            if (activeChannelId === ch.id && currentUrlIdx === 0) {
-              playChannel(ch, 0);
-            }
-          }
-        });
-      }
-    });
-  }
-}
 
 function initHeaderStatus() {
   const timeEl = document.getElementById('status-time');
@@ -1786,7 +1809,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderCategories();
   renderChannels();
   initControls(); // 컨트롤 초기화
-  preloadWorkingUrls(); // 접속가능한 지상파 URL 사전 확인
   initHeaderStatus(); // 상단 헤더 시간/배터리 잔량 초기화
 
   // URL 파라미터 체크로 즐겨찾기 초기 활성화 지원

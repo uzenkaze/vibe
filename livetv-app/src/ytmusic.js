@@ -13,13 +13,14 @@ let isShuffle       = false;
 let isRepeat        = false;   // false | 'one' | 'all'
 let repeatMode      = 0;       // 0=off, 1=all, 2=one
 let isLiked         = false;
-let activeBottomTab = 'next';
+let activeBottomTab = '';
 let currentSearchQuery = '';
 let searchPageCount = 0;
 let isSearchLoading = false;
 
 /* ══════════════ YT IFRAME API ══════════════ */
-window.onYouTubeIframeAPIReady = function () {
+function initPlayer() {
+  if (ytPlayer) return;
   ytPlayer = new YT.Player('yt-player', {
     height: '100%', width: '100%',
     videoId: '',
@@ -29,7 +30,15 @@ window.onYouTubeIframeAPIReady = function () {
       onStateChange: onPlayerStateChange
     }
   });
+}
+
+window.onYouTubeIframeAPIReady = function () {
+  initPlayer();
 };
+
+if (window.YT && window.YT.Player) {
+  initPlayer();
+}
 
 function onPlayerStateChange(event) {
   if (event.data === YT.PlayerState.PLAYING) {
@@ -65,7 +74,75 @@ document.addEventListener('DOMContentLoaded', () => {
   initProgressBar();
   initBottomSheet();
   initInfiniteScroll();
+  initPullToRefresh();
 });
+
+// ── 당겨서 새로고침 (Pull-to-Refresh) ────────────────────────────────────────
+function initPullToRefresh() {
+  const indicator = document.getElementById('pull-refresh-indicator');
+  if (!indicator) return;
+
+  let startY = 0;
+  let pulling = false;
+  let triggered = false;
+  const THRESHOLD = 70;
+
+  document.addEventListener('touchstart', e => {
+    if (window.scrollY > 5) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+    triggered = false;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if (dist <= 0) { pulling = false; return; }
+
+    const progress = Math.min(dist / THRESHOLD, 1);
+    indicator.style.opacity = progress;
+    
+    // 화면 중앙 기준
+    const offset = 60 - Math.min(dist * 0.4, 60);
+    indicator.style.transform = `translateX(-50%) translateY(calc(-50% + ${offset}px))`;
+
+    if (dist >= THRESHOLD && !triggered) {
+      triggered = true;
+      indicator.classList.add('ready');
+    } else if (dist < THRESHOLD) {
+      indicator.classList.remove('ready');
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', async () => {
+    if (!pulling) return;
+    pulling = false;
+
+    if (triggered) {
+      indicator.classList.add('refreshing');
+      indicator.style.transform = 'translateX(-50%) translateY(-50%)'; // 정중앙 고정
+      
+      // 새로고침 로직
+      // 현재 활성화된 카테고리를 찾아서 클릭 발생 또는 함수 호출
+      const activeBtn = document.querySelector('.yt-cat.active');
+      if (activeBtn) {
+        activeBtn.click();
+      } else {
+        await loadTrending();
+      }
+
+      setTimeout(() => {
+        indicator.classList.remove('refreshing', 'ready');
+        indicator.style.opacity = '0';
+        indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
+      }, 500);
+    } else {
+      indicator.style.opacity = '0';
+      indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
+    }
+    triggered = false;
+  });
+}
 
 /* ══════════════ LOGIN ══════════════ */
 function openLoginModal()  { document.getElementById('login-modal').classList.add('open'); }
@@ -134,8 +211,8 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     else loadEl.classList.add('active');
   }
 
-  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
-  const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
+  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
+  const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
   
   let html = '';
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
@@ -159,7 +236,10 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     ];
     for (const makeProxy of proxies) {
       try {
-        const res = await fetch(makeProxy(targetUrl));
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const res = await fetch(makeProxy(targetUrl), { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (!res.ok) continue;
         if (makeProxy(targetUrl).includes('allorigins')) {
           html = (await res.json()).contents;
@@ -181,9 +261,11 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     return;
   }
 
-  const prefix = 'var ytInitialData = ';
-  const si = html.indexOf(prefix);
-  if (si === -1) {
+  let jsonStr = '';
+  const match = html.match(/(?:var\s+ytInitialData\s*=|window\["ytInitialData"\]\s*=)\s*(.*?)\s*;</);
+  if (match) {
+    jsonStr = match[1];
+  } else {
     if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">데이터 구조가 변경되었습니다.</div>`;
     if (loadEl) {
       if (isAppend) loadEl.style.display = 'none';
@@ -192,21 +274,19 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     isSearchLoading = false;
     return;
   }
-  const ei = html.indexOf(';</script>', si);
-  const jsonStr = html.substring(si + prefix.length, ei);
 
   let data;
   try {
     try { data = JSON.parse(jsonStr); }
     catch { data = new Function('return ' + jsonStr)(); }
+    if (typeof data === 'string') data = JSON.parse(data);
 
-    const contents = data.contents
-      .twoColumnSearchResultsRenderer
-      .primaryContents
-      .sectionListRenderer
-      .contents[0]
-      .itemSectionRenderer
-      .contents;
+    let contents = [];
+    if (data.contents?.twoColumnSearchResultsRenderer) {
+      contents = data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+    } else if (data.contents?.sectionListRenderer) {
+      contents = data.contents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+    }
 
     const songs = [];
     for (const item of contents) {
@@ -294,6 +374,24 @@ function loadRecent() {
   }, 80);
 }
 
+function loadLikedSongs() {
+  const listEl = document.getElementById('music-list');
+  document.getElementById('loading-indicator').classList.add('active');
+  listEl.innerHTML = '';
+  setTimeout(() => {
+    let liked = [];
+    try { liked = JSON.parse(localStorage.getItem('ytm_liked')) || []; } catch {}
+    document.getElementById('loading-indicator').classList.remove('active');
+    currentPlaylist = liked;
+    renderMusicList(liked);
+    if (!liked.length) {
+      listEl.innerHTML = `<div class="tab-placeholder">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg><br>
+        좋아요를 누른 음악이 없습니다.</div>`;
+    }
+  }, 80);
+}
+
 function saveToRecent(song) {
   let recent = [];
   try { recent = JSON.parse(localStorage.getItem('ytm_recent')) || []; } catch {}
@@ -352,6 +450,14 @@ function playMusic(song, index) {
   const hqThumb = 'https://i.ytimg.com/vi/' + song.videoId + '/hqdefault.jpg';
   document.getElementById('mini-thumb').src  = song.thumb;
   document.getElementById('mini-title').textContent  = song.title;
+  document.getElementById('mini-artist').textContent = song.artist;
+  
+  // 좋아요 상태 복원
+  let liked = [];
+  try { liked = JSON.parse(localStorage.getItem('ytm_liked')) || []; } catch {}
+  isLiked = !!liked.find(s => s.videoId === song.videoId);
+  const btn = document.getElementById('like-btn');
+  if (btn) btn.classList.toggle('liked', isLiked);
   document.getElementById('mini-artist').textContent = song.artist;
   document.getElementById('mini-player').classList.add('visible');
 
@@ -441,9 +547,25 @@ function toggleRepeat(event) {
 
 /* ══════════════ LIKE ══════════════ */
 function toggleLike() {
+  if (!currentVideoId) return;
+  const song = currentPlaylist[currentIndex];
+  if (!song) return;
+
   isLiked = !isLiked;
   const btn = document.getElementById('like-btn');
   if (btn) btn.classList.toggle('liked', isLiked);
+  
+  let liked = [];
+  try { liked = JSON.parse(localStorage.getItem('ytm_liked')) || []; } catch {}
+  
+  if (isLiked) {
+    if (!liked.find(s => s.videoId === song.videoId)) {
+      liked.unshift(song);
+    }
+  } else {
+    liked = liked.filter(s => s.videoId !== song.videoId);
+  }
+  localStorage.setItem('ytm_liked', JSON.stringify(liked));
 }
 
 /* ══════════════ OPEN / CLOSE FULL PLAYER ══════════════ */
@@ -553,8 +675,8 @@ async function searchRelated(videoId, container) {
   const song = currentPlaylist[currentIndex];
   if (!song) return;
   const query = `${song.artist} 관련 음악`;
-  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
-  const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D`;
+  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
+  const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
   
   let html = '';
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
@@ -578,7 +700,10 @@ async function searchRelated(videoId, container) {
     ];
     for (const makeProxy of proxies) {
       try {
-        const res = await fetch(makeProxy(targetUrl));
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const res = await fetch(makeProxy(targetUrl), { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (!res.ok) continue;
         if (makeProxy(targetUrl).includes('allorigins')) {
           html = (await res.json()).contents;
@@ -596,16 +721,20 @@ async function searchRelated(videoId, container) {
   }
 
   try {
-    const prefix = 'var ytInitialData = ';
-    const si = html.indexOf(prefix);
-    const ei = html.indexOf(';</script>', si);
-    const jsonStr = html.substring(si + prefix.length, ei);
+    let jsonStr = '';
+    const match = html.match(/(?:var\s+ytInitialData\s*=|window\["ytInitialData"\]\s*=)\s*(.*?)\s*;</);
+    if (match) jsonStr = match[1];
+    else throw new Error("No ytInitialData");
     let data;
     try { data = JSON.parse(jsonStr); } catch { data = new Function('return ' + jsonStr)(); }
+    if (typeof data === 'string') data = JSON.parse(data);
 
-    const contents = data.contents.twoColumnSearchResultsRenderer
-      .primaryContents.sectionListRenderer.contents[0]
-      .itemSectionRenderer.contents;
+    let contents = [];
+    if (data.contents?.twoColumnSearchResultsRenderer) {
+      contents = data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+    } else if (data.contents?.sectionListRenderer) {
+      contents = data.contents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+    }
 
     const songs = [];
     for (const item of contents) {
@@ -851,3 +980,30 @@ function initInfiniteScroll() {
     }
   }, 5 * 60 * 1000); // 5 minutes
 }
+
+// Export functions to window because this script is loaded as a module
+Object.assign(window, {
+  openFullPlayer,
+  closeFullPlayer,
+  togglePlay,
+  playNext,
+  playPrev,
+  toggleShuffle,
+  toggleRepeat,
+  switchBottomTab,
+  toggleDrawer,
+  openLoginModal,
+  closeLoginModal,
+  proceedYouTubeLogin,
+  activatePill,
+  loadTrending,
+  loadRecent,
+  searchMusic,
+  toggleLike,
+  switchMode
+});
+
+
+
+
+

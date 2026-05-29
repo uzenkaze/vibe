@@ -88,13 +88,15 @@
       background: rgba(12, 12, 18, 0.8);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+      padding-top: calc(env(safe-area-inset-top, 0px) - 2px) !important;
+      padding-bottom: 10px !important;
       height: calc(4rem + env(safe-area-inset-top)) !important;
     }
 
     @media (max-width: 1023px) {
       .glass-nav {
-        padding-top: calc(env(safe-area-inset-top, 0px) + 28px) !important;
+        padding-top: calc(env(safe-area-inset-top, 0px) + 18px) !important;
+        padding-bottom: 10px !important;
         height: calc(4.5rem + env(safe-area-inset-top)) !important;
       }
     }
@@ -208,7 +210,7 @@
     <!-- Header -->
     <header class="glass-nav h-16 flex items-center justify-between px-6 z-50 flex-shrink-0 border-b border-white/10 bg-zinc-950/40 backdrop-blur-md">
       <!-- PlayTime Logo & Title -->
-      <a href="index.html" class="flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity mb-[10px]">
+      <a href="index.html" class="flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity">
         <div class="w-6 h-6 bg-gradient-to-tr from-amber-400 via-yellow-400 to-yellow-500 rounded-[7px] flex items-center justify-center shadow-lg shadow-yellow-500/20 group-hover/logo:scale-105 transition-transform duration-300">
           <div class="w-4 h-4 bg-zinc-900 rounded-[4px] flex items-center justify-center">
             <svg width="6" height="6" viewBox="0 0 24 24" fill="none">
@@ -220,7 +222,7 @@
       </a>
 
       <!-- 우측 상단: 시계 + 배터리 -->
-      <div class="flex items-center gap-2 mb-[10px]">
+      <div class="flex items-center gap-2">
         <!-- 시계 -->
         <div id="header-clock" style="
           font-size: 15px;
@@ -485,20 +487,22 @@
     </button>
 
     <!-- YT Music -->
-    <button onclick="window.location.href='ytmusic.html?v=6'" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
+    <button onclick="window.location.href='ytmusic.html'" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/>
       </svg>
       <span class="text-[10px] font-bold">YT Music</span>
     </button>
 
-    <!-- 즐겨찾기 (Favorites) -->
-    <button onclick="window.switchTab('favorites')" id="tab-btn-favorites" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
+    <!-- 넷플릭스 -->
+    <button onclick="window.open('https://www.netflix.com', '_blank')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        <path d="M4 2v20h3.5v-7.5L16 22h4V2h-3.5v7.5L8 2H4z"/>
       </svg>
-      <span class="text-[10px] font-bold">즐겨찾기</span>
+      <span class="text-[10px] font-bold">넷플릭스</span>
     </button>
+
+
   </div>
 
   </div> <!-- End app-container -->

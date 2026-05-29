@@ -40,6 +40,11 @@ const DEFAULT_CHANNELS = [
   { id: 'UCaWT7FJKbcsMJBqUicb5v_w', name: 'HYBE LABELS', cat: 'music' },
   { id: 'UCTOe4j3r2JX1dE2sSzTvGJA', name: 'SMTOWN', cat: 'music' },
   { id: 'UCQhSqy2fVQMhXJv1oMLKlXA', name: 'JYP Entertainment', cat: 'music' },
+  // 교양
+  { id: 'UC-mOecNEMHGAE-3U1TzQpEQ', name: 'EBS 교양', cat: 'documentary' },
+  { id: 'UCW_oMms-7eJ_zW7VjBte9bA', name: 'KBS 교양', cat: 'documentary' },
+  { id: 'UCbYmH6LdD4L-sBqMhC40B8Q', name: '지식채널e', cat: 'documentary' },
+  { id: 'UC7Fv2yCQrBUvCXBCaRV12Iw', name: '사물궁이', cat: 'documentary' },
 ];
 
 const CAT_MAP = {
@@ -49,6 +54,7 @@ const CAT_MAP = {
   news: '뉴스',
   opinion: '시사',
   movie: '영화',
+  documentary: '교양',
   entertainment: '오락/예능',
   music: '음악',
 };
@@ -77,8 +83,8 @@ const INVIDIOUS_INSTANCES = [
 
 // ── 유튜브 직접 검색 API 파서 (Invidious 차단 우회 및 한글 완벽 대응) ───
 async function searchInvidious(query, page = 1) {
-  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
-  const pathUrl = `/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
+  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D&app=desktop`;
+  const pathUrl = `/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D&app=desktop`;
   
   let html = '';
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
@@ -334,20 +340,23 @@ async function fetchChannelBySearch(ch) {
     const searchResults = await searchInvidious(ch.name);
     if (!searchResults || searchResults.length === 0) return [];
 
-    // Filter search results to keep only videos from the target channel if possible
-    const filtered = searchResults.filter(v => 
-      v.channelId === ch.id || 
-      v.channelName.toLowerCase().includes(ch.name.toLowerCase()) ||
-      ch.name.toLowerCase().includes(v.channelName.toLowerCase())
+    // Filter search results to keep only videos from the target channel
+    const filtered = searchResults.filter(v =>
+      v.channelId === ch.id ||
+      v.channelName.toLowerCase().includes(ch.name.replace('@','').toLowerCase()) ||
+      ch.name.replace('@','').toLowerCase().includes(v.channelName.toLowerCase())
     );
 
-    // Fallback: if no matching videos found, use the unfiltered search results
-    const finalVideos = filtered.length > 0 ? filtered : searchResults;
+    // 내 체널(custom)인 경우 필터링 실패 시 fallback 허용 (사용자가 직접 추가한 체널이리 신뢢)
+    const finalVideos = (ch.cat === 'custom' && filtered.length === 0) ? searchResults.slice(0, 6) : filtered;
+
+    // 기타 카테고리는 필터링 실패 시 빈 배열 반환 (타 카테고리 영상 혼입 방지)
+    if (finalVideos.length === 0) return [];
 
     return finalVideos.map(v => ({
       videoId: v.videoId,
       title: v.title,
-      channelId: ch.id,
+      channelId: ch.id || v.channelId,
       channelName: ch.name,
       channelCat: ch.cat || 'search',
       published: v.published || new Date().toISOString(),
@@ -427,6 +436,7 @@ function interleaveVideos(videos) {
   const interleaved = [];
   let maxLen = 0;
   keys.forEach(key => {
+    groups[key] = groups[key].slice(0, 4); // 최대 4개로 제한하여 다양성 확보
     if (groups[key].length > maxLen) maxLen = groups[key].length;
   });
   
@@ -629,8 +639,22 @@ async function fetchNextPage(filter) {
 
   if (filter === 'custom') {
     const saved = loadSavedChannels();
-    if (!saved.length) return [];
-    const results = await Promise.allSettled(saved.map(ch => fetchChannelRss(ch)));
+    if (!saved.length) {
+      // 저장된 유저 체널이 없음 - 안내 표시
+      const grid = document.getElementById('yt-grid-container');
+      if (grid) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#555">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto 12px;color:#555"><path d="M12 5v14M5 12h14"/></svg>
+          우측 ➕ 버튼으로 위시할 체널을 추가하세요.
+        </div>`;
+      }
+      const sentinel = document.getElementById('scroll-sentinel');
+      if (sentinel) sentinel.style.display = 'none';
+      return [];
+    }
+    // 저장된 체널들의 영상 로드: cat을 'custom'으로 명시적으로 설정
+    const customChannels = saved.map(ch => ({ ...ch, cat: 'custom' }));
+    const results = await Promise.allSettled(customChannels.map(ch => fetchChannelRss(ch)));
     return results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
   }
 
@@ -645,8 +669,14 @@ async function fetchNextPage(filter) {
   if (!channelQueue[filter]) {
     let arr = [];
     if (filter === 'all') {
-      const defaultList = DEFAULT_CHANNELS.filter(c => c.cat !== 'music');
-      const watchedChannels = getWatchedSearchChannels();
+      // 오락, 예능, 음악은 메인 피드에서 제외하고 뉴스, 시사, 영화, 교양 위주로 노출
+      const targetCats = ['news', 'opinion', 'movie', 'documentary'];
+      const excludeCats = ['entertainment', 'music'];
+      const excludedIds = DEFAULT_CHANNELS.filter(c => excludeCats.includes(c.cat)).map(c => c.id);
+      
+      const defaultList = DEFAULT_CHANNELS.filter(c => targetCats.includes(c.cat));
+      const watchedChannels = getWatchedSearchChannels().filter(wc => !excludedIds.includes(wc.id));
+      
       // 기본 채널과 유저가 자주 본 검색 기반 채널을 안전하게 병합 (중복 방지)
       const combined = [...defaultList];
       watchedChannels.forEach(wc => {
@@ -669,14 +699,17 @@ async function fetchNextPage(filter) {
   const q = channelQueue[filter];
   if (!q.length) return [];
 
-  // 한번에 여러 채널을 로딩하여 빠른 속도 확보 (2개 채널 동시 로드)
-  const batch = q.splice(0, 2);
+  // 한번에 여러 채널을 로딩하여 빠른 속도 확보 (4개 채널 동시 로드)
+  const batch = q.splice(0, 4);
   const rssPromises = batch.map(ch => fetchChannelRss(ch));
 
   let searchPromises = [];
   let topKeywords = [];
   if (filter === 'all') {
-    topKeywords = getTopWatchedKeywords(1); // 추천 키워드를 1개로 축소하여 최초 로딩 속도를 극대화
+    // 자주 본 컨텐츠 위주로 노출하기 위해 키워드 기반 추천을 최대 3개까지 늘림
+    let keywords = getTopWatchedKeywords(6); // 여유 있게 가져와서 필터링
+    const blockList = ['예능', '오락', '노래', '음악', 'music', 'kpop', '뮤직'];
+    topKeywords = keywords.filter(k => !blockList.some(b => k.toLowerCase().includes(b))).slice(0, 3);
     searchPromises = topKeywords.map(keyword => searchInvidious(keyword, 1));
   }
 
@@ -752,7 +785,12 @@ async function loadMore() {
     return true;
   });
 
-  loadedVideos.push(...deduped);
+  // 카테고리 최종 필터: all/search/recent/custom이 아닐 경우 해당 카테고리 영상만 허용
+  const catFiltered = (['all','search','recent','custom'].includes(currentFilter))
+    ? deduped
+    : deduped.filter(v => !v.channelCat || v.channelCat === currentFilter || v.channelCat === 'search');
+
+  loadedVideos.push(...catFiltered);
   
   // 방금 받아온 것까지 합쳐서 렌더링
   const toRender = loadedVideos.slice(renderedCount, renderedCount + PAGE_SIZE);
@@ -914,7 +952,7 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
       if (loading) loading.style.display = 'none';
       iframe.style.opacity = '1';
     };
-    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&fs=0`;
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&fs=0&origin=${encodeURIComponent(window.location.origin)}`;
   }
   if (overlay) { 
     overlay.classList.add('open'); 
@@ -1038,6 +1076,8 @@ async function resolveChannelId(input) {
     const m = targetUrl.match(/channel\/(UC[\w-]{22})/);
     if (m) return { id: m[1], name: fallbackName };
   }
+  // 모든 프록시 실패 시 체널ID 없이 체널명만으로 fallback 반환 (fetchChannelBySearch에서 이름으로 검색)
+  if (fallbackName) return { id: '', name: fallbackName };
   return null;
 }
 
@@ -1047,10 +1087,17 @@ async function addChannel() {
   if (!input) { status.textContent = '채널명을 입력하세요.'; return; }
   status.style.color = '#888'; status.textContent = '채널을 검색 중...';
   const result = await resolveChannelId(input);
-  if (!result?.id) { status.style.color = '#f87171'; status.textContent = '채널을 찾을 수 없습니다.'; return; }
+  // resolveChannelId가 null이면 체널명만으로 fallback (체널ID 없이도 검색 기능으로 작동)
+  const channelName = result?.name || (input.startsWith('@') ? input : '@' + input);
+  const channelId   = result?.id || '';
+  
   const saved = loadSavedChannels();
-  if (saved.find(c => c.id === result.id)) { status.style.color = '#fbbf24'; status.textContent = '이미 추가된 채널입니다.'; return; }
-  const newCh = { id: result.id, name: result.name || input, handle: input.startsWith('@') ? input : '@' + (result.name || input) };
+  const isDuplicate = channelId
+    ? saved.find(c => c.id === channelId)
+    : saved.find(c => c.name.toLowerCase() === channelName.toLowerCase());
+  if (isDuplicate) { status.style.color = '#fbbf24'; status.textContent = '이미 추가된 채널입니다.'; return; }
+  
+  const newCh = { id: channelId, name: channelName, handle: input.startsWith('@') ? input : '@' + (result?.name || input) };
   saved.push(newCh);
   saveChannels(saved);
   status.style.color = '#4ade80'; status.textContent = `"${newCh.name}" 채널 추가 완료!`;
@@ -1061,7 +1108,12 @@ async function addChannel() {
 function saveChannels(list)  { localStorage.setItem('yt_channels_page', JSON.stringify(list)); }
 function loadSavedChannels() { try { return JSON.parse(localStorage.getItem('yt_channels_page') || '[]'); } catch { return []; } }
 
-function openAddModal()   { document.getElementById('add-modal')?.classList.add('open'); }
+function openAddModal() {
+  document.getElementById('add-modal')?.classList.add('open');
+  document.getElementById('ch-input').value = '';
+  document.getElementById('add-status').textContent = '';
+  document.getElementById('ch-results').innerHTML = '';
+}
 function closeAddModal()  { document.getElementById('add-modal')?.classList.remove('open'); }
 function openLoginModal() { document.getElementById('login-modal')?.classList.add('open'); }
 function closeLoginModal(){ document.getElementById('login-modal')?.classList.remove('open'); }
@@ -1129,7 +1181,189 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLoginUI();
   initPlayerControls();
   initFullscreenHandler();
+  initPullToRefresh();
 });
+
+// ── 당겨서 새로고침 (Pull-to-Refresh) ────────────────────────────────────────
+function initPullToRefresh() {
+  // Capacitor 앱 환경에서만 활성화
+  const isApp = typeof window.Capacitor !== 'undefined' || navigator.userAgent.includes('wv');
+
+  const indicator = document.getElementById('pull-refresh-indicator');
+  if (!indicator) return;
+
+  let startY = 0;
+  let pulling = false;
+  let triggered = false;
+  const THRESHOLD = 70; // 새로고침 트리거 기준 거리 (px)
+
+  document.addEventListener('touchstart', e => {
+    if (window.scrollY > 5) return; // 최상단에서만 활성화
+    startY = e.touches[0].clientY;
+    pulling = true;
+    triggered = false;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if (dist <= 0) { pulling = false; return; }
+
+    const progress = Math.min(dist / THRESHOLD, 1);
+    indicator.style.opacity = progress;
+    // 화면 중앙 기준 - 당기는 거리에 따라 살짝 위로 올라오는 효과
+    const offset = 60 - Math.min(dist * 0.4, 60);
+    indicator.style.transform = `translateX(-50%) translateY(calc(-50% + ${offset}px))`;
+
+    if (dist >= THRESHOLD && !triggered) {
+      triggered = true;
+      indicator.classList.add('ready');
+    } else if (dist < THRESHOLD) {
+      indicator.classList.remove('ready');
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', async () => {
+    if (!pulling) return;
+    pulling = false;
+
+    if (triggered) {
+      indicator.classList.add('refreshing');
+      indicator.style.transform = 'translateX(-50%) translateY(-50%)'; // 화면 정중앙 고정
+      // 현재 카테고리 기준으로 새로고침
+      await switchCategory(currentFilter, document.querySelector('.yt-cat.active'));
+      setTimeout(() => {
+        indicator.classList.remove('refreshing', 'ready');
+        indicator.style.opacity = '0';
+        indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
+      }, 500);
+    } else {
+      indicator.style.opacity = '0';
+      indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
+    }
+    triggered = false;
+  });
+}
 
 // ── 초기화 ────────────────────────────────────────────────────────────────
 switchCategory('all', document.querySelector('.yt-cat.active'));
+
+// ── 채널 검색 & 선택 추가 ─────────────────────────────────────────────────
+async function searchChannel() {
+  const query = document.getElementById('ch-input').value.trim();
+  const status = document.getElementById('add-status');
+  const resultBox = document.getElementById('ch-results');
+  if (!query) { status.textContent = '검색어를 입력하세요.'; return; }
+
+  status.style.color = '#888';
+  status.textContent = '채널 검색 중...';
+  resultBox.innerHTML = `<div style="text-align:center;padding:20px;color:#555"><div class="yt-spinner" style="margin:0 auto 8px"></div>검색 중...</div>`;
+
+  try {
+    // YouTube 채널 검색 (sp=EgIQAg%3D%3D 는 채널 필터)
+    const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAg%3D%3D`;
+    let html = '';
+
+    for (const proxy of makeProxies(targetUrl)) {
+      try {
+        const res = await fetch(proxy, { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) continue;
+        html = proxy.includes('allorigins') ? (await res.json()).contents || '' : await res.text();
+        if (html && html.includes('channelRenderer')) break;
+      } catch (_) {}
+    }
+
+    const channels = parseChannelSearchResults(html);
+
+    if (!channels.length) {
+      status.textContent = '검색 결과가 없습니다. 다른 키워드로 시도해보세요.';
+      resultBox.innerHTML = '';
+      return;
+    }
+
+    status.textContent = `${channels.length}개 채널을 찾았습니다. 추가할 채널을 선택하세요.`;
+    renderChannelResults(channels);
+  } catch (e) {
+    status.style.color = '#f87171';
+    status.textContent = '검색 중 오류가 발생했습니다.';
+    resultBox.innerHTML = '';
+  }
+}
+
+function parseChannelSearchResults(html) {
+  const channels = [];
+  if (!html) return channels;
+
+  // ytInitialData JSON 추출
+  const match = html.match(/var ytInitialData\s*=\s*(\{.+?\});\s*<\/script>/s)
+    || html.match(/ytInitialData\s*=\s*(\{.+?\});/s);
+  if (!match) return channels;
+
+  try {
+    const data = JSON.parse(match[1]);
+    const contents = data?.contents?.twoColumnSearchResultsRenderer
+      ?.primaryContents?.sectionListRenderer?.contents || [];
+
+    for (const section of contents) {
+      const items = section?.itemSectionRenderer?.contents || [];
+      for (const item of items) {
+        const ch = item?.channelRenderer;
+        if (!ch) continue;
+        const id = ch.channelId || '';
+        const name = ch.title?.simpleText || ch.title?.runs?.[0]?.text || '';
+        const handle = ch.navigationEndpoint?.browseEndpoint?.canonicalBaseUrl || '';
+        const thumb = ch.thumbnail?.thumbnails?.slice(-1)[0]?.url || '';
+        const subs = ch.videoCountText?.simpleText || ch.subscriberCountText?.simpleText || '';
+        if (!id || !name) continue;
+        channels.push({ id, name, handle, thumb, subs });
+        if (channels.length >= 8) break;
+      }
+      if (channels.length >= 8) break;
+    }
+  } catch (_) {}
+
+  return channels;
+}
+
+function renderChannelResults(channels) {
+  const resultBox = document.getElementById('ch-results');
+  const saved = loadSavedChannels();
+  resultBox.innerHTML = '';
+
+  channels.forEach(ch => {
+    const isAdded = !!saved.find(s => s.id === ch.id || s.name === ch.name);
+    const item = document.createElement('div');
+    item.className = 'ch-result-item';
+    item.innerHTML = `
+      <img class="ch-result-thumb" src="${ch.thumb || ''}" onerror="this.style.background='#333';this.src=''" alt="">
+      <div class="ch-result-info">
+        <div class="ch-result-name">${ch.name}</div>
+        <div class="ch-result-sub">${ch.handle || ''} ${ch.subs ? '· ' + ch.subs : ''}</div>
+      </div>
+      <button class="ch-result-add ${isAdded ? 'added' : ''}" data-id="${ch.id}" data-name="${ch.name}" data-handle="${ch.handle}" ${isAdded ? 'disabled' : ''}>${isAdded ? '추가됨' : '+ 추가'}</button>
+    `;
+    const btn = item.querySelector('.ch-result-add');
+    if (!isAdded) {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        addChannelById(ch.id, ch.name, ch.handle);
+        btn.textContent = '추가됨';
+        btn.classList.add('added');
+        btn.disabled = true;
+        document.getElementById('add-status').style.color = '#4ade80';
+        document.getElementById('add-status').textContent = `"${ch.name}" 채널이 내 채널에 추가되었습니다!`;
+      };
+    }
+    resultBox.appendChild(item);
+  });
+}
+
+function addChannelById(id, name, handle) {
+  const saved = loadSavedChannels();
+  if (saved.find(s => s.id === id)) return;
+  saved.push({ id, name, handle: handle || '@' + name });
+  saveChannels(saved);
+}
+
+window.searchChannel = searchChannel;
+window.addChannel = addChannel; // 기존 호환성 유지

@@ -3,12 +3,61 @@
 
 <head>
   <meta charset="UTF-8" />
+  <!-- TV/빔프로젝터: initial-scale을 고정하지 않고 device-width 기준으로 설정 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <!-- TV 환경 감지 스크립트: DOM 생성 전에 실행하여 클래스 적용 -->
+  <script>
+    (function() {
+      var w = window.screen ? window.screen.width : window.innerWidth;
+      var h = window.screen ? window.screen.height : window.innerHeight;
+      var ua = navigator.userAgent || '';
+      
+      // 모바일 디바이스 여부 강력히 판단 (터치 장치 및 모바일 UA)
+      var isMobileUA = /Mobile|Android.*Mobile|iPhone|iPod|IEMobile|BlackBerry|Opera Mini/i.test(ua);
+      var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      
+      // 명확한 TV 기기 키워드 탐색
+      var hasTVKeyword = /Android TV|SmartTV|SMART-TV|HbbTV|Tizen|WebOS|VIDAA|Vizio|Roku|Fire TV|TV Build|television/i.test(ua);
+      
+      // TV/빔프로젝터 감지 조건:
+      // 모바일 UA가 아니며 터치 기기가 아님을 기본 전제로 하고, TV 키워드가 있거나 대화면 데스크톱 스타일이어야 함.
+      var isTV = false;
+      
+      if (hasTVKeyword) {
+        isTV = true;
+      } else if (!isMobileUA && !isTouchDevice) {
+        // 모바일/터치 기기가 아닌 순수 대화면 스마트TV / 빔프로젝터 환경 타겟
+        isTV = (
+          w >= 1280 ||
+          (typeof window.matchMedia === 'function' && window.matchMedia('(device-width: 1920px)').matches) ||
+          (w > 0 && h > 0 && Math.max(w, h) >= 1280)
+        );
+      }
+      
+      // Z플립, 갤럭시 울트라 등 고해상도 스마트폰인 경우 절대 TV 모드로 오동작하지 않도록 완벽히 방어 차단
+      if (isMobileUA || isTouchDevice) {
+        isTV = false;
+      }
+      
+      // TV 감지 시 html 태그에 클래스 추가하여 CSS에서 활용
+      if (isTV) {
+        document.documentElement.classList.add('tv-mode');
+        // CSS 뷰포트를 1024px 이상으로 강제 인식하게 만들기
+        // (Tailwind의 lg: 브레이크포인트 활성화)
+        var meta = document.querySelector('meta[name=viewport]');
+        if (meta) {
+          // TV 실제 해상도에 맞게 width를 지정
+          meta.content = 'width=' + Math.max(w, 1280) + ', initial-scale=1.0, user-scalable=no';
+        }
+      }
+      window.__IS_TV__ = isTV;
+    })();
+  </script>
   <!-- 강력한 모바일 브라우저 캐시 무효화 (Cache-Busting) 적용 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <link rel="icon" type="image/png" href="./assets/favicon-CZKQBzCF.png" />
+  <link rel="icon" type="image/png" href="./assets/favicon-BraP8Net.png" />
   <!-- 모바일 홈 화면 추가 및 즐겨찾기 북마크 타이틀 지정 -->
   <meta name="apple-mobile-web-app-title" content="PlayTime" />
   <meta name="application-name" content="PlayTime" />
@@ -84,7 +133,7 @@
         position: relative !important;
       }
       #mobile-player-wrapper {
-        height: calc(100dvh - 64px) !important; /* 헤더 높이 64px 제외 */
+        height: calc(100dvh - 64px) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -97,8 +146,59 @@
         max-width: 100vw !important;
       }
     }
+
+    /* ============================================================
+       TV / 빔프로젝터 전용 레이아웃
+       html.tv-mode 클래스가 붙으면 PC 레이아웃을 강제 적용
+    ============================================================ */
+    html.tv-mode body {
+      overflow: hidden;
+    }
+
+    /* TV 모드: 모바일 전용 영역 숨기고 PC 영역 표시 */
+    html.tv-mode #app-container .lg\:hidden {
+      display: none !important;
+    }
+    html.tv-mode #app-container .hidden.lg\:flex {
+      display: flex !important;
+    }
+    html.tv-mode #app-container .hidden.lg\:block {
+      display: block !important;
+    }
+
+    /* TV 모드: 채널 그리드 폰트/카드 크기 TV 화면에 최적화 */
+    html.tv-mode .channel-card {
+      width: 11rem !important;
+    }
+    html.tv-mode .channel-row {
+      gap: 16px !important;
+      padding: 0 20px 20px !important;
+    }
+    html.tv-mode #video-container {
+      height: 55dvh !important;
+      max-height: 55dvh !important;
+    }
+    html.tv-mode #channel-grid,
+    html.tv-mode #channel-grid-mobile {
+      padding: 16px 20px 80px !important;
+    }
+
+    /* TV 모드: 하단 네비게이션 바 TV 스타일 */
+    html.tv-mode .absolute.bottom-0 {
+      height: 3.5rem !important;
+    }
+    html.tv-mode .absolute.bottom-0 span {
+      font-size: 11px !important;
+    }
+
+    /* TV 모드: 전체 앱 최대 너비 제한 해제 (TV는 항상 전체 화면) */
+    html.tv-mode #app-container {
+      max-width: 100vw !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
   </style>
-  <script type="module" crossorigin src="./assets/main-DHBgyJY2.js"></script>
+  <script type="module" crossorigin src="./assets/main-DtMwWrUo.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 
@@ -110,18 +210,59 @@
     <!-- Header -->
     <header class="glass-nav h-16 flex items-center justify-between px-6 z-50 flex-shrink-0 border-b border-white/10 bg-zinc-950/40 backdrop-blur-md">
       <!-- PlayTime Logo & Title -->
-      <a href="index.html" class="flex items-center gap-3 group/logo cursor-pointer hover:opacity-90 transition-opacity">
-        <div class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover/logo:scale-105 transition-transform duration-300">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-            <path d="M2 8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8Z" />
-            <path d="m9 8 6 4-6 4V8Z" fill="white" />
-          </svg>
+      <a href="index.html" class="flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity mb-[10px]">
+        <div class="w-6 h-6 bg-gradient-to-tr from-amber-400 via-yellow-400 to-yellow-500 rounded-[7px] flex items-center justify-center shadow-lg shadow-yellow-500/20 group-hover/logo:scale-105 transition-transform duration-300">
+          <div class="w-4 h-4 bg-zinc-900 rounded-[4px] flex items-center justify-center">
+            <svg width="6" height="6" viewBox="0 0 24 24" fill="none">
+              <polygon points="6 3 20 12 6 21 6 3" fill="#fbbf24" />
+            </svg>
+          </div>
         </div>
-        <span class="text-white font-extrabold text-xl tracking-tight drop-shadow-md">PlayTime</span>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-yellow-100 to-amber-300 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
       </a>
 
-      <!-- Status Bar Area (Clock & Battery) 완전히 빈 태그로 비워둠 -->
-      <div class="flex items-center gap-4">
+      <!-- 우측 상단: 시계 + 배터리 -->
+      <div class="flex items-center gap-2 mb-[10px]">
+        <!-- 시계 -->
+        <div id="header-clock" style="
+          font-size: 15px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          color: rgba(255,255,255,0.88);
+          font-variant-numeric: tabular-nums;
+          min-width: 38px;
+          text-align: right;
+        "></div>
+        <!-- 배터리 -->
+        <div id="header-battery" style="display:flex;align-items:center;gap:3px;">
+          <div style="position:relative;width:22px;height:11px;">
+            <div id="battery-body" style="
+              position:absolute;left:0;top:0;
+              width:19px;height:11px;
+              border:1.5px solid rgba(255,255,255,0.55);
+              border-radius:2.5px;
+              overflow:hidden;
+            ">
+              <div id="battery-fill" style="
+                position:absolute;left:0;top:0;bottom:0;
+                width:100%;
+                background:rgba(74,222,128,0.9);
+                border-radius:1.5px;
+                transition:width 0.5s, background 0.5s;
+              "></div>
+            </div>
+            <div style="
+              position:absolute;right:0;top:50%;transform:translateY(-50%);
+              width:2.5px;height:5px;
+              background:rgba(255,255,255,0.45);
+              border-radius:0 1px 1px 0;
+            "></div>
+          </div>
+          <!-- 충전 중일 때만 표시 -->
+          <svg id="battery-charging" width="9" height="12" viewBox="0 0 24 24" fill="#facc15" style="display:none">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
       </div>
     </header>
 
@@ -157,7 +298,7 @@
 
             <!-- Custom Controls (PC) -->
             <div id="video-controls"
-              class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-start gap-8 z-40">
+              class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center gap-8 z-40">
               <div class="flex items-center gap-6">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
@@ -179,7 +320,7 @@
                 </div>
 
                 <!-- Quality Selection (화질 선택) -->
-                <div class="relative" id="quality-select-pc-wrapper">
+                <div class="relative" id="quality-select-pc-wrapper" style="display: none;">
                   <button id="quality-btn" class="text-white/70 hover:text-white transition-colors flex items-center gap-1.5 text-[11px] font-bold bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-xl backdrop-blur-md hover:bg-white/10" title="화질 선택">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                       <circle cx="12" cy="12" r="3"/>
@@ -210,12 +351,14 @@
               </div>
             </div>
             <div id="loading-overlay"
-              class="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center hidden z-50">
-              <div class="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-              <span class="mt-4 text-sm font-bold text-white/70">연결 중...</span>
-            </div>
-            <div class="absolute bottom-6 left-6 flex items-center gap-3 z-10 pointer-events-none">
-              <div id="now-playing-title" class="text-white font-bold text-lg drop-shadow-lg"></div>
+              class="absolute inset-0 bg-zinc-950/90 backdrop-blur-xl flex flex-col items-center justify-center hidden z-50">
+              <div class="relative flex items-center justify-center">
+                <div class="absolute w-16 h-16 rounded-full border border-indigo-500/30 animate-ping"></div>
+                <div class="w-12 h-12 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
+                <div class="absolute w-3 h-3 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full shadow-lg shadow-indigo-500/50"></div>
+              </div>
+              <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-purple-200 uppercase drop-shadow-md">연결 중...</span>
+              <span class="mt-1 text-[10px] text-zinc-500 font-bold uppercase tracking-wider animate-pulse">Live Stream Loading</span>
             </div>
           </div> <!-- End Inner Screen -->
         </div> <!-- End Bezel Frame -->
@@ -245,7 +388,7 @@
 
               <!-- Custom Controls (Mobile) -->
               <div id="video-controls-mobile"
-                class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover/mob:opacity-100 transition-opacity duration-300 flex items-center justify-start gap-6 z-40">
+                class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center gap-6 z-40">
                 <div class="flex items-center gap-4">
                   <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
                   <span class="text-[9px] font-bold text-white/80 uppercase tracking-tighter">Live</span>
@@ -259,7 +402,7 @@
                   </button>
                   
                   <!-- Quality Selection (화질 선택 Mobile) -->
-                  <div class="relative" id="quality-select-mob-wrapper">
+                  <div class="relative" id="quality-select-mob-wrapper" style="display: none;">
                     <button id="quality-btn-mobile" class="text-white/70 flex items-center gap-1 text-[9px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded-lg backdrop-blur-md" title="화질 선택">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"/>
@@ -289,6 +432,17 @@
                 </div>
               </div>
 
+              <div id="loading-overlay-mobile"
+                class="absolute inset-0 bg-zinc-950/90 backdrop-blur-xl flex flex-col items-center justify-center hidden z-50">
+                <div class="relative flex items-center justify-center">
+                  <div class="absolute w-16 h-16 rounded-full border border-indigo-500/30 animate-ping"></div>
+                  <div class="w-12 h-12 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
+                  <div class="absolute w-3 h-3 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full shadow-lg shadow-indigo-500/50"></div>
+                </div>
+                <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-purple-200 uppercase drop-shadow-md">연결 중...</span>
+                <span class="mt-1 text-[10px] text-zinc-500 font-bold uppercase tracking-wider animate-pulse">Live Stream Loading</span>
+              </div>
+
               <div id="player-placeholder-mobile"
                 class="absolute inset-0 flex flex-col items-center justify-center bg-black z-20">
                 <div
@@ -296,9 +450,6 @@
                   PlayGround</div>
                 <div class="mt-2 text-xs text-gray-500 font-medium tracking-widest uppercase animate-pulse">Select a channel
                 </div>
-              </div>
-              <div class="absolute bottom-4 left-4 z-10 pointer-events-none">
-                <h2 id="now-playing-title-mobile" class="text-white font-bold text-sm drop-shadow-md"></h2>
               </div>
             </div>
           </div>
@@ -318,21 +469,12 @@
   <!-- Sticky Bottom Navigation Bar (고정바) -->
   <div class="absolute bottom-0 inset-x-0 h-16 bg-zinc-950/80 backdrop-blur-lg border-t border-white/10 z-50 flex items-center justify-around px-6 pb-safe">
     <!-- 홈 (Home) -->
-    <button onclick="safeNavigate('home.html')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
+    <button onclick="window.switchTab('live')" id="tab-btn-live" class="flex flex-col items-center gap-1 text-indigo-400 transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
         <polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
       <span class="text-[10px] font-bold">홈</span>
-    </button>
-
-    <!-- 실시간 TV (Live) -->
-    <button onclick="window.switchTab('live')" id="tab-btn-live" class="flex flex-col items-center gap-1 text-indigo-400 transition-colors cursor-pointer group">
-      <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M2 8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8Z" />
-        <path d="m9 8 6 4-6 4V8Z" />
-      </svg>
-      <span class="text-[10px] font-bold">실시간</span>
     </button>
 
     <!-- 유튜브 (YouTube) -->
@@ -342,6 +484,14 @@
         <polygon points="9.75 15.02 15.5 11.5 9.75 7.98 9.75 15.02"/>
       </svg>
       <span class="text-[10px] font-bold">유튜브</span>
+    </button>
+
+    <!-- YT Music -->
+    <button onclick="window.location.href='ytmusic.html?v=6'" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
+      <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/>
+      </svg>
+      <span class="text-[10px] font-bold">YT Music</span>
     </button>
 
     <!-- 즐겨찾기 (Favorites) -->
@@ -379,6 +529,61 @@
       }
       window.location.href = targetUrl;
     }
+
+    // 24시간 시계
+    (function() {
+      function updateClock() {
+        var el = document.getElementById('header-clock');
+        if (!el) return;
+        var now = new Date();
+        var h = String(now.getHours()).padStart(2, '0');
+        var m = String(now.getMinutes()).padStart(2, '0');
+        el.textContent = h + ':' + m;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    })();
+
+    // 배터리 잔량 표시
+    (function() {
+      function updateBattery(battery) {
+        var pct = Math.round(battery.level * 100);
+        var fill = document.getElementById('battery-fill');
+        var charging = document.getElementById('battery-charging');
+        var body = document.getElementById('battery-body');
+        if (!fill) return;
+
+        fill.style.width = pct + '%';
+
+        // 잔량에 따른 색상
+        if (pct <= 20) {
+          fill.style.background = 'rgba(239,68,68,0.9)';
+        } else if (pct <= 50) {
+          fill.style.background = 'rgba(251,191,36,0.9)';
+        } else {
+          fill.style.background = 'rgba(74,222,128,0.9)';
+        }
+
+        // 충전 중일 때만 번개 아이콘 표시
+        if (charging) charging.style.display = battery.charging ? 'inline' : 'none';
+        if (body) body.style.borderColor = battery.charging
+          ? 'rgba(250,204,21,0.7)' : 'rgba(255,255,255,0.55)';
+      }
+
+      if (navigator.getBattery) {
+        navigator.getBattery().then(function(battery) {
+          updateBattery(battery);
+          battery.addEventListener('levelchange', function() { updateBattery(battery); });
+          battery.addEventListener('chargingchange', function() { updateBattery(battery); });
+        }).catch(function() {
+          var el = document.getElementById('header-battery');
+          if (el) el.style.display = 'none';
+        });
+      } else {
+        var el = document.getElementById('header-battery');
+        if (el) el.style.display = 'none';
+      }
+    })();
   </script>
 </body>
 
