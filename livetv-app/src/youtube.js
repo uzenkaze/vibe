@@ -67,6 +67,7 @@ let isFetchingMore = false;
 let scrollObserver = null;
 let playerHistoryPushed = false;
 let seenVideoIds   = new Set();
+let renderedChannelIds = new Set(); // 이미 렌더된 채널 추적 (채널당 1개 강제)
 
 const searchState = {};
 const channelQueue = {};
@@ -219,6 +220,24 @@ function invidiousToVideo(item) {
 // ── 내 채널 (RSS) ─────────────────────────────────────────────────────────
 const rssCache = new Map();
 
+function makeRssProxies(channelId) {
+  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  const enc = encodeURIComponent(rssUrl);
+  const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
+
+  if (isCapacitor) {
+    // 앱 환경: 직접 접근 가능
+    return [rssUrl];
+  }
+
+  // 브라우저 환경: 검증된 CORS 프록시만 사용 (에러 반환 프록시 제거)
+  return [
+    `https://api.allorigins.win/get?url=${enc}`,          // 1순위: 안정적
+    `https://api.codetabs.com/v1/proxy?quest=${enc}`,     // 2순위: 빠름
+  ];
+}
+
+// 기존 makeProxies는 호환성 유지 (검색 등 다른 곳에서 사용)
 function makeProxies(url) {
   const list = [];
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
@@ -235,26 +254,56 @@ function makeProxies(url) {
 
   list.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
   list.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
-  list.push(`https://corsproxy.io/?${encodeURIComponent(url)}`);
 
   return list;
 }
 
-async function fetchOneProxy(proxyUrl) {
-  const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(3000) });
+
+async function fetchOneProxy(proxyUrl, timeoutMs = 1200) {
+  const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(timeoutMs) });
   if (!res.ok) throw new Error('not ok');
-  const text = proxyUrl.includes('allorigins')
-    ? ((await res.json()).contents || '')
-    : await res.text();
-  if (!text.includes('<entry>') && !text.includes('&lt;entry&gt;')) throw new Error('no entries');
+
+  let text;
+  if (proxyUrl.includes('allorigins')) {
+    // allorigins는 JSON {contents: "..."} 형태로 반환
+    const json = await res.json();
+    text = json.contents || '';
+  } else {
+    text = await res.text();
+  }
+
+  if (!text || (!text.includes('<entry>') && !text.includes('&lt;entry&gt;'))) {
+    throw new Error('no entries');
+  }
   return text;
 }
+
+
+// 모든 프록시를 동시에 시도하여 가장 빠른 응답만 사용 (Promise.race 방식)
+async function fetchRssRace(proxies) {
+  if (proxies.length === 0) throw new Error('no proxies');
+
+  // 성공 시 resolve, 전체 실패 시 reject
+  return new Promise((resolve, reject) => {
+    let failCount = 0;
+    const total = proxies.length;
+    proxies.forEach(proxyUrl => {
+      fetchOneProxy(proxyUrl)
+        .then(resolve)  // 가장 먼저 도착한 프록시 결과로 즉시 resolve
+        .catch(() => {
+          failCount++;
+          if (failCount === total) reject(new Error('all proxies failed'));
+        });
+    });
+  });
+}
+
 
 function parseRss(text, ch) {
   const xml = new DOMParser().parseFromString(text, 'text/xml');
   const entries = [...(xml.querySelectorAll('entry').length
     ? xml.querySelectorAll('entry')
-    : xml.getElementsByTagName('entry'))].slice(0, 10);
+    : xml.getElementsByTagName('entry'))].slice(0, 4);
   return entries.map(e => {
     const videoId =
       e.querySelector('videoId')?.textContent ||
@@ -286,7 +335,9 @@ async function fetchChannelInvidious(ch) {
   const params = new URLSearchParams({ sort_by: 'newest' });
   const instance = INVIDIOUS_INSTANCES[0]; // 탑 1순위 우수 인스턴스 단일 검사로 극강의 속도 확보
   const url = `${instance}/api/v1/channels/${ch.id}/videos?${params}`;
-  const tryUrls = [url, `https://corsproxy.io/?${encodeURIComponent(url)}`];
+  
+  // 데드 프록시(corsproxy.io) 제거 및 CORS 허용된 인비디우스 API 다이렉트 단일 호출 최적화
+  const tryUrls = [url];
   
   for (const fetchUrl of tryUrls) {
     try {
@@ -393,50 +444,94 @@ function getRssCacheItem(key) {
   return null;
 }
 
-async function fetchChannelRss(ch) {
-  // 1. 메모리 캐시 및 localStorage 영구 캐시(30분 유효) 확인 -> 극강의 0초 순간 로딩 경험
-  if (rssCache.has(ch.id)) return rssCache.get(ch.id);
-  const cachedData = getRssCacheItem(ch.id);
-  if (cachedData) {
-    rssCache.set(ch.id, cachedData);
-    return cachedData;
-  }
+// 만료 조건 없이 로컬 저장소에 저장된 캐시 데이터가 있다면 즉시 반환 (SWR 프리렌더용)
+function getRssCacheItemStale(key) {
+  try {
+    const cache = getRssCache();
+    const item = cache[key];
+    if (item) return item.data;
+  } catch {}
+  return null;
+}
 
-  // 2. [초고속 1순위] RSS XML 피드를 프록시를 통해 로드 (가장 가볍고 빠름)
-  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
-  const proxies = makeProxies(rssUrl);
-  for (const proxy of proxies) {
-    try {
-      const text = await fetchOneProxy(proxy);
-      const videos = parseRss(text, ch);
-      if (videos && videos.length > 0) {
-        rssCache.set(ch.id, videos);
-        setRssCache(ch.id, videos);
-        return videos;
-      }
-    } catch (_) {}
-  }
+// 캐시 데이터를 조회하되, 만료 여부(1시간 기준) 정보를 함께 제공 (SWR 갱신용)
+function getRssCacheItemInfo(key) {
+  try {
+    const cache = getRssCache();
+    const item = cache[key];
+    if (item) {
+      // 1시간 동안만 완전 최신 상태로 유지, 1시간이 지나면 백그라운드 갱신 실행
+      const isExpired = Date.now() - item.timestamp > 60 * 60 * 1000;
+      return { data: item.data, isExpired };
+    }
+  } catch {}
+  return null;
+}
 
-  // 3. [2순위 폴백] RSS가 완전히 차단/실패했을 때만 느린 직접 검색 기반 스크래퍼 순차 시도
-  console.log(`[YouTube RSS] RSS XML failed. Falling back to direct search for channel: ${ch.name}`);
-  const searchVideos = await fetchChannelBySearch(ch);
-  if (searchVideos && searchVideos.length > 0) {
-    rssCache.set(ch.id, searchVideos);
-    setRssCache(ch.id, searchVideos);
-    return searchVideos;
+// 백그라운드 캐시 갱신 함수 (사용자의 화면 로딩을 지연시키지 않고 비동기로 조용히 실행)
+async function triggerBackgroundRssUpdate(ch) {
+  try {
+    const videos = await fetchRssFromNetwork(ch);
+    if (videos && videos.length > 0) {
+      rssCache.set(ch.id, videos);
+      setRssCache(ch.id, videos);
+      console.log(`[YouTube RSS Cache] Background update success for: ${ch.name}`);
+    }
+  } catch (e) {
+    console.warn(`[YouTube RSS Cache] Background update failed for: ${ch.name}`, e);
   }
+}
 
-  // 4. [3순위 최종 폴백] Invidious API
-  console.log(`[YouTube RSS] Search failed. Falling back to Invidious API for channel: ${ch.name}`);
+// 기존 네트워크 실시간 조회 로직을 분리한 헬퍼
+async function fetchRssFromNetwork(ch) {
+  // 1. [초고속] 검증된 CORS 프록시만 동시 경쟁 → 가장 빠른 것 사용
+  const proxies = makeRssProxies(ch.id);
+  try {
+    const text = await fetchRssRace(proxies);
+    const videos = parseRss(text, ch);
+    if (videos && videos.length > 0) {
+      return videos;
+    }
+  } catch (_) {}
+
+  // 2. [폴백] Invidious API (RSS 전체 실패 시만)
+  console.log(`[YouTube RSS] RSS 실패, Invidious 시도: ${ch.name}`);
   const invidiousVideos = await fetchChannelInvidious(ch);
   if (invidiousVideos && invidiousVideos.length > 0) {
-    rssCache.set(ch.id, invidiousVideos);
-    setRssCache(ch.id, invidiousVideos);
     return invidiousVideos;
   }
 
   return [];
 }
+
+async function fetchChannelRss(ch) {
+  // 1. 메모리 캐시 확인
+  if (rssCache.has(ch.id)) return rssCache.get(ch.id);
+
+  // 2. localStorage 캐시 확인 및 SWR(Stale-While-Revalidate) 판별
+  const cacheInfo = getRssCacheItemInfo(ch.id);
+  if (cacheInfo) {
+    rssCache.set(ch.id, cacheInfo.data);
+    
+    // 캐시가 만료되었거나 갱신 시간이 지났으면 백그라운드에서 조용히 네트워크 갱신
+    if (cacheInfo.isExpired) {
+      triggerBackgroundRssUpdate(ch);
+    }
+    // 사용자는 즉시 캐시 데이터로 대기 시간 0초를 보장받음
+    return cacheInfo.data;
+  }
+
+  // 3. 캐시가 전혀 없는 완전 최초 진입 시에만 실시간 네트워크 조회 (동기 대기)
+  const networkVideos = await fetchRssFromNetwork(ch);
+  if (networkVideos && networkVideos.length > 0) {
+    rssCache.set(ch.id, networkVideos);
+    setRssCache(ch.id, networkVideos);
+    return networkVideos;
+  }
+
+  return [];
+}
+
 
 // ── 도우미 ────────────────────────────────────────────────────────────────
 function relativeTime(iso) {
@@ -449,10 +544,10 @@ function relativeTime(iso) {
   return `${Math.floor(s / 2592000)}개월 전`;
 }
 
-// 채널별 영상 중복 지배 현상을 막고 다양한 채널의 영상을 골고루 섞어주는(인터리빙) 도우미
+// 채널당 최신 영상 1개만 선택하여 다양한 채널이 골고루 보이도록 하는 도우미
 function interleaveVideos(videos) {
   if (!videos || videos.length === 0) return [];
-  
+
   // 1. 채널별로 그룹화
   const groups = {};
   videos.forEach(v => {
@@ -460,30 +555,16 @@ function interleaveVideos(videos) {
     if (!groups[key]) groups[key] = [];
     groups[key].push(v);
   });
-  
-  // 2. 각 채널 내부의 비디오는 최신순으로 정렬
+
+  // 2. 각 채널에서 최신 영상 1개만 선택
   const keys = Object.keys(groups);
-  keys.forEach(key => {
-    groups[key].sort((a, b) => new Date(b.published || 0) - new Date(a.published || 0));
-  });
-  
-  // 3. 각 채널에서 번갈아가며 비디오를 하나씩 꺼내 교차로(Round-Robin) 결합
-  const interleaved = [];
-  let maxLen = 0;
-  keys.forEach(key => {
-    groups[key] = groups[key].slice(0, 4); // 최대 4개로 제한하여 다양성 확보
-    if (groups[key].length > maxLen) maxLen = groups[key].length;
-  });
-  
-  for (let i = 0; i < maxLen; i++) {
-    keys.forEach(key => {
-      if (groups[key][i]) {
-        interleaved.push(groups[key][i]);
-      }
-    });
-  }
-  
-  return interleaved;
+  return keys.map(key => {
+    // 최신순 정렬 후 1개만 반환
+    const sorted = groups[key].sort(
+      (a, b) => new Date(b.published || 0) - new Date(a.published || 0)
+    );
+    return sorted[0];
+  }).filter(Boolean);
 }
 
 // 검색 키워드 기반 추천 시스템 도우미
@@ -596,6 +677,34 @@ function strColor(s) {
   return p[Math.abs(h) % p.length];
 }
 
+// ── 썸네일 마이크로 가상화 옵저버 (Lite Virtual Scroll) ──────────────────────────
+const cardObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const card = entry.target;
+    const img = card.querySelector('.yt-thumb-img');
+    if (!img) return;
+
+    if (entry.isIntersecting) {
+      // 뷰포트에 들어옴: data-src에 기록된 실제 썸네일 경로 주입 및 복원
+      const realSrc = card.getAttribute('data-src');
+      if (realSrc && img.src !== realSrc) {
+        img.src = realSrc;
+        img.style.display = 'block';
+      }
+    } else {
+      // 뷰포트에서 상하 600px 이상 멀어짐: 브라우저 메모리 디코딩 회수를 위해 src 비움
+      if (img.src && !img.src.includes('about:blank')) {
+        card.setAttribute('data-src', img.src);
+        img.src = 'about:blank';
+        img.style.display = 'none';
+      }
+    }
+  });
+}, {
+  // 화면 상하 600px 마진을 미리 관찰하여, 스크롤 이동 시 지연 없이 매우 매끄럽게 이미지 로드
+  rootMargin: '600px 0px 600px 0px'
+});
+
 // ── 카드 생성 ─────────────────────────────────────────────────────────────
 function makeCard(v) {
   const card = document.createElement('div');
@@ -615,6 +724,9 @@ function makeCard(v) {
     ? displayName.replace('[★추천]', '').trim().charAt(0) 
     : displayName.charAt(0);
 
+  // 가상화를 위해 실제 썸네일 경로를 속성으로 별도 보관
+  card.setAttribute('data-src', hq);
+
   card.innerHTML = `
     <div class="yt-thumb">
       <div class="yt-thumb-fallback">
@@ -623,8 +735,14 @@ function makeCard(v) {
         </svg>
         <span>PlayTime</span>
       </div>
-      <img class="yt-thumb-img" src="${hq}" alt="" loading="lazy"
-        onerror="if(this.src.includes('hqdefault')){this.src='${mq}';}else if(this.src.includes('mqdefault')){this.src='${sd}';}else{this.style.display='none';}">
+      <img class="yt-thumb-img" src="about:blank" alt="" loading="lazy" style="display:none;"
+        onerror="
+          const mqSrc = '${mq}';
+          const sdSrc = '${sd}';
+          if (this.src.includes('hqdefault')) { this.src = mqSrc; }
+          else if (this.src.includes('mqdefault')) { this.src = sdSrc; }
+          else { this.style.display = 'none'; }
+        ">
       ${durStr ? `<div class="yt-duration">${durStr}</div>` : ''}
       <div class="yt-play-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><polygon points="6 3 20 12 6 21 6 3"/></svg>
@@ -638,15 +756,89 @@ function makeCard(v) {
         <div class="yt-info-row">${meta}</div>
       </div>
     </div>`;
+
+  // 가상화 옵저버에 카드 바인딩
+  cardObserver.observe(card);
+
   return card;
 }
 
-// ── 그리드 렌더링 ─────────────────────────────────────────────────────────
+// ── 그리드 렌더링 (채널당 최대 1개 강제) ────────────────────────────────
 function appendCards(videos) {
   const grid = document.getElementById('yt-grid-container');
   if (!grid) return;
-  videos.forEach(v => grid.appendChild(makeCard(v)));
-  renderedCount += videos.length;
+  let added = 0;
+  videos.forEach(v => {
+    const chKey = v.channelId || v.channelName || 'unknown';
+    if (renderedChannelIds.has(chKey)) return; // 이미 이 채널 영상이 표시됨 → 스킵
+    renderedChannelIds.add(chKey);
+    grid.appendChild(makeCard(v));
+    added++;
+  });
+  renderedCount += added;
+}
+
+// ── 채널 큐 초기화 헬퍼 ─────────────────────────────────────────────────
+function buildChannelQueue(filter) {
+  let arr = [];
+  if (filter === 'all') {
+    const targetCats = ['news', 'opinion', 'movie', 'documentary'];
+    const excludeCats = ['entertainment', 'music'];
+    const excludedIds = DEFAULT_CHANNELS.filter(c => excludeCats.includes(c.cat)).map(c => c.id);
+    const defaultList = DEFAULT_CHANNELS.filter(c => targetCats.includes(c.cat));
+    const watchedChannels = getWatchedSearchChannels().filter(wc => !excludedIds.includes(wc.id));
+    const history = getWatchHistory();
+    const historyChannels = [];
+    const seenChIds = new Set();
+    history.forEach(v => {
+      if (v.channelId && !seenChIds.has(v.channelId) && !excludedIds.includes(v.channelId)) {
+        seenChIds.add(v.channelId);
+        historyChannels.push({ id: v.channelId, name: v.channelName, cat: 'watched_history' });
+      }
+    });
+    const favoriteChannels = [];
+    [...watchedChannels, ...historyChannels.slice(0, 3)].forEach(wc => {
+      if (!favoriteChannels.find(c => c.id === wc.id)) favoriteChannels.push(wc);
+    });
+    const remainingChannels = defaultList.filter(c => !favoriteChannels.find(fc => fc.id === c.id));
+    for (let i = remainingChannels.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [remainingChannels[i], remainingChannels[j]] = [remainingChannels[j], remainingChannels[i]];
+    }
+    arr = [...favoriteChannels, ...remainingChannels];
+  } else {
+    arr = DEFAULT_CHANNELS.filter(c => c.cat === filter);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+  return arr;
+}
+
+// ── Progressive Loading: 채널 결과 도착하는 즉시 렌더링 ─────────────────
+// filter가 일반 카테고리(all/news 등)일 때 사용
+// onChannel(video) 콜백을 각 채널의 최신 영상 1개로 즉시 호출
+// batchSize 파라미터를 추가하여 첫 진입 시 동시 병렬 요청을 최적화 (기본값 4)
+async function streamChannelBatch(filter, onChannel, batchSize = 4) {
+  if (!channelQueue[filter]) {
+    channelQueue[filter] = buildChannelQueue(filter);
+  }
+  const q = channelQueue[filter];
+  if (!q.length) return;
+
+  const batch = q.splice(0, batchSize); // 지정한 크기만큼만 채널을 꺼내 병렬 로드
+  const promises = batch.map(ch =>
+    fetchChannelRss(ch).then(videos => {
+      if (!videos || videos.length === 0) return;
+      // 채널당 최신 영상 1개만 전달
+      const sorted = [...videos].sort(
+        (a, b) => new Date(b.published || 0) - new Date(a.published || 0)
+      );
+      onChannel([sorted[0]]); // 최신 1개만
+    }).catch(() => {})
+  );
+  await Promise.allSettled(promises);
 }
 
 // ── 다음 배치 로드 (RSS / 검색) ───────────────────────────────────────
@@ -675,7 +867,6 @@ async function fetchNextPage(filter) {
   if (filter === 'custom') {
     const saved = loadSavedChannels();
     if (!saved.length) {
-      // 저장된 유저 체널이 없음 - 안내 표시
       const grid = document.getElementById('yt-grid-container');
       if (grid) {
         grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#555">
@@ -687,7 +878,6 @@ async function fetchNextPage(filter) {
       if (sentinel) sentinel.style.display = 'none';
       return [];
     }
-    // 저장된 체널들의 영상 로드: cat을 'custom'으로 명시적으로 설정
     const customChannels = saved.map(ch => ({ ...ch, cat: 'custom' }));
     const results = await Promise.allSettled(customChannels.map(ch => fetchChannelRss(ch)));
     return results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
@@ -700,135 +890,25 @@ async function fetchNextPage(filter) {
     return items || [];
   }
 
-  // 일반 카테고리 (RSS 채널 피드)
-  if (!channelQueue[filter]) {
-    let arr = [];
-    if (filter === 'all') {
-      // 오락, 예능, 음악은 메인 피드에서 제외하고 뉴스, 시사, 영화, 교양 위주로 노출
-      const targetCats = ['news', 'opinion', 'movie', 'documentary'];
-      const excludeCats = ['entertainment', 'music'];
-      const excludedIds = DEFAULT_CHANNELS.filter(c => excludeCats.includes(c.cat)).map(c => c.id);
-      
-      const defaultList = DEFAULT_CHANNELS.filter(c => targetCats.includes(c.cat));
-      const watchedChannels = getWatchedSearchChannels().filter(wc => !excludedIds.includes(wc.id));
-      
-      // 자주 재생한 시청 기록(history)에서 선호 채널 최대 3개 안전 추출
-      const history = getWatchHistory();
-      const historyChannels = [];
-      const seenChIds = new Set();
-      history.forEach(v => {
-        if (v.channelId && !seenChIds.has(v.channelId) && !excludedIds.includes(v.channelId)) {
-          seenChIds.add(v.channelId);
-          historyChannels.push({ id: v.channelId, name: v.channelName, cat: 'watched_history' });
-        }
-      });
-
-      // 최선호 채널 리스트 구성 (검색 시 선호 채널 + 시청 히스토리 기반 선호 채널 결합)
-      const favoriteChannels = [];
-      [...watchedChannels, ...historyChannels.slice(0, 3)].forEach(wc => {
-        if (!favoriteChannels.find(c => c.id === wc.id)) {
-          favoriteChannels.push(wc);
-        }
-      });
-
-      // 기본 리스트에서 최선호 채널을 제외한 나머지 일반 채널 분리
-      const remainingChannels = [];
-      defaultList.forEach(c => {
-        if (!favoriteChannels.find(fc => fc.id === c.id)) {
-          remainingChannels.push(c);
-        }
-      });
-
-      // 셔플: 선호 채널은 셔플하지 않고, 일반 채널만 셔플하여 랜덤성 조화
-      for (let i = remainingChannels.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [remainingChannels[i], remainingChannels[j]] = [remainingChannels[j], remainingChannels[i]];
-      }
-
-      // 최종 큐: 사용자가 선호하는 최우선 채널들을 큐의 1순위(맨 앞)에 고정 배치하고 그 뒤를 셔플된 채널로 배치!!
-      arr = [...favoriteChannels, ...remainingChannels];
-    } else {
-      arr = DEFAULT_CHANNELS.filter(c => c.cat === filter);
-      // 일반 카테고리는 전체 셔플
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-    }
-    channelQueue[filter] = arr;
-  }
-
-  const q = channelQueue[filter];
-  if (!q.length) return [];
-
-  // 한번에 여러 채널을 로딩하여 빠른 속도 확보 (4개 채널 동시 로드)
-  const batch = q.splice(0, 4);
-  const rssPromises = batch.map(ch => fetchChannelRss(ch));
-
-  let searchPromises = [];
-  let topKeywords = [];
-  if (filter === 'all') {
-    // 자주 본 컨텐츠 위주로 노출하기 위해 키워드 기반 추천을 최대 3개까지 늘림
-    let keywords = getTopWatchedKeywords(6); // 여유 있게 가져와서 필터링
-    const blockList = ['예능', '오락', '노래', '음악', 'music', 'kpop', '뮤직'];
-    topKeywords = keywords.filter(k => !blockList.some(b => k.toLowerCase().includes(b))).slice(0, 3);
-    searchPromises = topKeywords.map(keyword => searchInvidious(keyword, 1));
-  }
-
-  // RSS와 키워드 추천 비디오 검색을 병렬로 동시에 로드
-  const results = await Promise.allSettled([
-    ...rssPromises,
-    ...searchPromises
-  ]);
-  
-  const rssVideos = [];
-  const searchResultsList = [];
-
-  results.forEach((r, idx) => {
-    if (r.status !== 'fulfilled') return;
-    if (idx < rssPromises.length) {
-      rssVideos.push(...(r.value || []));
-    } else {
-      const keywordIdx = idx - rssPromises.length;
-      const keyword = topKeywords[keywordIdx];
-      searchResultsList.push({ keyword, items: r.value || [] });
-    }
-  });
-
-  // 특정 대형 방송사/채널이 전체 피드를 독점하지 않도록 채널 교차(Interleave) 정렬하여 다양성 확보
-  const interleavedRssVideos = interleaveVideos(rssVideos);
-
-  // 검색한 추천 키워드 비디오를 목록에 자연스럽게 믹스인
-  const finalVideos = [...interleavedRssVideos];
-  searchResultsList.forEach(rec => {
-    const recItems = rec.items.slice(0, 4).map(v => {
-      return {
-        ...v,
-        channelCat: 'all',
-        channelName: `[★추천] ${v.channelName}`,
-        published: new Date().toISOString()
-      };
-    });
-    recItems.forEach((item, index) => {
-      // 4개 피드마다 1개씩 삽입하여 조화롭게 배치
-      const insertIdx = Math.min(2 + index * 4, finalVideos.length);
-      finalVideos.splice(insertIdx, 0, item);
-    });
-  });
-
-  return finalVideos;
+  // 일반 카테고리: Progressive Loading을 위해 null 반환 (loadMore에서 직접 처리)
+  return null;
 }
 
 // ── 무한 스크롤 ───────────────────────────────────────────────────────────
+let lastLoadTime = 0;
 async function loadMore() {
   if (isFetchingMore) return;
+
+  const now = Date.now();
+  if (now - lastLoadTime < 300) return; // 300ms 쓰로틀링 차단벽
+  lastLoadTime = now;
 
   // 이미 로드된 것 중 미렌더된 것 먼저 표시
   const unrendered = loadedVideos.slice(renderedCount, renderedCount + PAGE_SIZE);
   if (unrendered.length >= PAGE_SIZE) {
     appendCards(unrendered);
     updateSentinel();
-    setTimeout(() => prefetchNext(), 1500); // 남은 버퍼 확인 후 보충 (지연 실행)
+    setTimeout(() => prefetchNext(), 1500);
     return;
   }
 
@@ -836,57 +916,138 @@ async function loadMore() {
   showSentinel(true);
 
   const filterBefore = currentFilter;
+
+  // ── 일반 카테고리: Progressive Loading (채널별 즉시 렌더링) ──────────
+  const isStreamable = !['recent','custom','search'].includes(currentFilter);
+  if (isStreamable) {
+    let firstRender = true;
+    const batchSize = (renderedCount === 0) ? 6 : 8; // 최초 병렬수를 늘려 빠른 렌더링 유도
+    await streamChannelBatch(currentFilter, (channelVideos) => {
+      if (currentFilter !== filterBefore) return; // 카테고리 변경 무시
+
+      const deduped = channelVideos.filter(v => {
+        if (seenVideoIds.has(v.videoId)) return false;
+        
+        // TV조선 콘텐츠 차단 필터 (채널명 또는 제목 기준)
+        const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
+        if (isTVChosun) return false;
+        
+        seenVideoIds.add(v.videoId);
+        return true;
+      });
+
+      const catFiltered = (['all','search','recent','custom'].includes(currentFilter))
+        ? deduped
+        : deduped.filter(v => !v.channelCat || v.channelCat === currentFilter);
+
+      if (catFiltered.length === 0) return;
+
+      loadedVideos.push(...catFiltered);
+
+      // 도착하는 즉시 렌더링 (병목 제거)
+      const toRender = loadedVideos.slice(renderedCount);
+      if (toRender.length > 0) {
+        appendCards(toRender);
+      }
+
+      // 첫 번째 결과 도착 시 스피너 제거
+      if (firstRender) {
+        firstRender = false;
+        showSentinel(false); // 로딩 → 스크롤 안내로 전환
+      }
+    }, batchSize);
+
+    if (currentFilter !== filterBefore) { isFetchingMore = false; return; }
+
+    isFetchingMore = false;
+    updateSentinel();
+    setTimeout(() => prefetchNext(), 1000);
+    return;
+  }
+
+  // ── 나머지(recent / custom / search): 기존 방식 유지 ─────────────────
   const raw = await fetchNextPage(currentFilter);
-  
-  // 비동기 요청 도중에 카테고리나 검색어가 바뀌었다면 즉시 파기하고 종료
-  if (currentFilter !== filterBefore) return;
+  if (currentFilter !== filterBefore) { isFetchingMore = false; return; }
+
+  if (!raw || raw.length === 0) {
+    isFetchingMore = false;
+    updateSentinel();
+    return;
+  }
 
   const deduped = raw.filter(v => {
     if (seenVideoIds.has(v.videoId)) return false;
+    
+    // TV조선 콘텐츠 차단 필터 (채널명 또는 제목 기준)
+    const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
+    if (isTVChosun) return false;
+    
     seenVideoIds.add(v.videoId);
     return true;
   });
 
-  // 카테고리 최종 필터: all/search/recent/custom이 아닐 경우 해당 카테고리 영상만 허용
   const catFiltered = (['all','search','recent','custom'].includes(currentFilter))
     ? deduped
     : deduped.filter(v => !v.channelCat || v.channelCat === currentFilter || v.channelCat === 'search');
 
   loadedVideos.push(...catFiltered);
-  
-  // 방금 받아온 것까지 합쳐서 렌더링
   const toRender = loadedVideos.slice(renderedCount, renderedCount + PAGE_SIZE);
   appendCards(toRender);
 
   isFetchingMore = false;
   updateSentinel();
-  setTimeout(() => prefetchNext(), 1500); // 지연 실행
+  setTimeout(() => prefetchNext(), 1500);
 }
 
 let isPrefetching = false;
 async function prefetchNext() {
-  // 대기 시간 없이 즉시 프리페치 실행
-  // 화면에 안 그려진 영상이 2페이지(24개) 미만이면 백그라운드 로드
-  if (isPrefetching || (loadedVideos.length - renderedCount) >= PAGE_SIZE * 2) return;
-  
+  if (isPrefetching) return;
   isPrefetching = true;
   const filterBefore = currentFilter;
+
   try {
-    const raw = await fetchNextPage(currentFilter);
-    if (currentFilter !== filterBefore) {
-      isPrefetching = false;
-      return;
+    const isStreamable = !['recent','custom','search'].includes(currentFilter);
+    if (isStreamable) {
+      // 일반 카테고리: 채널당 최신 1개씩 백그라운드 로드 (배치 크기 4로 최적화)
+      await streamChannelBatch(currentFilter, (channelVideos) => {
+        if (currentFilter !== filterBefore) return;
+        const deduped = channelVideos.filter(v => {
+          if (seenVideoIds.has(v.videoId)) return false;
+          
+          // TV조선 콘텐츠 차단 필터
+          const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
+          if (isTVChosun) return false;
+          
+          seenVideoIds.add(v.videoId);
+          return true;
+        });
+        const catFiltered = (['all','search','recent','custom'].includes(currentFilter))
+          ? deduped
+          : deduped.filter(v => !v.channelCat || v.channelCat === currentFilter);
+        if (catFiltered.length > 0) loadedVideos.push(...catFiltered);
+      }, 4);
+    } else {
+      const raw = await fetchNextPage(currentFilter);
+      if (currentFilter !== filterBefore) { isPrefetching = false; return; }
+      if (raw && raw.length > 0) {
+        const deduped = raw.filter(v => {
+          if (seenVideoIds.has(v.videoId)) return false;
+          
+          // TV조선 콘텐츠 차단 필터
+          const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
+          if (isTVChosun) return false;
+          
+          seenVideoIds.add(v.videoId);
+          return true;
+        });
+        loadedVideos.push(...deduped);
+      }
     }
-    const deduped = raw.filter(v => {
-      if (seenVideoIds.has(v.videoId)) return false;
-      seenVideoIds.add(v.videoId);
-      return true;
-    });
-    loadedVideos.push(...deduped);
-    updateSentinel();
+    if (currentFilter === filterBefore) updateSentinel();
   } catch (e) {}
   isPrefetching = false;
 }
+
 
 // ── 센티넬 ────────────────────────────────────────────────────────────────
 function showSentinel(loading) {
@@ -916,6 +1077,7 @@ function initGrid(title) {
   const main = document.getElementById('yt-main');
   loadedVideos  = [];
   renderedCount = 0;
+  renderedChannelIds = new Set(); // 카테고리 전환 시 채널 렌더 추적 초기화
   isFetchingMore = false; // 진행 중인 이전 Fetch 상태 강제 해제
   isPrefetching = false;  // 진행 중인 프리페치 상태 강제 해제
 
@@ -948,17 +1110,53 @@ async function switchCategory(filter, btnEl) {
   seenVideoIds.clear();
   isPrefetching = false;
 
-  // 카테고리 전환 시 채널 큐를 초기화하여 항상 첫 번째 채널들부터 빠르게 로드되도록 보장
+  // 채널 큐 초기화
   delete channelQueue[filter];
 
   document.querySelectorAll('.yt-cat').forEach(b => b.classList.remove('active'));
   if (btnEl) btnEl.classList.add('active');
 
-  // 검색 상태 초기화 (탭 클릭 시 처음부터)
   searchState[filter] = { keyIdx: 0, page: 1 };
 
   const title = filter === 'all' ? '' : (CAT_MAP[filter] || '');
   initGrid(title);
+
+  // ── 즉시 캐시 프리렌더: localStorage 캐시가 있는 채널은 0ms에 화면 채움 ──
+  // 일반 카테고리(all/뉴스 등)만 해당
+  const isStreamable = !['recent','custom','search'].includes(filter);
+  if (isStreamable) {
+    const queue = buildChannelQueue(filter);
+    channelQueue[filter] = queue; // 미리 큐 설정
+
+    const cacheVideos = [];
+    for (const ch of queue.slice(0, 12)) { // 첫 12개 채널 캐시 확인 (Stale 상태 무관하게 프리렌더)
+      const cached = getRssCacheItemStale(ch.id);
+      if (cached && cached.length > 0) {
+        // 카테고리 필드 보정
+        const fixed = cached.map(v => ({ ...v, channelName: ch.name, channelCat: ch.cat || filter }));
+        cacheVideos.push(...fixed);
+      }
+    }
+
+    if (cacheVideos.length > 0) {
+      // 캐시 데이터로 즉시 첫 화면 렌더링 (0ms!)
+      const deduped = cacheVideos.filter(v => {
+        if (seenVideoIds.has(v.videoId)) return false;
+        
+        // TV조선 콘텐츠 차단 필터
+        const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
+        if (isTVChosun) return false;
+        
+        seenVideoIds.add(v.videoId);
+        return true;
+      });
+      loadedVideos.push(...deduped);
+      const toRender = loadedVideos.slice(0, PAGE_SIZE);
+      appendCards(toRender);
+      showSentinel(false); // 로딩 스피너 → 스크롤 안내로 즉시 전환
+    }
+  }
+
   await loadMore();
 }
 
@@ -983,6 +1181,10 @@ window.doSearch = async function () {
 
 // ── 플레이어 ──────────────────────────────────────────────────────────────
 function playVideo(videoId, title, searchQuery = '', channelId = '', channelName = '') {
+  if (typeof window.stopAllMedia === 'function') {
+    window.stopAllMedia();
+  }
+
   if (searchQuery) {
     trackWatchedKeyword(searchQuery);
   }

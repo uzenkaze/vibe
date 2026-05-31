@@ -40,11 +40,20 @@ if (window.YT && window.YT.Player) {
   initPlayer();
 }
 
+function notifyAndroidNative(playing) {
+  if (window.AndroidNative && typeof window.AndroidNative.onMusicStateChanged === 'function') {
+    try {
+      window.AndroidNative.onMusicStateChanged(playing);
+    } catch (e) {}
+  }
+}
+
 function onPlayerStateChange(event) {
   if (event.data === YT.PlayerState.PLAYING) {
     isPlaying = true;
     updatePlayPauseIcon();
     startProgressTimer();
+    notifyAndroidNative(true);
     try {
       if (ytPlayer.setPlaybackQuality) ytPlayer.setPlaybackQuality('highres');
     } catch(e) {}
@@ -52,7 +61,9 @@ function onPlayerStateChange(event) {
     isPlaying = false;
     updatePlayPauseIcon();
     stopProgressTimer();
+    notifyAndroidNative(false);
   } else if (event.data === YT.PlayerState.ENDED) {
+    notifyAndroidNative(false);
     handleTrackEnd();
   }
 }
