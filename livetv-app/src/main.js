@@ -940,6 +940,13 @@ async function showYouTubeIframePlayback(ch) {
         const handle = ch.ytHandle.replace('@', '');
         const url = `https://www.youtube.com/@${handle}/live`;
         const proxies = [
+          u => {
+            // 로컬 Vite 개발 서버 환경일 때 로컬 프록시 /yt-proxy 경로를 1순위로 사용
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')) {
+              return `/yt-proxy/@${handle}/live`;
+            }
+            return u;
+          },
           u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
           u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
           u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
@@ -1654,15 +1661,20 @@ function initControls() {
     let timeout = null;
 
     const show = () => {
-      // 영상 엘리먼트가 숨김 상태(재생 전/에러 상태)라면 컨트롤을 무조건 숨김
-      if (video.classList.contains('hidden')) {
+      const isYtActive = !document.getElementById('youtube-iframe-pc').classList.contains('hidden') || 
+                         !document.getElementById('youtube-iframe-mobile').classList.contains('hidden');
+      
+      // 영상 엘리먼트가 숨김 상태(재생 전/에러 상태)이고 유튜브 모드도 아니라면 컨트롤을 무조건 숨김
+      if (video.classList.contains('hidden') && !isYtActive) {
         hide();
         return;
       }
       controls.classList.remove('opacity-0', 'pointer-events-none');
       controls.classList.add('opacity-100', 'pointer-events-auto');
       if (timeout) clearTimeout(timeout);
-      if (!video.paused) {
+      
+      // 일반 비디오 재생(HLS) 중일 때만 5초 뒤 자동 숨김 처리 적용
+      if (!video.paused && !isYtActive) {
         timeout = setTimeout(hide, 5000);
       }
     };
@@ -1675,8 +1687,11 @@ function initControls() {
 
     wrapper.addEventListener('click', (e) => {
       if (controls.contains(e.target)) return;
+      const isYtActive = !document.getElementById('youtube-iframe-pc').classList.contains('hidden') || 
+                         !document.getElementById('youtube-iframe-mobile').classList.contains('hidden');
+      
       // 재생 중이 아닐 때는 클릭 토글 방지
-      if (video.classList.contains('hidden')) return;
+      if (video.classList.contains('hidden') && !isYtActive) return;
 
       const isVisible = controls.classList.contains('opacity-100');
       if (isVisible) {
