@@ -1,6 +1,5 @@
 // PlayTime - YouTube Page Logic (v4 - Keyword Search)
 
-// ── 카테고리별 채널 목록 ───────────────────────────────────────────────────
 const DEFAULT_CHANNELS = [
   // 뉴스
   { id: 'UCsU-I-vHLiaMfV_ceaYz5rQ', name: 'JTBC 뉴스', cat: 'news' },
@@ -9,8 +8,8 @@ const DEFAULT_CHANNELS = [
   { id: 'UCi5Z9HKuiEHHFClY8XZKQKg', name: 'MBC 뉴스', cat: 'news' },
   { id: 'UCsW2CSEICjFKFKBxBi1TVOQ', name: 'KBS 뉴스', cat: 'news' },
   { id: 'UCl-9BzBJWuIJfNqEt93QaCg', name: '채널A 뉴스', cat: 'news' },
-  { id: 'UCjnJk72zk6MmMWwEWDNJGcQ', name: 'TV조선', cat: 'news' },
   { id: 'UCU4HdJNI5Q9vkErE6Ri9hYw', name: 'MBN 뉴스', cat: 'news' },
+
   // 시사
   { id: 'UCsJ6RuBi65JHJkZYO1MECIA', name: '슈카월드', cat: 'opinion' },
   { id: 'UCO850F-GqB3hSpR3M7z182A', name: '삼프로TV', cat: 'opinion' },
@@ -370,33 +369,69 @@ async function fetchChannelBySearch(ch) {
   }
 }
 
-async function fetchChannelRss(ch) {
-  if (rssCache.has(ch.id)) return rssCache.get(ch.id);
+// ── RSS 캐시 도우미 (로컬 스토리지 영구 보관으로 0초 순간 조회 달성) ──
+const RSS_CACHE_KEY = 'yt_rss_cache_v2';
+function getRssCache() {
+  try { return JSON.parse(localStorage.getItem(RSS_CACHE_KEY) || '{}'); }
+  catch { return {}; }
+}
+function setRssCache(key, data) {
+  try {
+    const cache = getRssCache();
+    cache[key] = { data, timestamp: Date.now() };
+    localStorage.setItem(RSS_CACHE_KEY, JSON.stringify(cache));
+  } catch {}
+}
+function getRssCacheItem(key) {
+  try {
+    const cache = getRssCache();
+    const item = cache[key];
+    if (item && Date.now() - item.timestamp < 30 * 60 * 1000) { // 30분 동안 캐시 유효
+      return item.data;
+    }
+  } catch {}
+  return null;
+}
 
-  // Try the super-fast and 100% reliable direct search-based scraper first
-  const searchVideos = await fetchChannelBySearch(ch);
-  if (searchVideos && searchVideos.length > 0) {
-    rssCache.set(ch.id, searchVideos);
-    return searchVideos;
+async function fetchChannelRss(ch) {
+  // 1. 메모리 캐시 및 localStorage 영구 캐시(30분 유효) 확인 -> 극강의 0초 순간 로딩 경험
+  if (rssCache.has(ch.id)) return rssCache.get(ch.id);
+  const cachedData = getRssCacheItem(ch.id);
+  if (cachedData) {
+    rssCache.set(ch.id, cachedData);
+    return cachedData;
   }
 
-  // Legacy fallback if search fails
+  // 2. [초고속 1순위] RSS XML 피드를 프록시를 통해 로드 (가장 가볍고 빠름)
   const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
   const proxies = makeProxies(rssUrl);
   for (const proxy of proxies) {
     try {
       const text = await fetchOneProxy(proxy);
       const videos = parseRss(text, ch);
-      rssCache.set(ch.id, videos);
-      return videos;
+      if (videos && videos.length > 0) {
+        rssCache.set(ch.id, videos);
+        setRssCache(ch.id, videos);
+        return videos;
+      }
     } catch (_) {}
   }
 
-  // Fallback to Invidious API if all RSS proxies fail
-  console.log(`[YouTube RSS] falling back to Invidious API for channel: ${ch.name}`);
+  // 3. [2순위 폴백] RSS가 완전히 차단/실패했을 때만 느린 직접 검색 기반 스크래퍼 순차 시도
+  console.log(`[YouTube RSS] RSS XML failed. Falling back to direct search for channel: ${ch.name}`);
+  const searchVideos = await fetchChannelBySearch(ch);
+  if (searchVideos && searchVideos.length > 0) {
+    rssCache.set(ch.id, searchVideos);
+    setRssCache(ch.id, searchVideos);
+    return searchVideos;
+  }
+
+  // 4. [3순위 최종 폴백] Invidious API
+  console.log(`[YouTube RSS] Search failed. Falling back to Invidious API for channel: ${ch.name}`);
   const invidiousVideos = await fetchChannelInvidious(ch);
   if (invidiousVideos && invidiousVideos.length > 0) {
     rssCache.set(ch.id, invidiousVideos);
+    setRssCache(ch.id, invidiousVideos);
     return invidiousVideos;
   }
 
@@ -677,21 +712,48 @@ async function fetchNextPage(filter) {
       const defaultList = DEFAULT_CHANNELS.filter(c => targetCats.includes(c.cat));
       const watchedChannels = getWatchedSearchChannels().filter(wc => !excludedIds.includes(wc.id));
       
-      // 기본 채널과 유저가 자주 본 검색 기반 채널을 안전하게 병합 (중복 방지)
-      const combined = [...defaultList];
-      watchedChannels.forEach(wc => {
-        if (!combined.find(c => c.id === wc.id)) {
-          combined.push(wc);
+      // 자주 재생한 시청 기록(history)에서 선호 채널 최대 3개 안전 추출
+      const history = getWatchHistory();
+      const historyChannels = [];
+      const seenChIds = new Set();
+      history.forEach(v => {
+        if (v.channelId && !seenChIds.has(v.channelId) && !excludedIds.includes(v.channelId)) {
+          seenChIds.add(v.channelId);
+          historyChannels.push({ id: v.channelId, name: v.channelName, cat: 'watched_history' });
         }
       });
-      arr = combined;
+
+      // 최선호 채널 리스트 구성 (검색 시 선호 채널 + 시청 히스토리 기반 선호 채널 결합)
+      const favoriteChannels = [];
+      [...watchedChannels, ...historyChannels.slice(0, 3)].forEach(wc => {
+        if (!favoriteChannels.find(c => c.id === wc.id)) {
+          favoriteChannels.push(wc);
+        }
+      });
+
+      // 기본 리스트에서 최선호 채널을 제외한 나머지 일반 채널 분리
+      const remainingChannels = [];
+      defaultList.forEach(c => {
+        if (!favoriteChannels.find(fc => fc.id === c.id)) {
+          remainingChannels.push(c);
+        }
+      });
+
+      // 셔플: 선호 채널은 셔플하지 않고, 일반 채널만 셔플하여 랜덤성 조화
+      for (let i = remainingChannels.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [remainingChannels[i], remainingChannels[j]] = [remainingChannels[j], remainingChannels[i]];
+      }
+
+      // 최종 큐: 사용자가 선호하는 최우선 채널들을 큐의 1순위(맨 앞)에 고정 배치하고 그 뒤를 셔플된 채널로 배치!!
+      arr = [...favoriteChannels, ...remainingChannels];
     } else {
       arr = DEFAULT_CHANNELS.filter(c => c.cat === filter);
-    }
-    // 셔플
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+      // 일반 카테고리는 전체 셔플
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
     }
     channelQueue[filter] = arr;
   }
