@@ -681,11 +681,41 @@ async function fetchNextPage(filter) {
     return items || [];
   }
 
+  const CAT_KEYWORDS = {
+    news: '뉴스',
+    opinion: '시사',
+    movie: '영화',
+    documentary: '교양',
+    entertainment: '예능'
+  };
+
+  if (CAT_KEYWORDS[filter]) {
+    const keyword = CAT_KEYWORDS[filter];
+    if (!searchState[filter]) {
+      searchState[filter] = { query: keyword, page: 1 };
+    } else if (!searchState[filter].query) {
+      searchState[filter].query = keyword;
+      searchState[filter].page = 1;
+    }
+    const st = searchState[filter];
+    const p = st.page++;
+    console.log(`[Category Search] Fetching keyword: "${st.query}" for category: ${filter}, page: ${p}`);
+    const items = await searchInvidious(st.query, p);
+    if (items && items.length > 0) {
+      return items.map(v => ({
+        ...v,
+        channelCat: filter
+      }));
+    }
+    return items || [];
+  }
+
   // 일반 카테고리 (RSS 채널 로드)
   if (!channelQueue[filter]) {
     let arr = [];
     if (filter === 'all') {
-      const defaultList = DEFAULT_CHANNELS.filter(c => c.cat !== 'music');
+      // 예능(entertainment) 및 음악(music) 보다는 교양, 시사, 뉴스, 영화 위주로 조회하도록 필터링
+      const defaultList = DEFAULT_CHANNELS.filter(c => c.cat !== 'music' && c.cat !== 'entertainment');
       const watchedChannels = getWatchedSearchChannels();
       // 기본 채널과 유저가 자주 본 검색 기반 채널을 안전하게 병합 (중복 방지)
       const combined = [...defaultList];
@@ -905,43 +935,6 @@ async function switchCategory(filter, btnEl) {
 
   const title = filter === 'all' ? '' : (CAT_MAP[filter] || '');
   initGrid(title);
-
-  // ── 즉시 캐시 프리렌더: localStorage 캐시가 있는 채널은 0ms에 화면 채움 ──
-  // 일반 카테고리(all/뉴스 등)만 해당
-  const isStreamable = !['recent','custom','search'].includes(filter);
-  if (isStreamable) {
-    const queue = buildChannelQueue(filter);
-    channelQueue[filter] = queue; // 미리 큐 설정
-
-    const cacheVideos = [];
-    for (const ch of queue.slice(0, 12)) { // 첫 12개 채널 캐시 확인 (Stale 상태 무관하게 프리렌더)
-      const cached = getRssCacheItemStale(ch.id);
-      if (cached && cached.length > 0) {
-        // 카테고리 필드 보정
-        const fixed = cached.map(v => ({ ...v, channelName: ch.name, channelCat: ch.cat || filter }));
-        cacheVideos.push(...fixed);
-      }
-    }
-
-    if (cacheVideos.length > 0) {
-      // 캐시 데이터로 즉시 첫 화면 렌더링 (0ms!)
-      const deduped = cacheVideos.filter(v => {
-        if (seenVideoIds.has(v.videoId)) return false;
-        
-        // TV조선 콘텐츠 차단 필터
-        const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
-        if (isTVChosun) return false;
-        
-        seenVideoIds.add(v.videoId);
-        return true;
-      });
-      loadedVideos.push(...deduped);
-      const toRender = loadedVideos.slice(0, PAGE_SIZE);
-      appendCards(toRender);
-      showSentinel(false); // 로딩 스피너 → 스크롤 안내로 즉시 전환
-    }
-  }
-
   await loadMore();
 }
 
