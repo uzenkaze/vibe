@@ -19,11 +19,11 @@
   },
   {
     "id": "1779861939097",
-    "title": "Reuse 중고폰 온라인 판매 도입에 따른 개발 요청의 건",
+    "title": "[BO,MC,PC]Reuse 중고폰 온라인 판매 도입에 따른 개발 요청의 건",
     "receive_date": "",
     "status": "todo",
     "work_no": "44759",
-    "task_no": "",
+    "task_no": "60917",
     "product_no": "0006096761",
     "task_content": "",
     "dev_deploy_date": "",
@@ -33,7 +33,7 @@
     "start_date": "",
     "end_date": "",
     "reference": "feature-00000",
-    "updated_at": "2026-05-28T03:54:40.927Z"
+    "updated_at": "2026-06-01T04:53:12.207Z"
   },
   {
     "id": "1778639112834",
