@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; media-src * data: blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://*.youtube.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob: about:; media-src * data: blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://*.youtube.com;">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <!-- TV 환경 감지 스크립트 -->
   <script>
@@ -33,8 +33,8 @@
     })();
   </script>
   <title>PlayTime - YouTube</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/tailwind.css">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:#0f0f0f;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:80px;}
@@ -305,14 +305,6 @@
     .bottom-bar button.active{color:#818cf8}
 
     /* 모바일 반응형 */
-    @media(max-width:600px){
-      .yt-grid{grid-template-columns:1fr;gap:0 0}
-      .yt-card{border-radius:0;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:12px;margin-bottom:4px}
-      .yt-thumb{border-radius:0;margin-bottom:8px}
-      .yt-header{gap:8px;padding:0 10px;overflow:hidden}
-      .yt-logo-text{display:none}
-      .yt-search{height:34px;padding:0 10px}
-      .yt-search input{font-size:13px}
     @media(max-width:600px){
       .yt-grid{grid-template-columns:1fr;gap:0 0}
       .yt-card{border-radius:0;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:12px;margin-bottom:4px}
