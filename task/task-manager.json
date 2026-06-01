@@ -26,14 +26,14 @@
     "task_no": "60917",
     "product_no": "0006096761",
     "task_content": "",
-    "dev_deploy_date": "",
-    "deploy_date": "",
+    "dev_deploy_date": "2026-07-17",
+    "deploy_date": "2026-07-28",
     "pub_content": "",
     "remarks": "[작업파일]\nC:\\work\\workspace_git\\02_Application\\src\\main\\java\\ehimart\\app\\domain\\common\\HCodeConstants.java\nC:\\work\\workspace_git\\04_FrontMobile\\src\\main\\java\\ehimart\\webapp\\frontMobile\\goods\\ProductContorller.java\nC:\\work\\workspace_git\\04_FrontMobile\\WebContent\\WEB-INF\\jsp\\goods\\productReusePhoneDetail.jsp",
-    "start_date": "",
-    "end_date": "",
+    "start_date": "2026-06-08",
+    "end_date": "2026-07-17",
     "reference": "feature-00000",
-    "updated_at": "2026-06-01T04:53:12.207Z"
+    "updated_at": "2026-06-01T04:54:00.105Z"
   },
   {
     "id": "1778639112834",
