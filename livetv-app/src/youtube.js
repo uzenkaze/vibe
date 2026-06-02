@@ -68,6 +68,8 @@ let scrollObserver = null;
 let playerHistoryPushed = false;
 let seenVideoIds   = new Set();
 let renderedChannelIds = new Set(); // 이미 렌더된 채널 추적 (채널당 1개 강제)
+let watchTimer = null;
+let currentlyPlayingVideo = null;
 
 const searchState = {};
 const channelQueue = {};
@@ -972,7 +974,12 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
     trackWatchedChannel(channelId, channelName);
   }
   
-  // 최근 재생한 동영상 목록에 저장 (최대 20개)
+  // 10초 이상 시청 시에만 시청 기록에 추가하기 위해 타이머 설정
+  if (watchTimer) {
+    clearTimeout(watchTimer);
+    watchTimer = null;
+  }
+  
   const existingVideo = loadedVideos.find(v => v.videoId === videoId);
   const fallbackVideo = {
     videoId: videoId,
@@ -983,7 +990,16 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
     views: 0,
     lengthSec: 0
   };
-  saveToWatchHistory(existingVideo || fallbackVideo);
+  currentlyPlayingVideo = existingVideo || fallbackVideo;
+  
+  watchTimer = setTimeout(() => {
+    if (currentlyPlayingVideo && currentlyPlayingVideo.videoId === videoId) {
+      saveToWatchHistory(currentlyPlayingVideo);
+      console.log(`[YouTube History] 10 seconds watched. Added to history: "${currentlyPlayingVideo.title}"`);
+    }
+    watchTimer = null;
+  }, 10000); // 10초
+
   const overlay  = document.getElementById('player-overlay');
   const iframe   = document.getElementById('yt-iframe');
   const loading  = document.getElementById('player-loading');
@@ -1007,6 +1023,13 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
 }
 
 function closePlayer(avoidPop = false) {
+  if (watchTimer) {
+    clearTimeout(watchTimer);
+    watchTimer = null;
+    console.log(`[YouTube History] Closed player before 10s. Not added to history.`);
+  }
+  currentlyPlayingVideo = null;
+
   // 전체화면 모드 해제
   if (document.fullscreenElement || document.webkitFullscreenElement) {
     try {
