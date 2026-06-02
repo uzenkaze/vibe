@@ -926,15 +926,46 @@ async function showYouTubeIframePlayback(ch) {
   const ytIframe = isPC() ? ytIframePC : ytIframeMob;
   if (ytIframe) {
     
-    // 1단계: 실시간 유튜브 라이브 비디오 ID 동적 분석 시도
-    let liveVideoId = ch.ytVideoId || null;
+    // 실시간 유튜브 라이브 비디오 ID 분석 (우선순위 기반 다중 레이어 분석)
+    let liveVideoId = null;
+
+    // 1순위: 로컬 백엔드 라이브 분석기 호출 (CORS 우회가 가능하고, 서버 측 파싱으로 가장 안정적이며 속도가 빠름)
+    if (ch.ytHandle) {
+      try {
+        const handle = ch.ytHandle.replace('@', '');
+        const proxyHost = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))
+          ? `http://${window.location.hostname}:5174`
+          : 'http://localhost:5174';
+        
+        const proxyApiUrl = `${proxyHost}/api/youtube/live?handle=${handle}`;
+        console.log(`[YouTube Live Playback] 로컬 백엔드 라이브 분석기 호출: ${proxyApiUrl}`);
+        
+        const res = await fetch(proxyApiUrl, { signal: AbortSignal.timeout(4000) });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && data.videoId) {
+            liveVideoId = data.videoId;
+            console.log(`[YouTube Live Playback] 백엔드 분석 성공: ${liveVideoId}`);
+          }
+        }
+      } catch (e) {
+        console.warn(`[YouTube Live Playback] 백엔드 분석기 실패:`, e);
+      }
+    }
+
+    // 2순위: 하드코딩된 비디오 ID 사용
+    if (!liveVideoId && ch.ytVideoId) {
+      liveVideoId = ch.ytVideoId;
+      console.log(`[YouTube Live Playback] 하드코딩된 비디오 ID 사용: ${liveVideoId}`);
+    }
+
+    // 3순위: 클라이언트 사이드 공용 CORS 프록시 스크래핑 폴백 (개발 서버가 구동 중이지 않은 정적 환경용)
     if (!liveVideoId && ch.ytHandle) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const url = `https://www.youtube.com/@${handle}/live`;
         const proxies = [
           u => {
-            // 로컬 Vite 개발 서버 환경일 때 로컬 프록시 /yt-proxy 경로를 1순위로 사용
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')) {
               return `/yt-proxy/@${handle}/live`;
             }
