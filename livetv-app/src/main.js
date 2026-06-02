@@ -80,7 +80,7 @@ const CHANNELS = [
   { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', noPlayableHls: true, urls: [] },
 
   // 뉴스/경제
-  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', officialUrl: 'https://www.ytn.co.kr/live/', noPlayableHls: true, urls: [] },
+  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', ytVideoId: 'aZyD6EPl6KU', officialUrl: 'https://www.ytn.co.kr/live/', noPlayableHls: true, urls: [] },
   { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', noPlayableHls: true, urls: [] },
   { id: 'sbsbiz', name: 'SBS Biz', network: 'SBS_BIZ', category: '뉴스/경제', ytHandle: '@SBSBiz2021', ytChannelId: 'UCbMjg2EvXs_RUGW-KrdM3pw', officialUrl: 'https://biz.sbs.co.kr/onair.html', urls: [
     'https://onair.sbs.co.kr/media/sbsbiz/playlist.m3u8'
@@ -927,8 +927,8 @@ async function showYouTubeIframePlayback(ch) {
   if (ytIframe) {
     
     // 1단계: 실시간 유튜브 라이브 비디오 ID 동적 분석 시도
-    let liveVideoId = null;
-    if (ch.ytHandle) {
+    let liveVideoId = ch.ytVideoId || null;
+    if (!liveVideoId && ch.ytHandle) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const url = `https://www.youtube.com/@${handle}/live`;
