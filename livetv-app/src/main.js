@@ -977,16 +977,17 @@ async function showYouTubeIframePlayback(ch) {
       }
     }
 
-    ytIframe.onload = () => {
-      showLoading(false);
-      ytIframe.classList.remove('hidden');
-    };
+    // Show the iframe and clear the loading overlay immediately to prevent strict browser engines 
+    // from suspending iframe loading inside hidden (display: none) frames.
+    ytIframe.classList.remove('hidden');
+    showLoading(false);
+
     if (liveVideoId) {
-      console.log(`[YouTube Live Playback] 동적 실시간 라이브 비디오 ID 획득: ${liveVideoId}`);
-      ytIframe.src = `https://www.youtube-nocookie.com/embed/${liveVideoId}?autoplay=1&mute=0&rel=0`;
+      console.log(`[YouTube Live Playback] 실시간 라이브 비디오 ID: ${liveVideoId}`);
+      ytIframe.src = `https://www.youtube.com/embed/${liveVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
     } else {
       console.log(`[YouTube Live Playback] 동적 ID 분석 실패, 채널 ID 기반 라이브 스트림 주입`);
-      ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0`;
+      ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
     }
   }
   updateTitle(`${ch.name} · YouTube Live`);
