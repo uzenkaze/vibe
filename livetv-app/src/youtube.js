@@ -637,6 +637,14 @@ function makeCard(v) {
       <div class="yt-play-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><polygon points="6 3 20 12 6 21 6 3"/></svg>
       </div>
+      ${currentFilter === 'recent' ? `
+        <button class="yt-card-delete-btn" title="삭제" onclick="event.stopPropagation(); window.removeHistoryVideo('${v.videoId}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      ` : ''}
     </div>
     <div class="yt-card-info">
       <div class="yt-avatar" style="background:${strColor(displayName)}">${avatarChar.toUpperCase()}</div>
@@ -1209,8 +1217,25 @@ function updateLoginUI() {
     : openLoginModal;
 }
 
+function removeHistoryVideo(videoId) {
+  if (!confirm('최근 재생 목록에서 이 영상을 삭제하시겠습니까?')) return;
+  try {
+    let history = getWatchHistory();
+    history = history.filter(v => v.videoId !== videoId);
+    localStorage.setItem('yt_watch_history', JSON.stringify(history));
+    
+    if (currentFilter === 'recent') {
+      const activeBtn = document.querySelector('.yt-cat.active');
+      switchCategory('recent', activeBtn);
+    }
+  } catch (e) {
+    console.error('[YouTube History] Failed to remove history video:', e);
+  }
+}
+
 // ── 전역 노출 ─────────────────────────────────────────────────────────────
 window.playVideo = playVideo;
+window.removeHistoryVideo = removeHistoryVideo;
 window.closePlayer = closePlayer;
 window.openAddModal = openAddModal;
 window.closeAddModal = closeAddModal;
