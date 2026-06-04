@@ -81,10 +81,11 @@ const CHANNELS = [
 
   // 뉴스/경제
   { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', ytVideoId: 'aZyD6EPl6KU', officialUrl: 'https://www.ytn.co.kr/live/', noPlayableHls: true, urls: [] },
-  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', noPlayableHls: true, urls: [] },
+  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', ytVideoId: 'Hdw_2AlFCog', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', noPlayableHls: true, urls: [] },
   { id: 'sbsbiz', name: 'SBS Biz', network: 'SBS_BIZ', category: '뉴스/경제', ytHandle: '@SBSBiz2021', ytChannelId: 'UCbMjg2EvXs_RUGW-KrdM3pw', officialUrl: 'https://biz.sbs.co.kr/onair.html', urls: [
     'https://onair.sbs.co.kr/media/sbsbiz/playlist.m3u8'
   ]},
+  { id: 'mk', name: '매일경제TV', network: 'MK', category: '뉴스/경제', ytHandle: '@MKeconomy_TV', ytChannelId: 'UCW_rE_QzXm5b7w7O21tE22A', officialUrl: 'https://www.mk.co.kr/', noPlayableHls: true, urls: [] },
   { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytHandle: '@mtn', ytChannelId: 'UCaQREsefLy-W8ruWcJ7IDtg', officialUrl: 'https://www.mtn.co.kr/tv-live', urls: [
     'http://183.110.27.87/mtnlive/720/playlist.m3u8',
     'http://live.mtn.co.kr/hls/mtn/playlist.m3u8'
@@ -899,7 +900,7 @@ async function tryNextUrl(ch, currentIdx) {
       }
     }
 
-    if (ch.ytChannelId) {
+    if (ch.ytChannelId || ch.ytVideoId) {
       showYouTubeIframePlayback(ch);
     } else if (ch.ytHandle || ch.officialUrl) {
       showYouTubeFallback(ch);
@@ -1008,10 +1009,15 @@ async function showYouTubeIframePlayback(ch) {
       }
     }
 
-    // Show the iframe and clear the loading overlay immediately to prevent strict browser engines 
+    // Show the iframe immediately to prevent strict browser engines 
     // from suspending iframe loading inside hidden (display: none) frames.
     ytIframe.classList.remove('hidden');
-    showLoading(false);
+
+    // Iframe 로드가 완료된 후에 로딩 오버레이를 숨김
+    ytIframe.onload = () => {
+      showLoading(false);
+      ytIframe.onload = null;
+    };
 
     if (liveVideoId) {
       console.log(`[YouTube Live Playback] 실시간 라이브 비디오 ID: ${liveVideoId}`);

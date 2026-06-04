@@ -10,7 +10,11 @@ export default defineConfig({
       '/yt-proxy': {
         target: 'https://www.youtube.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/yt-proxy/, '')
+        rewrite: (path) => path.replace(/^\/yt-proxy/, ''),
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
       }
     }
   },

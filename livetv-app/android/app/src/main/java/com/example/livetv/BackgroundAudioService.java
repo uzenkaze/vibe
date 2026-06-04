@@ -39,8 +39,8 @@ public class BackgroundAudioService extends Service {
                 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Vibe Music")
-                .setContentText("?깆씠 諛깃렇?쇱슫?쒖뿉???ъ깮 以묒엯?덈떎.")
+                .setContentTitle("PlayTime Music")
+                .setContentText("음악이 백그라운드에서 재생 중입니다.")
                 .setSmallIcon(android.R.drawable.ic_media_play)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
@@ -76,7 +76,7 @@ public class BackgroundAudioService extends Service {
                     "Vibe Music Background Service",
                     NotificationManager.IMPORTANCE_LOW
             );
-            serviceChannel.setDescription("諛깃렇?쇱슫???뚯븙 ?ъ깮???좎??섍린 ?꾪븳 ?뚮┝?낅땲??");
+            serviceChannel.setDescription("백그라운드 음악 재생을 유지하기 위한 알림입니다.");
             
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) {

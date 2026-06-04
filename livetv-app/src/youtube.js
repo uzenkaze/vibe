@@ -1,5 +1,6 @@
 // PlayTime - YouTube Page Logic (v4 - Keyword Search)
 
+// ── 카테고리별 채널 목록 ───────────────────────────────────────────────────
 const DEFAULT_CHANNELS = [
   // 뉴스
   { id: 'UCsU-I-vHLiaMfV_ceaYz5rQ', name: 'JTBC 뉴스', cat: 'news' },
@@ -8,8 +9,8 @@ const DEFAULT_CHANNELS = [
   { id: 'UCi5Z9HKuiEHHFClY8XZKQKg', name: 'MBC 뉴스', cat: 'news' },
   { id: 'UCsW2CSEICjFKFKBxBi1TVOQ', name: 'KBS 뉴스', cat: 'news' },
   { id: 'UCl-9BzBJWuIJfNqEt93QaCg', name: '채널A 뉴스', cat: 'news' },
+  { id: 'UCjnJk72zk6MmMWwEWDNJGcQ', name: 'TV조선', cat: 'news' },
   { id: 'UCU4HdJNI5Q9vkErE6Ri9hYw', name: 'MBN 뉴스', cat: 'news' },
-
   // 시사
   { id: 'UCsJ6RuBi65JHJkZYO1MECIA', name: '슈카월드', cat: 'opinion' },
   { id: 'UCO850F-GqB3hSpR3M7z182A', name: '삼프로TV', cat: 'opinion' },
@@ -67,18 +68,42 @@ let isFetchingMore = false;
 let scrollObserver = null;
 let playerHistoryPushed = false;
 let seenVideoIds   = new Set();
-let renderedChannelIds = new Set(); // 이미 렌더된 채널 추적 (채널당 1개 강제)
-let watchTimer = null;
-let currentlyPlayingVideo = null;
 
 const searchState = {};
 const channelQueue = {};
 
-// Worker Pool 상태 변수
-const MAX_WORKERS = 3;
-let activeWorkers  = 0;
-let currentQueue   = [];
-let isQueueRunning = false;
+// 차단된 채널 가져오기
+function getIgnoredChannels() {
+  try {
+    const raw = localStorage.getItem('ignored_yt_channels');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+// 채널 차단 (관심없음 -> 삭제처리)
+window.ignoreChannel = function(channelId, channelName, event) {
+  if (event) event.stopPropagation();
+  if (!channelId) return;
+  if (!confirm(`유튜브 목록에서 "${channelName || '해당'}" 채널을 삭제하시겠습니까?\n(삭제 후에는 조회 대상에서 영구적으로 제외됩니다)`)) return;
+  
+  const list = getIgnoredChannels();
+  if (!list.includes(channelId)) {
+    list.push(channelId);
+    localStorage.setItem('ignored_yt_channels', JSON.stringify(list));
+  }
+  
+  // 현재 화면에서 해당 채널 카드 삭제
+  document.querySelectorAll('.yt-card').forEach(card => {
+    if (card.dataset.channelId === channelId) {
+      card.remove();
+    }
+  });
+  
+  // loadedVideos 배열에서도 제거
+  loadedVideos = loadedVideos.filter(v => v.channelId !== channelId);
+  
+  alert(`"${channelName || '해당'}" 채널이 삭제되었으며, 앞으로 조회 대상에서 완전히 제외됩니다.`);
+};
 
 // Invidious 공개 인스턴스 목록 (우수 업타임 인스턴스 보강)
 const INVIDIOUS_INSTANCES = [
@@ -91,8 +116,8 @@ const INVIDIOUS_INSTANCES = [
 
 // ── 유튜브 직접 검색 API 파서 (Invidious 차단 우회 및 한글 완벽 대응) ───
 async function searchInvidious(query, page = 1) {
-  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D&app=desktop`;
-  const pathUrl = `/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D&app=desktop`;
+  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
+  const pathUrl = `/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
   
   let html = '';
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
@@ -155,11 +180,17 @@ async function searchInvidious(query, page = 1) {
           if (matched) views = parseFloat(matched[0]);
         }
 
+        let channelId = v.ownerText?.runs?.[0]?.navigationApi?.browseEndpoint?.browseId || '';
+        let channelAvatar = v.channelThumbnailSupportedRenderers?.channelThumbnailWithLinkRenderer?.thumbnail?.thumbnails?.[0]?.url || '';
+        if (channelAvatar && channelAvatar.startsWith('//')) channelAvatar = 'https:' + channelAvatar;
+        if (!channelAvatar && channelId && channelId.startsWith('UC')) channelAvatar = 'https://unavatar.io/youtube/' + channelId;
+
         videos.push({
           videoId: v.videoId,
           title: v.title?.runs?.[0]?.text || '(제목 없음)',
-          channelId: v.ownerText?.runs?.[0]?.navigationEndpoint?.browseEndpoint?.browseId || v.ownerText?.runs?.[0]?.navigationApi?.browseEndpoint?.browseId || '',
+          channelId: v.ownerText?.runs?.[0]?.navigationApi?.browseEndpoint?.browseId || '',
           channelName: v.ownerText?.runs?.[0]?.text || 'Unknown',
+          channelAvatar: channelAvatar,
           channelCat: 'search',
           searchQuery: query, // 검색 원본 키워드 기록
           published: '',
@@ -168,7 +199,14 @@ async function searchInvidious(query, page = 1) {
           lengthSec: lengthSec
         });
       }
-      return videos;
+      // 필터링 적용 (관심없음 채널 제외 및 채널당 최대 2개)
+      const ignored = getIgnoredChannels();
+      const channelCounts = {};
+      return videos.filter(v => {
+        if (ignored.includes(v.channelId)) return false;
+        channelCounts[v.channelId] = (channelCounts[v.channelId] || 0) + 1;
+        return channelCounts[v.channelId] <= 2;
+      });
     } catch (e) {
       console.warn('[YouTube Search] Parsing failed within helper:', e);
       return null;
@@ -212,11 +250,19 @@ function invidiousToVideo(item) {
   const published = item.published
     ? new Date(item.published * 1000).toISOString()
     : '';
+  let channelId = item.authorId || '';
+  let channelAvatar = '';
+  if (item.authorThumbnails && item.authorThumbnails.length > 0) {
+    channelAvatar = item.authorThumbnails[0].url || '';
+    if (channelAvatar && channelAvatar.startsWith('//')) channelAvatar = 'https:' + channelAvatar;
+  }
+  if (!channelAvatar && channelId && channelId.startsWith('UC')) channelAvatar = 'https://unavatar.io/youtube/' + channelId;
   return {
     videoId,
     title:       item.title || '(제목 없음)',
     channelId:   item.authorId || '',
     channelName: item.author  || '',
+    channelAvatar: channelAvatar,
     channelCat:  currentFilter,
     published,
     timeAgo:     relativeTime(published),
@@ -228,26 +274,6 @@ function invidiousToVideo(item) {
 // ── 내 채널 (RSS) ─────────────────────────────────────────────────────────
 const rssCache = new Map();
 
-function makeRssProxies(channelId) {
-  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-  const enc = encodeURIComponent(rssUrl);
-  const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
-
-  if (isCapacitor) {
-    // 앱 환경: 직접 접근 가능
-    return [rssUrl];
-  }
-
-  // 브라우저 환경: 검증된 CORS 프록시만 사용 (에러 반환 프록시 제거)
-  return [
-    `http://localhost:5174/api/rss?channelId=${channelId}`, // 1. [최우선] 로컬 Node.js RSS 프록시 서버 (CORS 우회 + 캐시로 속도 극대화)
-    rssUrl.replace('https://www.youtube.com', '/yt-proxy'), // 2. Vite 프록시 (가장 빠름)
-    `https://api.allorigins.win/get?url=${enc}`,            // 3. allorigins
-    `https://api.codetabs.com/v1/proxy?quest=${enc}`,        // 4. codetabs
-  ];
-}
-
-// 기존 makeProxies는 호환성 유지 (검색 등 다른 곳에서 사용)
 function makeProxies(url) {
   const list = [];
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
@@ -264,57 +290,26 @@ function makeProxies(url) {
 
   list.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
   list.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
+  list.push(`https://corsproxy.io/?${encodeURIComponent(url)}`);
 
   return list;
 }
 
-
-async function fetchOneProxy(proxyUrl, timeoutMs = 1200) {
-  const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(timeoutMs) });
+async function fetchOneProxy(proxyUrl) {
+  const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(3000) });
   if (!res.ok) throw new Error('not ok');
-
-  let text;
-  if (proxyUrl.includes('allorigins')) {
-    // allorigins는 JSON {contents: "..."} 형태로 반환
-    const json = await res.json();
-    text = json.contents || '';
-  } else {
-    text = await res.text();
-  }
-
-  if (!text || (!text.includes('<entry>') && !text.includes('&lt;entry&gt;'))) {
-    throw new Error('no entries');
-  }
+  const text = proxyUrl.includes('allorigins')
+    ? ((await res.json()).contents || '')
+    : await res.text();
+  if (!text.includes('<entry>') && !text.includes('&lt;entry&gt;')) throw new Error('no entries');
   return text;
 }
-
-
-// 모든 프록시를 동시에 시도하여 가장 빠른 응답만 사용 (Promise.race 방식)
-async function fetchRssRace(proxies) {
-  if (proxies.length === 0) throw new Error('no proxies');
-
-  // 성공 시 resolve, 전체 실패 시 reject
-  return new Promise((resolve, reject) => {
-    let failCount = 0;
-    const total = proxies.length;
-    proxies.forEach(proxyUrl => {
-      // 로컬 RSS 프록시 최초 기동 및 캐시 미스를 감안하여 타임아웃을 3초로 넉넉하게 설정
-      fetchOneProxy(proxyUrl, 3000)
-        .then(resolve)  // 가장 먼저 도착한 프록시 결과로 즉시 resolve
-        .catch(() => {
-          failCount++;
-          if (failCount === total) reject(new Error('all proxies failed'));
-        });
-    });
-  });
-}
-
 
 function parseRss(text, ch) {
   const xml = new DOMParser().parseFromString(text, 'text/xml');
   const entries = [...(xml.querySelectorAll('entry').length
     ? xml.querySelectorAll('entry')
-    : xml.getElementsByTagName('entry'))].slice(0, 4);
+    : xml.getElementsByTagName('entry'))].slice(0, 10);
   return entries.map(e => {
     const videoId =
       e.querySelector('videoId')?.textContent ||
@@ -329,11 +324,14 @@ function parseRss(text, ch) {
         e.querySelector('media\\:statistics');
       if (stat) views = parseInt(stat.getAttribute('views'), 10) || 0;
     } catch (_) {}
+    
+    let channelAvatar = (ch.id && ch.id.startsWith('UC')) ? 'https://unavatar.io/youtube/' + ch.id : '';
     return {
       videoId,
       title: e.querySelector('title')?.textContent || '(제목 없음)',
       channelId: ch.id,
       channelName: ch.name,
+      channelAvatar: channelAvatar,
       channelCat: 'custom',
       published,
       timeAgo: relativeTime(published),
@@ -343,41 +341,54 @@ function parseRss(text, ch) {
 }
 
 async function fetchChannelInvidious(ch) {
-  // Invidious 인스턴스 2개를 랜덤으로 선택하여 레이싱 (429 단일 서버 집중 차단)
-  const shuffled = [...INVIDIOUS_INSTANCES].sort(() => 0.5 - Math.random());
-  const candidates = shuffled.slice(0, 2);
-
-  return new Promise((resolve, reject) => {
-    let failCount = 0;
-    candidates.forEach(inst => {
-      fetch(`${inst}/api/v1/channels/${ch.id}/videos?sort_by=newest`, { signal: AbortSignal.timeout(3000) })
-        .then(async res => {
-          if (!res.ok) throw new Error('not ok');
-          const data = await res.json();
-          const videos = Array.isArray(data) ? data : (Array.isArray(data.videos) ? data.videos : []);
-          if (videos.length === 0) throw new Error('empty');
-          resolve(videos.map(item => {
-            if (!item.videoId) return null;
-            let pub = '';
-            if (item.published) {
-              try { pub = new Date(typeof item.published === 'number' ? item.published * 1000 : item.published).toISOString(); } catch (_) {}
-            }
-            return {
-              videoId: item.videoId,
-              title: item.title || '(제목 없음)',
-              channelId: ch.id,
-              channelName: ch.name,
-              channelCat: ch.cat || currentFilter,
-              published: pub,
-              timeAgo: relativeTime(pub) || item.publishedText || '',
-              views: item.viewCount || 0,
-              lengthSec: item.lengthSeconds || 0,
-            };
-          }).filter(Boolean));
-        })
-        .catch(() => { if (++failCount === candidates.length) reject(new Error('all failed')); });
-    });
-  });
+  const params = new URLSearchParams({ sort_by: 'newest' });
+  const instance = INVIDIOUS_INSTANCES[0]; // 탑 1순위 우수 인스턴스 단일 검사로 극강의 속도 확보
+  const url = `${instance}/api/v1/channels/${ch.id}/videos?${params}`;
+  const tryUrls = [url, `https://corsproxy.io/?${encodeURIComponent(url)}`];
+  
+  for (const fetchUrl of tryUrls) {
+    try {
+      const res = await fetch(fetchUrl, { signal: AbortSignal.timeout(3000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      
+      let videos = [];
+      if (Array.isArray(data)) {
+        videos = data;
+      } else if (data && Array.isArray(data.videos)) {
+        videos = data.videos;
+      }
+      
+      if (videos.length > 0) {
+        return videos.map(item => {
+          const videoId = item.videoId;
+          if (!videoId) return null;
+          let published = '';
+          if (item.published) {
+            try {
+              if (typeof item.published === 'number') {
+                published = new Date(item.published * 1000).toISOString();
+              } else {
+                published = new Date(item.published).toISOString();
+              }
+            } catch (_) {}
+          }
+          return {
+            videoId,
+            title: item.title || '(제목 없음)',
+            channelId: ch.id,
+            channelName: ch.name,
+            channelCat: 'custom',
+            published,
+            timeAgo: relativeTime(published) || item.publishedText || '',
+            views: item.viewCount || 0,
+            lengthSec: item.lengthSeconds || 0,
+          };
+        }).filter(Boolean);
+      }
+    } catch (_) {}
+  }
+  return [];
 }
 
 async function fetchChannelBySearch(ch) {
@@ -414,13 +425,15 @@ async function fetchChannelBySearch(ch) {
 }
 
 async function fetchChannelRss(ch) {
+  if (getIgnoredChannels().includes(ch.id)) return [];
   if (rssCache.has(ch.id)) return rssCache.get(ch.id);
 
   // Try the super-fast and 100% reliable direct search-based scraper first
   const searchVideos = await fetchChannelBySearch(ch);
   if (searchVideos && searchVideos.length > 0) {
-    rssCache.set(ch.id, searchVideos);
-    return searchVideos;
+    const limited = searchVideos.slice(0, 2);
+    rssCache.set(ch.id, limited);
+    return limited;
   }
 
   // Legacy fallback if search fails
@@ -430,8 +443,9 @@ async function fetchChannelRss(ch) {
     try {
       const text = await fetchOneProxy(proxy);
       const videos = parseRss(text, ch);
-      rssCache.set(ch.id, videos);
-      return videos;
+      const limited = videos.slice(0, 2);
+      rssCache.set(ch.id, limited);
+      return limited;
     } catch (_) {}
   }
 
@@ -439,8 +453,9 @@ async function fetchChannelRss(ch) {
   console.log(`[YouTube RSS] falling back to Invidious API for channel: ${ch.name}`);
   const invidiousVideos = await fetchChannelInvidious(ch);
   if (invidiousVideos && invidiousVideos.length > 0) {
-    rssCache.set(ch.id, invidiousVideos);
-    return invidiousVideos;
+    const limited = invidiousVideos.slice(0, 2);
+    rssCache.set(ch.id, limited);
+    return limited;
   }
 
   return [];
@@ -469,7 +484,7 @@ function interleaveVideos(videos) {
     groups[key].push(v);
   });
   
-  // 2. 각 채널 내부 비디오는 최신순으로 정렬
+  // 2. 각 채널 내부의 비디오는 최신순으로 정렬
   const keys = Object.keys(groups);
   keys.forEach(key => {
     groups[key].sort((a, b) => new Date(b.published || 0) - new Date(a.published || 0));
@@ -584,9 +599,9 @@ function saveToWatchHistory(video) {
 
 function fmtViews(n) {
   if (!n) return '';
-  if (n >= 1e8) return `${+(n / 1e8).toFixed(1)}억회`;
-  if (n >= 1e4) return `${+(n / 1e4).toFixed(1)}만회`;
-  if (n >= 1e3) return `${+(n / 1e3).toFixed(1)}천회`;
+  if (n >= 1e8) return `${+(n / 1e8).toFixed(1)}억 회`;
+  if (n >= 1e4) return `${+(n / 1e4).toFixed(1)}만 회`;
+  if (n >= 1e3) return `${+(n / 1e3).toFixed(1)}천 회`;
   return `${n}회`;
 }
 
@@ -596,7 +611,6 @@ function fmtDuration(sec) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-// 임시 색상 선택기
 function strColor(s) {
   const p = ['#7c3aed','#1d4ed8','#059669','#b45309','#be185d','#0891b2','#dc2626','#6d28d9','#0f766e'];
   let h = 0;
@@ -604,23 +618,24 @@ function strColor(s) {
   return p[Math.abs(h) % p.length];
 }
 
-// 미디어 카드 생성 도우미
+// ── 카드 생성 ─────────────────────────────────────────────────────────────
 function makeCard(v) {
   const card = document.createElement('div');
   card.className = 'yt-card';
+  card.dataset.channelId = v.channelId;
   card.onclick = () => playVideo(v.videoId, v.title, v.searchQuery, v.channelId, v.channelName);
 
   const viewStr  = fmtViews(v.views);
   const durStr   = fmtDuration(v.lengthSec);
-  const meta     = [viewStr, v.timeAgo].filter(Boolean).join(' • ');
+  const meta     = [viewStr, v.timeAgo].filter(Boolean).join(' · ');
 
   const hq = `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg`;
   const mq = `https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg`;
   const sd = `https://i.ytimg.com/vi/${v.videoId}/sddefault.jpg`;
 
   const displayName = v.channelName || '?';
-  const avatarChar = displayName.startsWith('[추천]') 
-    ? displayName.replace('[추천]', '').trim().charAt(0) 
+  const avatarChar = displayName.startsWith('[★추천]') 
+    ? displayName.replace('[★추천]', '').trim().charAt(0) 
     : displayName.charAt(0);
 
   card.innerHTML = `
@@ -638,16 +653,26 @@ function makeCard(v) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><polygon points="6 3 20 12 6 21 6 3"/></svg>
       </div>
       ${currentFilter === 'recent' ? `
-        <button class="yt-card-delete-btn" title="삭제" onclick="event.stopPropagation(); window.removeHistoryVideo('${v.videoId}')">
+        <button class="yt-card-delete-btn" title="기록에서 삭제" onclick="event.stopPropagation(); window.removeHistoryVideo('${v.videoId}')" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);border:1.5px solid rgba(255,255,255,0.8);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.5);">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
-      ` : ''}
+      ` : `
+        <button class="yt-card-delete-btn" title="채널 삭제" onclick="window.ignoreChannel('${v.channelId}', '${displayName.replace(/'/g, "\\'")}', event)" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);border:1.5px solid rgba(255,255,255,0.8);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.5);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      `}
     </div>
     <div class="yt-card-info">
-      <div class="yt-avatar" style="background:${strColor(displayName)}">${avatarChar.toUpperCase()}</div>
+      ${v.channelAvatar 
+        ? `<img class="yt-avatar" src="${v.channelAvatar}" style="border-radius:50%;object-fit:cover;background:#333;" onerror="this.outerHTML='<div class=\\'yt-avatar\\' style=\\'background:${strColor(displayName)}\\'>${avatarChar.toUpperCase()}</div>'">`
+        : `<div class="yt-avatar" style="background:${strColor(displayName)}">${avatarChar.toUpperCase()}</div>`
+      }
       <div class="yt-meta">
         <div class="yt-title">${v.title}</div>
         <div class="yt-ch-name">${displayName}</div>
@@ -657,7 +682,7 @@ function makeCard(v) {
   return card;
 }
 
-// 미디어 카드 렌더링 도우미
+// ── 그리드 렌더링 ─────────────────────────────────────────────────────────
 function appendCards(videos) {
   const grid = document.getElementById('yt-grid-container');
   if (!grid) return;
@@ -671,9 +696,20 @@ async function fetchNextPage(filter) {
     const history = getWatchHistory();
     if (history.length === 0) {
       const grid = document.getElementById('yt-grid-container');
-      if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#666">최근 기록이 없습니다.</div>';
+      if (grid) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #555;">
+            <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 12px; color: #555;"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            최근 재생한 동영상이 없습니다.
+          </div>
+        `;
+      }
+      const sentinel = document.getElementById('scroll-sentinel');
+      if (sentinel) sentinel.style.display = 'none';
       return [];
     }
+    const sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel) sentinel.style.display = 'none';
     return history;
   }
 
@@ -691,40 +727,10 @@ async function fetchNextPage(filter) {
     return items || [];
   }
 
-  const CAT_KEYWORDS = {
-    news: '뉴스',
-    opinion: '시사',
-    movie: '영화',
-    documentary: '교양',
-    entertainment: '예능'
-  };
-
-  if (CAT_KEYWORDS[filter]) {
-    const keyword = CAT_KEYWORDS[filter];
-    if (!searchState[filter]) {
-      searchState[filter] = { query: keyword, page: 1 };
-    } else if (!searchState[filter].query) {
-      searchState[filter].query = keyword;
-      searchState[filter].page = 1;
-    }
-    const st = searchState[filter];
-    const p = st.page++;
-    console.log(`[Category Search] Fetching keyword: "${st.query}" for category: ${filter}, page: ${p}`);
-    const items = await searchInvidious(st.query, p);
-    if (items && items.length > 0) {
-      return items.map(v => ({
-        ...v,
-        channelCat: filter
-      }));
-    }
-    return items || [];
-  }
-
-  // 일반 카테고리 (RSS 채널 로드)
+  // 일반 카테고리 (RSS 채널 피드)
   if (!channelQueue[filter]) {
     let arr = [];
     if (filter === 'all') {
-      // 예능(entertainment) 및 음악(music) 보다는 교양, 시사, 뉴스, 영화 위주로 조회하도록 필터링
       const defaultList = DEFAULT_CHANNELS.filter(c => c.cat !== 'music' && c.cat !== 'entertainment');
       const watchedChannels = getWatchedSearchChannels();
       // 기본 채널과 유저가 자주 본 검색 기반 채널을 안전하게 병합 (중복 방지)
@@ -749,8 +755,8 @@ async function fetchNextPage(filter) {
   const q = channelQueue[filter];
   if (!q.length) return [];
 
-  // 한번에 여러 채널을 로딩하여 빠른 속도 확보 (2개 채널 동시에 로드)
-  const batch = q.splice(0, 2);
+  // 한번에 여러 채널을 로딩하여 다양한 채널로 구성 (6개 채널 동시 로드)
+  const batch = q.splice(0, 6);
   const rssPromises = batch.map(ch => fetchChannelRss(ch));
 
   let searchPromises = [];
@@ -780,17 +786,17 @@ async function fetchNextPage(filter) {
     }
   });
 
-  // 특정 거대 방송사 채널이 전체 피드를 독점하지 않도록 채널 교차(Interleave) 정렬하여 다양한 정보
+  // 특정 대형 방송사/채널이 전체 피드를 독점하지 않도록 채널 교차(Interleave) 정렬하여 다양성 확보
   const interleavedRssVideos = interleaveVideos(rssVideos);
 
-  // 검색한 추천 키워드 비디오를 목록에 자연스럽게 믹스
+  // 검색한 추천 키워드 비디오를 목록에 자연스럽게 믹스인
   const finalVideos = [...interleavedRssVideos];
   searchResultsList.forEach(rec => {
     const recItems = rec.items.slice(0, 4).map(v => {
       return {
         ...v,
         channelCat: 'all',
-        channelName: `[추천] ${v.channelName}`,
+        channelName: `[★추천] ${v.channelName}`,
         published: new Date().toISOString()
       };
     });
@@ -823,16 +829,11 @@ async function loadMore() {
   const filterBefore = currentFilter;
   const raw = await fetchNextPage(currentFilter);
   
-  // 비동기 요청 와중에 카테고리나 검색어가 바뀌었다면 즉시 파기하고 종료
+  // 비동기 요청 도중에 카테고리나 검색어가 바뀌었다면 즉시 파기하고 종료
   if (currentFilter !== filterBefore) return;
 
   const deduped = raw.filter(v => {
     if (seenVideoIds.has(v.videoId)) return false;
-    
-    // TV조선 콘텐츠 차단 필터
-    const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
-    if (isTVChosun) return false;
-    
     seenVideoIds.add(v.videoId);
     return true;
   });
@@ -851,7 +852,7 @@ async function loadMore() {
 let isPrefetching = false;
 async function prefetchNext() {
   // 대기 시간 없이 즉시 프리페치 실행
-  // 화면에 그려진 영상이 2페이지(24개) 미만이면 백그라운드 로드
+  // 화면에 안 그려진 영상이 2페이지(24개) 미만이면 백그라운드 로드
   if (isPrefetching || (loadedVideos.length - renderedCount) >= PAGE_SIZE * 2) return;
   
   isPrefetching = true;
@@ -864,11 +865,6 @@ async function prefetchNext() {
     }
     const deduped = raw.filter(v => {
       if (seenVideoIds.has(v.videoId)) return false;
-      
-      // TV조선 콘텐츠 차단 필터
-      const isTVChosun = (v.channelName && v.channelName.includes('TV조선')) || (v.title && v.title.includes('TV조선'));
-      if (isTVChosun) return false;
-      
       seenVideoIds.add(v.videoId);
       return true;
     });
@@ -883,14 +879,26 @@ function showSentinel(loading) {
   const el = document.getElementById('scroll-sentinel');
   if (!el) return;
   el.style.display = 'flex';
+  el.style.opacity = loading ? '1' : '0';
+  el.innerHTML = loading
+    ? `<div class="yt-spinner" style="width:28px;height:28px;border-width:2px"></div>
+       <span style="font-size:13px;color:#888">영상 불러오는 중...</span>`
+    : ``;
 }
 
 function updateSentinel() {
   const el = document.getElementById('scroll-sentinel');
   if (!el) return;
-  el.style.display = 'flex';
-  if (!isFetchingMore) {
-    el.innerHTML = `<span style="font-size:13px;color:#666">↓ 아래로 스크롤하여 더 로드하기</span>`;
+  const hasMore = currentFilter === 'recent' ? (renderedCount < loadedVideos.length) : true;
+  
+  if (!hasMore) {
+    el.style.display = 'none';
+  } else {
+    el.style.display = 'flex';
+    if (!isFetchingMore) {
+      el.style.opacity = '0';
+      el.innerHTML = ``;
+    }
   }
 }
 
@@ -899,11 +907,8 @@ function initGrid(title) {
   const main = document.getElementById('yt-main');
   loadedVideos  = [];
   renderedCount = 0;
-  renderedChannelIds = new Set(); // 카테고리 전환 시 채널 렌더 추적 초기화
-  isFetchingMore = false;
-  isPrefetching  = false;
-  currentQueue   = [];
-  isQueueRunning = false;
+  isFetchingMore = false; // 진행 중인 이전 Fetch 상태 강제 해제
+  isPrefetching = false;  // 진행 중인 프리페치 상태 강제 해제
 
   main.innerHTML = title ? `<div class="section-title">${title}</div>` : '';
 
@@ -932,15 +937,15 @@ function initGrid(title) {
 async function switchCategory(filter, btnEl) {
   currentFilter = filter;
   seenVideoIds.clear();
-  isPrefetching  = false;
-  currentQueue   = [];
-  isQueueRunning = false;
+  isPrefetching = false;
 
+  // 카테고리 전환 시 채널 큐를 초기화하여 항상 첫 번째 채널들부터 빠르게 로드되도록 보장
   delete channelQueue[filter];
 
   document.querySelectorAll('.yt-cat').forEach(b => b.classList.remove('active'));
   if (btnEl) btnEl.classList.add('active');
 
+  // 검색 상태 초기화 (탭 클릭 시 처음부터)
   searchState[filter] = { keyIdx: 0, page: 1 };
 
   const title = filter === 'all' ? '' : (CAT_MAP[filter] || '');
@@ -957,9 +962,7 @@ window.doSearch = async function () {
 
   currentFilter = 'search';
   seenVideoIds.clear();
-  isPrefetching  = false;
-  currentQueue   = [];
-  isQueueRunning = false;
+  isPrefetching = false;
 
   document.querySelectorAll('.yt-cat').forEach(b => b.classList.remove('active'));
 
@@ -971,10 +974,6 @@ window.doSearch = async function () {
 
 // ── 플레이어 ──────────────────────────────────────────────────────────────
 function playVideo(videoId, title, searchQuery = '', channelId = '', channelName = '') {
-  if (typeof window.stopAllMedia === 'function') {
-    window.stopAllMedia();
-  }
-
   if (searchQuery) {
     trackWatchedKeyword(searchQuery);
   }
@@ -982,12 +981,7 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
     trackWatchedChannel(channelId, channelName);
   }
   
-  // 10초 이상 시청 시에만 시청 기록에 추가하기 위해 타이머 설정
-  if (watchTimer) {
-    clearTimeout(watchTimer);
-    watchTimer = null;
-  }
-  
+  // 최근 재생한 동영상 목록에 저장 (최대 20개)
   const existingVideo = loadedVideos.find(v => v.videoId === videoId);
   const fallbackVideo = {
     videoId: videoId,
@@ -998,16 +992,13 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
     views: 0,
     lengthSec: 0
   };
-  currentlyPlayingVideo = existingVideo || fallbackVideo;
-  
-  watchTimer = setTimeout(() => {
-    if (currentlyPlayingVideo && currentlyPlayingVideo.videoId === videoId) {
-      saveToWatchHistory(currentlyPlayingVideo);
-      console.log(`[YouTube History] 10 seconds watched. Added to history: "${currentlyPlayingVideo.title}"`);
+  window.currentlyPlayingVideo = existingVideo || fallbackVideo;
+  if (window.watchTimer) clearTimeout(window.watchTimer);
+  window.watchTimer = setTimeout(() => {
+    if (window.currentlyPlayingVideo && window.currentlyPlayingVideo.videoId === videoId) {
+      saveToWatchHistory(window.currentlyPlayingVideo);
     }
-    watchTimer = null;
-  }, 10000); // 10초
-
+  }, 10000);
   const overlay  = document.getElementById('player-overlay');
   const iframe   = document.getElementById('yt-iframe');
   const loading  = document.getElementById('player-loading');
@@ -1020,7 +1011,7 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
       if (loading) loading.style.display = 'none';
       iframe.style.opacity = '1';
     };
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&fs=0&origin=${encodeURIComponent(window.location.origin)}`;
+    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&fs=0`;
   }
   if (overlay) { 
     overlay.classList.add('open'); 
@@ -1031,13 +1022,8 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
 }
 
 function closePlayer(avoidPop = false) {
-  if (watchTimer) {
-    clearTimeout(watchTimer);
-    watchTimer = null;
-    console.log(`[YouTube History] Closed player before 10s. Not added to history.`);
-  }
-  currentlyPlayingVideo = null;
-
+  if (window.watchTimer) { clearTimeout(window.watchTimer); window.watchTimer = null; }
+  window.currentlyPlayingVideo = null;
   // 전체화면 모드 해제
   if (document.fullscreenElement || document.webkitFullscreenElement) {
     try {
@@ -1151,8 +1137,6 @@ async function resolveChannelId(input) {
     const m = targetUrl.match(/channel\/(UC[\w-]{22})/);
     if (m) return { id: m[1], name: fallbackName };
   }
-  // 모든 프록시 실패 시 체널ID 없이 체널명만으로 fallback 반환 (fetchChannelBySearch에서 이름으로 검색)
-  if (fallbackName) return { id: '', name: fallbackName };
   return null;
 }
 
@@ -1162,37 +1146,21 @@ async function addChannel() {
   if (!input) { status.textContent = '채널명을 입력하세요.'; return; }
   status.style.color = '#888'; status.textContent = '채널을 검색 중...';
   const result = await resolveChannelId(input);
-  // resolveChannelId가 null이면 체널명만으로 fallback (체널ID 없이도 검색 기능으로 작동)
-  const channelName = result?.name || (input.startsWith('@') ? input : '@' + input);
-  const channelId   = result?.id || '';
-  
+  if (!result?.id) { status.style.color = '#f87171'; status.textContent = '채널을 찾을 수 없습니다.'; return; }
   const saved = loadSavedChannels();
-  const isDuplicate = channelId
-    ? saved.find(c => c.id === channelId)
-    : saved.find(c => c.name.toLowerCase() === channelName.toLowerCase());
-  if (isDuplicate) { status.style.color = '#fbbf24'; status.textContent = '이미 추가된 채널입니다.'; return; }
-  
-  const newCh = { id: channelId, name: channelName, handle: input.startsWith('@') ? input : '@' + (result?.name || input) };
+  if (saved.find(c => c.id === result.id)) { status.style.color = '#fbbf24'; status.textContent = '이미 추가된 채널입니다.'; return; }
+  const newCh = { id: result.id, name: result.name || input, handle: input.startsWith('@') ? input : '@' + (result.name || input) };
   saved.push(newCh);
   saveChannels(saved);
   status.style.color = '#4ade80'; status.textContent = `"${newCh.name}" 채널 추가 완료!`;
   document.getElementById('ch-input').value = '';
-  setTimeout(() => {
-    closeAddModal();
-    const btn = Array.from(document.querySelectorAll('.yt-cat')).find(b => b.getAttribute('onclick')?.includes('custom'));
-    switchCategory('custom', btn);
-  }, 1200);
+  setTimeout(closeAddModal, 1200);
 }
 
 function saveChannels(list)  { localStorage.setItem('yt_channels_page', JSON.stringify(list)); }
 function loadSavedChannels() { try { return JSON.parse(localStorage.getItem('yt_channels_page') || '[]'); } catch { return []; } }
 
-function openAddModal() {
-  document.getElementById('add-modal')?.classList.add('open');
-  document.getElementById('ch-input').value = '';
-  document.getElementById('add-status').textContent = '';
-  document.getElementById('ch-results').innerHTML = '';
-}
+function openAddModal()   { document.getElementById('add-modal')?.classList.add('open'); }
 function closeAddModal()  { document.getElementById('add-modal')?.classList.remove('open'); }
 function openLoginModal() { document.getElementById('login-modal')?.classList.add('open'); }
 function closeLoginModal(){ document.getElementById('login-modal')?.classList.remove('open'); }
@@ -1217,25 +1185,8 @@ function updateLoginUI() {
     : openLoginModal;
 }
 
-function removeHistoryVideo(videoId) {
-  if (!confirm('최근 재생 목록에서 이 영상을 삭제하시겠습니까?')) return;
-  try {
-    let history = getWatchHistory();
-    history = history.filter(v => v.videoId !== videoId);
-    localStorage.setItem('yt_watch_history', JSON.stringify(history));
-    
-    if (currentFilter === 'recent') {
-      const activeBtn = document.querySelector('.yt-cat.active');
-      switchCategory('recent', activeBtn);
-    }
-  } catch (e) {
-    console.error('[YouTube History] Failed to remove history video:', e);
-  }
-}
-
 // ── 전역 노출 ─────────────────────────────────────────────────────────────
 window.playVideo = playVideo;
-window.removeHistoryVideo = removeHistoryVideo;
 window.closePlayer = closePlayer;
 window.openAddModal = openAddModal;
 window.closeAddModal = closeAddModal;
@@ -1277,189 +1228,23 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLoginUI();
   initPlayerControls();
   initFullscreenHandler();
-  initPullToRefresh();
 });
-
-// ── 당겨서 새로고침 (Pull-to-Refresh) ────────────────────────────────────────
-function initPullToRefresh() {
-  // Capacitor 앱 환경에서만 활성화
-  const isApp = typeof window.Capacitor !== 'undefined' || navigator.userAgent.includes('wv');
-
-  const indicator = document.getElementById('pull-refresh-indicator');
-  if (!indicator) return;
-
-  let startY = 0;
-  let pulling = false;
-  let triggered = false;
-  const THRESHOLD = 70; // 새로고침 트리거 기준 거리 (px)
-
-  document.addEventListener('touchstart', e => {
-    if (window.scrollY > 5) return; // 최상단에서만 활성화
-    startY = e.touches[0].clientY;
-    pulling = true;
-    triggered = false;
-  }, { passive: true });
-
-  document.addEventListener('touchmove', e => {
-    if (!pulling) return;
-    const dist = e.touches[0].clientY - startY;
-    if (dist <= 0) { pulling = false; return; }
-
-    const progress = Math.min(dist / THRESHOLD, 1);
-    indicator.style.opacity = progress;
-    // 화면 중앙 기준 - 당기는 거리에 따라 살짝 위로 올라오는 효과
-    const offset = 60 - Math.min(dist * 0.4, 60);
-    indicator.style.transform = `translateX(-50%) translateY(calc(-50% + ${offset}px))`;
-
-    if (dist >= THRESHOLD && !triggered) {
-      triggered = true;
-      indicator.classList.add('ready');
-    } else if (dist < THRESHOLD) {
-      indicator.classList.remove('ready');
-    }
-  }, { passive: true });
-
-  document.addEventListener('touchend', async () => {
-    if (!pulling) return;
-    pulling = false;
-
-    if (triggered) {
-      indicator.classList.add('refreshing');
-      indicator.style.transform = 'translateX(-50%) translateY(-50%)'; // 화면 정중앙 고정
-      // 현재 카테고리 기준으로 새로고침
-      await switchCategory(currentFilter, document.querySelector('.yt-cat.active'));
-      setTimeout(() => {
-        indicator.classList.remove('refreshing', 'ready');
-        indicator.style.opacity = '0';
-        indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
-      }, 500);
-    } else {
-      indicator.style.opacity = '0';
-      indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
-    }
-    triggered = false;
-  });
-}
 
 // ── 초기화 ────────────────────────────────────────────────────────────────
 switchCategory('all', document.querySelector('.yt-cat.active'));
 
-// ── 채널 검색 & 선택 추가 ─────────────────────────────────────────────────
-async function searchChannel() {
-  const query = document.getElementById('ch-input').value.trim();
-  const status = document.getElementById('add-status');
-  const resultBox = document.getElementById('ch-results');
-  if (!query) { status.textContent = '검색어를 입력하세요.'; return; }
 
-  status.style.color = '#888';
-  status.textContent = '채널 검색 중...';
-  resultBox.innerHTML = `<div style="text-align:center;padding:20px;color:#555"><div class="yt-spinner" style="margin:0 auto 8px"></div>검색 중...</div>`;
-
+window.removeHistoryVideo = function(videoId) {
+  if (!confirm('최근 재생 목록에서 이 영상을 삭제하시겠습니까?')) return;
   try {
-    // YouTube 채널 검색 (sp=EgIQAg%3D%3D 는 채널 필터)
-    const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAg%3D%3D`;
-    let html = '';
-
-    for (const proxy of makeProxies(targetUrl)) {
-      try {
-        const res = await fetch(proxy, { signal: AbortSignal.timeout(5000) });
-        if (!res.ok) continue;
-        html = proxy.includes('allorigins') ? (await res.json()).contents || '' : await res.text();
-        if (html && html.includes('channelRenderer')) break;
-      } catch (_) {}
+    let history = getWatchHistory();
+    history = history.filter(v => v.videoId !== videoId);
+    localStorage.setItem('yt_watch_history', JSON.stringify(history));
+    if (currentFilter === 'recent') {
+      const activeBtn = document.querySelector('.yt-cat.active');
+      switchCategory('recent', activeBtn);
     }
-
-    const channels = parseChannelSearchResults(html);
-
-    if (!channels.length) {
-      status.textContent = '검색 결과가 없습니다. 다른 키워드로 시도해보세요.';
-      resultBox.innerHTML = '';
-      return;
-    }
-
-    status.textContent = `${channels.length}개 채널을 찾았습니다. 추가할 채널을 선택하세요.`;
-    renderChannelResults(channels);
   } catch (e) {
-    status.style.color = '#f87171';
-    status.textContent = '검색 중 오류가 발생했습니다.';
-    resultBox.innerHTML = '';
+    console.error(e);
   }
-}
-
-function parseChannelSearchResults(html) {
-  const channels = [];
-  if (!html) return channels;
-
-  // ytInitialData JSON 추출
-  const match = html.match(/var ytInitialData\s*=\s*(\{.+?\});\s*<\/script>/s)
-    || html.match(/ytInitialData\s*=\s*(\{.+?\});/s);
-  if (!match) return channels;
-
-  try {
-    const data = JSON.parse(match[1]);
-    const contents = data?.contents?.twoColumnSearchResultsRenderer
-      ?.primaryContents?.sectionListRenderer?.contents || [];
-
-    for (const section of contents) {
-      const items = section?.itemSectionRenderer?.contents || [];
-      for (const item of items) {
-        const ch = item?.channelRenderer;
-        if (!ch) continue;
-        const id = ch.channelId || '';
-        const name = ch.title?.simpleText || ch.title?.runs?.[0]?.text || '';
-        const handle = ch.navigationEndpoint?.browseEndpoint?.canonicalBaseUrl || '';
-        const thumb = ch.thumbnail?.thumbnails?.slice(-1)[0]?.url || '';
-        const subs = ch.videoCountText?.simpleText || ch.subscriberCountText?.simpleText || '';
-        if (!id || !name) continue;
-        channels.push({ id, name, handle, thumb, subs });
-        if (channels.length >= 8) break;
-      }
-      if (channels.length >= 8) break;
-    }
-  } catch (_) {}
-
-  return channels;
-}
-
-function renderChannelResults(channels) {
-  const resultBox = document.getElementById('ch-results');
-  const saved = loadSavedChannels();
-  resultBox.innerHTML = '';
-
-  channels.forEach(ch => {
-    const isAdded = !!saved.find(s => s.id === ch.id || s.name === ch.name);
-    const item = document.createElement('div');
-    item.className = 'ch-result-item';
-    item.innerHTML = `
-      <img class="ch-result-thumb" src="${ch.thumb || ''}" onerror="this.style.background='#333';this.src=''" alt="">
-      <div class="ch-result-info">
-        <div class="ch-result-name">${ch.name}</div>
-        <div class="ch-result-sub">${ch.handle || ''} ${ch.subs ? '· ' + ch.subs : ''}</div>
-      </div>
-      <button class="ch-result-add ${isAdded ? 'added' : ''}" data-id="${ch.id}" data-name="${ch.name}" data-handle="${ch.handle}" ${isAdded ? 'disabled' : ''}>${isAdded ? '추가됨' : '+ 추가'}</button>
-    `;
-    const btn = item.querySelector('.ch-result-add');
-    if (!isAdded) {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        addChannelById(ch.id, ch.name, ch.handle);
-        btn.textContent = '추가됨';
-        btn.classList.add('added');
-        btn.disabled = true;
-        document.getElementById('add-status').style.color = '#4ade80';
-        document.getElementById('add-status').textContent = `"${ch.name}" 채널이 내 채널에 추가되었습니다!`;
-      };
-    }
-    resultBox.appendChild(item);
-  });
-}
-
-function addChannelById(id, name, handle) {
-  const saved = loadSavedChannels();
-  if (saved.find(s => s.id === id)) return;
-  saved.push({ id, name, handle: handle || '@' + name });
-  saveChannels(saved);
-}
-
-window.searchChannel = searchChannel;
-window.addChannel = addChannel; // 기존 호환성 유지
+};

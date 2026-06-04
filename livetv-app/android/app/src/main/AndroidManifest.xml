@@ -25,6 +25,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="sensor"
             android:hardwareAccelerated="true"
+            android:supportsPictureInPicture="true"
             android:exported="true">
 
             <!-- 일반 앱 런처 -->

@@ -212,56 +212,64 @@
         padding-top:calc(env(safe-area-inset-top,0px) + 31px);
       }
     }
-    .yt-player-title{font-size:15px;font-weight:600;color:#f1f1f1;flex:1;margin:0 16px;margin-left:116px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .yt-player-title{font-size:16px;font-weight:600;color:#f1f1f1;flex:1;margin:0 16px 0 130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
     .yt-close-btn{
       position:absolute;
       top:calc(env(safe-area-inset-top,0px) + 16px);
       left:20px;
       z-index:230;
-      width:40px;height:40px;
-      background:rgba(0,0,0,0.65);
-      border:1.5px solid rgba(255,255,255,0.3);
-      border-radius:50%;
+      width:42px;height:42px;
+      background:rgba(24,24,27,0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      border-radius:14px;
       color:#fff;
       cursor:pointer;
       display:flex;align-items:center;justify-content:center;
       flex-shrink:0;
-      transition:all 0.2s ease;
-      opacity:0.8;
+      transition:all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity:1;
       pointer-events:auto !important;
     }
     .yt-close-btn:hover{
-      background:rgba(0,0,0,0.85);
-      opacity:1;
-      transform:scale(1.08);
+      background:rgba(239, 68, 68, 0.9);
+      border-color:rgba(239, 68, 68, 1);
+      transform:scale(1.08) translateY(-2px);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
     }
     .yt-player-overlay.hide-controls .yt-close-btn{
-      opacity:0.8; /* 컨트롤이 페이드아웃 되어도 닫기 버튼은 항상 선명한 0.8 상태로 상시 유지 */
+      opacity:0.6;
     }
     .yt-fullscreen-btn{
       position:absolute;
       top:calc(env(safe-area-inset-top,0px) + 16px);
-      left:70px;
+      left:72px;
       z-index:230;
-      width:40px;height:40px;
-      background:rgba(0,0,0,0.65);
-      border:1.5px solid rgba(255,255,255,0.3);
-      border-radius:50%;
+      width:42px;height:42px;
+      background:rgba(24,24,27,0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      border-radius:14px;
       color:#fff;
       cursor:pointer;
       display:flex;align-items:center;justify-content:center;
       flex-shrink:0;
-      transition:all 0.2s ease;
-      opacity:0.8;
+      transition:all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity:1;
       pointer-events:auto !important;
     }
     .yt-fullscreen-btn:hover{
-      background:rgba(0,0,0,0.85);
-      opacity:1;
-      transform:scale(1.08);
+      background:rgba(255,255,255,0.15);
+      border-color:rgba(255,255,255,0.4);
+      transform:scale(1.08) translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255,255,255,0.1);
     }
     .yt-player-overlay.hide-controls .yt-fullscreen-btn{
-      opacity:0.8; /* 컨트롤이 페이드아웃 되어도 크게보기 버튼은 선명히 유지 */
+      opacity:0.6;
     }
     .yt-player-wrap{
       width:100vw;
