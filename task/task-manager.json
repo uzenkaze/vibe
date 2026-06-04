@@ -32,8 +32,8 @@
     "remarks": "[작업파일]\nC:\\work\\workspace_git\\02_Application\\src\\main\\java\\ehimart\\app\\domain\\common\\HCodeConstants.java\nC:\\work\\workspace_git\\04_FrontMobile\\src\\main\\java\\ehimart\\webapp\\frontMobile\\goods\\ProductContorller.java\nC:\\work\\workspace_git\\04_FrontMobile\\WebContent\\WEB-INF\\jsp\\goods\\productReusePhoneDetail.jsp",
     "start_date": "2026-06-08",
     "end_date": "2026-07-16",
-    "reference": "feature-00000 작업중",
-    "updated_at": "2026-06-03T23:36:14.027Z"
+    "reference": "feature-00000 작업중\n\n본품 테스트 상품 : 0020901233",
+    "updated_at": "2026-06-04T04:11:05.370Z"
   },
   {
     "id": "1778639112834",
