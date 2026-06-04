@@ -151,31 +151,6 @@ let lastIsPC = IS_TV_ENV || window.innerWidth >= 1024;
 const isPC = () => IS_TV_ENV || window.innerWidth >= 1024;
 
 
-// 즐겨찾기 상태 및 기능 정의
-let favorites = JSON.parse(localStorage.getItem('vibe_tv_favorites') || '[]');
-
-function isFavorite(chId) {
-  return favorites.includes(chId);
-}
-
-function toggleFavorite(chId, event) {
-  if (event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-  const idx = favorites.indexOf(chId);
-  if (idx > -1) {
-    favorites.splice(idx, 1);
-  } else {
-    favorites.push(chId);
-  }
-  localStorage.setItem('vibe_tv_favorites', JSON.stringify(favorites));
-  renderCategories();
-  renderChannels();
-}
-
-window.toggleFavorite = toggleFavorite;
-
 
 /* =================== DOM REFS =================== */
 const videoEl        = document.getElementById('main-video');
@@ -247,7 +222,7 @@ async function loadExternalPlaylist() {
 
 /* =================== UI RENDERERS =================== */
 function renderCategories() {
-  const cats = ['전체', '즐겨찾기', ...new Set(CHANNELS.map(c => c.category))];
+  const cats = ['전체', ...new Set(CHANNELS.map(c => c.category))];
   [catContainerPC, catContainerMob].forEach(c => {
     if (!c) return;
     c.innerHTML = '';
@@ -255,14 +230,15 @@ function renderCategories() {
       const btn = document.createElement('button');
       btn.textContent = cat;
       const active = (activeCategoryFilter === cat) || (!activeCategoryFilter && cat === '전체');
-      btn.className = `whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all ${
-        active ? 'bg-white text-black font-semibold' : 'bg-white/5 text-gray-400 hover:bg-white/10'
+      btn.className = `whitespace-nowrap px-4 py-2 rounded-full text-[13px] transition-all duration-300 ${
+        active 
+          ? 'bg-gradient-to-r from-[#6D28D9] to-[#8B5CF6] text-white font-bold shadow-md shadow-purple-600/30' 
+          : 'bg-[#1A1A1A] border border-white/5 text-gray-400 font-medium hover:text-white hover:bg-[#222222]'
       }`;
       btn.onclick = () => { 
         activeCategoryFilter = cat === '전체' ? null : cat; 
-        const tabName = cat === '즐겨찾기' ? 'favorites' : 'live';
         if (typeof updateBottomBarActiveState === 'function') {
-          updateBottomBarActiveState(tabName);
+          updateBottomBarActiveState('live');
         }
         renderCategories(); 
         renderChannels(); 
@@ -327,31 +303,7 @@ function renderChannels() {
     if (catTitle) scrollPositions[catTitle] = row.scrollLeft;
   });
 
-  let filtered = [];
-  if (activeCategoryFilter === '즐겨찾기') {
-    filtered = CHANNELS.filter(c => favorites.includes(c.id));
-  } else {
-    filtered = activeCategoryFilter ? CHANNELS.filter(c => c.category === activeCategoryFilter) : CHANNELS;
-  }
-
-  // 즐겨찾기 비었을 때 화면 구성
-  if (activeCategoryFilter === '즐겨찾기' && filtered.length === 0) {
-    [gridPC, gridMob].forEach(container => {
-      if (!container) return;
-      container.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-20 px-6 text-center text-gray-500 w-full col-span-full">
-          <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
-            <svg class="text-yellow-400/60" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-          </div>
-          <h3 class="text-white font-bold text-sm mb-1">즐겨찾는 채널이 없습니다</h3>
-          <p class="text-xs text-gray-500 max-w-xs leading-relaxed">채널 카드의 왼쪽 위에 있는 별(⭐) 아이콘을 클릭하여 나만의 즐겨찾기 목록을 채워보세요!</p>
-        </div>
-      `;
-    });
-    return;
-  }
+  let filtered = activeCategoryFilter ? CHANNELS.filter(c => c.category === activeCategoryFilter) : CHANNELS;
 
   [gridPC, gridMob].forEach(container => {
     if (!container) return;
@@ -364,8 +316,12 @@ function renderChannels() {
 
     Object.entries(groups).forEach(([cat, chs]) => {
       const section = document.createElement('div');
-      section.className = 'mb-8';
-      section.innerHTML = `<h3 class="text-white/40 text-[11px] font-bold px-4 mb-3 uppercase tracking-widest">${cat}</h3>`;
+      section.className = 'mb-10';
+      section.innerHTML = `
+        <div class="flex items-center px-4 mb-4">
+          <h3 class="text-white text-[15px] font-bold tracking-tight">${cat}</h3>
+        </div>
+      `;
       const row = document.createElement('div');
       row.className = 'channel-row no-scrollbar';
       row.style.cssText = 'display:flex; flex-wrap:nowrap; gap:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 14px 15px; touch-action: pan-x pan-y;';
@@ -626,38 +582,31 @@ function createCard(ch) {
   const active = activeChannelId === ch.id;
   const cardStyle = getChannelCardStyleAndContent(ch, active);
   const isRealtime = !ch.noPlayableHls && ((ch.urls && ch.urls.length > 0) || ch.kbsApiCode || ch.url);
+  
+  // 1. Futuristic ON AIR Badge (Neon Glow)
   const onAirBadgeHtml = isRealtime ? `
-    <div class="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-red-600/90 text-[7px] font-extrabold rounded text-white flex items-center gap-0.5 uppercase tracking-wider z-20">
-      <span class="w-1 h-1 bg-white rounded-full animate-pulse"></span>ON AIR
+    <div class="absolute top-2 right-2 px-1.5 py-0.5 bg-red-600/90 text-white border border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.8)] backdrop-blur-md rounded-full text-[8px] font-black flex items-center gap-1 uppercase tracking-widest z-20">
+      <span class="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,1)] animate-pulse"></span>ON AIR
     </div>
   ` : '';
 
-  const fav = isFavorite(ch.id);
-  const starColorClass = fav ? 'text-yellow-400 fill-yellow-400' : 'text-white/40 group-hover/fav:text-white/80';
-  const favoriteBtnHtml = `
-    <button onclick="window.toggleFavorite('${ch.id}', event)" class="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center border border-white/10 z-30 group/fav hover:scale-110 active:scale-95 transition-all">
-      <svg class="${starColorClass} transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-      </svg>
-    </button>
-  `;
-
+  // 2. Main Card Construction
   const card = document.createElement('div');
   card.className = 'flex-shrink-0 w-36 sm:w-40 cursor-pointer group channel-card';
   card.onclick = () => playChannel(ch);
   card.innerHTML = `
-    <div data-id="${ch.id}" style="background:${cardStyle.bg};" class="channel-card-inner relative rounded-2xl aspect-video flex items-center justify-center border-2 ${active ? 'border-indigo-500 shadow-indigo-500/20' : 'border-white/5 shadow-black/40'} transition-all duration-300 group-hover:border-white/20 shadow-lg overflow-hidden">
+    <div data-id="${ch.id}" style="background: ${cardStyle.bg === '#1e1e28' ? '#111111' : cardStyle.bg};" class="channel-card-inner relative rounded-[24px] aspect-video flex items-center justify-center border border-white/5 ${active ? 'ring-2 ring-[#8B5CF6] ring-offset-2 ring-offset-[#0A0A0A] shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'shadow-lg shadow-black/40'} transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)] overflow-hidden bg-[#111111]">
       ${cardStyle.html}
       ${onAirBadgeHtml}
-      ${favoriteBtnHtml}
+      
       <!-- Hover / Active Play Button Overlay -->
-      <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 ${active ? 'opacity-100 bg-black/30' : ''} transition-opacity duration-300 z-10">
-        <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" class="ml-0.5"><path d="M8 5v14l11-7z"/></svg>
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 ${active ? 'opacity-100 bg-black/20 backdrop-blur-none' : ''} transition-all duration-300 z-10">
+        <div class="w-10 h-10 rounded-full bg-[#8B5CF6]/90 border border-white/20 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white" class="ml-1"><path d="M8 5v14l11-7z"/></svg>
         </div>
       </div>
     </div>
-    <div class="channel-name-text mt-2 text-[11px] font-bold truncate px-1 text-center ${active ? 'text-indigo-400' : 'text-gray-400 group-hover:text-white'}">${ch.name}</div>
+    <div class="channel-name-text mt-3 text-[13px] font-semibold tracking-tight truncate px-1 text-center transition-colors duration-300 ${active ? 'text-white' : 'text-gray-400 group-hover:text-white'}">${ch.name}</div>
   `;
   return card;
 }
