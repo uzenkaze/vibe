@@ -956,6 +956,26 @@ async function switchCategory(filter, btnEl) {
 window.filterCat = (cat, btn) => switchCategory(cat, btn);
 
 // ── 검색 ──────────────────────────────────────────────────────────────────
+window.handleSearchInput = function () {
+  const q = document.getElementById('search-input')?.value || '';
+  const btn = document.querySelector('.yt-search-btn');
+  if (!btn) return;
+  if (q.length > 0) {
+    btn.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+    btn.onclick = window.clearSearch;
+  } else {
+    btn.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`;
+    btn.onclick = window.doSearch;
+  }
+};
+
+window.clearSearch = function () {
+  const input = document.getElementById('search-input');
+  if (input) input.value = '';
+  window.handleSearchInput();
+  window.doSearch();
+};
+
 window.doSearch = async function () {
   const q = document.getElementById('search-input')?.value?.trim();
   if (!q) { switchCategory('all'); return; }
