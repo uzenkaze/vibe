@@ -101,6 +101,16 @@ foreach ($folder in $staticFolders) {
                 New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
                 Get-ChildItem -Path $folder -Exclude "node_modules", ".git", ".expo", ".vscode" | Copy-Item -Destination "$deployDir/$targetFolder" -Recurse
             }
+        } elseif ($folder -eq "Asset") {
+            # 자산관리 폴더는 소스코드(node_modules, src 등)를 제외하고 빌드 산출물(dist)과 데이터 파일만 선별 복사
+            Write-Host "> Asset 빌드 결과물 및 데이터만 복사 중..." -ForegroundColor Cyan
+            New-Item -ItemType Directory -Path "$deployDir/Asset" -Force | Out-Null
+            if (Test-Path "Asset/favicon.png") { Copy-Item -Path "Asset/favicon.png" -Destination "$deployDir/Asset/" -Force }
+            if (Test-Path "Asset/data") { Copy-Item -Path "Asset/data" -Destination "$deployDir/Asset/" -Recurse -Force }
+            if (Test-Path "Asset/asset-react/dist") {
+                New-Item -ItemType Directory -Path "$deployDir/Asset/asset-react" -Force | Out-Null
+                Copy-Item -Path "Asset/asset-react/dist" -Destination "$deployDir/Asset/asset-react/" -Recurse -Force
+            }
         } else {
             Copy-Item -Path $folder -Destination $deployDir -Recurse
         }

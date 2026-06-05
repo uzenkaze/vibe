@@ -456,7 +456,8 @@
 
             // 신규 리액트 기반 자산관리 프로젝트(asset-react) 매핑
             let resolvedUrl = url;
-            if (url === 'Asset/asset.html' || url.startsWith('Asset/asset.html')) {
+            if (url === 'Asset/asset.html' || url.startsWith('Asset/asset.html') || 
+                url === 'Asset/asset-react/dist/index.html' || url.startsWith('Asset/asset-react/dist/index.html')) {
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     resolvedUrl = 'http://localhost:5173/';
                 } else {
