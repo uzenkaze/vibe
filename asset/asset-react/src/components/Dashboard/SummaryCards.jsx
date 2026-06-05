@@ -4,12 +4,23 @@ import { formatKRW } from '../../utils/format';
 
 function SummaryCard({ label, value, sub, subPositive, accentColor, icon, tooltipContent }) {
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    const supportsHover = window.matchMedia('(hover: hover)').matches;
+    if (supportsHover && window.innerWidth > 768) {
+      setIsHovered(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
   
   return (
     <div 
       className="summary-card-outer"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{ zIndex: isHovered ? 100 : 1, position: 'relative' }}
     >
       <div className="summary-card-inner">

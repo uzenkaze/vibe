@@ -6,7 +6,8 @@ function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
-    if (window.innerWidth > 768) {
+    const supportsHover = window.matchMedia('(hover: hover)').matches;
+    if (supportsHover && window.innerWidth > 768) {
       setIsHovered(true);
     }
   };
