@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { getGithubConfig, saveGithubConfig, syncWithGitHub } from '../../utils/github';
 
 export default function GitHubModal({ onClose }) {
-  const { showToast, yearData, year, loadYearData } = useApp();
+  const { showToast, yearData, year, loadYearData, checkGithubConnection } = useApp();
   
   const [token, setToken] = useState('');
   const [repo, setRepo] = useState('');
@@ -20,13 +20,16 @@ export default function GitHubModal({ onClose }) {
     setAutoSync(!!config.autoSync);
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (token && !repo) {
       showToast('저장소 정보를 입력해주세요.', 'error');
       return;
     }
     saveGithubConfig({ token, repo, branch, autoSync });
     showToast('GitHub 설정이 저장되었습니다.', 'success');
+    if (checkGithubConnection) {
+      await checkGithubConnection();
+    }
     onClose();
   };
 

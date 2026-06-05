@@ -3,7 +3,7 @@ import {
   loadData, saveData, emptyMonthSections,
   getSession, setSession, clearSession, getAccounts, saveAccounts
 } from '../utils/storage';
-import { getGithubConfig, syncWithGitHub } from '../utils/github';
+import { getGithubConfig, syncWithGitHub, testGithubConnection } from '../utils/github';
 import { getCurrentYearMonth, genId } from '../utils/format';
 
 export const AppContext = createContext(null);
@@ -35,6 +35,24 @@ export function AppProvider({ children }) {
 
   // Active nav section
   const [navSection, setNavSection] = useState('dashboard');
+
+  // GitHub connection status
+  const [isGithubConnected, setIsGithubConnected] = useState(false);
+
+  const checkGithubConnection = useCallback(async () => {
+    try {
+      const connected = await testGithubConnection();
+      setIsGithubConnected(connected);
+    } catch {
+      setIsGithubConnected(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (screen === 'dashboard') {
+      checkGithubConnection();
+    }
+  }, [screen, checkGithubConnection]);
 
   // --- Theme ---
   useEffect(() => {
@@ -258,6 +276,7 @@ export function AppProvider({ children }) {
       addRow, updateRow, deleteRow,
       login, logout,
       accounts, saveAccountsAndUpdate,
+      isGithubConnected, checkGithubConnection,
     }}>
       {children}
     </AppContext.Provider>

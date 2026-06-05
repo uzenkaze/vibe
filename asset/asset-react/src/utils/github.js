@@ -76,3 +76,21 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
     throw e;
   }
 }
+
+export async function testGithubConnection() {
+  const config = getGithubConfig();
+  if (!config.token || !config.repo) return false;
+
+  const url = `https://api.github.com/repos/${config.repo}`;
+  const headers = {
+    'Authorization': `token ${config.token}`,
+    'Accept': 'application/vnd.github.v3+json'
+  };
+
+  try {
+    const res = await fetch(url, { headers });
+    return res.ok;
+  } catch (err) {
+    return false;
+  }
+}

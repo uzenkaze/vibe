@@ -310,6 +310,9 @@ body {
   .topbar-actions .nav-action-btn {
     display: none !important;
   }
+  .topbar-actions .github-sync-btn {
+    display: flex !important;
+  }
   .topbar-actions .save-btn {
     display: flex !important;
   }
@@ -574,6 +577,21 @@ html.dark .topbar-btn:hover {
   color: var(--teal);
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.40);
+}
+
+/* Git 연결 완료 시 초록색 테마 */
+.topbar-btn.github-sync-btn.connected {
+  color: var(--teal) !important;
+  border-color: rgba(45, 201, 160, 0.25) !important;
+  background: rgba(45, 201, 160, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(45, 201, 160, 0.12) !important;
+}
+
+.topbar-btn.github-sync-btn.connected:hover {
+  color: var(--teal-light) !important;
+  border-color: rgba(45, 201, 160, 0.45) !important;
+  background: rgba(45, 201, 160, 0.15) !important;
+  box-shadow: 0 6px 16px rgba(45, 201, 160, 0.22) !important;
 }
 
 .hamburger-btn {
