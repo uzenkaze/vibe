@@ -454,8 +454,17 @@
             const frame = document.getElementById('contentFrame');
             if (!frame) return;
 
-            // 로컬 개발 환경(localhost/127.0.0.1) 지원을 위해 livetv/ 경로를 livetv-app/으로 내부 매핑
+            // 신규 리액트 기반 자산관리 프로젝트(asset-react) 매핑
             let resolvedUrl = url;
+            if (url === 'Asset/asset.html' || url.startsWith('Asset/asset.html')) {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'http://localhost:5173/';
+                } else {
+                    resolvedUrl = 'Asset/asset-react/dist/index.html';
+                }
+            }
+
+            // 로컬 개발 환경(localhost/127.0.0.1) 지원을 위해 livetv/ 경로를 livetv-app/으로 내부 매핑
             if (url.startsWith('livetv/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
                 resolvedUrl = url.replace('livetv/', 'livetv-app/');
             }

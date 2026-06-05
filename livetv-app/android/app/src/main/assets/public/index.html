@@ -65,10 +65,10 @@
   <title>PlayTime</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #000;
       color: #fff;
       margin: 0;
@@ -200,27 +200,29 @@
       box-shadow: none !important;
     }
   </style>
-  <script type="module" crossorigin src="./assets/main-DtMwWrUo.js"></script>
+  <script type="module" crossorigin src="./assets/main-CE2O7ruL.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 
-<body class="h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-[#030307] p-0">
+<body class="h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-black p-0" style="background-image: radial-gradient(circle at 50% 0%, rgba(109,40,217,0.15), transparent 60%);">
 
-  <!-- Main Portal Device Container (PC 브라우저 가운데 정렬 및 스마트 셋톱/콘솔 룩) -->
-  <div id="app-container" class="relative w-full h-[100dvh] lg:max-w-[88.88vh] bg-black rounded-none border-none lg:border-x lg:border-white/10 lg:shadow-[0_0_80px_rgba(99,102,241,0.08)] flex flex-col overflow-hidden mx-auto">
+  <!-- Main Portal Device Container -->
+  <div id="app-container" class="relative w-full h-[100dvh] lg:max-w-[88.88vh] bg-[#0A0A0A] rounded-none border-none lg:border-x lg:border-white/5 flex flex-col overflow-hidden mx-auto z-0" style="background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 20px 20px;">
+    
+    <!-- Subtle Senthora Purple Glow -->
+    <div class="absolute top-[-150px] left-1/2 transform -translate-x-1/2 w-[120vw] max-w-[800px] h-[400px] bg-purple-600/10 blur-[140px] rounded-full pointer-events-none -z-10"></div>
 
     <!-- Header -->
     <header class="glass-nav h-16 flex items-center justify-between px-6 z-50 flex-shrink-0 border-b border-white/10 bg-zinc-950/40 backdrop-blur-md">
       <!-- PlayTime Logo & Title -->
       <a href="index.html" class="flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity">
-        <div class="w-6 h-6 bg-gradient-to-tr from-amber-400 via-yellow-400 to-yellow-500 rounded-[7px] flex items-center justify-center shadow-lg shadow-yellow-500/20 group-hover/logo:scale-105 transition-transform duration-300">
-          <div class="w-4 h-4 bg-zinc-900 rounded-[4px] flex items-center justify-center">
-            <svg width="6" height="6" viewBox="0 0 24 24" fill="none">
-              <polygon points="6 3 20 12 6 21 6 3" fill="#fbbf24" />
-            </svg>
-          </div>
+        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 border border-white/20">
+          <div class="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
+          <svg class="relative z-10 ml-0.5" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round">
+            <polygon points="6 3 20 12 6 21 6 3" fill="white" />
+          </svg>
         </div>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-yellow-100 to-amber-300 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-purple-200 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
       </a>
 
       <!-- 우측 상단: 시계 + 배터리 -->
@@ -271,11 +273,11 @@
     <div class="flex-1 flex flex-col overflow-hidden">
 
       <!-- Main Content -->
-      <main class="flex-1 flex flex-col bg-black relative overflow-hidden">
+      <main class="flex-1 flex flex-col bg-transparent relative overflow-hidden">
 
       <!-- PC Player -->
       <div id="video-container"
-        class="hidden lg:flex w-full lg:h-[50dvh] lg:max-h-[50dvh] bg-black flex-col items-center justify-center flex-shrink-0 border-b border-white/5">
+        class="hidden lg:flex w-full lg:h-[50dvh] lg:max-h-[50dvh] bg-[#050508] flex-col items-center justify-center flex-shrink-0 border-b border-white/5">
         
         <!-- TV Bezel Frame Container (TV 외관 모서리 라운드 & 그라데이션) - 여백 없이 꽉 찬 화면으로 변경 -->
         <div class="relative h-full aspect-video flex-shrink-0 group" id="video-bezel-frame">
@@ -290,9 +292,9 @@
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen></iframe>
 
-            <div id="player-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-black z-20">
+            <div id="player-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-[#0A0A0A] z-20">
               <div
-                class="text-4xl md:text-5xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-lg">
+                class="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
                 PlayGround</div>
               <div class="mt-4 text-sm text-gray-500 font-medium tracking-widest uppercase animate-pulse">Select a channel
               </div>
@@ -367,15 +369,15 @@
       </div>
 
       <!-- PC Channels (Below Player) -->
-      <div class="hidden lg:flex flex-col w-full bg-[#08080c] border-t border-white/5 overflow-y-auto no-scrollbar flex-1 pb-16">
+      <div class="hidden lg:flex flex-col w-full bg-transparent overflow-y-auto no-scrollbar flex-1 pb-16">
         <div class="p-6 overflow-x-auto no-scrollbar flex items-center gap-3 border-b border-white/5 flex-shrink-0" id="category-tabs-pc"></div>
         <div id="channel-grid" class="p-6 flex-1"></div>
       </div>
 
       <!-- Mobile Content -->
-      <div class="lg:hidden flex flex-col h-full bg-black overflow-hidden">
+      <div class="lg:hidden flex flex-col h-full bg-transparent overflow-hidden">
         <!-- Player (Mobile) -->
-        <div class="w-full bg-black flex-shrink-0 p-0" id="mobile-player-wrapper">
+        <div class="w-full bg-[#050508] flex-shrink-0 p-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)] z-10" id="mobile-player-wrapper">
           <div class="relative w-full aspect-video flex-shrink-0 group/mob">
             
             <!-- TV Stand/Bottom Decor (숨김 처리) -->
@@ -446,9 +448,9 @@
               </div>
 
               <div id="player-placeholder-mobile"
-                class="absolute inset-0 flex flex-col items-center justify-center bg-black z-20">
+                class="absolute inset-0 flex flex-col items-center justify-center bg-[#0A0A0A] z-20">
                 <div
-                  class="text-3xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-lg">
+                  class="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
                   PlayGround</div>
                 <div class="mt-2 text-xs text-gray-500 font-medium tracking-widest uppercase animate-pulse">Select a channel
                 </div>
@@ -468,8 +470,8 @@
     </main>
   </div>
 
-  <!-- Sticky Bottom Navigation Bar (고정바) -->
-  <div class="absolute bottom-0 inset-x-0 h-16 bg-zinc-950/80 backdrop-blur-lg border-t border-white/10 z-50 flex items-center justify-around px-6 pb-safe">
+  <!-- Sticky Bottom Navigation Bar (Floating Pill) -->
+  <div class="absolute bottom-6 inset-x-4 h-[64px] bg-[#111111]/95 backdrop-blur-2xl border border-white/5 rounded-[32px] z-50 flex items-center justify-around px-6 shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
     <!-- 홈 (Home) -->
     <button onclick="window.switchTab('live')" id="tab-btn-live" class="flex flex-col items-center gap-1 text-indigo-400 transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

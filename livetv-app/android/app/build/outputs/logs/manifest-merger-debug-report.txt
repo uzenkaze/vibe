@@ -1,20 +1,20 @@
 -- Merging decision tree log ---
 provider#androidx.core.content.FileProvider
-INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:44:9-52:20
+INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:45:9-53:20
 	android:grantUriPermissions
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:48:13-47
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:49:13-47
 	android:authorities
 		INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:46:13-64
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:47:13-64
 	android:exported
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:47:13-37
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:48:13-37
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:45:13-62
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:46:13-62
 manifest
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-67:12
-INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-67:12
-INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-67:12
-INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-67:12
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-68:12
+INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-68:12
+INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-68:12
+INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:2:1-68:12
 MERGED from [:capacitor-android] D:\VibeCoding\livetv-app\node_modules\@capacitor\android\capacitor\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:capacitor-cordova-android-plugins] D:\VibeCoding\livetv-app\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.7.0] C:\Users\1328493\.gradle\caches\transforms-4\3e32076cdec8b83d9275d9d84e03e90d\transformed\appcompat-resources-1.7.0\AndroidManifest.xml:2:1-7:12
@@ -77,8 +77,8 @@ ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:8:5
 	android:name
 		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:8:19-59
 application
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:10:5-57:19
-INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:10:5-57:19
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:10:5-58:19
+INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:10:5-58:19
 MERGED from [:capacitor-cordova-android-plugins] D:\VibeCoding\livetv-app\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-9:19
 MERGED from [:capacitor-cordova-android-plugins] D:\VibeCoding\livetv-app\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-9:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\1328493\.gradle\caches\transforms-4\ac0583742763417d1135d83982b52659\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
@@ -114,7 +114,7 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\1328493\.gradle\ca
 	android:usesCleartextTraffic
 		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:18:9-44
 activity#com.example.livetv.MainActivity
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:20:9-42:20
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:20:9-43:20
 	android:screenOrientation
 		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:26:13-47
 	android:label
@@ -124,7 +124,9 @@ ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:20:
 	android:hardwareAccelerated
 		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:27:13-47
 	android:exported
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:28:13-36
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:29:13-36
+	android:supportsPictureInPicture
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:28:13-52
 	android:configChanges
 		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:21:13-148
 	android:theme
@@ -132,63 +134,63 @@ ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:20:
 	android:name
 		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:22:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:31:13-34:29
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:32:13-35:29
 action#android.intent.action.MAIN
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:32:17-69
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:33:17-69
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:32:25-66
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:33:25-66
 category#android.intent.category.LAUNCHER
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:33:17-77
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:34:17-77
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:33:27-74
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:34:27-74
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LEANBACK_LAUNCHER
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:37:13-40:29
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:38:13-41:29
 category#android.intent.category.LEANBACK_LAUNCHER
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:39:17-86
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:40:17-86
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:39:27-83
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:40:27-83
 service#com.example.livetv.BackgroundAudioService
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:53:9-56:61
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:54:9-57:61
 	android:exported
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:55:13-37
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:56:13-37
 	android:foregroundServiceType
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:56:13-58
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:57:13-58
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:54:13-51
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:55:13-51
 uses-permission#android.permission.INTERNET
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:60:5-67
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:61:5-67
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:60:22-64
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:61:22-64
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:61:5-79
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:62:5-79
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:61:22-76
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:62:22-76
 uses-permission#android.permission.ACCESS_WIFI_STATE
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:62:5-76
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:63:5-76
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:62:22-73
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:63:22-73
 uses-permission#android.permission.FOREGROUND_SERVICE
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:63:5-77
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:64:5-77
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:63:22-74
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:64:22-74
 uses-permission#android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:64:5-92
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:65:5-92
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:64:22-89
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:65:22-89
 uses-permission#android.permission.POST_NOTIFICATIONS
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:65:5-77
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:66:5-77
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:65:22-74
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:66:22-74
 uses-permission#android.permission.WAKE_LOCK
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:66:5-68
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:67:5-68
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:66:22-65
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:67:22-65
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:49:13-51:64
+ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:50:13-52:64
 	android:resource
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:51:17-51
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:52:17-51
 	android:name
-		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:50:17-67
+		ADDED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml:51:17-67
 uses-sdk
 INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\VibeCoding\livetv-app\android\app\src\main\AndroidManifest.xml

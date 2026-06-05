@@ -41,6 +41,17 @@ try {
     Set-Location ..
 }
 
+# 2-2. 'Asset/asset-react' 프로젝트 빌드
+Write-Host "> 'Asset/asset-react' 프로젝트 빌드 중..." -ForegroundColor Yellow
+try {
+    Set-Location Asset/asset-react
+    npm.cmd run build
+    Set-Location ../..
+} catch {
+    Write-Host "> 'Asset/asset-react' 프로젝트 빌드 실패" -ForegroundColor Red
+    Set-Location ../..
+}
+
 # 3. 'learn' 빌드 결과물 복사
 Write-Host "> 'learn' 빌드 결과물 복사 중..."
 if (Test-Path "$deployDir/learn") { Remove-Item -Recurse -Force "$deployDir/learn" }
@@ -130,4 +141,4 @@ Write-Host ">>> 모든 사이트 배포 완료!" -ForegroundColor Green
 Write-Host "접속 주소:"
 Write-Host "- Learn: https://uzenkaze.github.io/vibe/learn/"
 Write-Host "- Task: https://uzenkaze.github.io/vibe/task/task-manager.html"
-Write-Host "- Asset: https://uzenkaze.github.io/vibe/Asset/asset.html"
+Write-Host "- Asset: https://uzenkaze.github.io/vibe/Asset/asset-react/dist/index.html"
