@@ -5,11 +5,21 @@ import { formatKRW } from '../../utils/format';
 function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleMouseEnter = () => {
+    if (window.innerWidth > 768) {
+      setIsHovered(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
   return (
     <div
       className="installment-stat"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{ '--stat-accent': accent, position: 'relative', zIndex: isHovered ? 100 : 1 }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem' }}>
