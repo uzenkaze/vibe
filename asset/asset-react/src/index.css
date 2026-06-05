@@ -1103,9 +1103,9 @@ html.dark .data-table tbody tr:hover td {
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: var(--bg-alt, var(--bg));
-  border: 1px solid var(--card-border);
-  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
