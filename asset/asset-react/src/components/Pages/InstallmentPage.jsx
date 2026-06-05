@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 import NumberInput from '../UI/NumberInput';
+import CustomDropdown from '../UI/CustomDropdown';
 
 function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -505,13 +506,11 @@ export default function InstallmentPage() {
                     />
                   </td>
                   <td>
-                    <select 
-                      value={r.card || '국민'} 
-                      onChange={(e) => handleFieldChange(r.id, 'card', e.target.value)}
-                      style={{ width: '100%', padding: '2px 4px' }}
-                    >
-                      {cardsList.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <CustomDropdown
+                      value={r.card || '국민'}
+                      onChange={(val) => handleFieldChange(r.id, 'card', val)}
+                      options={cardsList.map(c => ({ value: c, label: c }))}
+                    />
                   </td>
                   <td>
                     <input 
@@ -640,23 +639,15 @@ export default function InstallmentPage() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>상환 구분</label>
-                <select 
+                <CustomDropdown 
                   value={modalRepayStatus} 
-                  onChange={(e) => setModalRepayStatus(e.target.value)}
-                  style={{ 
-                    padding: '0.4rem 1rem', 
-                    borderRadius: '8px', 
-                    border: '1px solid var(--input-border)',
-                    background: 'var(--card)',
-                    color: 'var(--text-primary)',
-                    fontWeight: 'bold',
-                    fontSize: '0.85rem',
-                  }}
-                >
-                  <option value="active">정상 납부</option>
-                  <option value="partial">일부 상환</option>
-                  <option value="full">중도 완납</option>
-                </select>
+                  onChange={setModalRepayStatus} 
+                  options={[
+                    { value: 'active', label: '정상 납부' },
+                    { value: 'partial', label: '일부 상환' },
+                    { value: 'full', label: '중도 완납' }
+                  ]}
+                />
               </div>
 
               {/* 상환 구분 설명 뱃지 */}

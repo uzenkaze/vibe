@@ -14,15 +14,11 @@ function EditableRow({ row, sectionKey, columns, onUpdate, onDelete, onHoverDeta
               {col.format ? col.format(row[col.key]) : row[col.key]}
             </span>
           ) : col.type === 'select' ? (
-            <select
+            <CustomDropdown
               value={row[col.key] || ''}
-              onChange={e => onUpdate(sectionKey, row.id, col.key, e.target.value)}
-            >
-              <option value="">—</option>
-              {(col.options || []).map(o => (
-                <option key={o} value={o}>{o}</option>
-              ))}
-            </select>
+              onChange={val => onUpdate(sectionKey, row.id, col.key, val)}
+              options={col.options || []}
+            />
           ) : col.type === 'number' ? (
             <NumberInput
               value={row[col.key] ?? ''}
