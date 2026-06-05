@@ -19,7 +19,7 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
   const config = getGithubConfig();
   if (!config.token || !config.repo) return null;
 
-  const filePath = `Asset/data/${yearKey}.json`;
+  const filePath = `asset/data/${yearKey}.json`;
   const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${config.branch}`;
   const headers = {
     'Authorization': `token ${config.token}`,

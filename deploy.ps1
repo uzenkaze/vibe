@@ -41,14 +41,14 @@ try {
     Set-Location ..
 }
 
-# 2-2. 'Asset/asset-react' 프로젝트 빌드
-Write-Host "> 'Asset/asset-react' 프로젝트 빌드 중..." -ForegroundColor Yellow
+# 2-2. 'asset/asset-react' 프로젝트 빌드
+Write-Host "> 'asset/asset-react' 프로젝트 빌드 중..." -ForegroundColor Yellow
 try {
-    Set-Location Asset/asset-react
+    Set-Location asset/asset-react
     npm.cmd run build
     Set-Location ../..
 } catch {
-    Write-Host "> 'Asset/asset-react' 프로젝트 빌드 실패" -ForegroundColor Red
+    Write-Host "> 'asset/asset-react' 프로젝트 빌드 실패" -ForegroundColor Red
     Set-Location ../..
 }
 
@@ -62,8 +62,8 @@ Copy-Item -Path "learn/dist/*" -Destination "$deployDir/learn" -Recurse -Force
 Write-Host "> 'livetv-app' 프로젝트 빌드는 건너뜁니다 (정적 소스 직접 복사)" -ForegroundColor Yellow
 
 
-# 4. 기타 정적 폴더 복사 (Asset, task, hobby 등)
-$staticFolders = @("Asset", "task", "hobby-app", "livetv-app", "vibe-hybrid-app")
+# 4. 기타 정적 폴더 복사 (asset, task, hobby 등)
+$staticFolders = @("asset", "task", "hobby-app", "livetv-app", "vibe-hybrid-app")
 foreach ($folder in $staticFolders) {
     if (Test-Path $folder) {
         # livetv-app 폴더는 배포 시 간단한 'livetv' 경로로 매핑, hobby-app은 'mPlay'로 매핑
@@ -101,15 +101,15 @@ foreach ($folder in $staticFolders) {
                 New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
                 Get-ChildItem -Path $folder -Exclude "node_modules", ".git", ".expo", ".vscode" | Copy-Item -Destination "$deployDir/$targetFolder" -Recurse
             }
-        } elseif ($folder -eq "Asset") {
+        } elseif ($folder -eq "asset") {
             # 자산관리 폴더는 소스코드(node_modules, src 등)를 제외하고 빌드 산출물(dist)과 데이터 파일만 선별 복사
-            Write-Host "> Asset 빌드 결과물 및 데이터만 복사 중..." -ForegroundColor Cyan
-            New-Item -ItemType Directory -Path "$deployDir/Asset" -Force | Out-Null
-            if (Test-Path "Asset/favicon.png") { Copy-Item -Path "Asset/favicon.png" -Destination "$deployDir/Asset/" -Force }
-            if (Test-Path "Asset/data") { Copy-Item -Path "Asset/data" -Destination "$deployDir/Asset/" -Recurse -Force }
-            if (Test-Path "Asset/asset-react/dist") {
-                New-Item -ItemType Directory -Path "$deployDir/Asset/asset-react" -Force | Out-Null
-                Copy-Item -Path "Asset/asset-react/dist" -Destination "$deployDir/Asset/asset-react/" -Recurse -Force
+            Write-Host "> asset 빌드 결과물 및 데이터만 복사 중..." -ForegroundColor Cyan
+            New-Item -ItemType Directory -Path "$deployDir/asset" -Force | Out-Null
+            if (Test-Path "asset/favicon.png") { Copy-Item -Path "asset/favicon.png" -Destination "$deployDir/asset/" -Force }
+            if (Test-Path "asset/data") { Copy-Item -Path "asset/data" -Destination "$deployDir/asset/" -Recurse -Force }
+            if (Test-Path "asset/asset-react/dist") {
+                New-Item -ItemType Directory -Path "$deployDir/asset/asset-react" -Force | Out-Null
+                Copy-Item -Path "asset/asset-react/dist" -Destination "$deployDir/asset/asset-react/" -Recurse -Force
             }
         } else {
             Copy-Item -Path $folder -Destination $deployDir -Recurse
@@ -143,7 +143,7 @@ git init
 git config user.name "uzenkaze"
 git config user.email "uzenkaze@users.noreply.github.com"
 git add .
-git commit -m "Integrated deploy: learn, Asset, task, and others"
+git commit -m "Integrated deploy: learn, asset, task, and others"
 git push -f https://github.com/uzenkaze/vibe.git master:gh-pages
 Set-Location ..
 
@@ -151,4 +151,4 @@ Write-Host ">>> 모든 사이트 배포 완료!" -ForegroundColor Green
 Write-Host "접속 주소:"
 Write-Host "- Learn: https://uzenkaze.github.io/vibe/learn/"
 Write-Host "- Task: https://uzenkaze.github.io/vibe/task/task-manager.html"
-Write-Host "- Asset: https://uzenkaze.github.io/vibe/Asset/asset-react/dist/index.html"
+Write-Host "- Asset: https://uzenkaze.github.io/vibe/asset/asset-react/dist/index.html"

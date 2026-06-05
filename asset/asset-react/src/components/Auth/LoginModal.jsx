@@ -45,9 +45,9 @@ export default function LoginModal({ onClose }) {
         const currentYear = new Date().getFullYear();
         const urls = [
           `../../data/assetData_${currentYear}.json`,
-          `http://localhost:5500/Asset/data/assetData_${currentYear}.json`,
-          `http://127.0.0.1:5500/Asset/data/assetData_${currentYear}.json`,
-          `/Asset/data/assetData_${currentYear}.json`
+          `http://localhost:5500/asset/data/assetData_${currentYear}.json`,
+          `http://127.0.0.1:5500/asset/data/assetData_${currentYear}.json`,
+          `/asset/data/assetData_${currentYear}.json`
         ];
 
         for (const url of urls) {

@@ -35,9 +35,9 @@ export async function loadData(year) {
       // 로컬 스토리지에 데이터가 없는 최초 로그인 시, 서버의 JSON 파일들로부터 초기 데이터 자동 로드 시도
       const urls = [
         `../../data/assetData_${year}.json`,
-        `http://localhost:5500/Asset/data/assetData_${year}.json`,
-        `http://127.0.0.1:5500/Asset/data/assetData_${year}.json`,
-        `/Asset/data/assetData_${year}.json`
+        `http://localhost:5500/asset/data/assetData_${year}.json`,
+        `http://127.0.0.1:5500/asset/data/assetData_${year}.json`,
+        `/asset/data/assetData_${year}.json`
       ];
 
       for (const url of urls) {
