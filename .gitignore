@@ -2,3 +2,6 @@
 Asset/*.json
 Asset/data/*.json
 *.json
+
+# Keep JSON files inside asset-react project
+!Asset/asset-react/**/*.json
