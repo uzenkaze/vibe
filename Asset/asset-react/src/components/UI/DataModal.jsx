@@ -458,8 +458,8 @@ export default function DataModal({ onClose }) {
                   justifyContent: 'center',
                   padding: '0.95rem',
                   borderRadius: 16,
-                  border: '1px solid var(--card-border)',
-                  background: 'var(--bg)',
+                  border: '1px solid var(--input-border)',
+                  background: 'var(--input-bg)',
                   color: 'var(--text-primary)',
                   fontWeight: 'bold',
                   cursor: 'pointer',
@@ -480,8 +480,8 @@ export default function DataModal({ onClose }) {
                   justifyContent: 'center',
                   padding: '0.95rem',
                   borderRadius: 16,
-                  border: '1px solid var(--card-border)',
-                  background: 'var(--bg)',
+                  border: '1px solid var(--input-border)',
+                  background: 'var(--input-bg)',
                   color: 'var(--text-primary)',
                   fontWeight: 'bold',
                   cursor: 'pointer',
@@ -502,7 +502,7 @@ export default function DataModal({ onClose }) {
           <div style={{
             marginBottom: '2rem',
             padding: '1.5rem',
-            background: 'var(--bg)',
+            background: 'var(--input-bg)',
             borderRadius: 24,
             border: '1.5px dashed var(--teal-dim)'
           }}>
@@ -608,7 +608,7 @@ export default function DataModal({ onClose }) {
                 marginBottom: '1rem',
                 color: 'var(--text-secondary)',
                 fontSize: '0.9rem',
-                background: isDragging ? 'var(--teal-dim)' : 'var(--bg)',
+                background: isDragging ? 'var(--teal-dim)' : 'var(--input-bg)',
                 transition: 'border-color 0.2s, background-color 0.2s'
               }}
             >
@@ -633,7 +633,7 @@ export default function DataModal({ onClose }) {
                 height: 120,
                 padding: '1rem',
                 borderRadius: 16,
-                border: '1.5px solid var(--card-border)',
+                border: '1.5px solid var(--input-border)',
                 background: 'var(--card)',
                 color: 'var(--text-primary)',
                 fontFamily: 'monospace',
