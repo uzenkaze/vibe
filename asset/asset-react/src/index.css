@@ -549,20 +549,22 @@ html.dark .month-selector select:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.topbar-btn:hover {
-  background: #FFFFFF;
-  color: #5B6BF8;
-  border-color: rgba(91, 107, 248, 0.18);
-  transform: translateY(-1px) scale(1.03);
-  box-shadow: 0 6px 16px rgba(91, 107, 248, 0.12);
-}
+@media (hover: hover) {
+  .topbar-btn:hover {
+    background: #FFFFFF;
+    color: #5B6BF8;
+    border-color: rgba(91, 107, 248, 0.18);
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 6px 16px rgba(91, 107, 248, 0.12);
+  }
 
-/* 라이트 모드 저장 버튼 호버 피드백 차별화 */
-.topbar-btn.save-btn:hover {
-  background: #FFFFFF;
-  color: var(--teal);
-  border-color: rgba(45, 201, 160, 0.18);
-  box-shadow: 0 6px 16px rgba(45, 201, 160, 0.15);
+  /* 라이트 모드 저장 버튼 호버 피드백 차별화 */
+  .topbar-btn.save-btn:hover {
+    background: #FFFFFF;
+    color: var(--teal);
+    border-color: rgba(45, 201, 160, 0.18);
+    box-shadow: 0 6px 16px rgba(45, 201, 160, 0.15);
+  }
 }
 
 html.dark .topbar-btn {
@@ -587,11 +589,13 @@ html.dark .topbar-btn:hover {
   box-shadow: 0 4px 12px rgba(45, 201, 160, 0.12) !important;
 }
 
-.topbar-btn.github-sync-btn.connected:hover {
-  color: var(--teal-light) !important;
-  border-color: rgba(45, 201, 160, 0.45) !important;
-  background: rgba(45, 201, 160, 0.15) !important;
-  box-shadow: 0 6px 16px rgba(45, 201, 160, 0.22) !important;
+@media (hover: hover) {
+  .topbar-btn.github-sync-btn.connected:hover {
+    color: var(--teal-light) !important;
+    border-color: rgba(45, 201, 160, 0.45) !important;
+    background: rgba(45, 201, 160, 0.15) !important;
+    box-shadow: 0 6px 16px rgba(45, 201, 160, 0.22) !important;
+  }
 }
 
 .hamburger-btn {
