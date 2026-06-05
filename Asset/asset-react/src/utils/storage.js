@@ -28,10 +28,37 @@ export async function saveData(year, data) {
 // 특정 연도 데이터 불러오기
 export async function loadData(year) {
   try {
-    const raw = localStorage.getItem(getDataKey(year));
-    if (!raw) return null;
-    
-    let data = JSON.parse(raw);
+    let raw = localStorage.getItem(getDataKey(year));
+    let data = null;
+
+    if (!raw) {
+      // 로컬 스토리지에 데이터가 없는 최초 로그인 시, 서버의 JSON 파일들로부터 초기 데이터 자동 로드 시도
+      const urls = [
+        `../../data/assetData_${year}.json`,
+        `http://localhost:5500/Asset/data/assetData_${year}.json`,
+        `http://127.0.0.1:5500/Asset/data/assetData_${year}.json`,
+        `/Asset/data/assetData_${year}.json`
+      ];
+
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            data = await res.json();
+            console.log(`[Storage] Loaded fallback initial data from ${url}`);
+            localStorage.setItem(getDataKey(year), JSON.stringify(data));
+            break;
+          }
+        } catch (err) {
+          // Silent fallback
+        }
+      }
+
+      if (!data) return null;
+    } else {
+      data = JSON.parse(raw);
+    }
+
     if (data._isEncrypted) {
       const password = sessionStorage.getItem('temp_master_pw');
       if (!password) {
@@ -49,8 +76,6 @@ export async function loadData(year) {
       try {
         const accs = JSON.parse(decodeURIComponent(atob(data._secureAccounts)));
         if (Array.isArray(accs) && accs.length > 0) {
-          // If no accounts exist or we want to merge/overwrite. 
-          // Original app overwrote it:
           localStorage.setItem('assetAccounts', JSON.stringify(accs));
         }
       } catch (err) {

@@ -38,10 +38,48 @@ export default function LoginModal({ onClose }) {
   const [adminVerifyCode, setAdminVerifyCode] = useState('');
 
   useEffect(() => {
-    const accs = getAccounts();
-    setAccounts(accs);
-    if (accs.length === 0) setTab('admin');
-    else if (accs.length > 1) setTab('signin');
+    const initAccounts = async () => {
+      let accs = getAccounts();
+      if (accs.length === 0) {
+        // 로컬 스토리지에 가입 정보가 없는 최초 실행 시, 서버의 JSON 백업으로부터 계정 정보 복원 시도
+        const currentYear = new Date().getFullYear();
+        const urls = [
+          `../../data/assetData_${currentYear}.json`,
+          `http://localhost:5500/Asset/data/assetData_${currentYear}.json`,
+          `http://127.0.0.1:5500/Asset/data/assetData_${currentYear}.json`,
+          `/Asset/data/assetData_${currentYear}.json`
+        ];
+
+        for (const url of urls) {
+          try {
+            const res = await fetch(url);
+            if (res.ok) {
+              const data = await res.json();
+              let restoredAccs = [];
+              if (data._secureAccounts) {
+                restoredAccs = JSON.parse(decodeURIComponent(atob(data._secureAccounts)));
+              } else if (data._backupAccounts) {
+                restoredAccs = data._backupAccounts;
+              }
+              if (restoredAccs.length > 0) {
+                saveAccounts(restoredAccs);
+                accs = restoredAccs;
+                break;
+              }
+            }
+          } catch (e) {
+            // Silent fallback
+          }
+        }
+      }
+      setAccounts(accs);
+      if (accs.length === 0) {
+        setTab('admin');
+      } else {
+        setTab('signin');
+      }
+    };
+    initAccounts();
   }, []);
 
   const hashPw = async (pw) => {
