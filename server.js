@@ -36,6 +36,59 @@ const server = http.createServer((req, res) => {
 
   // Parse URL to get file path
   let parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+  
+  // API handler for saving asset data
+  if (req.method === 'POST' && parsedUrl.pathname === '/api/save-asset') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body);
+        const { year, data } = payload;
+        if (!year || !data) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing year or data' }));
+          return;
+        }
+
+        const dataDir = path.join(__dirname, 'asset', 'data');
+        if (!fs.existsSync(dataDir)) {
+          fs.mkdirSync(dataDir, { recursive: true });
+        }
+        
+        const filePath = path.join(dataDir, `assetData_${year}.json`);
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+        console.log(`[Server] Saved asset data for ${year} to ${filePath}`);
+
+        // git auto commit & push
+        const { exec } = require('child_process');
+        exec(`git add asset/data/assetData_${year}.json && git commit -m "chore(data): auto-update asset data for year ${year}" && git push origin main`, (err, stdout, stderr) => {
+          if (err) {
+            console.error('[Server] Git sync error:', err);
+          } else {
+            console.log('[Server] Git sync success:', stdout);
+          }
+        });
+
+        // gh-pages deploy in background
+        exec(`powershell -ExecutionPolicy Bypass -File ./deploy.ps1`, (err, stdout, stderr) => {
+          if (err) {
+            console.error('[Server] gh-pages deploy error:', err);
+          } else {
+            console.log('[Server] gh-pages deploy success');
+          }
+        });
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: 'Saved and syncing with git' }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
   let sanitizePath = path.normalize(parsedUrl.pathname).replace(/^(\.\.[\/\\])+/, '');
   
   // If requesting root or directory, fallback to index.html

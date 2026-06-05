@@ -14,11 +14,43 @@ export function getDataKey(year) {
 export async function saveData(year, data) {
   try {
     const password = sessionStorage.getItem('temp_master_pw');
+    let dataToSave = data;
     if (password) {
-      const encrypted = await encryptData(data, password);
-      localStorage.setItem(getDataKey(year), JSON.stringify(encrypted));
-    } else {
-      localStorage.setItem(getDataKey(year), JSON.stringify(data));
+      dataToSave = await encryptData(data, password);
+    }
+
+    // 1. 항상 로컬 스토리지에 백업 저장
+    localStorage.setItem(getDataKey(year), JSON.stringify(dataToSave));
+
+    // 2. 서버 API를 호출하여 서버 파일에 저장 시도
+    const apiUrls = [
+      '/api/save-asset',
+      'http://localhost:5500/api/save-asset',
+      'http://127.0.0.1:5500/api/save-asset'
+    ];
+
+    let apiSaved = false;
+    for (const url of apiUrls) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ year, data: dataToSave }),
+        });
+        if (response.ok) {
+          console.log(`[Storage] Successfully saved data to server via API: ${url}`);
+          apiSaved = true;
+          break;
+        }
+      } catch (err) {
+        // Silent fallback
+      }
+    }
+
+    if (!apiSaved) {
+      console.warn('[Storage] Server save API failed. Data is saved in localStorage only.');
     }
   } catch (e) {
     console.error('Failed to save data', e);
@@ -28,36 +60,42 @@ export async function saveData(year, data) {
 // 특정 연도 데이터 불러오기
 export async function loadData(year) {
   try {
-    let raw = localStorage.getItem(getDataKey(year));
     let data = null;
+    const timestamp = Date.now();
 
-    if (!raw) {
-      // 로컬 스토리지에 데이터가 없는 최초 로그인 시, 서버의 JSON 파일들로부터 초기 데이터 자동 로드 시도
-      const urls = [
-        `../../data/assetData_${year}.json`,
-        `http://localhost:5500/asset/data/assetData_${year}.json`,
-        `http://127.0.0.1:5500/asset/data/assetData_${year}.json`,
-        `/asset/data/assetData_${year}.json`
-      ];
+    // 1. 서버의 JSON 파일들로부터 최신 데이터 로드 시도 (캐시 버스터 쿼리 추가)
+    const urls = [
+      `/asset/data/assetData_${year}.json?t=${timestamp}`,
+      `../../data/assetData_${year}.json?t=${timestamp}`,
+      `http://localhost:5500/asset/data/assetData_${year}.json?t=${timestamp}`,
+      `http://127.0.0.1:5500/asset/data/assetData_${year}.json?t=${timestamp}`
+    ];
 
-      for (const url of urls) {
-        try {
-          const res = await fetch(url);
-          if (res.ok) {
-            data = await res.json();
-            console.log(`[Storage] Loaded fallback initial data from ${url}`);
-            localStorage.setItem(getDataKey(year), JSON.stringify(data));
-            break;
-          }
-        } catch (err) {
-          // Silent fallback
+    for (const url of urls) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          data = await res.json();
+          console.log(`[Storage] Loaded latest data directly from server: ${url}`);
+          // 서버에서 받아온 최신 데이터를 로컬 스토리지에도 동기화
+          localStorage.setItem(getDataKey(year), JSON.stringify(data));
+          break;
         }
+      } catch (err) {
+        // Silent fallback
       }
-
-      if (!data) return null;
-    } else {
-      data = JSON.parse(raw);
     }
+
+    // 2. 서버 로드 실패 시 로컬 스토리지에서 데이터 로드
+    if (!data) {
+      console.warn(`[Storage] Server data load failed. Falling back to localStorage.`);
+      let raw = localStorage.getItem(getDataKey(year));
+      if (raw) {
+        data = JSON.parse(raw);
+      }
+    }
+
+    if (!data) return null;
 
     if (data._isEncrypted) {
       const password = sessionStorage.getItem('temp_master_pw');
