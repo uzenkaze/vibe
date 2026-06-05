@@ -631,25 +631,48 @@ export default function InstallmentPage() {
             </div>
 
             {/* 상환 관리 */}
-            <div style={{ background: 'var(--bg-alt, var(--bg))', padding: '1.25rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem' }}>
+            <div style={{
+              background: 'var(--input-bg)',
+              border: '1px solid var(--card-border)',
+              padding: '1.25rem',
+              borderRadius: 'var(--radius-sm)',
+              marginBottom: '1.5rem'
+            }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 700 }}>상환 구분</label>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>상환 구분</label>
                 <select 
                   value={modalRepayStatus} 
                   onChange={(e) => setModalRepayStatus(e.target.value)}
                   style={{ 
                     padding: '0.4rem 1rem', 
                     borderRadius: '8px', 
-                    border: '1px solid var(--card-border)', 
+                    border: '1px solid var(--input-border)',
                     background: 'var(--card)',
                     color: 'var(--text-primary)',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
                   }}
                 >
                   <option value="active">정상 납부</option>
                   <option value="partial">일부 상환</option>
                   <option value="full">중도 완납</option>
                 </select>
+              </div>
+
+              {/* 상환 구분 설명 뱃지 */}
+              <div style={{
+                fontSize: '0.75rem',
+                color: modalRepayStatus === 'full' ? 'var(--teal)' : modalRepayStatus === 'partial' ? '#F5A623' : 'var(--text-secondary)',
+                background: modalRepayStatus === 'full' ? 'rgba(45,201,160,0.10)' : modalRepayStatus === 'partial' ? 'rgba(245,166,35,0.10)' : 'rgba(91,107,248,0.08)',
+                border: `1px solid ${modalRepayStatus === 'full' ? 'rgba(45,201,160,0.25)' : modalRepayStatus === 'partial' ? 'rgba(245,166,35,0.25)' : 'rgba(91,107,248,0.15)'}`,
+                borderRadius: '8px',
+                padding: '0.4rem 0.75rem',
+                marginBottom: '0.5rem',
+                fontWeight: 600,
+              }}>
+                {modalRepayStatus === 'active' && '📅 현재 정상 납부 진행 중입니다.'}
+                {modalRepayStatus === 'partial' && '💰 일부 금액을 미리 상환한 경우 아래에 입력해주세요.'}
+                {modalRepayStatus === 'full' && '🎉 중도 완납 처리 시 잔액이 0원으로 변경됩니다.'}
               </div>
 
               {modalRepayStatus === 'partial' && (
