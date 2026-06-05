@@ -41,6 +41,8 @@ function Dashboard() {
         showToast('로컬 및 GitHub 동기화 저장이 완료되었습니다.', 'success');
       } else if (res.target === 'local_only_sync_fail') {
         showToast('로컬에 저장되었습니다. (GitHub 동기화 실패)', 'warning');
+      } else if (res.target === 'server') {
+        showToast('서버 및 로컬에 안전하게 저장되었습니다.', 'success');
       } else {
         showToast('로컬 저장소에 저장되었습니다.', 'success');
       }

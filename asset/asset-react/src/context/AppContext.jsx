@@ -131,13 +131,13 @@ export function AppProvider({ children }) {
     setYearData(prev => ({ ...prev, [year]: yd }));
 
     try {
-      await saveData(year, yd);
+      const apiSaved = await saveData(year, yd);
       const ghConfig = getGithubConfig();
       if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
         const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
         return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
       }
-      return { success: true, target: 'local' };
+      return { success: true, target: apiSaved ? 'server' : 'local' };
     } catch (e) {
       console.error('Failed to save sections', e);
       return { success: false, error: e };
@@ -154,13 +154,13 @@ export function AppProvider({ children }) {
     setYearData(prev => ({ ...prev, [year]: yd }));
 
     try {
-      await saveData(year, yd);
+      const apiSaved = await saveData(year, yd);
       const ghConfig = getGithubConfig();
       if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
         const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
         return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
       }
-      return { success: true, target: 'local' };
+      return { success: true, target: apiSaved ? 'server' : 'local' };
     } catch (e) {
       console.error('Failed to save pension', e);
       return { success: false, error: e };
@@ -171,13 +171,13 @@ export function AppProvider({ children }) {
     setYearData(prev => ({ ...prev, [targetYear]: data }));
 
     try {
-      await saveData(targetYear, data);
+      const apiSaved = await saveData(targetYear, data);
       const ghConfig = getGithubConfig();
       if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
         const syncSuccess = await syncWithGitHub('upload', `assetData_${targetYear}`, JSON.stringify(data));
         return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
       }
-      return { success: true, target: 'local' };
+      return { success: true, target: apiSaved ? 'server' : 'local' };
     } catch (e) {
       console.error(`Failed to persist year data for ${targetYear}`, e);
       return { success: false, error: e };

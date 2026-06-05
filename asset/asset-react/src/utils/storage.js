@@ -52,8 +52,10 @@ export async function saveData(year, data) {
     if (!apiSaved) {
       console.warn('[Storage] Server save API failed. Data is saved in localStorage only.');
     }
+    return apiSaved;
   } catch (e) {
     console.error('Failed to save data', e);
+    return false;
   }
 }
 
