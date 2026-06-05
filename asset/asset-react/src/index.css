@@ -749,6 +749,10 @@ html.dark .section-card {
   flex-wrap: nowrap;
   gap: 0.5rem;
   min-width: 0;
+  border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  overflow: hidden;
 }
 
 .section-card-header::before {
