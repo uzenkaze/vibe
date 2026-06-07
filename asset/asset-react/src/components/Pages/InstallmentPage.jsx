@@ -211,41 +211,6 @@ export default function InstallmentPage() {
       )
     },
     {
-      label: '이번 달 납부',
-      value: thisMonthTotal,
-      color: 'var(--teal)',
-      accent: '#2DC9A0',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-      ),
-      tooltipContent: (
-        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '240px' }}>
-          이번 달(선택 연월)에 청구되어 납부해야 하는 <strong>할부 원금 및 수수료의 총합계</strong> 금액입니다.
-        </div>
-      )
-    },
-    {
-      label: '다음 달 예정',
-      value: nextMonthTotal,
-      color: '#5B6BF8',
-      accent: '#5B6BF8',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-      ),
-      tooltipContent: (
-        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '240px' }}>
-          다음 달에 청구 예정인 <strong>할부 원금 및 수수료의 총합계</strong> 금액입니다 (잔여 회차가 2회 이상 남은 항목 기준).
-        </div>
-      )
-    },
-    {
       label: '남은 잔액',
       value: remainTotal,
       color: 'var(--coral)',
@@ -287,6 +252,41 @@ export default function InstallmentPage() {
               </tr>
             </tbody>
           </table>
+        </div>
+      )
+    },
+    {
+      label: '이번 달 납부',
+      value: thisMonthTotal,
+      color: 'var(--teal)',
+      accent: '#2DC9A0',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+      tooltipContent: (
+        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '240px' }}>
+          이번 달(선택 연월)에 청구되어 납부해야 하는 <strong>할부 원금 및 수수료의 총합계</strong> 금액입니다.
+        </div>
+      )
+    },
+    {
+      label: '다음 달 예정',
+      value: nextMonthTotal,
+      color: '#5B6BF8',
+      accent: '#5B6BF8',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      ),
+      tooltipContent: (
+        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '240px' }}>
+          다음 달에 청구 예정인 <strong>할부 원금 및 수수료의 총합계</strong> 금액입니다 (잔여 회차가 2회 이상 남은 항목 기준).
         </div>
       )
     },
