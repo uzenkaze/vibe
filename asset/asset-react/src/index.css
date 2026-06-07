@@ -1669,6 +1669,9 @@ html.dark .installment-stat:hover {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+.summary-table th:not(:last-child) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1685,8 +1688,15 @@ html.dark .summary-table th {
   border-bottom: 1px solid rgba(120, 120, 120, 0.08);
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+.summary-table td:not(.num) {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summary-table td.num {
   white-space: nowrap;
 }
 
