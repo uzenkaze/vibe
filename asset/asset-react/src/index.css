@@ -1677,10 +1677,18 @@ html.dark .installment-stat:hover {
   white-space: nowrap;
 }
 
+.summary-table th:last-child {
+  text-align: right;
+}
+
 html.dark .summary-table th {
   background: linear-gradient(135deg, rgba(45, 201, 160, 0.06) 0%, rgba(91, 107, 248, 0.05) 100%);
   color: rgba(45, 201, 160, 0.9);
   border-bottom: 2px solid rgba(45, 201, 160, 0.15);
+}
+
+html.dark .summary-table th:last-child {
+  text-align: right;
 }
 
 .summary-table td {
@@ -1697,6 +1705,7 @@ html.dark .summary-table th {
 }
 
 .summary-table td.num {
+  text-align: right;
   white-space: nowrap;
 }
 
