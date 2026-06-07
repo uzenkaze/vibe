@@ -1659,15 +1659,21 @@ html.dark .installment-stat:hover {
 }
 
 .summary-table th {
-  background: var(--bg);
+  background: linear-gradient(135deg, rgba(91, 107, 248, 0.05) 0%, rgba(45, 201, 160, 0.04) 100%);
+  color: #5B6BF8;
+  border-bottom: 2px solid rgba(91, 107, 248, 0.18);
   padding: 0.625rem 0.875rem;
   text-align: left;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-secondary);
-  border-bottom: 2px solid var(--card-border);
+  letter-spacing: 0.1em;
+}
+
+html.dark .summary-table th {
+  background: linear-gradient(135deg, rgba(45, 201, 160, 0.06) 0%, rgba(91, 107, 248, 0.05) 100%);
+  color: rgba(45, 201, 160, 0.9);
+  border-bottom: 2px solid rgba(45, 201, 160, 0.15);
 }
 
 .summary-table td {
