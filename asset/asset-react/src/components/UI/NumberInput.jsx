@@ -28,7 +28,12 @@ export default function NumberInput({ value, onChange, placeholder, style, class
 
   const handleFocus = (e) => {
     setFocused(true);
-    e.target.select();
+    const target = e.target;
+    setTimeout(() => {
+      if (target) {
+        target.select();
+      }
+    }, 0);
   };
 
   const handleBlur = (e) => {
