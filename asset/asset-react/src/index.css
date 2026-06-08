@@ -2351,7 +2351,7 @@ html.dark .custom-dropdown-item.active {
 }
 
 .pension-info-value {
-  font-size: 1.1rem;
+  font-size: 1.65rem;
   font-weight: 900;
   letter-spacing: -0.03em;
   white-space: nowrap;
@@ -2370,11 +2370,11 @@ html.dark .custom-dropdown-item.active {
   }
   
   .pension-info-value {
-    font-size: 0.8rem; /* 모바일에서 3열 배치를 유지하면서 금액이 1줄로 표시될 수 있도록 폰트 크기 축소 */
+    font-size: 1.2rem; /* 모바일에서 3열 배치를 유지하면서 금액이 1줄로 표시될 수 있도록 폰트 크기 1.5배 축소 조정 */
   }
   
   .pension-info-value span {
-    font-size: 0.6rem !important;
+    font-size: 0.9rem !important;
     margin-left: 1px !important;
   }
 }
