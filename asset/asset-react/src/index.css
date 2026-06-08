@@ -2357,6 +2357,7 @@ html.dark .custom-dropdown-item.active {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right;
 }
 
 @media (max-width: 768px) {
