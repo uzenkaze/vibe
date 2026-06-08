@@ -134,7 +134,7 @@ export default function PensionPage() {
       </div>
 
       {/* ── 인포 카드 그리드 ── */}
-      <div className="pension-info-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
         {[
           { label: '세전 예상액', value: beforeTaxNum, color: '#5B6BF8', icon: (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -152,7 +152,16 @@ export default function PensionPage() {
             </svg>
           )},
         ].map(item => (
-          <div key={item.label} className="pension-info-card">
+          <div key={item.label} style={{
+            background: 'var(--card)',
+            border: '1px solid var(--card-border)',
+            borderRadius: 'var(--radius-md)',
+            padding: '1rem 1.125rem',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'var(--transition)',
+          }}>
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0,
               height: 3, background: item.color, borderRadius: '0 0 3px 3px',
@@ -171,7 +180,7 @@ export default function PensionPage() {
                 {item.label}
               </div>
             </div>
-            <div className="pension-info-value num" style={{ color: item.color }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '-0.03em', color: item.color }}>
               {formatKRW(item.value)}<span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginLeft: 2 }}>원</span>
             </div>
           </div>
