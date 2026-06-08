@@ -172,7 +172,7 @@ export default function PensionPage() {
               </div>
             </div>
             <div className="pension-info-value num" style={{ color: item.color }}>
-              {formatKRW(item.value)}<span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginLeft: 2 }}>원</span>
+              {formatKRW(item.value)}<span style={{ color: 'var(--text-muted)', marginLeft: 2 }}>원</span>
             </div>
           </div>
         ))}

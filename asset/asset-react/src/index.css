@@ -2351,7 +2351,7 @@ html.dark .custom-dropdown-item.active {
 }
 
 .pension-info-value {
-  font-size: 1.65rem;
+  font-size: 1.0rem;
   font-weight: 900;
   letter-spacing: -0.03em;
   white-space: nowrap;
@@ -2360,22 +2360,17 @@ html.dark .custom-dropdown-item.active {
   text-align: right;
 }
 
+.pension-info-value span {
+  font-size: 0.7rem !important;
+}
+
 @media (max-width: 768px) {
   .pension-info-grid {
-    gap: 0.5rem; /* 모바일에서 카드 간 간격 축소 */
+    gap: 0.5rem;
   }
   
   .pension-info-card {
-    padding: 0.75rem 0.5rem; /* 모바일에서 카드 패딩을 줄여 내부 공간 확보 */
-  }
-  
-  .pension-info-value {
-    font-size: 1.2rem; /* 모바일에서 3열 배치를 유지하면서 금액이 1줄로 표시될 수 있도록 폰트 크기 1.5배 축소 조정 */
-  }
-  
-  .pension-info-value span {
-    font-size: 0.9rem !important;
-    margin-left: 1px !important;
+    padding: 0.75rem 0.5rem;
   }
 }
 
