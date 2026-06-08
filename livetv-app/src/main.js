@@ -710,12 +710,24 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   // KBS API는 동적으로 URL을 앞에 추가
   if (ch.kbsApiCode && urlIdx === 0) {
     try {
-      const api = `https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}`;
-      const res = await fetch(api);
+      const api = `https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`;
+      let res;
+      try {
+        res = await fetch(api);
+      } catch(err) {
+        // CORS error fallback
+        res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(api)}`);
+      }
       const data = await res.json();
       const apiUrl = data.channel_item?.find(i => i.service_url)?.service_url;
-      if (apiUrl && !ch.urls.includes(apiUrl)) ch.urls.unshift(apiUrl);
-    } catch (e) { /* KBS API 실패 시 기존 urls 사용 */ }
+      if (apiUrl) {
+        // 이전에 추가된 동적 토큰 URL 제거
+        ch.urls = ch.urls.filter(u => !u.includes('gscdn.kbs.co.kr'));
+        ch.urls.unshift(apiUrl);
+      }
+    } catch (e) { 
+      console.warn('KBS API load failed', e);
+    }
   }
 
   const url = ch.urls[urlIdx % ch.urls.length];
