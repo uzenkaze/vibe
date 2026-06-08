@@ -212,21 +212,21 @@ export default function PensionPage() {
           {/* 납입 기간 */}
           <div>
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#5B6BF8' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--teal)' }}>
                 <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
               납입 기간
             </label>
             <input
               style={{
-                width: '100%', background: 'var(--card)', border: '1.5px solid var(--card-border)',
+                width: '100%', background: 'var(--card)', border: '1.5px solid rgba(45, 201, 160, 0.2)',
                 color: 'var(--text-primary)', borderRadius: 'var(--radius-sm)',
                 padding: '0.825rem 1rem', fontSize: '0.95rem', fontFamily: 'inherit',
                 fontWeight: 600, outline: 'none', transition: 'all 0.2s ease',
                 boxSizing: 'border-box', textAlign: 'center',
               }}
               onFocus={e => { e.target.style.borderColor = 'var(--teal)'; e.target.style.boxShadow = '0 0 0 3px rgba(45,201,160,0.15)'; }}
-              onBlur={e => { e.target.style.borderColor = 'var(--card-border)'; e.target.style.boxShadow = 'none'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(45, 201, 160, 0.2)'; e.target.style.boxShadow = 'none'; }}
               placeholder="예: 2024.01 ~ 2034.12"
               value={formData.totalPeriod}
               onChange={e => handleChange('totalPeriod', e.target.value)}
