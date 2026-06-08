@@ -2331,3 +2331,50 @@ html.dark .custom-dropdown-item.active {
   opacity: 0.9;
 }
 
+/* Pension info cards responsive styling */
+.pension-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pension-info-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.125rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.pension-info-value {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .pension-info-grid {
+    gap: 0.5rem; /* 모바일에서 카드 간 간격 축소 */
+  }
+  
+  .pension-info-card {
+    padding: 0.75rem 0.5rem; /* 모바일에서 카드 패딩을 줄여 내부 공간 확보 */
+  }
+  
+  .pension-info-value {
+    font-size: 0.8rem; /* 모바일에서 3열 배치를 유지하면서 금액이 1줄로 표시될 수 있도록 폰트 크기 축소 */
+  }
+  
+  .pension-info-value span {
+    font-size: 0.6rem !important;
+    margin-left: 1px !important;
+  }
+}
+
