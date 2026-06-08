@@ -26,6 +26,11 @@ export default function NumberInput({ value, onChange, placeholder, style, class
     if (onChange) onChange(num);
   };
 
+  const handleFocus = (e) => {
+    setFocused(true);
+    e.target.select();
+  };
+
   const handleBlur = (e) => {
     setFocused(false);
     let raw = e.target.value.replace(/[^0-9-]/g, '');
@@ -46,7 +51,7 @@ export default function NumberInput({ value, onChange, placeholder, style, class
       style={{ ...style, textAlign: rightAlign ? 'right' : (style?.textAlign || 'left') }}
       placeholder={placeholder}
       value={displayValue}
-      onFocus={() => setFocused(true)}
+      onFocus={handleFocus}
       onBlur={handleBlur}
       onChange={handleChange}
       disabled={disabled}
