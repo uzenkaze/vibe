@@ -153,9 +153,10 @@ function upgradeToHttps(url) {
   return url;
 }
 
-// 현재 시도 중인 프록시 인덱스 (동일 체널 재시도 시 유지됨)
-let currentProxyIdx = 0;
-// 현재 프록시 재시도인 체널 ID (실제 다른 체널은 proxyIdx 리셋)
+// 프록시 재시도 상태
+// -1 = 직접 접속 (프록시 없음, 로컬과 동일), 0~ = CORS_PROXIES 인덱스
+let currentProxyIdx = -1;
+// 현재 프록시 재시도인 채널 ID (다른 채널 선택 시 리셋)
 let proxyRetryChannelId = null;
 
 function isGitHubPages() {
@@ -940,12 +941,16 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     if (qualWrapperPC) qualWrapperPC.style.display = 'block';
     if (qualWrapperMob) qualWrapperMob.style.display = 'block';
 
-    // 새 채널이면 proxyIdx를 0으로 리셋, 동일 채널의 프록시 재시도면 유지
+    // 새 채널이면 proxyIdx를 -1(직접 접속)로 리셋, 동일 채널 재시도면 유지
     if (proxyRetryChannelId !== ch.id) {
-      currentProxyIdx = 0;
+      currentProxyIdx = -1; // -1 = 직접 접속 (로컬과 동일)
       proxyRetryChannelId = ch.id;
     }
-    const useCorsProxy = needsCorsProxy();
+
+    // ★ 핵심 변경: 로컬과 동일하게 항상 직접 접속 먼저 시도
+    // currentProxyIdx === -1이면 프록시 없이 직접 접속 (로컬 방식)
+    // 실패 시 에러 핸들러에서 프록시 인덱스를 0→1→2→3 순으로 올려 재시도
+    const useProxy = currentProxyIdx >= 0;
 
     hls = new Hls({
       manifestLoadingTimeOut: 8000,
@@ -961,7 +966,7 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
         const loader = new Hls.DefaultConfig.loader(config);
         const originalLoad = loader.load.bind(loader);
         loader.load = function(context, cfg, callbacks) {
-          if (useCorsProxy) {
+          if (useProxy) {
             const isAlreadyProxied =
               context.url.includes('allorigins.win') ||
               context.url.includes('corsproxy.io') ||
@@ -974,9 +979,8 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
               context.url = CORS_PROXIES[proxyIdx](originalUrl);
               console.log(`[HLS Loader] 프록시 적용 (${proxyIdx}): ${originalUrl.substring(0, 80)}`);
 
-              // ★ 핵심 수정: onSuccess에서 context.url을 원본 URL로 복원
+              // onSuccess에서 context.url을 원본 URL로 복원
               // HLS.js가 m3u8 내 상대 경로를 원본 서버 기준으로 해석하게 함
-              // (프록시 URL 기준 해석 시 URL이 완전히 깨지는 버그 방지)
               const origOnSuccess = callbacks.onSuccess;
               const patchedCallbacks = Object.assign({}, callbacks, {
                 onSuccess: (response, stats, ctx) => {
@@ -988,6 +992,7 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
               return;
             }
           }
+          // 직접 접속 (로컬과 동일한 방식)
           originalLoad(context, cfg, callbacks);
         };
         return loader;
@@ -1012,24 +1017,27 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       console.warn('[HLS.js Error]', data.type, data.details, data.fatal);
       if (data.fatal) {
         if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-          // 다음 CORS 프록시로 재시도 (최대 프록시 수만큼)
-          if (useCorsProxy && currentProxyIdx < CORS_PROXIES.length - 1) {
-            currentProxyIdx++;
-            debugLog(`네트워크 오류. 프록시 ${currentProxyIdx + 1}/${CORS_PROXIES.length}로 재시도...`);
+          // 직접 접속 실패 → CORS 프록시로 재시도 (0 → 1 → 2 → 3 순서)
+          if (currentProxyIdx < CORS_PROXIES.length - 1) {
+            currentProxyIdx++; // -1→0→1→2→3
+            if (currentProxyIdx === 0) {
+              debugLog(`직접 접속 실패. CORS 프록시 1/${CORS_PROXIES.length}로 재시도...`);
+            } else {
+              debugLog(`프록시 실패. 프록시 ${currentProxyIdx + 1}/${CORS_PROXIES.length}로 재시도...`);
+            }
             if (hls) {
               hls.destroy();
               hls = null;
             }
-            // 약간의 지연 후 재시도 (브라우저가 이전 요청을 정리할 시간)
             setTimeout(() => {
               if (activeChannelId === ch.id) {
                 playChannel(ch, urlIdx, startTime);
               }
-            }, 500);
+            }, 300);
           } else {
-            // 모든 프록시 소진 → 다음 URL로
-            debugLog(`모든 프록시 실패. 다음 스트림 URL로 전환합니다.`);
-            currentProxyIdx = 0;
+            // 직접접속 + 모든 프록시 소진 → 다음 URL로
+            debugLog(`직접접속 및 모든 프록시 실패. 다음 스트림 URL로 전환합니다.`);
+            currentProxyIdx = -1;
             proxyRetryChannelId = null;
             if (hls) { hls.destroy(); hls = null; }
             tryNextUrl(ch, urlIdx);
