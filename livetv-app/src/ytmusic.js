@@ -1,5 +1,73 @@
 // ytmusic.js
 
+/* =================== SMART FETCH (CORS BYPASS FOR MOBILE) =================== */
+async function smartFetch(url, options = {}) {
+  const isNative = typeof window !== 'undefined' && 
+                   (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  if (isNative && window.Capacitor?.Plugins?.CapacitorHttp) {
+    try {
+      const headers = options.headers || {};
+      if (!headers['User-Agent']) {
+        headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+      }
+      if (!headers['Accept']) {
+        headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7';
+      }
+      if (!headers['Accept-Language']) {
+        headers['Accept-Language'] = 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7';
+      }
+      const capOptions = {
+        url: url,
+        method: options.method || 'GET',
+        headers: headers,
+        connectTimeout: options.timeout || 5000,
+        readTimeout: options.timeout || 5000
+      };
+      if (options.body) {
+        capOptions.data = options.body;
+      }
+      
+      const response = await window.Capacitor.Plugins.CapacitorHttp.request(capOptions);
+      return {
+        ok: response.status >= 200 && response.status < 300,
+        status: response.status,
+        headers: {
+          get: (name) => {
+            const keys = Object.keys(response.headers || {});
+            const key = keys.find(k => k.toLowerCase() === name.toLowerCase());
+            return key ? response.headers[key] : '';
+          }
+        },
+        text: async () => typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+        json: async () => typeof response.data === 'object' ? response.data : JSON.parse(response.data)
+      };
+    } catch (e) {
+      console.error('[SmartFetch] Native request failed, falling back to standard fetch:', e);
+    }
+  }
+  
+  let controller = null;
+  let timeoutId = null;
+  const fetchOptions = { ...options };
+  
+  if (options.timeout) {
+    controller = new AbortController();
+    fetchOptions.signal = controller.signal;
+    delete fetchOptions.timeout;
+    timeoutId = setTimeout(() => controller.abort(), options.timeout);
+  }
+  
+  try {
+    const res = await fetch(url, fetchOptions);
+    if (timeoutId) clearTimeout(timeoutId);
+    return res;
+  } catch (e) {
+    if (timeoutId) clearTimeout(timeoutId);
+    throw e;
+  }
+}
+
 /* ══════════════ STATE ══════════════ */
 let currentVideoId  = null;
 let isPlaying       = false;
@@ -226,15 +294,17 @@ async function searchMusic(query, setInput = true, isAppend = false) {
   const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
   
   let html = '';
-  const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
+                      (window.location.hostname === 'localhost' && window.location.port === '') || 
+                      window.location.protocol === 'capacitor:';
+  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
   try {
     if (isCapacitor) {
-      const res = await fetch(targetUrl);
+      const res = await smartFetch(targetUrl);
       if (res.ok) html = await res.text();
     } else if (isLocal) {
-      const res = await fetch('/yt-proxy' + pathUrl);
+      const res = await smartFetch('/yt-proxy' + pathUrl);
       if (res.ok) html = await res.text();
     }
   } catch (e) {}
@@ -247,10 +317,7 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     ];
     for (const makeProxy of proxies) {
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-        const res = await fetch(makeProxy(targetUrl), { signal: controller.signal });
-        clearTimeout(timeoutId);
+        const res = await smartFetch(makeProxy(targetUrl), { timeout: 4000 });
         if (!res.ok) continue;
         if (makeProxy(targetUrl).includes('allorigins')) {
           html = (await res.json()).contents;
@@ -690,15 +757,17 @@ async function searchRelated(videoId, container) {
   const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
   
   let html = '';
-  const isCapacitor = !!window.Capacitor?.isNativePlatform?.();
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
+                      (window.location.hostname === 'localhost' && window.location.port === '') || 
+                      window.location.protocol === 'capacitor:';
+  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
   try {
     if (isCapacitor) {
-      const res = await fetch(targetUrl);
+      const res = await smartFetch(targetUrl);
       if (res.ok) html = await res.text();
     } else if (isLocal) {
-      const res = await fetch('/yt-proxy' + pathUrl);
+      const res = await smartFetch('/yt-proxy' + pathUrl);
       if (res.ok) html = await res.text();
     }
   } catch (e) {}
@@ -711,10 +780,7 @@ async function searchRelated(videoId, container) {
     ];
     for (const makeProxy of proxies) {
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-        const res = await fetch(makeProxy(targetUrl), { signal: controller.signal });
-        clearTimeout(timeoutId);
+        const res = await smartFetch(makeProxy(targetUrl), { timeout: 4000 });
         if (!res.ok) continue;
         if (makeProxy(targetUrl).includes('allorigins')) {
           html = (await res.json()).contents;

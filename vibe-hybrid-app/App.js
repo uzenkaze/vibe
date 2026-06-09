@@ -26,7 +26,7 @@ export default function App() {
 
   // URL of the live server running the existing Vibe Music Box HTML version
   // Add a boot-time cache buster query parameter to force new HTTP fetch on every app start
-  const [appUrl] = useState(() => `http://${localIp}:5500/hobby-app/www/index.html?t=${Date.now()}`);
+  const [appUrl] = useState(() => `https://uzenkaze.github.io/vibe/asset/asset-react/dist/index.html?t=${Date.now()}`);
 
   return (
     <SafeAreaView style={styles.container}>

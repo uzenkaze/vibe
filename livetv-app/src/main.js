@@ -14,15 +14,15 @@ const CHANNELS = [
     'http://203.251.91.122:1935/on-air-Backup/kbs2hd/playlist.m3u8'
   ] },
   { id: 'mbc', name: 'MBC', network: 'MBC', category: '지상파', ytHandle: '@MBCNEWS', urls: [
-    'https://stream.bsmbc.com/livetv/BusanMBC_TV_onairstream/playlist.m3u8',
     'https://ns1.tjmbc.co.kr/live/myStream.sdp/playlist.m3u8',
+    'https://stream.bsmbc.com/livetv/BusanMBC_TV_onairstream/playlist.m3u8',
     'https://stream.chmbc.co.kr/TV/myStream/playlist.m3u8',
     'https://wowza.jejumbc.com/live/tv_jejumbc/playlist.m3u8',
     'https://5c3639aa99149.streamlock.net/live_TV/tv/playlist.m3u8'
   ] },
   { id: 'sbs', name: 'SBS', network: 'SBS', category: '지상파', ytHandle: '@SBSnews8', urls: [
-    'https://cjsbshls.gcdn.ntruss.com/cjb/cjb_1080p/playlist.m3u8',
-    'https://knnhls.gcdn.ntruss.com/knn/knn_1080p/playlist.m3u8',
+    'https://stream1.knn.co.kr/hls/9ly4534y7dm2xfa123r2_tv/index.m3u8',
+    'https://stream.ubc.co.kr/hls/ubctvstream/index.m3u8',
     'http://203.251.91.122:1935/on-air-Backup/tv/playlist.m3u8'
   ] },
   { id: 'ebs1', name: 'EBS 1', network: 'EBS1', category: '지상파', ytHandle: '@ebskorea', urls: ['https://ebsonair.ebs.co.kr/ebs1familypc/familypc1m/playlist.m3u8'] },
@@ -75,7 +75,10 @@ const CHANNELS = [
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
-  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', noPlayableHls: true, urls: [] },
+  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', urls: [
+    'http://onair.cdn.tvchosun.com/origin1/_definst_/tvchosun_s1/playlist.m3u8',
+    'http://onair2.cdn.tvchosun.com/origin2/_definst_/tvchosun_s3/playlist.m3u8'
+  ] },
   { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', noPlayableHls: true, urls: [] },
   { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', noPlayableHls: true, urls: [] },
 
@@ -186,10 +189,78 @@ function updateTitle(title) {
 }
 
 /* =================== DYNAMIC FETCHERS =================== */
+/* =================== SMART FETCH (CORS BYPASS FOR MOBILE) =================== */
+async function smartFetch(url, options = {}) {
+  const isNative = typeof window !== 'undefined' && 
+                   (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  if (isNative && window.Capacitor?.Plugins?.CapacitorHttp) {
+    try {
+      const headers = options.headers || {};
+      if (!headers['User-Agent']) {
+        headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+      }
+      if (!headers['Accept']) {
+        headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7';
+      }
+      if (!headers['Accept-Language']) {
+        headers['Accept-Language'] = 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7';
+      }
+      const capOptions = {
+        url: url,
+        method: options.method || 'GET',
+        headers: headers,
+        connectTimeout: options.timeout || 5000,
+        readTimeout: options.timeout || 5000
+      };
+      if (options.body) {
+        capOptions.data = options.body;
+      }
+      
+      const response = await window.Capacitor.Plugins.CapacitorHttp.request(capOptions);
+      return {
+        ok: response.status >= 200 && response.status < 300,
+        status: response.status,
+        headers: {
+          get: (name) => {
+            const keys = Object.keys(response.headers || {});
+            const key = keys.find(k => k.toLowerCase() === name.toLowerCase());
+            return key ? response.headers[key] : '';
+          }
+        },
+        text: async () => typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+        json: async () => typeof response.data === 'object' ? response.data : JSON.parse(response.data)
+      };
+    } catch (e) {
+      console.error('[SmartFetch] Native request failed, falling back to standard fetch:', e);
+    }
+  }
+  
+  let controller = null;
+  let timeoutId = null;
+  const fetchOptions = { ...options };
+  
+  if (options.timeout) {
+    controller = new AbortController();
+    fetchOptions.signal = controller.signal;
+    delete fetchOptions.timeout;
+    timeoutId = setTimeout(() => controller.abort(), options.timeout);
+  }
+  
+  try {
+    const res = await fetch(url, fetchOptions);
+    if (timeoutId) clearTimeout(timeoutId);
+    return res;
+  } catch (e) {
+    if (timeoutId) clearTimeout(timeoutId);
+    throw e;
+  }
+}
+
 async function fetchWithProxy(url) {
   try {
     const proxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
-    const res = await fetch(proxy);
+    const res = await smartFetch(proxy);
     if (!res.ok) return null;
     return await res.text();
   } catch(e) { return null; }
@@ -761,20 +832,24 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       const api = `https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`;
       let res;
       try {
-        res = await fetch(api);
+        res = await smartFetch(api);
       } catch(err) {
         // CORS error fallback
-        res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(api)}`);
+        res = await smartFetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(api)}`);
       }
       const data = await res.json();
       const apiUrl = data.channel_item?.find(i => i.service_url)?.service_url;
       if (apiUrl) {
+        showToast(`KBS API 성공: ${ch.name}`);
         // 이전에 추가된 동적 토큰 URL 제거
         ch.urls = ch.urls.filter(u => !u.includes('gscdn.kbs.co.kr'));
         ch.urls.unshift(apiUrl);
+      } else {
+        showToast(`KBS API 주소 파싱 실패: ${ch.name}`);
       }
     } catch (e) { 
       console.warn('KBS API load failed', e);
+      showToast(`KBS API 오류: ${e.message}`);
     }
   }
 
@@ -782,14 +857,52 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
 
   if (!url) { showLoading(true, '재생 주소를 찾는 중입니다...'); tryNextUrl(ch, urlIdx); return; }
 
+  showToast(`재생 시도 (${urlIdx + 1}/${ch.urls.length}): ${url.split('?')[0].substring(0, 50)}...`);
+
   const startPlayback = () => {
-    target.play().catch(() => {});
+    target.play().catch((err) => {
+      console.warn('Autoplay failed:', err);
+      showToast(`자동 재생 실패 (화면 터치 필요): ${err.message}`);
+    });
   };
 
   target.onplaying = () => {
     if (playbackTimeout) clearTimeout(playbackTimeout);
     target.classList.remove('hidden');
     showLoading(false);
+  };
+
+  // 비디오 요소 자체 에러 리스너
+  target.onerror = () => {
+    const errorMsg = target.error ? `Code ${target.error.code}: ${target.error.message}` : '알 수 없는 에러';
+    console.error('[Video Error]', errorMsg);
+    showToast(`비디오 재생 에러: ${errorMsg}`);
+    tryNextUrl(ch, urlIdx);
+  };
+
+  const playNatively = () => {
+    console.warn(`[LiveTV] Hls.js failed or not supported. Falling back to native playback for: ${url}`);
+    if (hls) {
+      hls.destroy();
+      hls = null;
+    }
+    
+    // 화질 선택기 숨김 (네이티브 재생은 화질 선택 불가)
+    const qualWrapperPC = document.getElementById('quality-select-pc-wrapper');
+    const qualWrapperMob = document.getElementById('quality-select-mob-wrapper');
+    if (qualWrapperPC) qualWrapperPC.style.display = 'none';
+    if (qualWrapperMob) qualWrapperMob.style.display = 'none';
+
+    target.src = url;
+    target.onloadedmetadata = startPlayback;
+    
+    target.onerror = () => {
+      const nativeErrorMsg = target.error ? `Code ${target.error.code}: ${target.error.message}` : '네트워크 또는 코덱 오류';
+      console.error('[Native Playback Error]', nativeErrorMsg);
+      showToast(`네이티브 재생 실패: ${nativeErrorMsg}`);
+      target.onerror = null; // 리스너 해제
+      tryNextUrl(ch, urlIdx);
+    };
   };
 
   if (Hls.isSupported()) {
@@ -821,15 +934,31 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       updateQualitySelector(isPC());
     });
 
+    let mediaErrorRetries = 0;
     hls.on(Hls.Events.ERROR, (e, data) => { 
-      if (data.fatal || data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-        tryNextUrl(ch, urlIdx); 
+      console.warn('[HLS.js Error]', data.type, data.details, data.fatal);
+      if (data.fatal) {
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+          // 네트워크 에러 시 우선 네이티브 재생 폴백 시도 (CORS 차단 등 방어)
+          showToast(`네트워크 오류 발생. 네이티브 재생을 시도합니다.`);
+          playNatively();
+        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+          if (mediaErrorRetries < 2) {
+            mediaErrorRetries++;
+            showToast(`미디어 재생 오류 복구 시도 중... (${mediaErrorRetries}/2)`);
+            hls.recoverMediaError();
+          } else {
+            showToast(`미디어 복구 실패. 네이티브 재생을 시도합니다.`);
+            playNatively();
+          }
+        } else {
+          showToast(`재생 오류: ${data.details}. 네이티브 재생을 시도합니다.`);
+          playNatively();
+        }
       }
     });
   } else if (target.canPlayType('application/vnd.apple.mpegurl')) {
-    target.src = url;
-    target.onloadedmetadata = startPlayback;
-    target.onerror = () => tryNextUrl(ch, urlIdx);
+    playNatively();
   }
 
   // 8초 내에 playing 이벤트가 발생하지 않으면 다음 URL로 전환
@@ -848,7 +977,7 @@ async function fetchLatestStreams() {
   if (isFetchingStreams || Date.now() - lastFetchTime < 60000) return;
   isFetchingStreams = true;
   try {
-    const res = await fetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kr.m3u');
+    const res = await smartFetch('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kr.m3u');
     if (!res.ok) throw new Error('Network error');
     const text = await res.text();
     const lines = text.split('\n');
@@ -939,8 +1068,11 @@ async function showYouTubeIframePlayback(ch) {
     // 실시간 유튜브 라이브 비디오 ID 분석 (우선순위 기반 다중 레이어 분석)
     let liveVideoId = null;
 
-    // 1순위: 로컬 백엔드 라이브 분석기 호출 (CORS 우회가 가능하고, 서버 측 파싱으로 가장 안정적이며 속도가 빠름)
-    if (ch.ytHandle) {
+    const isNative = typeof window !== 'undefined' && 
+                     (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+
+    // 1순위: 로컬 백엔드 라이브 분석기 호출 (CORS 우회가 가능하고, 서버 측 파싱으로 가장 안정적이며 속도가 빠름 - PC 개발 환경 전용)
+    if (ch.ytHandle && !isNative) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const proxyHost = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))
@@ -950,7 +1082,7 @@ async function showYouTubeIframePlayback(ch) {
         const proxyApiUrl = `${proxyHost}/api/youtube/live?handle=${handle}`;
         console.log(`[YouTube Live Playback] 로컬 백엔드 라이브 분석기 호출: ${proxyApiUrl}`);
         
-        const res = await fetch(proxyApiUrl, { signal: AbortSignal.timeout(4000) });
+        const res = await smartFetch(proxyApiUrl, { timeout: 4000 });
         if (res.ok) {
           const data = await res.json();
           if (data.ok && data.videoId) {
@@ -974,24 +1106,23 @@ async function showYouTubeIframePlayback(ch) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const url = `https://www.youtube.com/@${handle}/live`;
-        const proxies = [
-          u => {
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')) {
-              return `/yt-proxy/@${handle}/live`;
-            }
-            return u;
-          },
-          u => u, // Direct fetch for CapacitorHttp
-          u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-          u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-          u => `https://corsproxy.io/?${encodeURIComponent(u)}`
-        ];
+        const proxies = [];
+        if (!isNative && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))) {
+          proxies.push(`/yt-proxy/@${handle}/live`);
+        } else {
+          proxies.push(url);
+        }
+        if (!proxies.includes(url)) {
+          proxies.push(url);
+        }
+        proxies.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        proxies.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
+        proxies.push(`https://corsproxy.io/?${encodeURIComponent(url)}`);
 
-        for (const getProxyUrl of proxies) {
+        for (const proxyUrl of proxies) {
           try {
-            const proxyUrl = getProxyUrl(url);
             console.log(`[YouTube Live Playback] 시도 프록시: ${proxyUrl}`);
-            const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
+            const res = await smartFetch(proxyUrl, { timeout: 6000 });
             let html = "";
             if (proxyUrl.includes('allorigins')) {
               const data = await res.json();
@@ -1868,7 +1999,7 @@ async function applyRemoteOverrides() {
   try {
     console.log('[LiveTV] Fetching remote overrides from GitHub...');
     // Fetch user's own urls.json from GitHub
-    const res = await fetch('https://raw.githubusercontent.com/uzenkaze/vibe/main/urls.json');
+    const res = await smartFetch('https://raw.githubusercontent.com/uzenkaze/vibe/main/urls.json');
     if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
     const overrides = await res.json();
     console.log('[LiveTV] Remote overrides loaded:', overrides);
@@ -1897,22 +2028,15 @@ async function applyRemoteOverrides() {
 async function testUrlPlayability(url) {
   if (!url) return false;
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-    
-    // Direct fetch first
-    let res = await fetch(url, { signal: controller.signal }).catch(() => null);
-    clearTimeout(timeoutId);
+    let res = await smartFetch(url, { timeout: 3500 }).catch(() => null);
     
     // Fallback to proxy if direct fetch fails (useful for PC browser development)
     if (!res || !res.ok) {
-      const isNative = typeof window !== 'undefined' && window.Capacitor;
+      const isNative = typeof window !== 'undefined' && 
+                       (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
       if (!isNative && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
         const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
-        const controller2 = new AbortController();
-        const timeoutId2 = setTimeout(() => controller2.abort(), 4000);
-        res = await fetch(proxyUrl, { signal: controller2.signal }).catch(() => null);
-        clearTimeout(timeoutId2);
+        res = await smartFetch(proxyUrl, { timeout: 4000 }).catch(() => null);
       }
     }
     
@@ -1940,13 +2064,14 @@ async function fetchIptvList() {
       console.log(`[Self-Healing] Fetching public IPTV playlist from ${u}...`);
       let m3uData = null;
       try {
-        const res = await fetch(u);
+        const res = await smartFetch(u);
         if (res.ok) m3uData = await res.text();
       } catch(e) {}
       
       // Try proxy fallback if direct fetch fails (PC development only)
       if (!m3uData || !m3uData.includes('#EXTM3U')) {
-        const isNative = typeof window !== 'undefined' && window.Capacitor;
+        const isNative = typeof window !== 'undefined' && 
+                         (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
         if (!isNative) {
           m3uData = await fetchWithProxy(u);
         }
@@ -2025,6 +2150,24 @@ async function checkAndRepairChannelUrls() {
     await Promise.all(batch.map(async (ch) => {
       updateChannelStatusUI(ch.id, 'checking');
       
+      // KBS API는 검증 전에 동적으로 URL을 업데이트
+      if (ch.kbsApiCode) {
+        try {
+          const api = `https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`;
+          const res = await smartFetch(api).catch(() => null);
+          if (res && res.ok) {
+            const data = await res.json();
+            const apiUrl = data.channel_item?.find(i => i.service_url)?.service_url;
+            if (apiUrl) {
+              ch.urls = ch.urls.filter(u => !u.includes('gscdn.kbs.co.kr'));
+              ch.urls.unshift(apiUrl);
+            }
+          }
+        } catch (e) {
+          console.warn(`[Self-Healing] KBS API fetch failed for ${ch.name}:`, e);
+        }
+      }
+
       const urlsToCheck = [...(ch.urls || [])];
       if (ch.url && !urlsToCheck.includes(ch.url)) urlsToCheck.push(ch.url);
       
