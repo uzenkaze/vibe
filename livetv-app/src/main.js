@@ -146,6 +146,34 @@ let currentUrlIdx = 0;
 let isYouTubeMode = false;
 const channelStatus = {};
 
+/* =================== CORS PROXY LIST =================== */
+// GitHub Pages 환경에서 HLS 스트림 접근 시 CORS 우회를 위한 프록시 목록 (우선순위 순서)
+const CORS_PROXIES = [
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  (url) => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+// 현재 시도 중인 프록시 인덱스 (동일 체널 재시도 시 유지됨)
+let currentProxyIdx = 0;
+// 현재 프록시 재시도인 체널 ID (실제 다른 체널은 proxyIdx 리셋)
+let proxyRetryChannelId = null;
+
+function isGitHubPages() {
+  const h = window.location.hostname;
+  return h.includes('github.io') || h.includes('github.com');
+}
+
+function needsCorsProxy() {
+  const h = window.location.hostname;
+  return !window.Capacitor &&
+         h !== 'localhost' &&
+         h !== '127.0.0.1' &&
+         !h.startsWith('192.168.') &&
+         window.location.protocol !== 'capacitor:';
+}
+
 // TV/빔프로젝터 환경 감지 (index.html의 인라인 스크립트가 먼저 실행됨)
 // window.__IS_TV__: TV 환경 감지 플래그 (HTML 파싱 전에 설정됨)
 const IS_TV_ENV = window.__IS_TV__ === true || document.documentElement.classList.contains('tv-mode');
@@ -840,16 +868,16 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       const data = await res.json();
       const apiUrl = data.channel_item?.find(i => i.service_url)?.service_url;
       if (apiUrl) {
-        showToast(`KBS API 성공: ${ch.name}`);
+        debugLog(`KBS API 성공: ${ch.name}`);
         // 이전에 추가된 동적 토큰 URL 제거
         ch.urls = ch.urls.filter(u => !u.includes('gscdn.kbs.co.kr'));
         ch.urls.unshift(apiUrl);
       } else {
-        showToast(`KBS API 주소 파싱 실패: ${ch.name}`);
+        debugLog(`KBS API 주소 파싱 실패: ${ch.name}`);
       }
     } catch (e) { 
       console.warn('KBS API load failed', e);
-      showToast(`KBS API 오류: ${e.message}`);
+      debugLog(`KBS API 오류: ${e.message}`);
     }
   }
 
@@ -857,12 +885,12 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
 
   if (!url) { showLoading(true, '재생 주소를 찾는 중입니다...'); tryNextUrl(ch, urlIdx); return; }
 
-  showToast(`재생 시도 (${urlIdx + 1}/${ch.urls.length}): ${url.split('?')[0].substring(0, 50)}...`);
+  debugLog(`재생 시도 (${urlIdx + 1}/${ch.urls.length}): ${url.split('?')[0].substring(0, 50)}...`);
 
   const startPlayback = () => {
     target.play().catch((err) => {
       console.warn('Autoplay failed:', err);
-      showToast(`자동 재생 실패 (화면 터치 필요): ${err.message}`);
+      debugLog(`자동 재생 실패 (화면 터치 필요): ${err.message}`);
     });
   };
 
@@ -876,7 +904,7 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   target.onerror = () => {
     const errorMsg = target.error ? `Code ${target.error.code}: ${target.error.message}` : '알 수 없는 에러';
     console.error('[Video Error]', errorMsg);
-    showToast(`비디오 재생 에러: ${errorMsg}`);
+    debugLog(`비디오 재생 에러: ${errorMsg}`);
     tryNextUrl(ch, urlIdx);
   };
 
@@ -895,12 +923,12 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
 
     target.src = url;
     target.onloadedmetadata = startPlayback;
-    
+
     target.onerror = () => {
       const nativeErrorMsg = target.error ? `Code ${target.error.code}: ${target.error.message}` : '네트워크 또는 코덱 오류';
       console.error('[Native Playback Error]', nativeErrorMsg);
-      showToast(`네이티브 재생 실패: ${nativeErrorMsg}`);
-      target.onerror = null; // 리스너 해제
+      debugLog(`네이티브 재생 실패: ${nativeErrorMsg}`);
+      target.onerror = null;
       tryNextUrl(ch, urlIdx);
     };
   };
@@ -912,24 +940,55 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     if (qualWrapperPC) qualWrapperPC.style.display = 'block';
     if (qualWrapperMob) qualWrapperMob.style.display = 'block';
 
-    hls = new Hls({ 
-      manifestLoadingTimeOut: 3000, 
+    // 새 채널이면 proxyIdx를 0으로 리셋, 동일 채널의 프록시 재시도면 유지
+    if (proxyRetryChannelId !== ch.id) {
+      currentProxyIdx = 0;
+      proxyRetryChannelId = ch.id;
+    }
+    const useCorsProxy = needsCorsProxy();
+
+    hls = new Hls({
+      manifestLoadingTimeOut: 8000,
       manifestLoadingMaxRetry: 0,
-      capLevelToPlayerSize: true, 
-      startLevel: -1,             
-      abrEwmaDefaultEstimate: isPC() ? 4000000 : 1500000, 
+      levelLoadingTimeOut: 8000,
+      levelLoadingMaxRetry: 0,
+      fragLoadingTimeOut: 10000,
+      capLevelToPlayerSize: true,
+      startLevel: -1,
+      abrEwmaDefaultEstimate: isPC() ? 4000000 : 1500000,
       testBandwidth: true,
       loader: function(config) {
         const loader = new Hls.DefaultConfig.loader(config);
         const originalLoad = loader.load.bind(loader);
-        loader.load = function(context, config, callbacks) {
-          const isNative = typeof window !== 'undefined' && 
-                           (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
-          if (!isNative && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-            // Rewrite URL to go through CORS proxy on GitHub Pages
-            context.url = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(context.url);
+        loader.load = function(context, cfg, callbacks) {
+          if (useCorsProxy) {
+            const isAlreadyProxied =
+              context.url.includes('allorigins.win') ||
+              context.url.includes('corsproxy.io') ||
+              context.url.includes('codetabs.com') ||
+              context.url.includes('thingproxy.freeboard.io');
+
+            if (!isAlreadyProxied) {
+              const originalUrl = context.url;
+              const proxyIdx = Math.min(currentProxyIdx, CORS_PROXIES.length - 1);
+              context.url = CORS_PROXIES[proxyIdx](originalUrl);
+              console.log(`[HLS Loader] 프록시 적용 (${proxyIdx}): ${originalUrl.substring(0, 80)}`);
+
+              // ★ 핵심 수정: onSuccess에서 context.url을 원본 URL로 복원
+              // HLS.js가 m3u8 내 상대 경로를 원본 서버 기준으로 해석하게 함
+              // (프록시 URL 기준 해석 시 URL이 완전히 깨지는 버그 방지)
+              const origOnSuccess = callbacks.onSuccess;
+              const patchedCallbacks = Object.assign({}, callbacks, {
+                onSuccess: (response, stats, ctx) => {
+                  ctx.url = originalUrl; // 원본 URL 복원 → 상대경로 해석 기준점 복원
+                  origOnSuccess(response, stats, ctx);
+                }
+              });
+              originalLoad(context, cfg, patchedCallbacks);
+              return;
+            }
           }
-          originalLoad(context, config, callbacks);
+          originalLoad(context, cfg, callbacks);
         };
         return loader;
       }
@@ -953,35 +1012,58 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       console.warn('[HLS.js Error]', data.type, data.details, data.fatal);
       if (data.fatal) {
         if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-          // 네트워크 에러 시 우선 네이티브 재생 폴백 시도 (CORS 차단 등 방어)
-          showToast(`네트워크 오류 발생. 네이티브 재생을 시도합니다.`);
-          playNatively();
+          // 다음 CORS 프록시로 재시도 (최대 프록시 수만큼)
+          if (useCorsProxy && currentProxyIdx < CORS_PROXIES.length - 1) {
+            currentProxyIdx++;
+            debugLog(`네트워크 오류. 프록시 ${currentProxyIdx + 1}/${CORS_PROXIES.length}로 재시도...`);
+            if (hls) {
+              hls.destroy();
+              hls = null;
+            }
+            // 약간의 지연 후 재시도 (브라우저가 이전 요청을 정리할 시간)
+            setTimeout(() => {
+              if (activeChannelId === ch.id) {
+                playChannel(ch, urlIdx, startTime);
+              }
+            }, 500);
+          } else {
+            // 모든 프록시 소진 → 다음 URL로
+            debugLog(`모든 프록시 실패. 다음 스트림 URL로 전환합니다.`);
+            currentProxyIdx = 0;
+            proxyRetryChannelId = null;
+            if (hls) { hls.destroy(); hls = null; }
+            tryNextUrl(ch, urlIdx);
+          }
         } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
           if (mediaErrorRetries < 2) {
             mediaErrorRetries++;
-            showToast(`미디어 재생 오류 복구 시도 중... (${mediaErrorRetries}/2)`);
+            debugLog(`미디어 재생 오류 복구 시도 중... (${mediaErrorRetries}/2)`);
             hls.recoverMediaError();
           } else {
-            showToast(`미디어 복구 실패. 네이티브 재생을 시도합니다.`);
-            playNatively();
+            debugLog(`미디어 복구 실패. 다음 스트림 URL로 전환합니다.`);
+            if (hls) { hls.destroy(); hls = null; }
+            tryNextUrl(ch, urlIdx);
           }
         } else {
-          showToast(`재생 오류: ${data.details}. 네이티브 재생을 시도합니다.`);
-          playNatively();
+          debugLog(`재생 오류: ${data.details}. 다음 스트림 URL로 전환합니다.`);
+          if (hls) { hls.destroy(); hls = null; }
+          tryNextUrl(ch, urlIdx);
         }
       }
     });
   } else if (target.canPlayType('application/vnd.apple.mpegurl')) {
+    // Safari / iOS: 네이티브 HLS 지원
     playNatively();
   }
 
-  // 8초 내에 playing 이벤트가 발생하지 않으면 다음 URL로 전환
+  // 12초 내에 playing 이벤트가 발생하지 않으면 다음 URL로 전환
   playbackTimeout = setTimeout(() => {
     if (target.paused || target.currentTime === 0) {
-      console.warn(`8초 타임아웃 - 다음 URL 시도: ${ch.name} (index: ${urlIdx})`);
+      console.warn(`12초 타임아웃 - 다음 URL 시도: ${ch.name} (index: ${urlIdx})`);
+      if (hls) { hls.destroy(); hls = null; }
       tryNextUrl(ch, urlIdx);
     }
-  }, 8000);
+  }, 12000);
 }
 
 let isFetchingStreams = false;
@@ -1301,6 +1383,16 @@ window.addEventListener('resize', () => {
 
 
 /* =================== TOAST NOTIFICATION SYSTEM =================== */
+// 디버깅용 내부 로그 전용 함수 - 토스트 UI 없이 진단 로그에만 기록
+function debugLog(message) {
+  console.log('[LiveTV]', message);
+  // index.html의 시스템 진단 로그 수집기에 기록
+  if (typeof window.__addLog === 'function') {
+    window.__addLog('DEBUG', message);
+  }
+}
+
+// 사용자에게 직접 노출되는 토스트 (화질 변경, PiP 등 명시적 사용자 액션에만 사용)
 function showToast(message) {
   let toastContainer = document.getElementById('toast-container');
   if (!toastContainer) {
@@ -1309,22 +1401,20 @@ function showToast(message) {
     toastContainer.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none px-4 w-full max-w-sm';
     document.body.appendChild(toastContainer);
   }
-  
+
   const toast = document.createElement('div');
   toast.className = 'bg-zinc-950/80 backdrop-blur-md border border-white/10 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0';
   toast.innerHTML = `
     <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-ping"></div>
     <span class="flex-1 text-left">${message}</span>
   `;
-  
+
   toastContainer.appendChild(toast);
-  
-  // Trigger reflow & animate in
+
   requestAnimationFrame(() => {
     toast.classList.remove('translate-y-2', 'opacity-0');
   });
-  
-  // Remove after 3 seconds
+
   setTimeout(() => {
     toast.classList.add('translate-y-2', 'opacity-0');
     setTimeout(() => toast.remove(), 300);
@@ -2042,15 +2132,16 @@ async function applyRemoteOverrides() {
 async function testUrlPlayability(url) {
   if (!url) return false;
   try {
+    // 직접 접근 먼저 시도
     let res = await smartFetch(url, { timeout: 3500 }).catch(() => null);
     
-    // Fallback to proxy if direct fetch fails (useful for PC browser development)
-    if (!res || !res.ok) {
-      const isNative = typeof window !== 'undefined' && 
-                       (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
-      if (!isNative) {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        res = await smartFetch(proxyUrl, { timeout: 4000 }).catch(() => null);
+    // 직접 접근 실패 시 CORS 프록시 체인으로 시도
+    if ((!res || !res.ok) && needsCorsProxy()) {
+      for (const proxyFn of CORS_PROXIES) {
+        try {
+          res = await smartFetch(proxyFn(url), { timeout: 4000 }).catch(() => null);
+          if (res && res.ok) break;
+        } catch(e) { /* 다음 프록시 시도 */ }
       }
     }
     
