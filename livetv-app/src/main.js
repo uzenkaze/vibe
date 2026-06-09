@@ -918,7 +918,21 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       capLevelToPlayerSize: true, 
       startLevel: -1,             
       abrEwmaDefaultEstimate: isPC() ? 4000000 : 1500000, 
-      testBandwidth: true
+      testBandwidth: true,
+      loader: function(config) {
+        const loader = new Hls.DefaultConfig.loader(config);
+        const originalLoad = loader.load.bind(loader);
+        loader.load = function(context, config, callbacks) {
+          const isNative = typeof window !== 'undefined' && 
+                           (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+          if (!isNative && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            // Rewrite URL to go through CORS proxy on GitHub Pages
+            context.url = 'https://corsproxy.io/?' + encodeURIComponent(context.url);
+          }
+          originalLoad(context, config, callbacks);
+        };
+        return loader;
+      }
     });
     hls.loadSource(url);
     hls.attachMedia(target);
@@ -2034,8 +2048,8 @@ async function testUrlPlayability(url) {
     if (!res || !res.ok) {
       const isNative = typeof window !== 'undefined' && 
                        (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
-      if (!isNative && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-        const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
+      if (!isNative) {
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
         res = await smartFetch(proxyUrl, { timeout: 4000 }).catch(() => null);
       }
     }
@@ -2154,7 +2168,10 @@ async function checkAndRepairChannelUrls() {
       if (ch.kbsApiCode) {
         try {
           const api = `https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`;
-          const res = await smartFetch(api).catch(() => null);
+          let res = await smartFetch(api).catch(() => null);
+          if (!res || !res.ok) {
+            res = await smartFetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(api)}`).catch(() => null);
+          }
           if (res && res.ok) {
             const data = await res.json();
             const apiUrl = data.channel_item?.find(i => i.service_url)?.service_url;
