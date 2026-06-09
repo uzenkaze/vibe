@@ -933,9 +933,10 @@ async function showYouTubeIframePlayback(ch) {
             }
             return u;
           },
+          u => u, // Direct fetch for CapacitorHttp
           u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-          u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-          u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+          u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+          u => `https://corsproxy.io/?${encodeURIComponent(u)}`
         ];
 
         for (const getProxyUrl of proxies) {
