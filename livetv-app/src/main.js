@@ -141,6 +141,7 @@ let activeCategoryFilter = null;
 let playbackTimeout = null;
 let currentUrlIdx = 0;
 let isYouTubeMode = false;
+const channelStatus = {};
 
 // TV/빔프로젝터 환경 감지 (index.html의 인라인 스크립트가 먼저 실행됨)
 // window.__IS_TV__: TV 환경 감지 플래그 (HTML 파싱 전에 설정됨)
@@ -578,6 +579,30 @@ function getChannelCardStyleAndContent(ch, active) {
   return { bg, html };
 }
 
+function updateChannelStatusUI(chId, status) {
+  channelStatus[chId] = status;
+  document.querySelectorAll(`[data-status-id="${chId}"]`).forEach(dot => {
+    dot.className = "absolute top-2 left-2 w-2 h-2 rounded-full z-20 transition-all duration-300";
+    let title = '점검 대기 중';
+    if (status === 'checking') {
+      dot.className += ' bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)]';
+      title = '점검 중...';
+    } else if (status === 'ok') {
+      dot.className += ' bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
+      title = '정상 작동';
+    } else if (status === 'repaired') {
+      dot.className += ' bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.8)]';
+      title = '자동 복구됨';
+    } else if (status === 'failed') {
+      dot.className += ' bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]';
+      title = '재생 불가 (복구 실패)';
+    } else {
+      dot.className += ' bg-gray-500/80';
+    }
+    dot.setAttribute('title', title);
+  });
+}
+
 function createCard(ch) {
   const active = activeChannelId === ch.id;
   const cardStyle = getChannelCardStyleAndContent(ch, active);
@@ -590,7 +615,29 @@ function createCard(ch) {
     </div>
   ` : '';
 
-  // 2. Main Card Construction
+  // 2. Dynamic Status indicator dot (Top-left)
+  const currentStatus = channelStatus[ch.id] || 'pending';
+  let dotClass = 'bg-gray-500/80';
+  let dotTitle = '점검 대기 중';
+  if (currentStatus === 'checking') {
+    dotClass = 'bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)]';
+    dotTitle = '점검 중...';
+  } else if (currentStatus === 'ok') {
+    dotClass = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
+    dotTitle = '정상 작동';
+  } else if (currentStatus === 'repaired') {
+    dotClass = 'bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.8)]';
+    dotTitle = '자동 복구됨';
+  } else if (currentStatus === 'failed') {
+    dotClass = 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]';
+    dotTitle = '재생 불가 (복구 실패)';
+  }
+
+  const statusDotHtml = !ch.noPlayableHls && ((ch.urls && ch.urls.length > 0) || ch.url) ? `
+    <div data-status-id="${ch.id}" title="${dotTitle}" class="absolute top-2 left-2 w-2 h-2 rounded-full z-20 transition-all duration-300 ${dotClass}"></div>
+  ` : '';
+
+  // 3. Main Card Construction
   const card = document.createElement('div');
   card.className = 'flex-shrink-0 w-36 sm:w-40 cursor-pointer group channel-card';
   card.onclick = () => playChannel(ch);
@@ -598,6 +645,7 @@ function createCard(ch) {
     <div data-id="${ch.id}" style="background: ${cardStyle.bg === '#1e1e28' ? '#111111' : cardStyle.bg};" class="channel-card-inner relative rounded-[24px] aspect-video flex items-center justify-center border border-white/5 ${active ? 'ring-2 ring-[#8B5CF6] ring-offset-2 ring-offset-[#0A0A0A] shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'shadow-lg shadow-black/40'} transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)] overflow-hidden bg-[#111111]">
       ${cardStyle.html}
       ${onAirBadgeHtml}
+      ${statusDotHtml}
       
       <!-- Hover / Active Play Button Overlay -->
       <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 ${active ? 'opacity-100 bg-black/20 backdrop-blur-none' : ''} transition-all duration-300 z-10">
@@ -1813,7 +1861,229 @@ function initHeaderStatus() {
   updateBattery();
 }
 
+/* =================== SELF-HEALING & REMOTE OVERRIDES =================== */
+let iptvCachedList = null;
+
+async function applyRemoteOverrides() {
+  try {
+    console.log('[LiveTV] Fetching remote overrides from GitHub...');
+    // Fetch user's own urls.json from GitHub
+    const res = await fetch('https://raw.githubusercontent.com/uzenkaze/vibe/main/urls.json');
+    if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
+    const overrides = await res.json();
+    console.log('[LiveTV] Remote overrides loaded:', overrides);
+    
+    let count = 0;
+    CHANNELS.forEach(ch => {
+      const netKey = ch.network ? ch.network.toUpperCase() : '';
+      const idKey = ch.id ? ch.id.toUpperCase() : '';
+      
+      const overrideUrl = overrides[idKey] || overrides[netKey];
+      if (overrideUrl) {
+        if (!ch.urls) ch.urls = [];
+        if (!ch.urls.includes(overrideUrl)) {
+          // Prepend override URL to prioritize it
+          ch.urls.unshift(overrideUrl);
+          count++;
+        }
+      }
+    });
+    console.log(`[LiveTV] Applied ${count} remote overrides to channels.`);
+  } catch (err) {
+    console.warn('[LiveTV] Failed to fetch remote overrides:', err);
+  }
+}
+
+async function testUrlPlayability(url) {
+  if (!url) return false;
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    
+    // Direct fetch first
+    let res = await fetch(url, { signal: controller.signal }).catch(() => null);
+    clearTimeout(timeoutId);
+    
+    // Fallback to proxy if direct fetch fails (useful for PC browser development)
+    if (!res || !res.ok) {
+      const isNative = typeof window !== 'undefined' && window.Capacitor;
+      if (!isNative && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
+        const controller2 = new AbortController();
+        const timeoutId2 = setTimeout(() => controller2.abort(), 4000);
+        res = await fetch(proxyUrl, { signal: controller2.signal }).catch(() => null);
+        clearTimeout(timeoutId2);
+      }
+    }
+    
+    if (!res || !res.ok) return false;
+    
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('mpegurl') || contentType.includes('application/x-mpegURL') || contentType.includes('application/vnd.apple.mpegurl')) {
+      return true;
+    }
+    const text = await res.text();
+    return text.includes('#EXTM3U');
+  } catch (e) {
+    return false;
+  }
+}
+
+async function fetchIptvList() {
+  if (iptvCachedList) return iptvCachedList;
+  try {
+    const playlistUrls = [
+      'https://iptv-org.github.io/iptv/countries/kr.m3u',
+      'https://raw.githubusercontent.com/e52250/IPTV/main/korea.m3u'
+    ];
+    for (const u of playlistUrls) {
+      console.log(`[Self-Healing] Fetching public IPTV playlist from ${u}...`);
+      let m3uData = null;
+      try {
+        const res = await fetch(u);
+        if (res.ok) m3uData = await res.text();
+      } catch(e) {}
+      
+      // Try proxy fallback if direct fetch fails (PC development only)
+      if (!m3uData || !m3uData.includes('#EXTM3U')) {
+        const isNative = typeof window !== 'undefined' && window.Capacitor;
+        if (!isNative) {
+          m3uData = await fetchWithProxy(u);
+        }
+      }
+      
+      if (m3uData && m3uData.includes('#EXTM3U')) {
+        iptvCachedList = parseM3u(m3uData);
+        console.log(`[Self-Healing] Loaded ${iptvCachedList.length} channels from IPTV list.`);
+        return iptvCachedList;
+      }
+    }
+  } catch (e) {
+    console.warn('[Self-Healing] Failed to fetch IPTV lists', e);
+  }
+  return null;
+}
+
+function parseM3u(text) {
+  const lines = text.split('\n');
+  const result = [];
+  let currentInfo = null;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('#EXTINF:')) {
+      currentInfo = trimmed;
+    } else if (trimmed.startsWith('http')) {
+      if (currentInfo) {
+        const commaIdx = currentInfo.lastIndexOf(',');
+        const name = commaIdx !== -1 ? currentInfo.substring(commaIdx + 1).trim() : 'Unknown';
+        result.push({ name, url: trimmed });
+        currentInfo = null;
+      }
+    }
+  }
+  return result;
+}
+
+function findAlternativeUrlsInM3u(ch, m3uChannels) {
+  if (!m3uChannels) return [];
+  const cleanName = ch.name.toLowerCase().replace(/[\s-]/g, '');
+  const cleanNetwork = ch.network ? ch.network.toLowerCase().replace(/[\s-]/g, '') : '';
+  
+  let candidates = [];
+  for (const item of m3uChannels) {
+    const itemClean = item.name.toLowerCase().replace(/[\s-]/g, '');
+    
+    // 1. Exact match or close name match
+    if (itemClean === cleanName || (cleanName.length > 2 && itemClean.includes(cleanName)) || (itemClean.length > 2 && cleanName.includes(itemClean))) {
+      candidates.push(item.url);
+    }
+  }
+  
+  // 2. Network-based fallback matches
+  if (candidates.length === 0 && cleanNetwork) {
+    for (const item of m3uChannels) {
+      const itemClean = item.name.toLowerCase().replace(/[\s-]/g, '');
+      if (itemClean === cleanNetwork || itemClean.includes(cleanNetwork)) {
+        candidates.push(item.url);
+      }
+    }
+  }
+  
+  return [...new Set(candidates)];
+}
+
+async function checkAndRepairChannelUrls() {
+  console.log('[LiveTV] Starting channel self-healing validation...');
+  
+  // Only check HLS channels (skip YouTube / official-only ones)
+  const hlsChannels = CHANNELS.filter(ch => !ch.noPlayableHls && ((ch.urls && ch.urls.length > 0) || ch.url));
+  
+  // Check in batches of 5 to avoid network congestion
+  const batchSize = 5;
+  for (let i = 0; i < hlsChannels.length; i += batchSize) {
+    const batch = hlsChannels.slice(i, i + batchSize);
+    await Promise.all(batch.map(async (ch) => {
+      updateChannelStatusUI(ch.id, 'checking');
+      
+      const urlsToCheck = [...(ch.urls || [])];
+      if (ch.url && !urlsToCheck.includes(ch.url)) urlsToCheck.push(ch.url);
+      
+      let workingUrl = null;
+      
+      // 1. Test existing URLs
+      for (const url of urlsToCheck) {
+        const playable = await testUrlPlayability(url);
+        if (playable) {
+          workingUrl = url;
+          break;
+        }
+      }
+      
+      if (workingUrl) {
+        // Active URL is working, update to ok status
+        ch.urls = [workingUrl, ...ch.urls.filter(u => u !== workingUrl)];
+        updateChannelStatusUI(ch.id, 'ok');
+        return;
+      }
+      
+      // 2. Self-healing fallback: find new working URL
+      console.log(`[Self-Healing] Channel "${ch.name}" has no working streams. Searching alternatives...`);
+      const m3uList = await fetchIptvList();
+      const candidates = findAlternativeUrlsInM3u(ch, m3uList);
+      
+      let foundNewWorking = false;
+      for (const candUrl of candidates) {
+        const playable = await testUrlPlayability(candUrl);
+        if (playable) {
+          console.log(`[Self-Healing] Found working URL for "${ch.name}": ${candUrl}`);
+          ch.urls.unshift(candUrl);
+          localStorage.setItem('repaired_url_' + ch.id, candUrl);
+          updateChannelStatusUI(ch.id, 'repaired');
+          foundNewWorking = true;
+          break;
+        }
+      }
+      
+      if (!foundNewWorking) {
+        console.warn(`[Self-Healing] Failed to find alternative working stream for "${ch.name}"`);
+        updateChannelStatusUI(ch.id, 'failed');
+      }
+    }));
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  // Load cached repaired URLs first (synchronously)
+  CHANNELS.forEach(ch => {
+    const cached = localStorage.getItem('repaired_url_' + ch.id);
+    if (cached) {
+      if (!ch.urls) ch.urls = [];
+      if (!ch.urls.includes(cached)) {
+        ch.urls.unshift(cached);
+      }
+    }
+  });
+
   renderCategories();
   renderChannels();
   initControls(); // 컨트롤 초기화
@@ -1826,8 +2096,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.switchTab('favorites');
   }
 
-  // 페이지 진입 시 첫 번째 채널 자동 재생 방지 (사용자가 클릭할 때만 플레이 가능하게 수정)
-  // if (!activeChannelId && CHANNELS.length > 0) {
-  //   playChannel(CHANNELS[0]);
-  // }
+  // 비동기로 원격 오버라이드 및 상태 검사 실행 (비차단형)
+  (async () => {
+    await applyRemoteOverrides();
+    renderChannels();
+    checkAndRepairChannelUrls();
+  })();
 });

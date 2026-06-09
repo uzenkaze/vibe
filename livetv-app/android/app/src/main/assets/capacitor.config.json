@@ -2,6 +2,11 @@
 	"appId": "com.playtime.livetv",
 	"appName": "PlayTime",
 	"webDir": "dist",
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		}
+	},
 	"android": {
 		"allowMixedContent": true,
 		"backgroundColor": "#000000"
