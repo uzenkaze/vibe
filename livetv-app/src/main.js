@@ -927,7 +927,7 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
                            (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
           if (!isNative && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
             // Rewrite URL to go through CORS proxy on GitHub Pages
-            context.url = 'https://corsproxy.io/?' + encodeURIComponent(context.url);
+            context.url = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(context.url);
           }
           originalLoad(context, config, callbacks);
         };
@@ -2049,7 +2049,7 @@ async function testUrlPlayability(url) {
       const isNative = typeof window !== 'undefined' && 
                        (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
       if (!isNative) {
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
         res = await smartFetch(proxyUrl, { timeout: 4000 }).catch(() => null);
       }
     }
