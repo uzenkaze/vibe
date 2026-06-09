@@ -27,6 +27,21 @@ if (fs.existsSync(fav)) {
   fs.copyFileSync(fav, path.join(destDir, 'favicon.png'));
 }
 
+// Copy public assets (hls.min.js, manifest.json, latest favicon.png, etc.)
+const publicDir = path.join(srcDir, 'public');
+if (fs.existsSync(publicDir)) {
+  for (const name of fs.readdirSync(publicDir)) {
+    const src = path.join(publicDir, name);
+    const dest = path.join(destDir, name);
+    const stat = fs.statSync(src);
+    if (stat.isDirectory()) {
+      copyDirUtf8(src, dest);
+    } else {
+      fs.copyFileSync(src, dest);
+    }
+  }
+}
+
 function copyDirUtf8(fromDir, toDir) {
   fs.mkdirSync(toDir, { recursive: true });
   for (const name of fs.readdirSync(fromDir)) {
