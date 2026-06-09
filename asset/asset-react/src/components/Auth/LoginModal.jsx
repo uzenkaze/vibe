@@ -17,6 +17,7 @@ export default function LoginModal({ onClose }) {
   const [loginPw, setLoginPw] = useState('');
   const [loginOTP, setLoginOTP] = useState('');
   const [showOTP, setShowOTP] = useState(false);
+  const [autoLogin, setAutoLogin] = useState(false);
 
   // 회원가입 폼
   const [signupStep, setSignupStep] = useState(1);
@@ -136,7 +137,7 @@ export default function LoginModal({ onClose }) {
       }
 
       localStorage.setItem('rememberId', loginId);
-      login(user.userid, user.site, loginPw, user.role === 'admin');
+      login(user.userid, user.site, loginPw, user.role === 'admin', autoLogin);
       showToast('로그인되었습니다.', 'success');
       onClose();
     } finally {
@@ -323,6 +324,23 @@ export default function LoginModal({ onClose }) {
                 placeholder="비밀번호 입력"
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
               />
+            </div>
+            <div className="login-options" style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem', gap: '0.5rem', justifyContent: 'flex-start' }}>
+              <input
+                type="checkbox"
+                id="autoLogin"
+                checked={autoLogin}
+                onChange={e => setAutoLogin(e.target.checked)}
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  cursor: 'pointer',
+                  accentColor: 'var(--teal)'
+                }}
+              />
+              <label htmlFor="autoLogin" style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.82rem', cursor: 'pointer', userSelect: 'none' }}>
+                자동 로그인 (1개월 유지)
+              </label>
             </div>
             {showOTP && (
               <div className="login-field">

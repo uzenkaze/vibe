@@ -157,17 +157,17 @@ export default function PensionPage() {
               position: 'absolute', top: 0, left: 0, right: 0,
               height: 3, background: item.color, borderRadius: '0 0 3px 3px',
             }} />
-            <div style={{
+            <div className="pension-info-card-header" style={{
               display: 'flex', alignItems: 'center', gap: '0.4rem',
               marginBottom: '0.5rem',
             }}>
-              <div style={{
+              <div className="pension-info-icon-wrapper" style={{
                 width: 26, height: 26, borderRadius: '7px',
                 background: item.color + '18',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: item.color,
               }}>{item.icon}</div>
-              <div style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+              <div className="pension-info-label" style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
                 {item.label}
               </div>
             </div>
@@ -237,7 +237,7 @@ export default function PensionPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {[
               { key: 'beforeTax', label: '세전 예상 연금액', color: '#5B6BF8', required: false, placeholder: '예: 1000000' },
-              { key: 'afterTax',  label: '세후 예상 연금액', color: '#2DC9A0', required: true,  placeholder: '예: 850000'  },
+              { key: 'afterTax',  label: '세후 예상 연금액', color: '#2DC9A0', required: false, placeholder: '예: 850000'  },
             ].map(f => (
               <div key={f.key}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>

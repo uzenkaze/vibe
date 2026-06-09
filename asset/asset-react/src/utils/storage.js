@@ -146,23 +146,62 @@ export function emptyMonthSections() {
   };
 }
 
-// 세션 스토리지 기반 로그인 상태
+// 세션 스토리지 기반 로그인 상태 및 로컬 스토리지 기반 자동 로그인 (1개월 만료)
 export function getSession() {
-  return {
-    loggedIn: sessionStorage.getItem('assetLoginSession') === 'true',
-    userId: sessionStorage.getItem('assetUserId') || '',
-    userName: sessionStorage.getItem('assetUserName') || '',
-    masterPw: sessionStorage.getItem('temp_master_pw') || '',
-    isAdmin: sessionStorage.getItem('assetIsAdmin') === 'true',
-  };
+  let loggedIn = sessionStorage.getItem('assetLoginSession') === 'true';
+  let userId = sessionStorage.getItem('assetUserId') || '';
+  let userName = sessionStorage.getItem('assetUserName') || '';
+  let masterPw = sessionStorage.getItem('temp_master_pw') || '';
+  let isAdmin = sessionStorage.getItem('assetIsAdmin') === 'true';
+
+  // 세션이 없고 자동로그인이 켜져 있는 경우 복원 처리
+  if (!loggedIn && localStorage.getItem('assetAutoLogin') === 'true') {
+    const expireStr = localStorage.getItem('assetAutoLoginExpire');
+    if (expireStr) {
+      const expireTime = parseInt(expireStr, 10);
+      if (Date.now() < expireTime) {
+        userId = localStorage.getItem('assetAutoLogin_userId') || '';
+        userName = localStorage.getItem('assetAutoLogin_userName') || '';
+        masterPw = localStorage.getItem('assetAutoLogin_masterPw') || '';
+        isAdmin = localStorage.getItem('assetAutoLogin_isAdmin') === 'true';
+        loggedIn = true;
+
+        // sessionStorage에 복원 기입
+        sessionStorage.setItem('assetLoginSession', 'true');
+        sessionStorage.setItem('assetUserId', userId);
+        sessionStorage.setItem('assetUserName', userName);
+        sessionStorage.setItem('temp_master_pw', masterPw);
+        sessionStorage.setItem('assetIsAdmin', String(isAdmin));
+      } else {
+        // 만료 시 정보 파기
+        clearAutoLogin();
+      }
+    }
+  }
+
+  return { loggedIn, userId, userName, masterPw, isAdmin };
 }
 
-export function setSession(data) {
+export function setSession(data, keepLoggedIn = false) {
   sessionStorage.setItem('assetLoginSession', 'true');
   sessionStorage.setItem('assetUserId', data.userId || '');
   sessionStorage.setItem('assetUserName', data.userName || '');
   sessionStorage.setItem('temp_master_pw', data.masterPw || '');
   sessionStorage.setItem('assetIsAdmin', String(!!data.isAdmin));
+
+  if (keepLoggedIn) {
+    const oneMonth = 30 * 24 * 60 * 60 * 1000;
+    const expireTime = Date.now() + oneMonth;
+
+    localStorage.setItem('assetAutoLogin', 'true');
+    localStorage.setItem('assetAutoLoginExpire', String(expireTime));
+    localStorage.setItem('assetAutoLogin_userId', data.userId || '');
+    localStorage.setItem('assetAutoLogin_userName', data.userName || '');
+    localStorage.setItem('assetAutoLogin_masterPw', data.masterPw || '');
+    localStorage.setItem('assetAutoLogin_isAdmin', String(!!data.isAdmin));
+  } else {
+    clearAutoLogin();
+  }
 }
 
 export function clearSession() {
@@ -171,6 +210,17 @@ export function clearSession() {
   sessionStorage.removeItem('assetUserName');
   sessionStorage.removeItem('temp_master_pw');
   sessionStorage.removeItem('assetIsAdmin');
+
+  clearAutoLogin();
+}
+
+function clearAutoLogin() {
+  localStorage.removeItem('assetAutoLogin');
+  localStorage.removeItem('assetAutoLoginExpire');
+  localStorage.removeItem('assetAutoLogin_userId');
+  localStorage.removeItem('assetAutoLogin_userName');
+  localStorage.removeItem('assetAutoLogin_masterPw');
+  localStorage.removeItem('assetAutoLogin_isAdmin');
 }
 
 // 계정 데이터 저장 (로컬스토리지)

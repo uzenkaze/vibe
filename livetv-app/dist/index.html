@@ -3,6 +3,67 @@
 
 <head>
   <meta charset="UTF-8" />
+  <!-- 시스템 진단 로그 수집기 -->
+  <script>
+    (function() {
+      window.__LOGS__ = [];
+      try {
+        var cached = localStorage.getItem('playtime_debug_logs');
+        if (cached) window.__LOGS__ = JSON.parse(cached).slice(-80);
+      } catch(e) {}
+
+      function addLog(type, msg) {
+        var time = new Date().toLocaleTimeString();
+        var logEntry = "[" + time + "] [" + type + "] " + msg;
+        window.__LOGS__.push(logEntry);
+        if (window.__LOGS__.length > 150) window.__LOGS__.shift();
+        try {
+          localStorage.setItem('playtime_debug_logs', JSON.stringify(window.__LOGS__));
+        } catch(e) {}
+        
+        var el = document.getElementById('debug-log-content');
+        if (el) {
+          var div = document.createElement('div');
+          div.className = 'py-0.5 border-b border-white/5 text-[10px] text-gray-300 font-mono break-all';
+          div.textContent = logEntry;
+          el.appendChild(div);
+          el.scrollTop = el.scrollHeight;
+        }
+      }
+
+      window.__addLog = addLog;
+
+      var originalLog = console.log;
+      var originalWarn = console.warn;
+      var originalError = console.error;
+
+      console.log = function() {
+        var args = Array.prototype.slice.call(arguments);
+        originalLog.apply(console, args);
+        addLog('LOG', args.join(' '));
+      };
+      console.warn = function() {
+        var args = Array.prototype.slice.call(arguments);
+        originalWarn.apply(console, args);
+        addLog('WARN', args.join(' '));
+      };
+      console.error = function() {
+        var args = Array.prototype.slice.call(arguments);
+        originalError.apply(console, args);
+        addLog('ERROR', args.join(' '));
+      };
+
+      window.onerror = function(message, source, lineno, colno, error) {
+        var msg = message + " at " + (source || 'unknown') + ":" + lineno + ":" + colno;
+        addLog('CRITICAL', msg);
+        return false;
+      };
+
+      window.onunhandledrejection = function(event) {
+        addLog('REJECTION', event.reason ? String(event.reason) : 'Promise rejected');
+      };
+    })();
+  </script>
   <!-- TV/빔프로젝터: initial-scale을 고정하지 않고 device-width 기준으로 설정 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <!-- TV 환경 감지 스크립트: DOM 생성 전에 실행하여 클래스 적용 -->
@@ -64,7 +125,7 @@
   <link rel="manifest" href="./manifest.json" />
   <title>PlayTime</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="./hls.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body {
@@ -200,7 +261,8 @@
       box-shadow: none !important;
     }
   </style>
-  <script type="module" crossorigin src="./assets/main-CpK7567-.js"></script>
+  <script src="capacitor.js"></script>
+  <script type="module" crossorigin src="./assets/main-BrNGuoKU.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 
@@ -226,7 +288,7 @@
       </a>
 
       <!-- 우측 상단: 시계 + 배터리 -->
-      <div class="flex items-center gap-2">
+      <div id="header-status-container" class="flex items-center gap-2">
         <!-- 시계 -->
         <div id="header-clock" style="
           font-size: 15px;
@@ -590,6 +652,110 @@
         if (el) el.style.display = 'none';
       }
     })();
+
+    // 앱 실행 시 (네이티브 앱 환경일 때) 시계와 배터리 표시부 숨김 처리
+    (function() {
+      var isNative = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) ||
+                     (window.location.hostname === 'localhost' && window.location.port === '') || 
+                     window.location.protocol === 'capacitor:';
+      if (isNative) {
+        var container = document.getElementById('header-status-container');
+        if (container) container.style.display = 'none';
+      }
+    })();
+  </script>
+
+  <!-- 시스템 진단 로그 모달 UI -->
+  <button id="debug-log-toggle" onclick="document.getElementById('debug-log-modal').classList.remove('hidden')" class="fixed bottom-28 right-6 w-10 h-10 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all z-50 text-indigo-400 hover:text-white" title="시스템 진단 로그">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      <line x1="11" y1="8" x2="11" y2="14"></line>
+      <line x1="8" y1="11" x2="14" y2="11"></line>
+    </svg>
+  </button>
+
+  <div id="debug-log-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[9999] flex items-center justify-center p-4">
+    <div class="bg-zinc-950/95 border border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[70vh]">
+      <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-zinc-900/50">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+          <span class="font-extrabold text-sm tracking-tight text-white">시스템 진단 로그</span>
+        </div>
+        <button onclick="document.getElementById('debug-log-modal').classList.add('hidden')" class="text-gray-400 hover:text-white transition-colors p-1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div id="debug-log-content" class="flex-1 overflow-y-auto p-4 space-y-1 bg-black/40 no-scrollbar select-text">
+        <!-- Logs populated dynamically -->
+      </div>
+      <div class="px-6 py-4 border-t border-white/5 bg-zinc-900/50 flex items-center justify-end gap-3">
+        <button onclick="window.__clearLogs()" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all active:scale-95">로그 초기화</button>
+        <button onclick="window.__copyLogs()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all active:scale-95">로그 복사</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.__clearLogs = function() {
+      try {
+        localStorage.removeItem('playtime_debug_logs');
+        window.__LOGS__ = [];
+        var el = document.getElementById('debug-log-content');
+        if (el) el.innerHTML = '';
+        alert('진단 로그가 초기화되었습니다.');
+      } catch(e) {}
+    };
+
+    window.__copyLogs = function() {
+      try {
+        var logsText = (window.__LOGS__ || []).join('\n');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(logsText).then(function() {
+            alert('진단 로그가 클립보드에 복사되었습니다.');
+          }).catch(function() {
+            fallbackCopyText(logsText);
+          });
+        } else {
+          fallbackCopyText(logsText);
+        }
+      } catch(e) {
+        alert('복사 실패: ' + e.message);
+      }
+    };
+
+    function fallbackCopyText(text) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert('진단 로그가 클립보드에 복사되었습니다. (폴백)');
+      } catch (err) {
+        alert('복사 실패 (폴백): ' + err.message);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var el = document.getElementById('debug-log-content');
+      if (el && window.__LOGS__) {
+        el.innerHTML = '';
+        window.__LOGS__.forEach(function(log) {
+          var div = document.createElement('div');
+          div.className = 'py-0.5 border-b border-white/5 text-[10px] text-gray-300 font-mono break-all';
+          div.textContent = log;
+          el.appendChild(div);
+        });
+        el.scrollTop = el.scrollHeight;
+      }
+    });
   </script>
 </body>
 

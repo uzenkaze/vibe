@@ -71,8 +71,8 @@ export function AppProvider({ children }) {
     }
   }, []);
 
-  const login = useCallback((userId, userName, masterPw, isAdmin) => {
-    setSession({ userId, userName, masterPw, isAdmin });
+  const login = useCallback((userId, userName, masterPw, isAdmin, keepLoggedIn = false) => {
+    setSession({ userId, userName, masterPw, isAdmin }, keepLoggedIn);
     setSessionState({ loggedIn: true, userId, userName, masterPw, isAdmin });
     setScreen('dashboard');
   }, []);

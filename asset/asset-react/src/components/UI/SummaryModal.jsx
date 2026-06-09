@@ -19,9 +19,9 @@ function SummaryTable({ rows, totalLabel, totalValue, color }) {
     <table className="summary-table">
       <thead>
         <tr>
-          <th style={{ width: '30%' }}>분류</th>
-          <th style={{ width: '45%' }}>내용</th>
-          <th style={{ textAlign: 'right', width: '25%' }}>금액</th>
+          <th style={{ width: '20%' }}>분류</th>
+          <th style={{ width: '42%' }}>내용</th>
+          <th style={{ textAlign: 'right', width: '38%' }}>금액</th>
         </tr>
       </thead>
       <tbody>
@@ -97,7 +97,7 @@ export default function SummaryModal({ type, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-box" style={{ maxWidth: '1000px', width: '95%' }} onClick={e => e.stopPropagation()}>
+      <div className="modal-box summary-modal-box" style={{ maxWidth: '1000px', width: '95%' }} onClick={e => e.stopPropagation()}>
         <div className="modal-header" style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--card-border)', paddingBottom: '1rem' }}>
           <div className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <span style={{

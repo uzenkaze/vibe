@@ -3,27 +3,24 @@
 /* =================== CHANNELS DATA (100+ Channels) =================== */
 const CHANNELS = [
   // 지상파 (KBS, MBC, SBS, EBS)
-  { id: 'kbs1', name: 'KBS 1TV', network: 'KBS1', category: '지상파', kbsApiCode: '11', ytHandle: '@kbs1tv', urls: [
+  { id: 'kbs1', name: 'KBS 1TV', network: 'KBS1', category: '지상파', kbsApiCode: '11', ytHandle: '@kbs1tv', ytChannelId: 'UCcQTRi69dsVYHN3exePtZ1A', urls: [
     'https://kbs-hls.gcdn.ntruss.com/kbs/kbs1hd/playlist.m3u8',
-    'https://624a79c87201d.streamlock.net/kbs1/live/playlist.m3u8',
-    'http://203.251.91.122:1935/on-air-Backup/kbs1hd/playlist.m3u8'
+    'https://624a79c87201d.streamlock.net/kbs1/live/playlist.m3u8'
   ] },
-  { id: 'kbs2', name: 'KBS 2TV', network: 'KBS2', category: '지상파', kbsApiCode: '12', ytHandle: '@kbs2tv', urls: [
+  { id: 'kbs2', name: 'KBS 2TV', network: 'KBS2', category: '지상파', kbsApiCode: '12', ytHandle: '@kbs2tv', ytChannelId: 'UC_x5XG1OV2P6uZZ5FSM9Ttw', urls: [
     'https://kbs-hls.gcdn.ntruss.com/kbs/kbs2hd/playlist.m3u8',
-    'https://624a79c87201d.streamlock.net/kbs2/live/playlist.m3u8',
-    'http://203.251.91.122:1935/on-air-Backup/kbs2hd/playlist.m3u8'
+    'https://624a79c87201d.streamlock.net/kbs2/live/playlist.m3u8'
   ] },
-  { id: 'mbc', name: 'MBC', network: 'MBC', category: '지상파', ytHandle: '@MBCNEWS', urls: [
+  { id: 'mbc', name: 'MBC', network: 'MBC', category: '지상파', ytHandle: '@MBCNEWS', ytChannelId: 'UCF4Wxdo3inmxP-Y59wXDsFw', urls: [
     'https://ns1.tjmbc.co.kr/live/myStream.sdp/playlist.m3u8',
     'https://stream.bsmbc.com/livetv/BusanMBC_TV_onairstream/playlist.m3u8',
     'https://stream.chmbc.co.kr/TV/myStream/playlist.m3u8',
     'https://wowza.jejumbc.com/live/tv_jejumbc/playlist.m3u8',
     'https://5c3639aa99149.streamlock.net/live_TV/tv/playlist.m3u8'
   ] },
-  { id: 'sbs', name: 'SBS', network: 'SBS', category: '지상파', ytHandle: '@SBSnews8', urls: [
+  { id: 'sbs', name: 'SBS', network: 'SBS', category: '지상파', ytHandle: '@SBSnews8', ytChannelId: 'UCkinYTS9IHqOEFMlZ0VXKSA', urls: [
     'https://stream1.knn.co.kr/hls/9ly4534y7dm2xfa123r2_tv/index.m3u8',
-    'https://stream.ubc.co.kr/hls/ubctvstream/index.m3u8',
-    'http://203.251.91.122:1935/on-air-Backup/tv/playlist.m3u8'
+    'https://stream.ubc.co.kr/hls/ubctvstream/index.m3u8'
   ] },
   { id: 'ebs1', name: 'EBS 1', network: 'EBS1', category: '지상파', ytHandle: '@ebskorea', urls: ['https://ebsonair.ebs.co.kr/ebs1familypc/familypc1m/playlist.m3u8'] },
   { id: 'ebs2', name: 'EBS 2', network: 'EBS2', category: '지상파', urls: ['https://ebsonair.ebs.co.kr/ebs2familypc/familypc1m/playlist.m3u8'] },
@@ -75,10 +72,7 @@ const CHANNELS = [
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
-  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', urls: [
-    'http://onair.cdn.tvchosun.com/origin1/_definst_/tvchosun_s1/playlist.m3u8',
-    'http://onair2.cdn.tvchosun.com/origin2/_definst_/tvchosun_s3/playlist.m3u8'
-  ] },
+  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', noPlayableHls: true, urls: [] },
   { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', noPlayableHls: true, urls: [] },
   { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', noPlayableHls: true, urls: [] },
 
@@ -89,17 +83,13 @@ const CHANNELS = [
     'https://onair.sbs.co.kr/media/sbsbiz/playlist.m3u8'
   ]},
   { id: 'mk', name: '매일경제TV', network: 'MK', category: '뉴스/경제', ytHandle: '@MKeconomy_TV', ytChannelId: 'UCW_rE_QzXm5b7w7O21tE22A', officialUrl: 'https://www.mk.co.kr/', noPlayableHls: true, urls: [] },
-  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytHandle: '@mtn', ytChannelId: 'UCaQREsefLy-W8ruWcJ7IDtg', officialUrl: 'https://www.mtn.co.kr/tv-live', urls: [
-    'http://183.110.27.87/mtnlive/720/playlist.m3u8',
-    'http://live.mtn.co.kr/hls/mtn/playlist.m3u8'
-  ]},
+  { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytHandle: '@mtn', ytChannelId: 'UCaQREsefLy-W8ruWcJ7IDtg', officialUrl: 'https://www.mtn.co.kr/tv-live', noPlayableHls: true, urls: [] },
   { id: 'ktv', name: 'KTV 국민방송', network: 'KTV', category: '뉴스/경제', ytHandle: '@KTVKorea', ytChannelId: 'UCj8Snyrs1y-wnBQiUmGrTjw', urls: [
     'https://hlive.ktv.go.kr/live/klive_h.stream/playlist.m3u8',
     'https://hlive.ktv.go.kr/live/klive_l.stream/playlist.m3u8'
   ]},
   { id: 'arirang', name: 'Arirang TV', network: 'ARIRANG', category: '뉴스/경제', ytHandle: '@arirangnews', ytChannelId: 'UCV2R_C_c4Xp8k-L1qT7_hSw', urls: [
-    'https://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8',
-    'http://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8'
+    'https://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8'
   ]},
   { id: 'tbs', name: 'TBS 교통방송', network: 'TBS', category: '뉴스/경제', ytHandle: '@tbsnews', ytChannelId: 'UCF_yO86W0-S06z1L299OqYQ', urls: [
     'https://cdntv.tbs.seoul.kr/tbs/tbs_tv_web.smil/playlist.m3u8',
@@ -154,6 +144,14 @@ const CORS_PROXIES = [
   (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
   (url) => `https://thingproxy.freeboard.io/fetch/${url}`,
 ];
+
+// GitHub Pages(HTTPS) 환경에서 http:// URL은 Mixed Content로 차단됨 → https://로 자동 업그레이드
+function upgradeToHttps(url) {
+  if (url && url.startsWith('http://') && window.location.protocol === 'https:') {
+    return url.replace('http://', 'https://');
+  }
+  return url;
+}
 
 // 현재 시도 중인 프록시 인덱스 (동일 체널 재시도 시 유지됨)
 let currentProxyIdx = 0;
@@ -881,7 +879,9 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     }
   }
 
-  const url = ch.urls[urlIdx % ch.urls.length];
+  // GitHub Pages(HTTPS) 환경에서 http:// 스트림 URL을 https://로 자동 업그레이드 (Mixed Content 차단 방지)
+  const rawUrl = ch.urls[urlIdx % ch.urls.length];
+  const url = upgradeToHttps(rawUrl);
 
   if (!url) { showLoading(true, '재생 주소를 찾는 중입니다...'); tryNextUrl(ch, urlIdx); return; }
 
@@ -1166,15 +1166,19 @@ async function showYouTubeIframePlayback(ch) {
 
     const isNative = typeof window !== 'undefined' && 
                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
 
-    // 1순위: 로컬 백엔드 라이브 분석기 호출 (CORS 우회가 가능하고, 서버 측 파싱으로 가장 안정적이며 속도가 빠름 - PC 개발 환경 전용)
-    if (ch.ytHandle && !isNative) {
+    // 0순위: ytVideoId 하드코딩 값이 있으면 즉시 사용 (가장 빠르고 안정적)
+    if (!liveVideoId && ch.ytVideoId) {
+      liveVideoId = ch.ytVideoId;
+      console.log(`[YouTube Live Playback] 하드코딩 ytVideoId 사용: ${liveVideoId}`);
+    }
+
+    // 1순위: 로컬 개발 환경에서만 백엔드 라이브 분석기 호출 (localhost:5174)
+    if (!liveVideoId && ch.ytHandle && isLocal && !isNative) {
       try {
         const handle = ch.ytHandle.replace('@', '');
-        const proxyHost = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))
-          ? `http://${window.location.hostname}:5174`
-          : 'http://localhost:5174';
-        
+        const proxyHost = `http://${window.location.hostname}:5174`;
         const proxyApiUrl = `${proxyHost}/api/youtube/live?handle=${handle}`;
         console.log(`[YouTube Live Playback] 로컬 백엔드 라이브 분석기 호출: ${proxyApiUrl}`);
         
@@ -1191,29 +1195,20 @@ async function showYouTubeIframePlayback(ch) {
       }
     }
 
-    // 2순위: 하드코딩된 비디오 ID 사용
-    if (!liveVideoId && ch.ytVideoId) {
-      liveVideoId = ch.ytVideoId;
-      console.log(`[YouTube Live Playback] 하드코딩된 비디오 ID 사용: ${liveVideoId}`);
-    }
+    // 2순위: ytChannelId 기반 iframe (GitHub Pages / 정적 환경에서 가장 안정적)
+    // ytVideoId/로컬백엔드로 live videoId를 못 얻은 경우 channelId 기반 embed로 폴백
+    // → 아래에서 liveVideoId가 없으면 ch.ytChannelId를 사용해 embed URL 생성
 
-    // 3순위: 클라이언트 사이드 공용 CORS 프록시 스크래핑 폴백 (개발 서버가 구동 중이지 않은 정적 환경용)
-    if (!liveVideoId && ch.ytHandle) {
+    // 3순위: 로컬 환경에서만 클라이언트 사이드 CORS 프록시 스크래핑 시도
+    // (GitHub Pages 등 정적 배포 환경에서는 YouTube가 봇 차단하므로 생략)
+    if (!liveVideoId && ch.ytHandle && isLocal) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const url = `https://www.youtube.com/@${handle}/live`;
-        const proxies = [];
-        if (!isNative && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))) {
-          proxies.push(`/yt-proxy/@${handle}/live`);
-        } else {
-          proxies.push(url);
-        }
-        if (!proxies.includes(url)) {
-          proxies.push(url);
-        }
-        proxies.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-        proxies.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
-        proxies.push(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+        const proxies = [
+          `/yt-proxy/@${handle}/live`,
+          `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+        ];
 
         for (const proxyUrl of proxies) {
           try {
@@ -1259,9 +1254,23 @@ async function showYouTubeIframePlayback(ch) {
     if (liveVideoId) {
       console.log(`[YouTube Live Playback] 실시간 라이브 비디오 ID: ${liveVideoId}`);
       ytIframe.src = `https://www.youtube.com/embed/${liveVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
-    } else {
-      console.log(`[YouTube Live Playback] 동적 ID 분석 실패, 채널 ID 기반 라이브 스트림 주입`);
+    } else if (ch.ytChannelId) {
+      // ytChannelId 기반 라이브 스트림 embed (GitHub Pages 정적 환경에서 가장 안정적인 폴백)
+      console.log(`[YouTube Live Playback] ytChannelId 기반 라이브 embed: ${ch.ytChannelId}`);
       ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
+    } else if (ch.ytHandle) {
+      // ytHandle 기반 폴백 (ytChannelId 없을 때)
+      const handle = ch.ytHandle.replace('@', '');
+      console.log(`[YouTube Live Playback] ytHandle 기반 폴백: ${handle}`);
+      // embed/live_stream은 channelId 필수이므로 showYouTubeFallback으로 재위임
+      showLoading(false);
+      showYouTubeFallback(ch);
+      return;
+    } else {
+      console.warn(`[YouTube Live Playback] videoId/channelId 모두 없음. 폴백 UI 표시.`);
+      showLoading(false);
+      showYouTubeFallback(ch);
+      return;
     }
   }
   updateTitle(`${ch.name} · YouTube Live`);
