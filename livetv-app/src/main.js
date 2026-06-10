@@ -71,7 +71,7 @@ const CHANNELS = [
 
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
-  { id: 'ytn_science', name: 'YTN 사이언스', network: 'YTN', category: '종합편성', ytHandle: '@YTNSCIENCE', ytChannelId: 'UCgWnS_4-yI7F0mY7dBL1C1A', officialUrl: 'https://science.ytn.co.kr/', urls: ['https://ytnscience-hls.gcdn.ntruss.com/ytnscience/ytnsciencehd/playlist.m3u8'] },
+  { id: 'ytn_science', name: 'YTN 사이언스', network: 'YTN', category: '종합편성', ytHandle: '@YTNSCIENCE', ytChannelId: 'UCgWnS_4-yI7F0mY7dBL1C1A', ytVideoId: '6FbEE0gmnrE', officialUrl: 'https://science.ytn.co.kr/', urls: ['https://ytnscience-hls.gcdn.ntruss.com/ytnscience/ytnsciencehd/playlist.m3u8'] },
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', jtbcApiCode: 'onair', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', urls: [] },
   { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', urls: ['https://tvchosun-hls.gcdn.ntruss.com/tvchosun/tvchosunhd/playlist.m3u8'] },
   { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', urls: ['https://ichannela-hls.gcdn.ntruss.com/ichannela/ichannelahd/playlist.m3u8'] },
