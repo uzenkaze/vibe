@@ -71,7 +71,7 @@ const CHANNELS = [
 
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
-  { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', noPlayableHls: true, urls: [] },
+  { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', jtbcApiCode: 'onair', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', urls: [] },
   { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', noPlayableHls: true, urls: [] },
   { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', noPlayableHls: true, urls: [] },
   { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', noPlayableHls: true, urls: [] },
@@ -182,6 +182,19 @@ let lastIsPC = IS_TV_ENV || window.innerWidth >= 1024;
 const isPC = () => IS_TV_ENV || window.innerWidth >= 1024;
 
 
+
+function getProxyBaseUrl() {
+  const isLocal = window.location.hostname === 'localhost' || 
+                  window.location.hostname === '127.0.0.1' || 
+                  window.location.hostname.startsWith('192.168.');
+  const isCapacitor = typeof window !== 'undefined' && 
+                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  if (isLocal && !isCapacitor) {
+    return `http://${window.location.hostname}:5174`;
+  }
+  return '';
+}
 
 /* =================== DOM REFS =================== */
 const videoEl        = document.getElementById('main-video');
@@ -880,6 +893,48 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     }
   }
 
+  // JTBC API는 동적으로 URL을 앞에 추가
+  if (ch.jtbcApiCode && urlIdx === 0) {
+    try {
+      const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
+                          (window.location.hostname === 'localhost' && window.location.port === '') || 
+                          window.location.protocol === 'capacitor:';
+      const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
+      
+      let api = 'https://api.jtbc.co.kr/v1/onair';
+      if (isLocal) {
+        api = '/jtbc-proxy/v1/onair';
+      }
+      
+      debugLog(`JTBC API 호출 시도...`);
+      let res;
+      try {
+        res = await smartFetch(api);
+      } catch (err) {
+        if (!isCapacitor) {
+          debugLog(`기본 API 실패. 자체 서버리스 프록시 우회 시도...`);
+          const proxyBase = getProxyBaseUrl();
+          res = await smartFetch(`${proxyBase}/api/jtbc`, { timeout: 3000 });
+        } else {
+          throw err;
+        }
+      }
+      const data = await res.json();
+      const apiUrl = data.sources?.HLS?.HD?.file;
+      if (apiUrl) {
+        debugLog(`JTBC API 성공: ${ch.name}`);
+        // 이전에 추가된 동적 토큰 URL 제거
+        ch.urls = ch.urls.filter(u => !u.includes('jtbclive-cdn.jtbc.co.kr'));
+        ch.urls.unshift(apiUrl);
+      } else {
+        debugLog(`JTBC API 주소 파싱 실패`);
+      }
+    } catch (e) {
+      console.warn('JTBC API load failed', e);
+      debugLog(`JTBC API 오류: ${e.message}`);
+    }
+  }
+
   // GitHub Pages(HTTPS) 환경에서 http:// 스트림 URL을 https://로 자동 업그레이드 (Mixed Content 차단 방지)
   const rawUrl = ch.urls[urlIdx % ch.urls.length];
   const url = upgradeToHttps(rawUrl);
@@ -1182,13 +1237,13 @@ async function showYouTubeIframePlayback(ch) {
       console.log(`[YouTube Live Playback] 하드코딩 ytVideoId 사용: ${liveVideoId}`);
     }
 
-    // 1순위: 로컬 개발 환경에서만 백엔드 라이브 분석기 호출 (localhost:5174)
-    if (!liveVideoId && ch.ytHandle && isLocal && !isNative) {
+    // 1순위: 자체 백엔드/서버리스 라이브 분석기 호출 (CORS 우회)
+    if (!liveVideoId && ch.ytHandle && !isNative) {
       try {
         const handle = ch.ytHandle.replace('@', '');
-        const proxyHost = `http://${window.location.hostname}:5174`;
-        const proxyApiUrl = `${proxyHost}/api/youtube/live?handle=${handle}`;
-        console.log(`[YouTube Live Playback] 로컬 백엔드 라이브 분석기 호출: ${proxyApiUrl}`);
+        const proxyBase = getProxyBaseUrl();
+        const proxyApiUrl = `${proxyBase}/api/youtube/live?handle=${handle}`;
+        console.log(`[YouTube Live Playback] 자체 백엔드 라이브 분석기 호출: ${proxyApiUrl}`);
         
         const res = await smartFetch(proxyApiUrl, { timeout: 4000 });
         if (res.ok) {

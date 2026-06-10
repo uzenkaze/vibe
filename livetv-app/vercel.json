@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/rss/batch",
+      "destination": "/api/rss/batch.js"
+    },
+    {
+      "source": "/api/rss",
+      "destination": "/api/rss.js"
+    },
+    {
+      "source": "/api/youtube/live",
+      "destination": "/api/youtube/live.js"
+    },
+    {
+      "source": "/api/jtbc",
+      "destination": "/api/jtbc.js"
+    }
+  ]
+}
