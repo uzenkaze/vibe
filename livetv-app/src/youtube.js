@@ -139,6 +139,7 @@ let seenVideoIds   = new Set();
 
 const searchState = {};
 const channelQueue = {};
+const channelPage = {};
 
 // 차단된 채널 가져오기
 function getIgnoredChannels() {
@@ -579,10 +580,10 @@ function parseRss(text, ch) {
   }).filter(Boolean);
 }
 
-async function fetchChannelInvidious(ch) {
+async function fetchChannelInvidious(ch, page = 1) {
   await ensureInvidiousInstances();
   const instances = dynamicInvidiousInstances;
-  const params = new URLSearchParams({ sort_by: 'newest' });
+  const params = new URLSearchParams({ sort_by: 'newest', page: page.toString() });
   
   // Try up to 3 instances to avoid excessive delay but ensure fallback
   const testInstances = instances.slice(0, 3);
@@ -623,7 +624,7 @@ async function fetchChannelInvidious(ch) {
               title: item.title || '(제목 없음)',
               channelId: ch.id,
               channelName: ch.name,
-              channelCat: 'custom',
+              channelCat: ch.cat || 'search',
               published,
               timeAgo: relativeTime(published) || item.publishedText || '',
               views: item.viewCount || 0,
@@ -637,10 +638,10 @@ async function fetchChannelInvidious(ch) {
   return [];
 }
 
-async function fetchChannelBySearch(ch) {
+async function fetchChannelBySearch(ch, page = 1) {
   try {
-    console.log(`[YouTube Scraper] Fetching videos for channel: ${ch.name} via direct search`);
-    const searchResults = await searchInvidious(ch.name, 1, false);
+    console.log(`[YouTube Scraper] Fetching videos for channel: ${ch.name} via direct search page ${page}`);
+    const searchResults = await searchInvidious(ch.name, page, false);
     if (!searchResults || searchResults.length === 0) return [];
 
     // Filter search results to keep only videos from the target channel if possible
@@ -686,7 +687,7 @@ function getProxyBaseUrl() {
 // 백그라운드 갱신 잠금용 집합 (중복 갱신 방지)
 const backgroundSyncingChannels = new Set();
 
-async function fetchChannelRssFromNetwork(ch) {
+async function fetchChannelRssFromNetwork(ch, page = 1) {
   if (getIgnoredChannels().includes(ch.id)) return [];
 
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
@@ -694,8 +695,8 @@ async function fetchChannelRssFromNetwork(ch) {
                       window.location.protocol === 'capacitor:';
   const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
-  // 1순위: 자체 고속 백엔드/서버리스 RSS 프록시 API 호출 (초고속 로드 실현)
-  if (!isCapacitor) {
+  // 1순위: 1페이지일 때만 자체 고속 백엔드/서버리스 RSS 프록시 API 호출 (초고속 로드 실현)
+  if (!isCapacitor && page === 1) {
     try {
       const proxyBase = getProxyBaseUrl();
       const apiUrl = `${proxyBase}/api/rss?channelId=${ch.id}`;
@@ -714,8 +715,8 @@ async function fetchChannelRssFromNetwork(ch) {
     }
   }
 
-  // 2순위: 모바일 앱(Capacitor) 환경 직접 호출 또는 로컬 /yt-proxy 직접 패치
-  if (isLocal || isCapacitor) {
+  // 2순위: 1페이지 모바일 앱(Capacitor) 환경 직접 호출 또는 로컬 /yt-proxy 직접 패치
+  if (page === 1 && (isLocal || isCapacitor)) {
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
     if (isCapacitor) {
       try {
@@ -733,63 +734,40 @@ async function fetchChannelRssFromNetwork(ch) {
     }
   }
 
-  // 2. In Production (GitHub Pages browser) or if RSS failed:
-  // Go straight to Invidious API (extremely fast & reliable dynamic CORS JSON)
-  const invidiousVideos = await fetchChannelInvidious(ch);
+  // 3순위 (실질적인 스크롤 무한 연장): 2페이지 이상이거나 1페이지 RSS 실패 시 
+  // Invidious API에 page 인자를 얹어서 채널 VOD 히스토리 페이지네이션 스크래핑
+  const invidiousVideos = await fetchChannelInvidious(ch, page);
   if (invidiousVideos && invidiousVideos.length > 0) return invidiousVideos;
 
-  // 3. Fallback to channel search
-  const searchVideos = await searchInvidious(ch.name, 1, false);
-  const filtered = searchVideos.filter(v => 
-    v.channelId === ch.id || 
-    v.channelName.toLowerCase().includes(ch.name.toLowerCase()) ||
-    ch.name.toLowerCase().includes(v.channelName.toLowerCase())
-  );
-  const finalVideos = filtered.length > 0 ? filtered : searchVideos;
-  if (finalVideos && finalVideos.length > 0) {
-    return finalVideos.map(v => ({
-      videoId: v.videoId,
-      title: v.title,
-      channelId: ch.id,
-      channelName: ch.name,
-      channelCat: ch.cat || 'search',
-      published: v.published || new Date().toISOString(),
-      timeAgo: v.timeAgo || '',
-      views: v.views || 0,
-      lengthSec: v.lengthSec || 0
-    }));
-  }
-
-  return [];
+  // 4순위: 최후의 수단으로 채널 이름을 직접 유튜브 검색해 연관성 높은 이전 VOD를 페이징 조회
+  const searchVideos = await fetchChannelBySearch(ch, page);
+  return searchVideos || [];
 }
 
-async function fetchChannelRss(ch) {
+async function fetchChannelRss(ch, page = 1) {
   if (getIgnoredChannels().includes(ch.id)) return [];
 
-  // 캐시 상태 점검 (bypassRssCacheOnce가 참이면 캐시 우회)
-  const cachedData = bypassRssCacheOnce ? null : getRssCache(ch.id);
+  // page > 1 이면 캐시를 우회하고 항상 최신 네트워크 VOD 목록(Invidious 페이지네이션)을 긁어옴
+  const cachedData = (page > 1 || bypassRssCacheOnce) ? null : getRssCache(ch.id);
 
   if (cachedData) {
-    // 메모리 캐시인 경우 age가 없으므로 즉시 반환
     if (typeof cachedData.age === 'undefined') {
       return cachedData;
     }
 
     const { videos, age } = cachedData;
 
-    // 신선한 캐시인 경우 (15분 이내) 바로 반환
     if (age < FRESH_CACHE_TTL) {
       rssCache.set(ch.id, videos);
       return videos;
     }
 
-    // Stale 캐시인 경우 (15분 ~ 6시간) 캐시 반환 후 백그라운드 갱신
     if (age < STALE_CACHE_TTL) {
       if (!backgroundSyncingChannels.has(ch.id)) {
         backgroundSyncingChannels.add(ch.id);
         
         setTimeout(() => {
-          fetchChannelRssFromNetwork(ch)
+          fetchChannelRssFromNetwork(ch, 1)
             .then(freshVideos => {
               if (freshVideos && freshVideos.length > 0) {
                 const limited = freshVideos.slice(0, 2);
@@ -810,19 +788,20 @@ async function fetchChannelRss(ch) {
     }
   }
 
-  // 캐시가 없거나 6시간 초과된 경우: 포그라운드 네트워크 패치 진행
   try {
-    const freshVideos = await fetchChannelRssFromNetwork(ch);
+    const freshVideos = await fetchChannelRssFromNetwork(ch, page);
     if (freshVideos && freshVideos.length > 0) {
-      const limited = freshVideos.slice(0, 2);
-      setRssCache(ch.id, limited);
-      return limited;
+      if (page === 1) {
+        const limited = freshVideos.slice(0, 2);
+        setRssCache(ch.id, limited);
+        return limited;
+      }
+      return freshVideos;
     }
   } catch (err) {
     console.error(`[RSS Fetch Error] Foreground fetch failed for ${ch.name}:`, err);
   }
 
-  // 네트워크 실패 시 기 보유중인 캐시가 있으면 반환
   if (cachedData && cachedData.videos) {
     return cachedData.videos;
   }
@@ -1102,7 +1081,6 @@ async function fetchNextPage(filter) {
     if (filter === 'all') {
       const defaultList = DEFAULT_CHANNELS.filter(c => c.cat !== 'music' && c.cat !== 'entertainment');
       const watchedChannels = getWatchedSearchChannels();
-      // 기본 채널과 유저가 자주 본 검색 기반 채널을 안전하게 병합 (중복 방지)
       const combined = [...defaultList];
       watchedChannels.forEach(wc => {
         if (!combined.find(c => c.id === wc.id)) {
@@ -1113,15 +1091,15 @@ async function fetchNextPage(filter) {
     } else {
       arr = DEFAULT_CHANNELS.filter(c => c.cat === filter);
     }
-    // 셔플
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     channelQueue[filter] = arr;
+    channelPage[filter] = 1;
   }
 
-  // 큐가 모두 소진되었을 때 무한 스크롤 유지를 위해 다시 채널 리스트를 리필
+  // 큐가 모두 소진되었을 때 무한 스크롤 유지를 위해 다시 채널 리스트를 리필 및 페이지 증가
   if (!channelQueue[filter] || !channelQueue[filter].length) {
     let arr = [];
     if (filter === 'all') {
@@ -1140,11 +1118,13 @@ async function fetchNextPage(filter) {
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     channelQueue[filter] = arr;
+    channelPage[filter] = (channelPage[filter] || 1) + 1;
   }
 
   const q = channelQueue[filter];
+  const page = channelPage[filter] || 1;
   const batch = q.splice(0, 6);
-  const rssPromises = batch.map(ch => fetchChannelRss(ch));
+  const rssPromises = batch.map(ch => fetchChannelRss(ch, page));
 
   let searchPromises = [];
   let topKeywords = [];
