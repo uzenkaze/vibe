@@ -1372,6 +1372,29 @@ window.doSearch = async function () {
 };
 
 // ── 플레이어 ──────────────────────────────────────────────────────────────
+let ytPlayerInstance = null;
+let ytPlaybackTimer = null;
+
+function saveCurrentPlaybackTime() {
+  if (!ytPlayerInstance || typeof ytPlayerInstance.getCurrentTime !== 'function') return;
+  if (!window.currentlyPlayingVideo || !window.currentlyPlayingVideo.videoId) return;
+  
+  try {
+    const videoId = window.currentlyPlayingVideo.videoId;
+    const currentTime = ytPlayerInstance.getCurrentTime();
+    const duration = ytPlayerInstance.getDuration() || 0;
+    
+    // 비디오가 거의 끝나가는 시점(97% 이상)이면 이어보기를 초기화(0초)하여 다음에 처음부터 보게 함
+    const savedTime = (duration > 0 && currentTime > duration * 0.97) ? 0 : currentTime;
+    
+    const resumeTimes = JSON.parse(localStorage.getItem('yt_play_time_resume') || '{}');
+    resumeTimes[videoId] = Math.floor(savedTime);
+    localStorage.setItem('yt_play_time_resume', JSON.stringify(resumeTimes));
+  } catch (e) {
+    console.error('[YouTube Resume] Failed to save playback time:', e);
+  }
+}
+
 function playVideo(videoId, title, searchQuery = '', channelId = '', channelName = '') {
   if (searchQuery) {
     trackWatchedKeyword(searchQuery);
@@ -1380,7 +1403,6 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
     trackWatchedChannel(channelId, channelName);
   }
   
-  // 최근 재생한 동영상 목록에 저장 (최대 20개)
   const existingVideo = loadedVideos.find(v => v.videoId === videoId);
   const fallbackVideo = {
     videoId: videoId,
@@ -1398,31 +1420,113 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
       saveToWatchHistory(window.currentlyPlayingVideo);
     }
   }, 10000);
+
   const overlay  = document.getElementById('player-overlay');
-  const iframe   = document.getElementById('yt-iframe');
   const loading  = document.getElementById('player-loading');
   const titleEl  = document.getElementById('player-title');
   if (titleEl) titleEl.textContent = title;
   if (loading) loading.style.display = 'flex';
-  if (iframe) {
-    iframe.style.opacity = '0';
-    iframe.onload = () => {
-      if (loading) loading.style.display = 'none';
-      iframe.style.opacity = '1';
-    };
-    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&fs=0`;
+
+  // 이어보기 시작 시간 조회
+  const resumeTimes = JSON.parse(localStorage.getItem('yt_play_time_resume') || '{}');
+  const startTime = resumeTimes[videoId] || 0;
+  console.log(`[YouTube Resume] 저장된 시작 시간: ${startTime}초 (비디오 ID: ${videoId})`);
+
+  // YouTube Iframe API 스크립트 로드 확인
+  if (!window.YT) {
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
   }
+
+  // 1초 지연 후 YouTube Player 초기화 또는 리로드
+  function initOrLoadPlayer() {
+    if (ytPlaybackTimer) {
+      clearInterval(ytPlaybackTimer);
+      ytPlaybackTimer = null;
+    }
+
+    if (window.YT && window.YT.Player) {
+      if (ytPlayerInstance) {
+        try {
+          ytPlayerInstance.destroy();
+        } catch (e) {}
+        ytPlayerInstance = null;
+      }
+
+      ytPlayerInstance = new window.YT.Player('yt-iframe', {
+        height: '100%',
+        width: '100%',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          fs: 0,
+          start: startTime > 5 ? startTime : 0 // 5초 이상 재생 기록이 있을 때만 이어보기 적용
+        },
+        events: {
+          onReady: (event) => {
+            if (loading) loading.style.display = 'none';
+            const iframe = document.getElementById('yt-iframe');
+            if (iframe) iframe.style.opacity = '1';
+            event.target.playVideo();
+          },
+          onStateChange: (event) => {
+            // 재생 중(PLAYING = 1)일 때 2초 주기로 현재 시청 시간 저장
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              if (!ytPlaybackTimer) {
+                ytPlaybackTimer = setInterval(saveCurrentPlaybackTime, 2000);
+              }
+            } else {
+              if (ytPlaybackTimer) {
+                clearInterval(ytPlaybackTimer);
+                ytPlaybackTimer = null;
+              }
+              // 일시정지(PAUSED) 혹은 종료(ENDED) 시점 저장
+              saveCurrentPlaybackTime();
+            }
+          }
+        }
+      });
+    } else {
+      // API가 아직 준비되지 않았다면 200ms 뒤 재시도
+      setTimeout(initOrLoadPlayer, 200);
+    }
+  }
+
+  initOrLoadPlayer();
+
   if (overlay) { 
     overlay.classList.add('open'); 
     document.body.style.overflow = 'hidden'; 
-    resetControlsTimer(); // 플레이어가 열릴 때 컨트롤 자동 타이머 기동
+    resetControlsTimer(); 
   }
   if (!playerHistoryPushed) { history.pushState({ playerOpen: true }, ''); playerHistoryPushed = true; }
 }
 
 function closePlayer(avoidPop = false) {
   if (window.watchTimer) { clearTimeout(window.watchTimer); window.watchTimer = null; }
+  
+  // 닫을 때 마지막 재생 시점 최종 저장
+  saveCurrentPlaybackTime();
+
+  if (ytPlaybackTimer) {
+    clearInterval(ytPlaybackTimer);
+    ytPlaybackTimer = null;
+  }
+
+  if (ytPlayerInstance) {
+    try {
+      ytPlayerInstance.destroy();
+    } catch (e) {}
+    ytPlayerInstance = null;
+  }
+
   window.currentlyPlayingVideo = null;
+
   // 전체화면 모드 해제
   if (document.fullscreenElement || document.webkitFullscreenElement) {
     try {
@@ -1433,7 +1537,11 @@ function closePlayer(avoidPop = false) {
 
   const iframe  = document.getElementById('yt-iframe');
   const loading = document.getElementById('player-loading');
-  if (iframe) { iframe.onload = null; iframe.src = 'about:blank'; iframe.style.opacity = '0'; }
+  if (iframe) { 
+    iframe.onload = null; 
+    iframe.src = 'about:blank'; 
+    iframe.style.opacity = '0'; 
+  }
   if (loading) loading.style.display = 'flex';
   
   const overlay = document.getElementById('player-overlay');
@@ -1441,11 +1549,10 @@ function closePlayer(avoidPop = false) {
     overlay.classList.remove('open');
     overlay.classList.remove('hide-controls'); // 컨트롤 숨김 클래스 초기화
   }
-  
   document.body.style.overflow = '';
   if (playerHistoryPushed && !avoidPop) history.back();
   playerHistoryPushed = false;
-  
+
   if (controlsTimeout) {
     clearTimeout(controlsTimeout);
     controlsTimeout = null;
