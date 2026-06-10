@@ -612,8 +612,8 @@ async function fetchChannelRssFromNetwork(ch) {
 async function fetchChannelRss(ch) {
   if (getIgnoredChannels().includes(ch.id)) return [];
 
-  // 캐시 상태 점검
-  const cachedData = getRssCache(ch.id);
+  // 캐시 상태 점검 (bypassRssCacheOnce가 참이면 캐시 우회)
+  const cachedData = bypassRssCacheOnce ? null : getRssCache(ch.id);
 
   if (cachedData) {
     // 메모리 캐시인 경우 age가 없으므로 즉시 반환
@@ -1458,11 +1458,131 @@ function initPlayerControls() {
   overlay.addEventListener('touchstart', resetControlsTimer);
 }
 
+// ── 당겨서 새로고침 (Pull-to-Refresh) ────────────────────────────────────────
+let bypassRssCacheOnce = false;
+
+function initPullToRefresh() {
+  const indicator = document.getElementById('pull-refresh-indicator');
+  if (!indicator) return;
+
+  let startY = 0;
+  let pulling = false;
+  let triggered = false;
+  const THRESHOLD = 70;
+
+  // 모바일 터치 이벤트 핸들러
+  document.addEventListener('touchstart', e => {
+    if (window.scrollY > 5) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+    triggered = false;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if (dist <= 0) { pulling = false; return; }
+
+    const progress = Math.min(dist / THRESHOLD, 1);
+    indicator.style.opacity = progress;
+    
+    const offset = 60 - Math.min(dist * 0.4, 60);
+    indicator.style.transform = `translateX(-50%) translateY(calc(-50% + ${offset}px))`;
+
+    if (dist >= THRESHOLD && !triggered) {
+      triggered = true;
+      indicator.classList.add('ready');
+    } else if (dist < THRESHOLD) {
+      indicator.classList.remove('ready');
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', async () => {
+    if (!pulling) return;
+    pulling = false;
+
+    if (triggered) {
+      indicator.classList.add('refreshing');
+      indicator.style.transform = 'translateX(-50%) translateY(-50%)';
+      
+      // 새로고침 로직 (캐시 우회 활성화)
+      const activeBtn = document.querySelector('.yt-cat.active');
+      bypassRssCacheOnce = true;
+      
+      try {
+        if (activeBtn) {
+          const onclickAttr = activeBtn.getAttribute('onclick') || '';
+          const match = onclickAttr.match(/filterCat\('([^']*)'/);
+          const filter = match ? match[1] : 'all';
+          await switchCategory(filter, activeBtn);
+        } else {
+          await switchCategory('all');
+        }
+      } catch (err) {
+        console.error('[Pull-to-Refresh] Error reloading:', err);
+      } finally {
+        setTimeout(() => {
+          bypassRssCacheOnce = false;
+        }, 3000);
+      }
+
+      setTimeout(() => {
+        indicator.classList.remove('refreshing', 'ready');
+        indicator.style.opacity = '0';
+        indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
+      }, 500);
+    } else {
+      indicator.style.opacity = '0';
+      indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
+    }
+    triggered = false;
+  });
+
+  // 데스크톱 마우스 휠 이벤트 핸들러 (맨 위에서 위로 스크롤 시 새로고침)
+  document.addEventListener('wheel', async e => {
+    if (window.scrollY === 0 && e.deltaY < -50 && !pulling && !triggered && currentFilter !== 'recent' && currentFilter !== 'search') {
+      const isRefreshing = indicator.classList.contains('refreshing');
+      if (isRefreshing) return;
+
+      indicator.style.opacity = '1';
+      indicator.classList.add('refreshing');
+      indicator.style.transform = 'translateX(-50%) translateY(-50%)';
+      
+      const activeBtn = document.querySelector('.yt-cat.active');
+      bypassRssCacheOnce = true;
+      
+      try {
+        if (activeBtn) {
+          const onclickAttr = activeBtn.getAttribute('onclick') || '';
+          const match = onclickAttr.match(/filterCat\('([^']*)'/);
+          const filter = match ? match[1] : 'all';
+          await switchCategory(filter, activeBtn);
+        } else {
+          await switchCategory('all');
+        }
+      } catch (err) {
+        console.error('[Pull-to-Refresh Wheel] Error reloading:', err);
+      } finally {
+        setTimeout(() => {
+          bypassRssCacheOnce = false;
+        }, 3000);
+      }
+
+      setTimeout(() => {
+        indicator.classList.remove('refreshing', 'ready');
+        indicator.style.opacity = '0';
+        indicator.style.transform = 'translateX(-50%) translateY(calc(-50% + 60px))';
+      }, 800);
+    }
+  }, { passive: true });
+}
+
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePlayer(); });
 document.addEventListener('DOMContentLoaded', () => {
   updateLoginUI();
   initPlayerControls();
   initFullscreenHandler();
+  initPullToRefresh();
 });
 
 // ── 초기화 ────────────────────────────────────────────────────────────────
