@@ -1121,10 +1121,28 @@ async function fetchNextPage(filter) {
     channelQueue[filter] = arr;
   }
 
-  const q = channelQueue[filter];
-  if (!q.length) return [];
+  // 큐가 모두 소진되었을 때 무한 스크롤 유지를 위해 다시 채널 리스트를 리필
+  if (!channelQueue[filter] || !channelQueue[filter].length) {
+    let arr = [];
+    if (filter === 'all') {
+      const defaultList = DEFAULT_CHANNELS.filter(c => c.cat !== 'music' && c.cat !== 'entertainment');
+      const watchedChannels = getWatchedSearchChannels();
+      const combined = [...defaultList];
+      watchedChannels.forEach(wc => {
+        if (!combined.find(c => c.id === wc.id)) combined.push(wc);
+      });
+      arr = combined;
+    } else {
+      arr = DEFAULT_CHANNELS.filter(c => c.cat === filter);
+    }
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    channelQueue[filter] = arr;
+  }
 
-  // 한번에 여러 채널을 로딩하여 다양한 채널로 구성 (6개 채널 동시 로드)
+  const q = channelQueue[filter];
   const batch = q.splice(0, 6);
   const rssPromises = batch.map(ch => fetchChannelRss(ch));
 
@@ -1176,16 +1194,28 @@ async function fetchNextPage(filter) {
     });
   });
 
+  // 3. 중복 비디오 제거 및 카테고리 엄격 필터링 진행
+  let filtered = finalVideos;
+
   // 특정 카테고리 선택 시 관련 없는 채널의 폴백 영상이나 믹스인 데이터가 유입되지 않도록 최종 필터링
   if (filter !== 'all' && filter !== 'recent' && filter !== 'custom' && filter !== 'search') {
-    return finalVideos.filter(v => {
+    filtered = filtered.filter(v => {
       if (v.channelCat === filter) return true;
       const foundCh = DEFAULT_CHANNELS.find(c => c.id === v.channelId);
       return foundCh && foundCh.cat === filter;
     });
   }
 
-  return finalVideos;
+  // 전체 화면 중복 노출 제거 (seenVideoIds 기반)
+  const uniqueVideos = [];
+  filtered.forEach(v => {
+    if (!seenVideoIds.has(v.videoId)) {
+      seenVideoIds.add(v.videoId);
+      uniqueVideos.push(v);
+    }
+  });
+
+  return uniqueVideos;
 }
 
 // ── 무한 스크롤 ───────────────────────────────────────────────────────────
