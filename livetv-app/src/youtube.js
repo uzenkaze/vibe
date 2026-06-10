@@ -173,14 +173,54 @@ window.ignoreChannel = function(channelId, channelName, event) {
   alert(`"${channelName || '해당'}" 채널이 삭제되었으며, 앞으로 조회 대상에서 완전히 제외됩니다.`);
 };
 
-// Invidious 공개 인스턴스 목록 (우수 업타임 인스턴스 보강)
+// Invidious 공개 인스턴스 목록 (CORS 지원 우수 인스턴스 최상단 배치)
 const INVIDIOUS_INSTANCES = [
-  'https://inv.tux.pizza',
+  'https://inv.thepixora.com',
   'https://invidious.fdn.fr',
   'https://vid.puffyan.us',
   'https://invidious.projectsegfau.lt',
-  'https://invidious.lunar.icu'
+  'https://invidious.lunar.icu',
+  'https://yewtu.be',
+  'https://invidious.nerdvpn.de',
+  'https://invidious.no-logs.com'
 ];
+
+let dynamicInvidiousInstances = [];
+let isInvidiousInitialized = false;
+
+async function ensureInvidiousInstances() {
+  if (isInvidiousInitialized) return;
+  isInvidiousInitialized = true;
+  try {
+    // api.invidious.io/api/v1/instances 대신 공식 CORS 지원 JSON 엔드포인트 호출
+    const res = await smartFetch('https://api.invidious.io/instances.json', { timeout: 3000 });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        const active = data
+          .filter(item => {
+            const inst = item[1];
+            // 인바이어스 모니터 필드 경로에 맞게 uptime 및 CORS 여부 확인
+            const hasCors = inst.cors !== false;
+            const hasApi = inst.api !== false;
+            const isHttps = inst.type === 'https';
+            const isUp = inst.monitor?.last_status === 200 || (inst.monitor?.uptime || 0) > 80;
+            return inst && isHttps && hasCors && hasApi && isUp;
+          })
+          .map(item => `https://${item[0]}`);
+        if (active.length > 0) {
+          dynamicInvidiousInstances = active;
+          console.log('[Invidious API] Loaded dynamic instances:', dynamicInvidiousInstances);
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[Invidious API] Failed to fetch dynamic instances, using defaults:', e);
+  }
+  if (dynamicInvidiousInstances.length === 0) {
+    dynamicInvidiousInstances = [...INVIDIOUS_INSTANCES];
+  }
+}
 
 // ── 유튜브 직접 검색 API 파서 (Invidious 차단 우회 및 한글 완벽 대응) ───
 async function fetchYouTubeSearchScrape(query, limitChannelVideos = false) {
@@ -317,14 +357,16 @@ async function fetchYouTubeSearchScrape(query, limitChannelVideos = false) {
 }
 
 async function fetchInvidiousSearchApi(query, page) {
+  await ensureInvidiousInstances();
+  const instances = dynamicInvidiousInstances;
   // Cycle through instances if one fails
-  for (const instance of INVIDIOUS_INSTANCES) {
+  for (const instance of instances) {
     const invidiousUrl = `${instance}/api/v1/search?q=${encodeURIComponent(query)}&page=${page}&type=video`;
     const proxies = makeProxies(invidiousUrl);
     
     for (const proxy of proxies) {
       try {
-        const res = await smartFetch(proxy, { timeout: 4000 });
+        const res = await smartFetch(proxy, { timeout: 2000 });
         if (!res.ok) continue;
         
         const json = proxy.includes('allorigins')
@@ -356,7 +398,13 @@ async function fetchInvidiousSearchApi(query, page) {
 }
 
 async function searchInvidious(query, page = 1, limitChannelVideos = false) {
-  if (page === 1) {
+  const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
+                      (window.location.hostname === 'localhost' && window.location.port === '') || 
+                      window.location.protocol === 'capacitor:';
+  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
+
+  // On local or Capacitor, we can scrape page 1 directly. On production browser, skip to avoid CORS proxy timeouts.
+  if (page === 1 && (isLocal || isCapacitor)) {
     try {
       const results = await fetchYouTubeSearchScrape(query, limitChannelVideos);
       if (results && results.length > 0) {
@@ -467,12 +515,21 @@ function makeProxies(url) {
     } else {
       list.push(url);
     }
+  } else {
+    // On production server (e.g. GitHub Pages)
+    if (!url.includes('https://www.youtube.com')) {
+      // Invidious instances support CORS natively, so always try direct request first
+      list.push(url);
+    }
   }
 
   // CORS 프록시 리스트 추가 (속도 및 신뢰도 우선 정렬)
-  list.push(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-  list.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
-  list.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+  // 유튜브 공식 RSS 피드일 때만 공용 CORS 프록시를 시도합니다. (Invidious는 차단되므로 제외)
+  if (url.includes('https://www.youtube.com') || isLocal) {
+    list.push(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+    list.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
+    list.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+  }
 
   return list;
 }
@@ -523,52 +580,59 @@ function parseRss(text, ch) {
 }
 
 async function fetchChannelInvidious(ch) {
+  await ensureInvidiousInstances();
+  const instances = dynamicInvidiousInstances;
   const params = new URLSearchParams({ sort_by: 'newest' });
-  const instance = INVIDIOUS_INSTANCES[0]; // 탑 1순위 우수 인스턴스 단일 검사로 극강의 속도 확보
-  const url = `${instance}/api/v1/channels/${ch.id}/videos?${params}`;
-  const tryUrls = [url, `https://corsproxy.io/?${encodeURIComponent(url)}`];
   
-  for (const fetchUrl of tryUrls) {
-    try {
-      const res = await smartFetch(fetchUrl, { timeout: 3000 });
-      if (!res.ok) continue;
-      const data = await res.json();
-      
-      let videos = [];
-      if (Array.isArray(data)) {
-        videos = data;
-      } else if (data && Array.isArray(data.videos)) {
-        videos = data.videos;
-      }
-      
-      if (videos.length > 0) {
-        return videos.map(item => {
-          const videoId = item.videoId;
-          if (!videoId) return null;
-          let published = '';
-          if (item.published) {
-            try {
-              if (typeof item.published === 'number') {
-                published = new Date(item.published * 1000).toISOString();
-              } else {
-                published = new Date(item.published).toISOString();
-              }
-            } catch (_) {}
-          }
-          return {
-            videoId,
-            title: item.title || '(제목 없음)',
-            channelId: ch.id,
-            channelName: ch.name,
-            channelCat: 'custom',
-            published,
-            timeAgo: relativeTime(published) || item.publishedText || '',
-            views: item.viewCount || 0,
-            lengthSec: item.lengthSeconds || 0,
-          };
-        }).filter(Boolean);
-      }
-    } catch (_) {}
+  // Try up to 3 instances to avoid excessive delay but ensure fallback
+  const testInstances = instances.slice(0, 3);
+  
+  for (const instance of testInstances) {
+    const url = `${instance}/api/v1/channels/${ch.id}/videos?${params}`;
+    const tryUrls = [url]; // Invidious는 CORS를 지원하므로 공용 프록시 우회 제외
+    
+    for (const fetchUrl of tryUrls) {
+      try {
+        const res = await smartFetch(fetchUrl, { timeout: 2000 });
+        if (!res.ok) continue;
+        const data = await res.json();
+        
+        let videos = [];
+        if (Array.isArray(data)) {
+          videos = data;
+        } else if (data && Array.isArray(data.videos)) {
+          videos = data.videos;
+        }
+        
+        if (videos.length > 0) {
+          return videos.map(item => {
+            const videoId = item.videoId;
+            if (!videoId) return null;
+            let published = '';
+            if (item.published) {
+              try {
+                if (typeof item.published === 'number') {
+                  published = new Date(item.published * 1000).toISOString();
+                } else {
+                  published = new Date(item.published).toISOString();
+                }
+              } catch (_) {}
+            }
+            return {
+              videoId,
+              title: item.title || '(제목 없음)',
+              channelId: ch.id,
+              channelName: ch.name,
+              channelCat: 'custom',
+              published,
+              timeAgo: relativeTime(published) || item.publishedText || '',
+              views: item.viewCount || 0,
+              lengthSec: item.lengthSeconds || 0,
+            };
+          }).filter(Boolean);
+        }
+      } catch (_) {}
+    }
   }
   return [];
 }
@@ -606,63 +670,95 @@ async function fetchChannelBySearch(ch) {
   }
 }
 
+function getProxyBaseUrl() {
+  const isLocal = window.location.hostname === 'localhost' || 
+                  window.location.hostname === '127.0.0.1' || 
+                  window.location.hostname.startsWith('192.168.');
+  const isCapacitor = typeof window !== 'undefined' && 
+                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  if (isLocal && !isCapacitor) {
+    return `http://${window.location.hostname}:5174`;
+  }
+  return '';
+}
+
 // 백그라운드 갱신 잠금용 집합 (중복 갱신 방지)
 const backgroundSyncingChannels = new Set();
 
 async function fetchChannelRssFromNetwork(ch) {
   if (getIgnoredChannels().includes(ch.id)) return [];
 
-  // 1. Try official YouTube RSS feed first (highly efficient, lightweight, and official)
-  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
-  
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
                       (window.location.hostname === 'localhost' && window.location.port === '') || 
                       window.location.protocol === 'capacitor:';
   const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
-  // 1.1 Local/Native direct bypass
-  if (isCapacitor) {
+  // 1순위: 자체 고속 백엔드/서버리스 RSS 프록시 API 호출 (초고속 로드 실현)
+  if (!isCapacitor) {
     try {
-      const text = await fetchOneProxy(rssUrl);
-      const videos = parseRss(text, ch);
-      if (videos && videos.length > 0) return videos;
-    } catch (_) {}
-  } else if (isLocal) {
-    try {
-      const localProxyUrl = rssUrl.replace('https://www.youtube.com', '/yt-proxy');
-      const text = await fetchOneProxy(localProxyUrl);
-      const videos = parseRss(text, ch);
-      if (videos && videos.length > 0) return videos;
-    } catch (_) {}
-  }
-
-  // 1.2 CORS proxies (using workingProxyIdx first)
-  const proxyIndices = [workingProxyIdx];
-  for (let i = 0; i < RSS_CORS_PROXIES.length; i++) {
-    if (i !== workingProxyIdx) proxyIndices.push(i);
-  }
-
-  for (const idx of proxyIndices) {
-    const proxy = RSS_CORS_PROXIES[idx];
-    const proxyUrl = proxy.getUrl(rssUrl);
-    try {
-      const text = await fetchOneProxy(proxyUrl);
-      const videos = parseRss(text, ch);
-      if (videos && videos.length > 0) {
-        workingProxyIdx = idx; // Pin the successful proxy
-        return videos;
+      const proxyBase = getProxyBaseUrl();
+      const apiUrl = `${proxyBase}/api/rss?channelId=${ch.id}`;
+      console.log(`[YouTube RSS] 자체 백엔드 프록시 호출: ${apiUrl}`);
+      const res = await smartFetch(apiUrl, { timeout: 4000 });
+      if (res.ok) {
+        const text = await res.text();
+        const videos = parseRss(text, ch);
+        if (videos && videos.length > 0) {
+          console.log(`[YouTube RSS] 자체 백엔드 로드 성공: ${ch.name}`);
+          return videos;
+        }
       }
-    } catch (_) {}
+    } catch (e) {
+      console.warn(`[YouTube RSS] 자체 백엔드 호출 실패, 폴백 진행:`, e.message);
+    }
   }
 
-  // 2. Fallback to direct search-based scraper if RSS fails (e.g. if channel ID is not UC-based)
-  const searchVideos = await fetchChannelBySearch(ch);
-  if (searchVideos && searchVideos.length > 0) return searchVideos;
+  // 2순위: 모바일 앱(Capacitor) 환경 직접 호출 또는 로컬 /yt-proxy 직접 패치
+  if (isLocal || isCapacitor) {
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
+    if (isCapacitor) {
+      try {
+        const text = await fetchOneProxy(rssUrl);
+        const videos = parseRss(text, ch);
+        if (videos && videos.length > 0) return videos;
+      } catch (_) {}
+    } else {
+      try {
+        const localProxyUrl = rssUrl.replace('https://www.youtube.com', '/yt-proxy');
+        const text = await fetchOneProxy(localProxyUrl);
+        const videos = parseRss(text, ch);
+        if (videos && videos.length > 0) return videos;
+      } catch (_) {}
+    }
+  }
 
-  // 3. Fallback to Invidious API if all RSS proxies and searches fail
-  console.log(`[YouTube RSS] falling back to Invidious API for channel: ${ch.name}`);
+  // 2. In Production (GitHub Pages browser) or if RSS failed:
+  // Go straight to Invidious API (extremely fast & reliable dynamic CORS JSON)
   const invidiousVideos = await fetchChannelInvidious(ch);
   if (invidiousVideos && invidiousVideos.length > 0) return invidiousVideos;
+
+  // 3. Fallback to channel search
+  const searchVideos = await searchInvidious(ch.name, 1, false);
+  const filtered = searchVideos.filter(v => 
+    v.channelId === ch.id || 
+    v.channelName.toLowerCase().includes(ch.name.toLowerCase()) ||
+    ch.name.toLowerCase().includes(v.channelName.toLowerCase())
+  );
+  const finalVideos = filtered.length > 0 ? filtered : searchVideos;
+  if (finalVideos && finalVideos.length > 0) {
+    return finalVideos.map(v => ({
+      videoId: v.videoId,
+      title: v.title,
+      channelId: ch.id,
+      channelName: ch.name,
+      channelCat: ch.cat || 'search',
+      published: v.published || new Date().toISOString(),
+      timeAgo: v.timeAgo || '',
+      views: v.views || 0,
+      lengthSec: v.lengthSec || 0
+    }));
+  }
 
   return [];
 }
