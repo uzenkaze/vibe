@@ -1176,6 +1176,15 @@ async function fetchNextPage(filter) {
     });
   });
 
+  // 특정 카테고리 선택 시 관련 없는 채널의 폴백 영상이나 믹스인 데이터가 유입되지 않도록 최종 필터링
+  if (filter !== 'all' && filter !== 'recent' && filter !== 'custom' && filter !== 'search') {
+    return finalVideos.filter(v => {
+      if (v.channelCat === filter) return true;
+      const foundCh = DEFAULT_CHANNELS.find(c => c.id === v.channelId);
+      return foundCh && foundCh.cat === filter;
+    });
+  }
+
   return finalVideos;
 }
 
