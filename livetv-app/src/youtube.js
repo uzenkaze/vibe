@@ -183,7 +183,7 @@ const INVIDIOUS_INSTANCES = [
 ];
 
 // ── 유튜브 직접 검색 API 파서 (Invidious 차단 우회 및 한글 완벽 대응) ───
-async function searchInvidious(query, page = 1) {
+async function fetchYouTubeSearchScrape(query, limitChannelVideos = false) {
   const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
   const pathUrl = `/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
   
@@ -251,7 +251,7 @@ async function searchInvidious(query, page = 1) {
           if (matched) views = parseFloat(matched[0]);
         }
 
-        let channelId = v.ownerText?.runs?.[0]?.navigationApi?.browseEndpoint?.browseId || '';
+        let channelId = v.ownerText?.runs?.[0]?.navigationEndpoint?.browseEndpoint?.browseId || '';
         let channelAvatar = v.channelThumbnailSupportedRenderers?.channelThumbnailWithLinkRenderer?.thumbnail?.thumbnails?.[0]?.url || '';
         if (channelAvatar && channelAvatar.startsWith('//')) channelAvatar = 'https:' + channelAvatar;
         if (!channelAvatar && channelId && channelId.startsWith('UC')) channelAvatar = 'https://unavatar.io/youtube/' + channelId;
@@ -259,7 +259,7 @@ async function searchInvidious(query, page = 1) {
         videos.push({
           videoId: v.videoId,
           title: v.title?.runs?.[0]?.text || '(제목 없음)',
-          channelId: v.ownerText?.runs?.[0]?.navigationApi?.browseEndpoint?.browseId || '',
+          channelId: channelId,
           channelName: v.ownerText?.runs?.[0]?.text || 'Unknown',
           channelAvatar: channelAvatar,
           channelCat: 'search',
@@ -270,13 +270,16 @@ async function searchInvidious(query, page = 1) {
           lengthSec: lengthSec
         });
       }
-      // 필터링 적용 (관심없음 채널 제외 및 채널당 최대 2개)
+      // 필터링 적용 (관심없음 채널 제외 및 채널당 최대 2개/무제한)
       const ignored = getIgnoredChannels();
       const channelCounts = {};
       return videos.filter(v => {
         if (ignored.includes(v.channelId)) return false;
-        channelCounts[v.channelId] = (channelCounts[v.channelId] || 0) + 1;
-        return channelCounts[v.channelId] <= 2;
+        if (limitChannelVideos) {
+          channelCounts[v.channelId] = (channelCounts[v.channelId] || 0) + 1;
+          return channelCounts[v.channelId] <= 2;
+        }
+        return true;
       });
     } catch (e) {
       console.warn('[YouTube Search] Parsing failed within helper:', e);
@@ -311,6 +314,61 @@ async function searchInvidious(query, page = 1) {
 
   console.error('[YouTube Search] All proxies and direct fetch failed to return valid search results');
   return [];
+}
+
+async function fetchInvidiousSearchApi(query, page) {
+  // Cycle through instances if one fails
+  for (const instance of INVIDIOUS_INSTANCES) {
+    const invidiousUrl = `${instance}/api/v1/search?q=${encodeURIComponent(query)}&page=${page}&type=video`;
+    const proxies = makeProxies(invidiousUrl);
+    
+    for (const proxy of proxies) {
+      try {
+        const res = await smartFetch(proxy, { timeout: 4000 });
+        if (!res.ok) continue;
+        
+        const json = proxy.includes('allorigins')
+          ? JSON.parse((await res.json()).contents || '[]')
+          : await res.json();
+          
+        if (Array.isArray(json) && json.length > 0) {
+          const videos = json.map(item => {
+            const parsed = invidiousToVideo(item);
+            if (parsed) {
+              parsed.searchQuery = query; // Record query
+            }
+            return parsed;
+          }).filter(Boolean);
+          
+          if (videos.length > 0) {
+            console.log(`[Invidious Search] Successfully retrieved page ${page} search results using: ${instance}`);
+            return videos;
+          }
+        }
+      } catch (e) {
+        // Try next proxy/instance
+      }
+    }
+  }
+  
+  console.warn(`[Invidious Search] All proxies and Invidious instances failed for page ${page}`);
+  return [];
+}
+
+async function searchInvidious(query, page = 1, limitChannelVideos = false) {
+  if (page === 1) {
+    try {
+      const results = await fetchYouTubeSearchScrape(query, limitChannelVideos);
+      if (results && results.length > 0) {
+        return results;
+      }
+    } catch (e) {
+      console.warn('[YouTube Search] Page 1 direct scrape failed, falling back to Invidious API:', e);
+    }
+  }
+
+  // Fallback for page 1 if scraping failed, or primary source for page > 1 (pagination support)
+  return await fetchInvidiousSearchApi(query, page);
 }
 
 function invidiousToVideo(item) {
@@ -518,7 +576,7 @@ async function fetchChannelInvidious(ch) {
 async function fetchChannelBySearch(ch) {
   try {
     console.log(`[YouTube Scraper] Fetching videos for channel: ${ch.name} via direct search`);
-    const searchResults = await searchInvidious(ch.name);
+    const searchResults = await searchInvidious(ch.name, 1, false);
     if (!searchResults || searchResults.length === 0) return [];
 
     // Filter search results to keep only videos from the target channel if possible
@@ -938,7 +996,7 @@ async function fetchNextPage(filter) {
   if (filter === 'search') {
     const st = searchState['search'];
     const p = st.page++;
-    const items = await searchInvidious(st.query, p);
+    const items = await searchInvidious(st.query, p, false);
     return items || [];
   }
 
@@ -978,7 +1036,7 @@ async function fetchNextPage(filter) {
   let topKeywords = [];
   if (filter === 'all') {
     topKeywords = getTopWatchedKeywords(1); // 추천 키워드를 1개로 축소하여 최초 로딩 속도를 극대화
-    searchPromises = topKeywords.map(keyword => searchInvidious(keyword, 1));
+    searchPromises = topKeywords.map(keyword => searchInvidious(keyword, 1, true));
   }
 
   // RSS와 키워드 추천 비디오 검색을 병렬로 동시에 로드
