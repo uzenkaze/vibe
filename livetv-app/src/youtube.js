@@ -343,17 +343,67 @@ function invidiousToVideo(item) {
 }
 
 // ── 내 채널 (RSS) ─────────────────────────────────────────────────────────
-const rssCache = new Map();
+// 캐시 유효 기간 설정
+const FRESH_CACHE_TTL = 15 * 60 * 1000;     // 15분 (이 안에는 완전히 캐시로만 서비스)
+const STALE_CACHE_TTL = 6 * 60 * 60 * 1000; // 6시간 (캐시 데이터를 화면에 일단 보여주고, 백그라운드 갱신)
+
+const rssCache = new Map(); // 메모리 세션 캐시
+
+// CORS 프록시 목록 (우수 업타임 및 응답 속도순 정렬)
+const RSS_CORS_PROXIES = [
+  { name: 'corsproxy', getUrl: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}` },
+  { name: 'codetabs', getUrl: (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}` },
+  { name: 'allorigins', getUrl: (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}` }
+];
+let workingProxyIdx = 0; // 최근 성공한 프록시 인덱스 저장 (속도 극대화)
+
+function getRssCache(chId) {
+  // 1. 메모리 캐시 확인 (현재 페이지 생명주기 동안 메모리 접근)
+  if (rssCache.has(chId)) {
+    return rssCache.get(chId);
+  }
+  
+  // 2. 로컬 스토리지 캐시 확인
+  try {
+    const raw = localStorage.getItem(`yt_rss_cache_${chId}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.videos)) {
+        const age = Date.now() - (parsed.timestamp || 0);
+        return { videos: parsed.videos, age };
+      }
+    }
+  } catch (e) {
+    console.error('[RSS Cache] Error reading cache:', e);
+  }
+  return null;
+}
+
+function setRssCache(chId, videos) {
+  // 메모리 캐시 저장
+  rssCache.set(chId, videos);
+  
+  // 로컬 스토리지 캐시 저장
+  try {
+    localStorage.setItem(`yt_rss_cache_${chId}`, JSON.stringify({
+      videos,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    console.error('[RSS Cache] Error writing cache:', e);
+  }
+}
 
 function makeProxies(url) {
   const list = [];
   const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
                       (window.location.hostname === 'localhost' && window.location.port === '') || 
                       window.location.protocol === 'capacitor:';
+  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
   if (isCapacitor) {
     list.push(url);
-  } else {
+  } else if (isLocal) {
     if (url.includes('https://www.youtube.com')) {
       list.push(url.replace('https://www.youtube.com', '/yt-proxy'));
     } else {
@@ -361,9 +411,10 @@ function makeProxies(url) {
     }
   }
 
-  list.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-  list.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
+  // CORS 프록시 리스트 추가 (속도 및 신뢰도 우선 정렬)
   list.push(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+  list.push(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`);
+  list.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
 
   return list;
 }
@@ -497,40 +548,129 @@ async function fetchChannelBySearch(ch) {
   }
 }
 
-async function fetchChannelRss(ch) {
+// 백그라운드 갱신 잠금용 집합 (중복 갱신 방지)
+const backgroundSyncingChannels = new Set();
+
+async function fetchChannelRssFromNetwork(ch) {
   if (getIgnoredChannels().includes(ch.id)) return [];
-  if (rssCache.has(ch.id)) return rssCache.get(ch.id);
 
   // 1. Try official YouTube RSS feed first (highly efficient, lightweight, and official)
   const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
-  const proxies = makeProxies(rssUrl);
-  for (const proxy of proxies) {
+  
+  const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
+                      (window.location.hostname === 'localhost' && window.location.port === '') || 
+                      window.location.protocol === 'capacitor:';
+  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
+
+  // 1.1 Local/Native direct bypass
+  if (isCapacitor) {
     try {
-      const text = await fetchOneProxy(proxy);
+      const text = await fetchOneProxy(rssUrl);
+      const videos = parseRss(text, ch);
+      if (videos && videos.length > 0) return videos;
+    } catch (_) {}
+  } else if (isLocal) {
+    try {
+      const localProxyUrl = rssUrl.replace('https://www.youtube.com', '/yt-proxy');
+      const text = await fetchOneProxy(localProxyUrl);
+      const videos = parseRss(text, ch);
+      if (videos && videos.length > 0) return videos;
+    } catch (_) {}
+  }
+
+  // 1.2 CORS proxies (using workingProxyIdx first)
+  const proxyIndices = [workingProxyIdx];
+  for (let i = 0; i < RSS_CORS_PROXIES.length; i++) {
+    if (i !== workingProxyIdx) proxyIndices.push(i);
+  }
+
+  for (const idx of proxyIndices) {
+    const proxy = RSS_CORS_PROXIES[idx];
+    const proxyUrl = proxy.getUrl(rssUrl);
+    try {
+      const text = await fetchOneProxy(proxyUrl);
       const videos = parseRss(text, ch);
       if (videos && videos.length > 0) {
-        const limited = videos.slice(0, 2);
-        rssCache.set(ch.id, limited);
-        return limited;
+        workingProxyIdx = idx; // Pin the successful proxy
+        return videos;
       }
     } catch (_) {}
   }
 
   // 2. Fallback to direct search-based scraper if RSS fails (e.g. if channel ID is not UC-based)
   const searchVideos = await fetchChannelBySearch(ch);
-  if (searchVideos && searchVideos.length > 0) {
-    const limited = searchVideos.slice(0, 2);
-    rssCache.set(ch.id, limited);
-    return limited;
-  }
+  if (searchVideos && searchVideos.length > 0) return searchVideos;
 
   // 3. Fallback to Invidious API if all RSS proxies and searches fail
   console.log(`[YouTube RSS] falling back to Invidious API for channel: ${ch.name}`);
   const invidiousVideos = await fetchChannelInvidious(ch);
-  if (invidiousVideos && invidiousVideos.length > 0) {
-    const limited = invidiousVideos.slice(0, 2);
-    rssCache.set(ch.id, limited);
-    return limited;
+  if (invidiousVideos && invidiousVideos.length > 0) return invidiousVideos;
+
+  return [];
+}
+
+async function fetchChannelRss(ch) {
+  if (getIgnoredChannels().includes(ch.id)) return [];
+
+  // 캐시 상태 점검
+  const cachedData = getRssCache(ch.id);
+
+  if (cachedData) {
+    // 메모리 캐시인 경우 age가 없으므로 즉시 반환
+    if (typeof cachedData.age === 'undefined') {
+      return cachedData;
+    }
+
+    const { videos, age } = cachedData;
+
+    // 신선한 캐시인 경우 (15분 이내) 바로 반환
+    if (age < FRESH_CACHE_TTL) {
+      rssCache.set(ch.id, videos);
+      return videos;
+    }
+
+    // Stale 캐시인 경우 (15분 ~ 6시간) 캐시 반환 후 백그라운드 갱신
+    if (age < STALE_CACHE_TTL) {
+      if (!backgroundSyncingChannels.has(ch.id)) {
+        backgroundSyncingChannels.add(ch.id);
+        
+        setTimeout(() => {
+          fetchChannelRssFromNetwork(ch)
+            .then(freshVideos => {
+              if (freshVideos && freshVideos.length > 0) {
+                const limited = freshVideos.slice(0, 2);
+                setRssCache(ch.id, limited);
+              }
+            })
+            .catch(err => {
+              console.warn(`[RSS Cache Sync] Background refresh failed for ${ch.name}:`, err);
+            })
+            .finally(() => {
+              backgroundSyncingChannels.delete(ch.id);
+            });
+        }, 200);
+      }
+      
+      rssCache.set(ch.id, videos);
+      return videos;
+    }
+  }
+
+  // 캐시가 없거나 6시간 초과된 경우: 포그라운드 네트워크 패치 진행
+  try {
+    const freshVideos = await fetchChannelRssFromNetwork(ch);
+    if (freshVideos && freshVideos.length > 0) {
+      const limited = freshVideos.slice(0, 2);
+      setRssCache(ch.id, limited);
+      return limited;
+    }
+  } catch (err) {
+    console.error(`[RSS Fetch Error] Foreground fetch failed for ${ch.name}:`, err);
+  }
+
+  // 네트워크 실패 시 기 보유중인 캐시가 있으면 반환
+  if (cachedData && cachedData.videos) {
+    return cachedData.videos;
   }
 
   return [];
