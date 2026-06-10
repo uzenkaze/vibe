@@ -1206,16 +1206,7 @@ async function fetchNextPage(filter) {
     });
   }
 
-  // 전체 화면 중복 노출 제거 (seenVideoIds 기반)
-  const uniqueVideos = [];
-  filtered.forEach(v => {
-    if (!seenVideoIds.has(v.videoId)) {
-      seenVideoIds.add(v.videoId);
-      uniqueVideos.push(v);
-    }
-  });
-
-  return uniqueVideos;
+  return filtered;
 }
 
 // ── 무한 스크롤 ───────────────────────────────────────────────────────────
