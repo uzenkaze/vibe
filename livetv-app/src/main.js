@@ -873,14 +873,22 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   // KBS API는 동적으로 URL을 앞에 추가
   if (ch.kbsApiCode && urlIdx === 0) {
     try {
-      const api = `https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`;
+      const isCapacitor = typeof window !== 'undefined' && 
+                          (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+      
       let res;
       try {
-        res = await smartFetch(api);
-      } catch(err) {
-        // CORS error fallback
-        res = await smartFetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(api)}`);
+        if (isCapacitor) {
+          const proxyBase = getProxyBaseUrl();
+          res = await smartFetch(`${proxyBase}/api/kbs?channel_code=${ch.kbsApiCode}`, { timeout: 4000 });
+        } else {
+          res = await smartFetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`, { timeout: 3000 });
+        }
+      } catch (err) {
+        const proxyBase = getProxyBaseUrl();
+        res = await smartFetch(`${proxyBase}/api/kbs?channel_code=${ch.kbsApiCode}`, { timeout: 4000 });
       }
+
       const data = await res.json();
       const apiUrl = data.channel_item?.find(i => i.service_url)?.service_url;
       if (apiUrl) {
@@ -989,7 +997,13 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     };
   };
 
-  if (Hls.isSupported()) {
+  const isCapacitor = typeof window !== 'undefined' && 
+                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+
+  if (isCapacitor) {
+    // Capacitor 환경에서는 CORS 프록시나 Hls.js를 거치지 않고 즉시 네이티브 HLS 플레이어로 재생 (CORS 회피 및 빠른 로딩)
+    playNatively();
+  } else if (Hls.isSupported()) {
     // HLS 재생 가능 시 화질 선택 버튼 활성화
     const qualWrapperPC = document.getElementById('quality-select-pc-wrapper');
     const qualWrapperMob = document.getElementById('quality-select-mob-wrapper');
