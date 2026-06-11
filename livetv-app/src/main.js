@@ -1280,34 +1280,54 @@ async function showYouTubeIframePlayback(ch) {
 
   const ytIframe = isPC() ? ytIframePC : ytIframeMob;
   if (ytIframe) {
-    // 0순위: ytChannelId 기반 라이브 스트림 embed (가장 빠르고 대기 시간 없음)
-    // 24/7 라이브 채널인 경우 스크래핑 대기 시간 없이 즉시 채널 ID 임베드를 사용하여 재생 속도 극대화
-    if (ch.ytChannelId) {
-      console.log(`[YouTube Live Playback] ytChannelId 기반 라이브 embed 즉시 사용: ${ch.ytChannelId}`);
-      ytIframe.classList.remove('hidden');
-      ytIframe.onload = () => {
-        showLoading(false);
-        ytIframe.onload = null;
-      };
-      ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
+    ytIframe.classList.remove('hidden');
+    ytIframe.onload = () => {
+      showLoading(false);
+      ytIframe.onload = null;
+    };
+
+    // 1. 로컬 스토리지 캐시 우선 로드 (재생 대기 시간 0초)
+    let cachedVideoId = localStorage.getItem('yt_live_videoid_' + ch.id);
+    if (cachedVideoId) {
+      console.log(`[YouTube Live Playback] 로컬 스토리지 캐시된 비디오 ID 즉시 사용: ${cachedVideoId}`);
+      ytIframe.src = `https://www.youtube.com/embed/${cachedVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
       updateTitle(`${ch.name} · YouTube Live`);
+      
+      // 백그라운드에서 비동기로 실시간 상태를 스크래핑하여 캐시 갱신 및 대조
+      if (ch.ytHandle) {
+        (async () => {
+          try {
+            const handle = ch.ytHandle.replace('@', '');
+            const proxyBase = getProxyBaseUrl();
+            const res = await smartFetch(`${proxyBase}/api/youtube/live?handle=${handle}`, { timeout: 4000 });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.ok && data.videoId && data.videoId !== cachedVideoId) {
+                console.log(`[YouTube Live Playback] 라이브 비디오 ID 변경 감지: ${cachedVideoId} -> ${data.videoId}`);
+                localStorage.setItem('yt_live_videoid_' + ch.id, data.videoId);
+                // 현재 재생 중인 채널이 일치할 때만 src 업데이트
+                if (activeChannelId === ch.id) {
+                  const currentIframe = isPC() ? ytIframePC : ytIframeMob;
+                  if (currentIframe) {
+                    currentIframe.src = `https://www.youtube.com/embed/${data.videoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
+                  }
+                }
+              }
+            }
+          } catch(e) {}
+        })();
+      }
       return;
     }
 
-    // 실시간 유튜브 라이브 비디오 ID 분석 (우선순위 기반 다중 레이어 분석)
+    // 2. 캐시가 없는 경우 우선순위 기반 스크래핑/분석 시작
     let liveVideoId = null;
 
     const isNative = typeof window !== 'undefined' && 
                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
 
-    // 0순위: ytVideoId 하드코딩 값이 있으면 즉시 사용 (가장 빠르고 안정적)
-    if (!liveVideoId && ch.ytVideoId) {
-      liveVideoId = ch.ytVideoId;
-      console.log(`[YouTube Live Playback] 하드코딩 ytVideoId 사용: ${liveVideoId}`);
-    }
-
-    // 1순위: 자체 백엔드/서버리스 라이브 분석기 호출 (CORS 우회)
+    // 2a. 1순위: 자체 백엔드/서버리스 라이브 분석기 호출 (CORS 우회)
     if (!liveVideoId && ch.ytHandle && !isNative) {
       try {
         const handle = ch.ytHandle.replace('@', '');
@@ -1321,6 +1341,7 @@ async function showYouTubeIframePlayback(ch) {
           if (data.ok && data.videoId) {
             liveVideoId = data.videoId;
             console.log(`[YouTube Live Playback] 백엔드 분석 성공: ${liveVideoId}`);
+            localStorage.setItem('yt_live_videoid_' + ch.id, liveVideoId);
           }
         }
       } catch (e) {
