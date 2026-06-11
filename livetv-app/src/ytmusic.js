@@ -109,7 +109,18 @@ if (window.YT && window.YT.Player) {
 }
 
 function notifyAndroidNative(playing) {
-  if (window.AndroidNative && typeof window.AndroidNative.onMusicStateChanged === 'function') {
+  if (window.AndroidNative && typeof window.AndroidNative.updateMetadata === 'function') {
+    try {
+      const song = currentPlaylist[currentIndex];
+      if (song) {
+        window.AndroidNative.updateMetadata(song.title || '', song.artist || 'Unknown', song.thumb || '', playing);
+      } else {
+        window.AndroidNative.onMusicStateChanged(playing);
+      }
+    } catch (e) {
+      console.error('[Background Audio] updateMetadata error:', e);
+    }
+  } else if (window.AndroidNative && typeof window.AndroidNative.onMusicStateChanged === 'function') {
     try {
       window.AndroidNative.onMusicStateChanged(playing);
     } catch (e) {}
@@ -262,6 +273,93 @@ function updateLoginUI() {
   }
 }
 
+/* ══════════════ INVIDIOUS INSTANCE FALLBACK ══════════════ */
+const INVIDIOUS_INSTANCES = [
+  'https://inv.thepixora.com',
+  'https://invidious.fdn.fr',
+  'https://vid.puffyan.us',
+  'https://invidious.projectsegfau.lt',
+  'https://invidious.lunar.icu',
+  'https://yewtu.be',
+  'https://invidious.nerdvpn.de',
+  'https://invidious.no-logs.com'
+];
+
+let dynamicInvidiousInstances = [];
+let isInvidiousInitialized = false;
+
+async function ensureInvidiousInstances() {
+  if (isInvidiousInitialized) return;
+  isInvidiousInitialized = true;
+  try {
+    const res = await smartFetch('https://api.invidious.io/instances.json', { timeout: 3000 });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        const active = data
+          .filter(item => {
+            const inst = item[1];
+            const hasCors = inst.cors !== false;
+            const hasApi = inst.api !== false;
+            const isHttps = inst.type === 'https';
+            const isUp = inst.monitor?.last_status === 200 || (inst.monitor?.uptime || 0) > 80;
+            return inst && isHttps && hasCors && hasApi && isUp;
+          })
+          .map(item => `https://${item[0]}`);
+        if (active.length > 0) {
+          dynamicInvidiousInstances = active;
+          console.log('[Invidious API] Loaded dynamic instances for Music:', dynamicInvidiousInstances);
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[Invidious API] Failed to fetch dynamic instances for Music, using defaults:', e);
+  }
+  if (dynamicInvidiousInstances.length === 0) {
+    dynamicInvidiousInstances = [...INVIDIOUS_INSTANCES];
+  }
+}
+
+async function searchInvidiousMusic(query) {
+  await ensureInvidiousInstances();
+  const instances = dynamicInvidiousInstances;
+  for (const instance of instances) {
+    const invidiousUrl = `${instance}/api/v1/search?q=${encodeURIComponent(query)}+official+audio&type=video`;
+    try {
+      const res = await smartFetch(invidiousUrl, { timeout: 3000 });
+      if (!res.ok) continue;
+      const json = await res.json();
+      if (Array.isArray(json) && json.length > 0) {
+        const songs = json.map(item => {
+          if (item.type !== 'video' && item.type !== undefined) return null;
+          const videoId = item.videoId;
+          if (!videoId) return null;
+          let durationStr = '';
+          if (item.lengthSeconds) {
+            const m = Math.floor(item.lengthSeconds / 60);
+            const s = item.lengthSeconds % 60;
+            durationStr = `${m}:${String(s).padStart(2, '0')}`;
+          }
+          return {
+            title: item.title || '(제목 없음)',
+            videoId: videoId,
+            artist: item.author || 'Unknown',
+            duration: durationStr,
+            thumb: `https://i.ytimg.com/vi/${videoId}/default.jpg`
+          };
+        }).filter(Boolean);
+        if (songs.length > 0) {
+          console.log(`[Invidious Search] Successfully retrieved songs using: ${instance}`);
+          return songs;
+        }
+      }
+    } catch (e) {
+      // try next
+    }
+  }
+  return [];
+}
+
 /* ══════════════ SEARCH ══════════════ */
 async function searchMusic(query, setInput = true, isAppend = false) {
   if (isSearchLoading) return;
@@ -329,7 +427,31 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     }
   }
 
+  const handleInvidiousFallback = async () => {
+    console.log('[YT Music] Direct fetch and CORS proxies failed. Trying Invidious fallback...');
+    const fallbackSongs = await searchInvidiousMusic(query);
+    if (fallbackSongs && fallbackSongs.length > 0) {
+      if (isAppend) {
+        const newSongs = fallbackSongs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
+        currentPlaylist = currentPlaylist.concat(newSongs);
+        renderMusicList(newSongs, true);
+      } else {
+        currentPlaylist = fallbackSongs;
+        renderMusicList(fallbackSongs, false);
+      }
+      if (loadEl) {
+        if (isAppend) loadEl.style.display = 'none';
+        else loadEl.classList.remove('active');
+      }
+      isSearchLoading = false;
+      return true;
+    }
+    return false;
+  };
+
   if (!html) {
+    const ok = await handleInvidiousFallback();
+    if (ok) return;
     if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">검색 결과를 불러올 수 없습니다.<br>잠시 후 다시 시도해 주세요.</div>`;
     if (loadEl) {
       if (isAppend) loadEl.style.display = 'none';
@@ -344,6 +466,8 @@ async function searchMusic(query, setInput = true, isAppend = false) {
   if (match) {
     jsonStr = match[1];
   } else {
+    const ok = await handleInvidiousFallback();
+    if (ok) return;
     if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">데이터 구조가 변경되었습니다.</div>`;
     if (loadEl) {
       if (isAppend) loadEl.style.display = 'none';
@@ -390,7 +514,10 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     }
   } catch (e) {
     console.error('Parse error', e);
-    if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">결과 분석 중 오류가 발생했습니다.</div>`;
+    const ok = await handleInvidiousFallback();
+    if (!ok) {
+      if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">결과 분석 중 오류가 발생했습니다.</div>`;
+    }
   }
   if (loadEl) {
     if (isAppend) loadEl.style.display = 'none';
@@ -792,7 +919,36 @@ async function searchRelated(videoId, container) {
     }
   }
 
+  const handleRelatedFallback = async () => {
+    console.log('[YT Music] Related search failed. Trying Invidious fallback...');
+    const fallbackSongs = await searchInvidiousMusic(query);
+    if (fallbackSongs && fallbackSongs.length > 0) {
+      container.innerHTML = '';
+      fallbackSongs.slice(0, 10).forEach((s, idx) => {
+        const div = document.createElement('div');
+        div.className = 'next-track-item';
+        div.onclick = () => {
+          currentPlaylist = [...currentPlaylist, ...fallbackSongs.filter(x => !currentPlaylist.find(c => c.videoId === x.videoId))];
+          const newIdx = currentPlaylist.findIndex(c => c.videoId === s.videoId);
+          playMusic(s, newIdx);
+        };
+        div.innerHTML = `
+          <span class="next-track-num">${idx + 1}</span>
+          <img src="${s.thumb}" class="next-track-thumb" alt="" onerror="this.src=''">
+          <div class="next-track-info">
+            <div class="next-track-title">${s.title}</div>
+            <div class="next-track-artist">${s.artist}</div>
+          </div>`;
+        container.appendChild(div);
+      });
+      return true;
+    }
+    return false;
+  };
+
   if (!html) {
+    const ok = await handleRelatedFallback();
+    if (ok) return;
     container.innerHTML = `<div class="tab-placeholder">관련 항목을 불러올 수 없습니다.</div>`;
     return;
   }
@@ -846,7 +1002,10 @@ async function searchRelated(videoId, container) {
       container.appendChild(div);
     });
   } catch (e) {
-    container.innerHTML = `<div class="tab-placeholder">관련 항목을 불러올 수 없습니다.</div>`;
+    const ok = await handleRelatedFallback();
+    if (!ok) {
+      container.innerHTML = `<div class="tab-placeholder">관련 항목을 불러올 수 없습니다.</div>`;
+    }
   }
 }
 
