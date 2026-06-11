@@ -2,7 +2,7 @@ import https from 'https';
 import http from 'http';
 
 const ytLiveCache = new Map();
-const YT_LIVE_CACHE_TTL = 10 * 60 * 1000; // 10분 캐시
+const YT_LIVE_CACHE_TTL = 1 * 60 * 1000; // 1분 캐시
 
 function fetchUrl(targetUrl, redirectCount = 0) {
   return new Promise((resolve, reject) => {
@@ -37,7 +37,8 @@ function fetchUrl(targetUrl, redirectCount = 0) {
 }
 
 async function getYoutubeLiveVideoId(handle, channelId) {
-  const cached = ytLiveCache.get(handle);
+  const cacheKey = `${handle}:${channelId || ''}`;
+  const cached = ytLiveCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < YT_LIVE_CACHE_TTL) {
     return cached.videoId;
   }
@@ -51,11 +52,17 @@ async function getYoutubeLiveVideoId(handle, channelId) {
     }
 
     const lowerHtml = html.toLowerCase();
-    const hasHandle = lowerHtml.includes(handle.toLowerCase());
-    const hasChannelId = channelId ? lowerHtml.includes(channelId.toLowerCase()) : false;
-
-    if (!hasHandle && !hasChannelId) {
-      throw new Error('Response HTML does not match the channel handle or ID');
+    
+    // Enforce channelId check if provided (foolproof against consent query redirects)
+    if (channelId) {
+      if (!lowerHtml.includes(channelId.toLowerCase())) {
+        throw new Error(`Response HTML does not contain channel ID: ${channelId}`);
+      }
+    } else {
+      const lowerHandle = handle.toLowerCase();
+      if (!lowerHtml.includes(lowerHandle)) {
+        throw new Error(`Response HTML does not contain channel handle: ${handle}`);
+      }
     }
   }
   
@@ -88,7 +95,7 @@ async function getYoutubeLiveVideoId(handle, channelId) {
     throw new Error('Could not find live video ID in page source');
   }
 
-  ytLiveCache.set(handle, { videoId, timestamp: Date.now() });
+  ytLiveCache.set(cacheKey, { videoId, timestamp: Date.now() });
   return videoId;
 }
 
