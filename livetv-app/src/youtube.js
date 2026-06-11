@@ -678,7 +678,10 @@ function getProxyBaseUrl() {
   const isCapacitor = typeof window !== 'undefined' && 
                       (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
   
-  if (isLocal && !isCapacitor) {
+  if (isCapacitor) {
+    return 'https://vibe-eight-iota.vercel.app';
+  }
+  if (isLocal) {
     return `http://${window.location.hostname}:5174`;
   }
   return '';

@@ -191,7 +191,10 @@ function getProxyBaseUrl() {
   const isCapacitor = typeof window !== 'undefined' && 
                       (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
   
-  if (isLocal && !isCapacitor) {
+  if (isCapacitor) {
+    return 'https://vibe-eight-iota.vercel.app';
+  }
+  if (isLocal) {
     return `http://${window.location.hostname}:5174`;
   }
   return '';
@@ -912,13 +915,9 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       try {
         res = await smartFetch(api);
       } catch (err) {
-        if (!isCapacitor) {
-          debugLog(`기본 API 실패. 자체 서버리스 프록시 우회 시도...`);
-          const proxyBase = getProxyBaseUrl();
-          res = await smartFetch(`${proxyBase}/api/jtbc`, { timeout: 3000 });
-        } else {
-          throw err;
-        }
+        debugLog(`기본 API 실패. 자체 서버리스 프록시 우회 시도...`);
+        const proxyBase = getProxyBaseUrl();
+        res = await smartFetch(`${proxyBase}/api/jtbc`, { timeout: 3000 });
       }
       const data = await res.json();
       const apiUrl = data.sources?.HLS?.HD?.file;
@@ -1073,6 +1072,15 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       console.warn('[HLS.js Error]', data.type, data.details, data.fatal);
       if (data.fatal) {
         if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+          // Capacitor 환경에서는 CORS 프록시를 통하는 것보다 네이티브 HLS 플레이어가 직접 재생하는 것이 적합 (CORS 제한 없음)
+          const isCapacitor = typeof window !== 'undefined' && 
+                              (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+          if (isCapacitor) {
+            debugLog(`직접 재생 실패. 네이티브 HLS 재생을 시도합니다...`);
+            playNatively();
+            return;
+          }
+
           // 직접 접속 실패 → CORS 프록시로 재시도 (0 → 1 → 2 → 3 순서)
           if (currentProxyIdx < CORS_PROXIES.length - 1) {
             currentProxyIdx++; // -1→0→1→2→3
