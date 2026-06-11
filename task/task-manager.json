@@ -32,8 +32,8 @@
     "remarks": "[작업파일]\nC:\\work\\workspace_git\\02_Application\\src\\main\\java\\ehimart\\app\\domain\\common\\HCodeConstants.java\nC:\\work\\workspace_git\\04_FrontMobile\\src\\main\\java\\ehimart\\webapp\\frontMobile\\goods\\ProductContorller.java\nC:\\work\\workspace_git\\04_FrontMobile\\WebContent\\WEB-INF\\jsp\\goods\\productReusePhoneDetail.jsp",
     "start_date": "2026-06-08",
     "end_date": "2026-07-14",
-    "reference": "feature-00000 작업중\n\n본품 테스트 상품 : 0020901233\n\n[배치생성상품]\n0006096802\n\n\n",
-    "updated_at": "2026-06-10T05:42:15.314Z"
+    "reference": "feature-00000 작업중\n\n본품 테스트 상품 : 0020901233\n\n[배치생성상품]\n0006096802\n---------------------------------------------------------------------------------------\n중고모바일 색상 코드에 맵핑되는 RGB 코드값 PD191 공통코드로 맵핑 예정\n\n\n\n",
+    "updated_at": "2026-06-11T00:58:26.483Z"
   },
   {
     "id": "1778639112834",
