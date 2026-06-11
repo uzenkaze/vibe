@@ -46,16 +46,25 @@ async function getYoutubeLiveVideoId(handle) {
   
   let videoId = null;
   if (html) {
-    let match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
+    // 1. liveStreamability 블록 내의 videoId 우선 검색 (가장 정확한 실시간 라이브 ID)
+    let match = html.match(/"liveStreamability"[\s\S]*?"videoId":"([a-zA-Z0-9_-]{11})"/);
     if (match?.[1]) videoId = match[1];
-    
+
+    // 2. 일반 JSON 내의 videoId 검색
+    if (!videoId) {
+      match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+      if (match?.[1]) videoId = match[1];
+    }
+
+    // 3. embed 주소 검색
     if (!videoId) {
       match = html.match(/embed\/([a-zA-Z0-9_-]{11})/);
       if (match?.[1]) videoId = match[1];
     }
-    
+
+    // 4. 일반 watch?v= 링크 검색 (최후의 폴백)
     if (!videoId) {
-      match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+      match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
       if (match?.[1]) videoId = match[1];
     }
   }

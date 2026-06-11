@@ -1377,13 +1377,16 @@ async function showYouTubeIframePlayback(ch) {
             }
 
             if (html) {
-              let match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
+              let match = html.match(/"liveStreamability"[\s\S]*?"videoId":"([a-zA-Z0-9_-]{11})"/);
+              if (match?.[1]) { liveVideoId = match[1]; break; }
+
+              match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
               if (match?.[1]) { liveVideoId = match[1]; break; }
 
               match = html.match(/embed\/([a-zA-Z0-9_-]{11})/);
               if (match?.[1]) { liveVideoId = match[1]; break; }
 
-              match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+              match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
               if (match?.[1]) { liveVideoId = match[1]; break; }
             }
           } catch (err) {
