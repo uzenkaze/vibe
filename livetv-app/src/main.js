@@ -1280,7 +1280,20 @@ async function showYouTubeIframePlayback(ch) {
 
   const ytIframe = isPC() ? ytIframePC : ytIframeMob;
   if (ytIframe) {
-    
+    // 0순위: ytChannelId 기반 라이브 스트림 embed (가장 빠르고 대기 시간 없음)
+    // 24/7 라이브 채널인 경우 스크래핑 대기 시간 없이 즉시 채널 ID 임베드를 사용하여 재생 속도 극대화
+    if (ch.ytChannelId) {
+      console.log(`[YouTube Live Playback] ytChannelId 기반 라이브 embed 즉시 사용: ${ch.ytChannelId}`);
+      ytIframe.classList.remove('hidden');
+      ytIframe.onload = () => {
+        showLoading(false);
+        ytIframe.onload = null;
+      };
+      ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
+      updateTitle(`${ch.name} · YouTube Live`);
+      return;
+    }
+
     // 실시간 유튜브 라이브 비디오 ID 분석 (우선순위 기반 다중 레이어 분석)
     let liveVideoId = null;
 
