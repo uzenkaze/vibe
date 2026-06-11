@@ -397,6 +397,28 @@ async function searchMusic(query, setInput = true, isAppend = false) {
                       window.location.protocol === 'capacitor:';
   const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
+  // On production browser, go straight to Invidious to avoid CORS proxy block timeouts (huge speed boost!)
+  if (!isCapacitor && !isLocal) {
+    console.log('[YT Music] Production website detected. Going straight to Invidious search for instant load.');
+    const fallbackSongs = await searchInvidiousMusic(query);
+    if (fallbackSongs && fallbackSongs.length > 0) {
+      if (isAppend) {
+        const newSongs = fallbackSongs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
+        currentPlaylist = currentPlaylist.concat(newSongs);
+        renderMusicList(newSongs, true);
+      } else {
+        currentPlaylist = fallbackSongs;
+        renderMusicList(fallbackSongs, false);
+      }
+      if (loadEl) {
+        if (isAppend) loadEl.style.display = 'none';
+        else loadEl.classList.remove('active');
+      }
+      isSearchLoading = false;
+      return;
+    }
+  }
+
   try {
     if (isCapacitor) {
       const res = await smartFetch(targetUrl);
@@ -888,6 +910,33 @@ async function searchRelated(videoId, container) {
                       (window.location.hostname === 'localhost' && window.location.port === '') || 
                       window.location.protocol === 'capacitor:';
   const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
+
+  // On production browser, go straight to Invidious to avoid CORS proxy block timeouts (huge speed boost!)
+  if (!isCapacitor && !isLocal) {
+    console.log('[YT Music] Production website detected for Related. Going straight to Invidious search.');
+    const fallbackSongs = await searchInvidiousMusic(query);
+    if (fallbackSongs && fallbackSongs.length > 0) {
+      container.innerHTML = '';
+      fallbackSongs.slice(0, 10).forEach((s, idx) => {
+        const div = document.createElement('div');
+        div.className = 'next-track-item';
+        div.onclick = () => {
+          currentPlaylist = [...currentPlaylist, ...fallbackSongs.filter(x => !currentPlaylist.find(c => c.videoId === x.videoId))];
+          const newIdx = currentPlaylist.findIndex(c => c.videoId === s.videoId);
+          playMusic(s, newIdx);
+        };
+        div.innerHTML = `
+          <span class="next-track-num">${idx + 1}</span>
+          <img src="${s.thumb}" class="next-track-thumb" alt="" onerror="this.src=''">
+          <div class="next-track-info">
+            <div class="next-track-title">${s.title}</div>
+            <div class="next-track-artist">${s.artist}</div>
+          </div>`;
+        container.appendChild(div);
+      });
+      return;
+    }
+  }
 
   try {
     if (isCapacitor) {
