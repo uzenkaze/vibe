@@ -873,18 +873,12 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   // KBS API는 동적으로 URL을 앞에 추가
   if (ch.kbsApiCode && urlIdx === 0) {
     try {
-      const isCapacitor = typeof window !== 'undefined' && 
-                          (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
-      
       let res;
       try {
-        if (isCapacitor) {
-          const proxyBase = getProxyBaseUrl();
-          res = await smartFetch(`${proxyBase}/api/kbs?channel_code=${ch.kbsApiCode}`, { timeout: 4000 });
-        } else {
-          res = await smartFetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`, { timeout: 3000 });
-        }
+        // 모바일(Capacitor)과 브라우저 모두 우선 직접 호출 시도 (모바일은 CapacitorHttp로 CORS가 없으며 국내 IP 전송 가능)
+        res = await smartFetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`, { timeout: 4000 });
       } catch (err) {
+        // 직접 호출 실패(브라우저 CORS 등) 시 Vercel 서버리스 프록시 우회
         const proxyBase = getProxyBaseUrl();
         res = await smartFetch(`${proxyBase}/api/kbs?channel_code=${ch.kbsApiCode}`, { timeout: 4000 });
       }
