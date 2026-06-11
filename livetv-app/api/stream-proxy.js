@@ -80,7 +80,8 @@ export default async function handler(req, res) {
     }
 
     // m3u8 파일의 경우 내부 URL을 프록시 URL로 교체
-    if (targetUrl.endsWith('.m3u8') || contentType.includes('mpegurl')) {
+    const isM3u8 = targetUrl.split('?')[0].endsWith('.m3u8') || contentType.toLowerCase().includes('mpegurl');
+    if (isM3u8) {
       const text = await upstream.text();
       const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
       

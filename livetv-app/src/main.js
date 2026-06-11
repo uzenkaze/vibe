@@ -1288,6 +1288,10 @@ async function showYouTubeIframePlayback(ch) {
 
     // 1. 로컬 스토리지 캐시 우선 로드 (재생 대기 시간 0초)
     let cachedVideoId = localStorage.getItem('yt_live_videoid_v3_' + ch.id);
+    if (cachedVideoId === 'C3aa-Vv4Fzw') {
+      localStorage.removeItem('yt_live_videoid_v3_' + ch.id);
+      cachedVideoId = null;
+    }
     if (cachedVideoId) {
       console.log(`[YouTube Live Playback] 로컬 스토리지 캐시된 비디오 ID 즉시 사용: ${cachedVideoId}`);
       ytIframe.src = `https://www.youtube.com/embed/${cachedVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
@@ -1302,7 +1306,7 @@ async function showYouTubeIframePlayback(ch) {
             const res = await smartFetch(`${proxyBase}/api/youtube/live?handle=${handle}`, { timeout: 4000 });
             if (res.ok) {
               const data = await res.json();
-              if (data.ok && data.videoId && data.videoId !== cachedVideoId) {
+              if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw' && data.videoId !== cachedVideoId) {
                 console.log(`[YouTube Live Playback] 라이브 비디오 ID 변경 감지: ${cachedVideoId} -> ${data.videoId}`);
                 localStorage.setItem('yt_live_videoid_v3_' + ch.id, data.videoId);
                 // 현재 재생 중인 채널이 일치할 때만 src 업데이트
@@ -1338,7 +1342,7 @@ async function showYouTubeIframePlayback(ch) {
         const res = await smartFetch(proxyApiUrl, { timeout: 4000 });
         if (res.ok) {
           const data = await res.json();
-          if (data.ok && data.videoId) {
+          if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw') {
             liveVideoId = data.videoId;
             console.log(`[YouTube Live Playback] 백엔드 분석 성공: ${liveVideoId}`);
             localStorage.setItem('yt_live_videoid_v3_' + ch.id, liveVideoId);
@@ -1377,17 +1381,21 @@ async function showYouTubeIframePlayback(ch) {
             }
 
             if (html) {
+              if (html.includes('consent.youtube.com') || html.includes('Before you continue') || html.includes('consent.google.com')) {
+                console.warn('[YouTube Live Playback] CORS 프록시 요청이 동의 화면으로 리다이렉트됨.');
+                continue;
+              }
               let match = html.match(/"liveStreamability"[\s\S]*?"videoId":"([a-zA-Z0-9_-]{11})"/);
-              if (match?.[1]) { liveVideoId = match[1]; break; }
+              if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') { liveVideoId = match[1]; break; }
 
               match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-              if (match?.[1]) { liveVideoId = match[1]; break; }
+              if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') { liveVideoId = match[1]; break; }
 
               match = html.match(/embed\/([a-zA-Z0-9_-]{11})/);
-              if (match?.[1]) { liveVideoId = match[1]; break; }
+              if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') { liveVideoId = match[1]; break; }
 
               match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
-              if (match?.[1]) { liveVideoId = match[1]; break; }
+              if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') { liveVideoId = match[1]; break; }
             }
           } catch (err) {
             console.warn(`[YouTube Live Playback] 프록시 실패:`, err);

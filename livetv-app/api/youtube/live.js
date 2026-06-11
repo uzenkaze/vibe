@@ -45,6 +45,10 @@ async function getYoutubeLiveVideoId(handle) {
   const url = `https://www.youtube.com/@${handle}/live`;
   const html = await fetchUrl(url);
   
+  if (html && (html.includes('consent.youtube.com') || html.includes('Before you continue') || html.includes('consent.google.com'))) {
+    throw new Error('Redirected to YouTube cookie consent page');
+  }
+  
   let videoId = null;
   if (html) {
     // 1. liveStreamability 블록 내의 videoId 우선 검색 (가장 정확한 실시간 라이브 ID)
@@ -54,23 +58,23 @@ async function getYoutubeLiveVideoId(handle) {
     // 2. 일반 JSON 내의 videoId 검색
     if (!videoId) {
       match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-      if (match?.[1]) videoId = match[1];
+      if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') videoId = match[1];
     }
 
     // 3. embed 주소 검색
     if (!videoId) {
       match = html.match(/embed\/([a-zA-Z0-9_-]{11})/);
-      if (match?.[1]) videoId = match[1];
+      if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') videoId = match[1];
     }
 
     // 4. 일반 watch?v= 링크 검색 (최후의 폴백)
     if (!videoId) {
       match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
-      if (match?.[1]) videoId = match[1];
+      if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') videoId = match[1];
     }
   }
 
-  if (!videoId) {
+  if (!videoId || videoId === 'C3aa-Vv4Fzw') {
     throw new Error('Could not find live video ID in page source');
   }
 
