@@ -432,13 +432,10 @@
         <div class="yt-spinner"></div>
         <span>영상 로딩 중...</span>
       </div>
-      <iframe
+      <div
         id="yt-iframe"
-        allowfullscreen
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        style="opacity:0;transition:opacity 0.3s ease"
-      ></iframe>
+        style="opacity:0;transition:opacity 0.3s ease;width:100%;height:100%;"
+      ></div>
     </div>
   </div>
   <div class="add-modal" id="add-modal">
@@ -470,6 +467,6 @@
     <button onclick="window.open('https://www.netflix.com', '_blank')" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M4 2v20h3.5v-7.5L16 22h4V2h-3.5v7.5L8 2H4z"/></svg><span style="font-size:10px;font-weight:700">넷플릭스</span></button>
 
   </div>
-  <script type="module" src="src/youtube.js?v=12"></script>
+  <script type="module" src="src/youtube.js?v=CACHE_BUST"></script>
 </body>
 </html>

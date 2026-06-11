@@ -1455,20 +1455,23 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
         ytPlayerInstance = null;
       }
 
-      // Recreate iframe if it does not exist or was destroyed/replaced by destroy()
-      let iframe = document.getElementById('yt-iframe');
-      if (!iframe) {
-        const wrap = document.querySelector('.yt-player-wrap');
-        if (wrap) {
-          iframe = document.createElement('iframe');
-          iframe.id = 'yt-iframe';
-          iframe.setAttribute('allowfullscreen', '');
-          iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-          iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-          iframe.style.opacity = '0';
-          iframe.style.transition = 'opacity 0.3s ease';
-          wrap.appendChild(iframe);
-        }
+      // Recreate placeholder div every time to ensure a clean slate
+      const oldPlayer = document.getElementById('yt-iframe');
+      if (oldPlayer) {
+        try {
+          oldPlayer.remove();
+        } catch (e) {}
+      }
+
+      const wrap = document.querySelector('.yt-player-wrap');
+      if (wrap) {
+        const placeholderDiv = document.createElement('div');
+        placeholderDiv.id = 'yt-iframe';
+        placeholderDiv.style.width = '100%';
+        placeholderDiv.style.height = '100%';
+        placeholderDiv.style.opacity = '0';
+        placeholderDiv.style.transition = 'opacity 0.3s ease';
+        wrap.appendChild(placeholderDiv);
       }
 
       ytPlayerInstance = new window.YT.Player('yt-iframe', {
@@ -1555,7 +1558,9 @@ function closePlayer(avoidPop = false) {
   const loading = document.getElementById('player-loading');
   if (iframe) { 
     iframe.onload = null; 
-    iframe.src = 'about:blank'; 
+    if (iframe.tagName === 'IFRAME') {
+      iframe.src = 'about:blank'; 
+    }
     iframe.style.opacity = '0'; 
   }
   if (loading) loading.style.display = 'flex';
