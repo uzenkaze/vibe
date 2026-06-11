@@ -71,15 +71,15 @@ const CHANNELS = [
 
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
-  { id: 'ytn_science', name: 'YTN 사이언스', network: 'YTN', category: '종합편성', ytHandle: '@YTNSCIENCE', ytChannelId: 'UCgWnS_4-yI7F0mY7dBL1C1A', ytVideoId: 'L8MwdIz2Iw4', officialUrl: 'https://science.ytn.co.kr/', urls: ['https://ytnscience-hls.gcdn.ntruss.com/ytnscience/ytnsciencehd/playlist.m3u8'] },
+  { id: 'ytn_science', name: 'YTN 사이언스', network: 'YTN', category: '종합편성', ytHandle: '@YTNSC', ytChannelId: 'UCgWnS_4-yI7F0mY7dBL1C1A', ytVideoId: '', officialUrl: 'https://science.ytn.co.kr/', noPlayableHls: true, urls: ['https://ytnscience-hls.gcdn.ntruss.com/ytnscience/ytnsciencehd/playlist.m3u8'] },
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', jtbcApiCode: 'onair', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', urls: [] },
   { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', urls: ['https://tvchosun-hls.gcdn.ntruss.com/tvchosun/tvchosunhd/playlist.m3u8'] },
   { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', urls: ['https://ichannela-hls.gcdn.ntruss.com/ichannela/ichannelahd/playlist.m3u8'] },
   { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', urls: ['https://mbn-hls.gcdn.ntruss.com/mbn/mbnhd/playlist.m3u8'] },
 
   // 뉴스/경제
-  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', ytVideoId: 'aZyD6EPl6KU', officialUrl: 'https://www.ytn.co.kr/live/', noPlayableHls: true, urls: [] },
-  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', ytVideoId: 'Hdw_2AlFCog', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', noPlayableHls: true, urls: [] },
+  { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', ytVideoId: '', officialUrl: 'https://www.ytn.co.kr/live/', noPlayableHls: true, urls: [] },
+  { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', ytVideoId: '', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', noPlayableHls: true, urls: [] },
   { id: 'sbsbiz', name: 'SBS Biz', network: 'SBS_BIZ', category: '뉴스/경제', ytHandle: '@SBSBiz2021', ytChannelId: 'UCbMjg2EvXs_RUGW-KrdM3pw', officialUrl: 'https://biz.sbs.co.kr/onair.html', noPlayableHls: true, urls: [] },
   { id: 'mk', name: '매일경제TV', network: 'MK', category: '뉴스/경제', ytHandle: '@MKeconomy_TV', ytChannelId: 'UCW_rE_QzXm5b7w7O21tE22A', officialUrl: 'https://www.mk.co.kr/', noPlayableHls: true, urls: [] },
   { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytHandle: '@mtn', ytChannelId: 'UCaQREsefLy-W8ruWcJ7IDtg', officialUrl: 'https://www.mtn.co.kr/tv-live', noPlayableHls: true, urls: [] },
@@ -980,9 +980,31 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
 
   // 비디오 요소 자체 에러 리스너
   target.onerror = () => {
-    const errorMsg = target.error ? `Code ${target.error.code}: ${target.error.message}` : '알 수 없는 에러';
+    const error = target.error;
+    const errorMsg = error ? `Code ${error.code}: ${error.message}` : '알 수 없는 에러';
     console.error('[Video Error]', errorMsg);
     debugLog(`비디오 재생 에러: ${errorMsg}`);
+
+    // 오디오 렌더러 에러(에러코드 3 또는 메시지에 audio 포함) 감지 시 음소거 재생 시도 (가상기기/에뮬레이터/사운드 장치 미연결 대응)
+    if (error && (error.code === 3 || (error.message && error.message.toLowerCase().includes('audio')))) {
+      if (!target.muted) {
+        debugLog(`오디오 장치 오류 감지. 음소거(Muted) 후 재생 재시도...`);
+        target.muted = true;
+        
+        // 볼륨 슬라이더 UI 음소거 상태로 동기화
+        const volSlider = document.getElementById(isPC() ? 'vol-slider' : 'vol-slider-mobile');
+        if (volSlider) volSlider.value = 0;
+        
+        if (hls) {
+          hls.startLoad();
+        } else {
+          target.load();
+        }
+        target.play().catch(e => console.warn('Muted play failed:', e));
+        return;
+      }
+    }
+
     tryNextUrl(ch, urlIdx);
   };
 
@@ -1003,9 +1025,23 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     target.onloadedmetadata = startPlayback;
 
     target.onerror = () => {
-      const nativeErrorMsg = target.error ? `Code ${target.error.code}: ${target.error.message}` : '네트워크 또는 코덱 오류';
+      const error = target.error;
+      const nativeErrorMsg = error ? `Code ${error.code}: ${error.message}` : '네트워크 또는 코덱 오류';
       console.error('[Native Playback Error]', nativeErrorMsg);
       debugLog(`네이티브 재생 실패: ${nativeErrorMsg}`);
+      
+      if (error && (error.code === 3 || (error.message && error.message.toLowerCase().includes('audio')))) {
+        if (!target.muted) {
+          debugLog(`네이티브 오디오 장치 오류. 음소거(Muted) 후 재생 재시도...`);
+          target.muted = true;
+          const volSlider = document.getElementById(isPC() ? 'vol-slider' : 'vol-slider-mobile');
+          if (volSlider) volSlider.value = 0;
+          target.load();
+          target.play().catch(e => console.warn('Muted play failed:', e));
+          return;
+        }
+      }
+
       target.onerror = null;
       tryNextUrl(ch, urlIdx);
     };
