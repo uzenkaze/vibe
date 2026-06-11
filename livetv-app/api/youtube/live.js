@@ -15,6 +15,7 @@ function fetchUrl(targetUrl, redirectCount = 0) {
         'Accept-Language': 'ko-KR,ko;q=0.9,en;q=0.8',
         'Accept-Encoding': 'identity',
         'Connection': 'keep-alive',
+        'Cookie': 'SOCS=CAESEwgDEgk0ODE3Nzk3MjQaAmtvIAEaBgiA_K2bBg; CONSENT=YES+cb.20210328-17-p0.en+FX+916',
       },
       timeout: 8000,
     }, (res) => {
