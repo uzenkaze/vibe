@@ -47,7 +47,12 @@ async function getYoutubeLiveVideoId(handle, channelId) {
   const html = await fetchUrl(url);
   
   if (html) {
-    if (html.includes('consent.youtube.com') || html.includes('Before you continue') || html.includes('consent.google.com')) {
+    const isConsentPage = html.includes('consent.youtube.com') || 
+                          html.includes('consent.google.com') || 
+                          html.includes('Before you continue') || 
+                          html.includes('동의') || 
+                          (html.includes('WIZ_global_data') && html.includes('youtube_web') && !html.includes('liveStreamability'));
+    if (isConsentPage) {
       throw new Error('Redirected to YouTube cookie consent page');
     }
 
@@ -68,26 +73,14 @@ async function getYoutubeLiveVideoId(handle, channelId) {
   
   let videoId = null;
   if (html) {
-    // 1. liveStreamability 블록 내의 videoId 우선 검색 (가장 정확한 실시간 라이브 ID)
+    // 1. liveStreamability 블록 내의 videoId 검색 (가장 정확하고 유일하게 유효한 실시간 라이브 ID)
     let match = html.match(/"liveStreamability"[\s\S]*?"videoId":"([a-zA-Z0-9_-]{11})"/);
-    if (match?.[1]) videoId = match[1];
-
-    // 2. 일반 JSON 내의 videoId 검색
-    if (!videoId) {
-      match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-      if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') videoId = match[1];
-    }
-
-    // 3. embed 주소 검색
-    if (!videoId) {
-      match = html.match(/embed\/([a-zA-Z0-9_-]{11})/);
-      if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') videoId = match[1];
-    }
-
-    // 4. 일반 watch?v= 링크 검색 (최후의 폴백)
-    if (!videoId) {
-      match = html.match(/watch\?v=([a-zA-Z0-9_-]{11})/);
-      if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') videoId = match[1];
+    if (match?.[1]) {
+      videoId = match[1];
+    } else {
+      // liveStreamability 블록이 없으면 동의 페이지 우회, 차단, 또는 채널 오프라인 상태이므로 에러 발생시킴
+      // 일반 동영상 ID를 임의로 긁어오는 폴백을 제거하여 엉뚱한 비디오(예: 삼프로TV)가 나오는 현상 방지
+      throw new Error('liveStreamability block not found in page source (likely redirected to consent or offline)');
     }
   }
 

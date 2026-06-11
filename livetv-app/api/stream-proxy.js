@@ -46,10 +46,13 @@ export default async function handler(req, res) {
   try {
     // Referer 결정
     let referer = 'https://vibe-eight-iota.vercel.app/';
-    if (urlHost.includes('kbs.co.kr')) referer = 'https://onair.kbs.co.kr/';
-    else if (urlHost.includes('jtbc.co.kr')) referer = 'https://onair.jtbc.co.kr/';
+    if (urlHost.includes('kbs')) referer = 'https://onair.kbs.co.kr/';
+    else if (urlHost.includes('jtbc')) referer = 'https://onair.jtbc.co.kr/';
     else if (urlHost.includes('mbc')) referer = 'https://www.mbc.co.kr/';
-    else if (urlHost.includes('sbs.co.kr')) referer = 'https://www.sbs.co.kr/';
+    else if (urlHost.includes('sbs')) referer = 'https://www.sbs.co.kr/';
+    else if (urlHost.includes('tvchosun')) referer = 'http://broadcast.tvchosun.com/';
+    else if (urlHost.includes('ichannela')) referer = 'https://ichannela.com/';
+    else if (urlHost.includes('mbn')) referer = 'https://www.mbn.co.kr/';
 
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',

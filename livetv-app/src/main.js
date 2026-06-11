@@ -1287,9 +1287,9 @@ async function showYouTubeIframePlayback(ch) {
     };
 
     // 1. 로컬 스토리지 캐시 우선 로드 (재생 대기 시간 0초)
-    let cachedVideoId = localStorage.getItem('yt_live_videoid_v3_' + ch.id);
+    let cachedVideoId = localStorage.getItem('yt_live_videoid_v4_' + ch.id);
     if (cachedVideoId === 'C3aa-Vv4Fzw') {
-      localStorage.removeItem('yt_live_videoid_v3_' + ch.id);
+      localStorage.removeItem('yt_live_videoid_v4_' + ch.id);
       cachedVideoId = null;
     }
     if (cachedVideoId) {
@@ -1308,7 +1308,7 @@ async function showYouTubeIframePlayback(ch) {
               const data = await res.json();
               if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw' && data.videoId !== cachedVideoId) {
                 console.log(`[YouTube Live Playback] 라이브 비디오 ID 변경 감지: ${cachedVideoId} -> ${data.videoId}`);
-                localStorage.setItem('yt_live_videoid_v3_' + ch.id, data.videoId);
+                localStorage.setItem('yt_live_videoid_v4_' + ch.id, data.videoId);
                 // 현재 재생 중인 채널이 일치할 때만 src 업데이트
                 if (activeChannelId === ch.id) {
                   const currentIframe = isPC() ? ytIframePC : ytIframeMob;
@@ -1345,7 +1345,7 @@ async function showYouTubeIframePlayback(ch) {
           if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw') {
             liveVideoId = data.videoId;
             console.log(`[YouTube Live Playback] 백엔드 분석 성공: ${liveVideoId}`);
-            localStorage.setItem('yt_live_videoid_v3_' + ch.id, liveVideoId);
+            localStorage.setItem('yt_live_videoid_v4_' + ch.id, liveVideoId);
           }
         }
       } catch (e) {
@@ -2502,7 +2502,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     for (let i = localStorage.length - 1; i >= 0; i--) {
       const key = localStorage.key(i);
-      if (key && key.startsWith('yt_live_videoid_') && !key.startsWith('yt_live_videoid_v3_')) {
+      if (key && key.startsWith('yt_live_videoid_') && !key.startsWith('yt_live_videoid_v4_')) {
         localStorage.removeItem(key);
       }
     }
