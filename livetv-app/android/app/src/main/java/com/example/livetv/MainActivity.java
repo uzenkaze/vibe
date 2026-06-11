@@ -1,10 +1,12 @@
 package com.example.livetv;
 
-import android.app.PictureInPictureParams;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Rational;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -15,6 +17,8 @@ import com.getcapacitor.BridgeWebViewClient;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
+    private BroadcastReceiver mediaReceiver;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +45,37 @@ public class MainActivity extends BridgeActivity {
                 }
             }
         });
+
+        // Register broadcast receiver for media control
+        mediaReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action == null) return;
+
+                WebView webView = getBridge() != null ? getBridge().getWebView() : null;
+                if (webView == null) return;
+
+                if ("com.example.livetv.ACTION_PLAY_PAUSE".equals(action)) {
+                    webView.post(() -> webView.evaluateJavascript("javascript:window.togglePlay()", null));
+                } else if ("com.example.livetv.ACTION_NEXT".equals(action)) {
+                    webView.post(() -> webView.evaluateJavascript("javascript:window.playNext()", null));
+                } else if ("com.example.livetv.ACTION_PREV".equals(action)) {
+                    webView.post(() -> webView.evaluateJavascript("javascript:window.playPrev()", null));
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.example.livetv.ACTION_PLAY_PAUSE");
+        filter.addAction("com.example.livetv.ACTION_NEXT");
+        filter.addAction("com.example.livetv.ACTION_PREV");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(mediaReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(mediaReceiver, filter);
+        }
     }
 
     private void handleSSLHandshake() {
@@ -81,14 +116,54 @@ public class MainActivity extends BridgeActivity {
                 @JavascriptInterface
                 public void onMusicStateChanged(boolean playing) {
                     Intent serviceIntent = new Intent(MainActivity.this, BackgroundAudioService.class);
-                    if (playing) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            startForegroundService(serviceIntent);
-                        } else {
-                            startService(serviceIntent);
-                        }
+                    serviceIntent.putExtra("playing", playing);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent);
                     } else {
-                        stopService(serviceIntent);
+                        startService(serviceIntent);
+                    }
+                }
+
+                @JavascriptInterface
+                public void updateMetadata(String title, String artist, String thumb, boolean playing) {
+                    Intent serviceIntent = new Intent(MainActivity.this, BackgroundAudioService.class);
+                    serviceIntent.putExtra("title", title);
+                    serviceIntent.putExtra("artist", artist);
+                    serviceIntent.putExtra("thumb", thumb);
+                    serviceIntent.putExtra("playing", playing);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent);
+                    } else {
+                        startService(serviceIntent);
+                    }
+                }
+
+                @JavascriptInterface
+                public String fetchKbsApi(String channelCode) {
+                    try {
+                        java.net.URL url = new java.net.URL("https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/" + channelCode + "?_=" + System.currentTimeMillis());
+                        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("GET");
+                        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+                        conn.setRequestProperty("Referer", "https://onair.kbs.co.kr/");
+                        conn.setConnectTimeout(5000);
+                        conn.setReadTimeout(5000);
+                        
+                        int responseCode = conn.getResponseCode();
+                        if (responseCode == 200) {
+                            java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream(), "UTF-8"));
+                            String inputLine;
+                            StringBuilder response = new StringBuilder();
+                            while ((inputLine = in.readLine()) != null) {
+                                response.append(inputLine);
+                            }
+                            in.close();
+                            return response.toString();
+                        } else {
+                            return "{\"error\": \"HTTP error code: " + responseCode + "\"}";
+                        }
+                    } catch (Exception e) {
+                        return "{\"error\": \"" + e.getMessage() + "\"}";
                     }
                 }
             }, "AndroidNative");
@@ -99,22 +174,43 @@ public class MainActivity extends BridgeActivity {
     public void onPause() {
         super.onPause();
         if (getBridge() != null && getBridge().getWebView() != null) {
-            getBridge().getWebView().onResume();
+            WebView webView = getBridge().getWebView();
+            webView.onResume();
+            webView.resumeTimers();
+            webView.dispatchWindowVisibilityChanged(View.VISIBLE);
         }
     }
 
     @Override
-    public void onUserLeaveHint() {
-        super.onUserLeaveHint();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    public void onStop() {
+        super.onStop();
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            WebView webView = getBridge().getWebView();
+            webView.onResume();
+            webView.dispatchWindowVisibilityChanged(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (!hasFocus && getBridge() != null && getBridge().getWebView() != null) {
+            getBridge().getWebView().dispatchWindowFocusChanged(true);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mediaReceiver != null) {
             try {
-                PictureInPictureParams params = new PictureInPictureParams.Builder()
-                        .setAspectRatio(new Rational(16, 9))
-                        .build();
-                enterPictureInPictureMode(params);
+                unregisterReceiver(mediaReceiver);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        // App is being closed: stop the background audio service completely
+        Intent serviceIntent = new Intent(this, BackgroundAudioService.class);
+        stopService(serviceIntent);
     }
 }

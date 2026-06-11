@@ -873,17 +873,26 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   // KBS API는 동적으로 URL을 앞에 추가
   if (ch.kbsApiCode && urlIdx === 0) {
     try {
-      let res;
-      try {
-        // 모바일(Capacitor)과 브라우저 모두 우선 직접 호출 시도 (모바일은 CapacitorHttp로 CORS가 없으며 국내 IP 전송 가능)
-        res = await smartFetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`, { timeout: 4000 });
-      } catch (err) {
-        // 직접 호출 실패(브라우저 CORS 등) 시 Vercel 서버리스 프록시 우회
-        const proxyBase = getProxyBaseUrl();
-        res = await smartFetch(`${proxyBase}/api/kbs?channel_code=${ch.kbsApiCode}`, { timeout: 4000 });
+      let data = null;
+      
+      // Android Native Bridge가 존재할 경우, 자바 네이티브 코드에서 직접 통신하여 CORS 차단 및 해외 IP 필터 우회
+      if (window.AndroidNative && typeof window.AndroidNative.fetchKbsApi === 'function') {
+        debugLog(`KBS API Android 네이티브 브릿지 호출...`);
+        const jsonStr = window.AndroidNative.fetchKbsApi(ch.kbsApiCode);
+        data = JSON.parse(jsonStr);
+      } else {
+        let res;
+        try {
+          // 모바일(Capacitor)과 브라우저 모두 우선 직접 호출 시도 (국내 IP 환경)
+          res = await smartFetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${ch.kbsApiCode}?_=${Date.now()}`, { timeout: 4000 });
+        } catch (err) {
+          // 직접 호출 실패(브라우저 CORS 등) 시 Vercel 서버리스 프록시 우회
+          const proxyBase = getProxyBaseUrl();
+          res = await smartFetch(`${proxyBase}/api/kbs?channel_code=${ch.kbsApiCode}`, { timeout: 4000 });
+        }
+        data = await res.json();
       }
 
-      const data = await res.json();
       const apiUrl = data.channel_item?.find(i => i.service_url)?.service_url;
       if (apiUrl) {
         debugLog(`KBS API 성공: ${ch.name}`);
