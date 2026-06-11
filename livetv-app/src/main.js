@@ -80,9 +80,7 @@ const CHANNELS = [
   // 뉴스/경제
   { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', ytVideoId: 'aZyD6EPl6KU', officialUrl: 'https://www.ytn.co.kr/live/', noPlayableHls: true, urls: [] },
   { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', ytVideoId: 'Hdw_2AlFCog', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', noPlayableHls: true, urls: [] },
-  { id: 'sbsbiz', name: 'SBS Biz', network: 'SBS_BIZ', category: '뉴스/경제', ytHandle: '@SBSBiz2021', ytChannelId: 'UCbMjg2EvXs_RUGW-KrdM3pw', officialUrl: 'https://biz.sbs.co.kr/onair.html', urls: [
-    'https://onair.sbs.co.kr/media/sbsbiz/playlist.m3u8'
-  ]},
+  { id: 'sbsbiz', name: 'SBS Biz', network: 'SBS_BIZ', category: '뉴스/경제', ytHandle: '@SBSBiz2021', ytChannelId: 'UCbMjg2EvXs_RUGW-KrdM3pw', officialUrl: 'https://biz.sbs.co.kr/onair.html', noPlayableHls: true, urls: [] },
   { id: 'mk', name: '매일경제TV', network: 'MK', category: '뉴스/경제', ytHandle: '@MKeconomy_TV', ytChannelId: 'UCW_rE_QzXm5b7w7O21tE22A', officialUrl: 'https://www.mk.co.kr/', noPlayableHls: true, urls: [] },
   { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytHandle: '@mtn', ytChannelId: 'UCaQREsefLy-W8ruWcJ7IDtg', officialUrl: 'https://www.mtn.co.kr/tv-live', noPlayableHls: true, urls: [] },
   { id: 'ktv', name: 'KTV 국민방송', network: 'KTV', category: '뉴스/경제', ytHandle: '@KTVKorea', ytChannelId: 'UCj8Snyrs1y-wnBQiUmGrTjw', urls: [
@@ -139,12 +137,25 @@ const channelStatus = {};
 
 /* =================== CORS PROXY LIST =================== */
 // GitHub Pages 환경에서 HLS 스트림 접근 시 CORS 우회를 위한 프록시 목록 (우선순위 순서)
-const CORS_PROXIES = [
-  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-  (url) => `https://thingproxy.freeboard.io/fetch/${url}`,
-];
+// CORS 프록시 - Vercel 자체 서버리스 프록시만 사용 (외부 무료 프록시들은 모두 차단/다운됨)
+// /api/stream-proxy?url=... 엔드포인트를 통해 방송사 스트림을 안전하게 중계
+const getVercelStreamProxy = (url) => {
+  const isLocal = window.location.hostname === 'localhost' || 
+                  window.location.hostname === '127.0.0.1' || 
+                  window.location.hostname.startsWith('192.168.');
+  const isCapacitor = typeof window !== 'undefined' && 
+                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  if (isLocal && !isCapacitor) {
+    return null; // Local browser development directly connects to the stream
+  }
+  
+  const proxyBase = getProxyBaseUrl();
+  return `${proxyBase}/api/stream-proxy?url=${encodeURIComponent(url)}`;
+};
+
+// 레거시 호환성 유지 (직접 접속만 시도 - 외부 프록시 제거)
+const CORS_PROXIES = [];
 
 // GitHub Pages(HTTPS) 환경에서 http:// URL은 Mixed Content로 차단됨 → https://로 자동 업그레이드
 function upgradeToHttps(url) {
@@ -1003,10 +1014,7 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
   const isCapacitor = typeof window !== 'undefined' && 
                       (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
 
-  if (isCapacitor) {
-    // Capacitor 환경에서는 CORS 프록시나 Hls.js를 거치지 않고 즉시 네이티브 HLS 플레이어로 재생 (CORS 회피 및 빠른 로딩)
-    playNatively();
-  } else if (Hls.isSupported()) {
+  if (Hls.isSupported()) {
     // HLS 재생 가능 시 화질 선택 버튼 활성화
     const qualWrapperPC = document.getElementById('quality-select-pc-wrapper');
     const qualWrapperMob = document.getElementById('quality-select-mob-wrapper');
@@ -1019,10 +1027,9 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       proxyRetryChannelId = ch.id;
     }
 
-    // ★ 핵심 변경: 로컬과 동일하게 항상 직접 접속 먼저 시도
-    // currentProxyIdx === -1이면 프록시 없이 직접 접속 (로컬 방식)
-    // 실패 시 에러 핸들러에서 프록시 인덱스를 0→1→2→3 순으로 올려 재시도
-    const useProxy = currentProxyIdx >= 0;
+    // Vercel 배포 환경에서는 자체 stream-proxy 사용 가능 여부 확인
+    const vercelProxy = getVercelStreamProxy(url);
+    const useProxy = currentProxyIdx >= 0 && !!vercelProxy;
 
     hls = new Hls({
       manifestLoadingTimeOut: 8000,
@@ -1040,31 +1047,28 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
         loader.load = function(context, cfg, callbacks) {
           if (useProxy) {
             const isAlreadyProxied =
-              context.url.includes('allorigins.win') ||
-              context.url.includes('corsproxy.io') ||
-              context.url.includes('codetabs.com') ||
-              context.url.includes('thingproxy.freeboard.io');
+              context.url.includes('/api/stream-proxy');
 
             if (!isAlreadyProxied) {
               const originalUrl = context.url;
-              const proxyIdx = Math.min(currentProxyIdx, CORS_PROXIES.length - 1);
-              context.url = CORS_PROXIES[proxyIdx](originalUrl);
-              console.log(`[HLS Loader] 프록시 적용 (${proxyIdx}): ${originalUrl.substring(0, 80)}`);
+              const proxyUrl = getVercelStreamProxy(originalUrl);
+              if (proxyUrl) {
+                context.url = proxyUrl;
+                console.log(`[HLS Loader] Vercel 프록시 적용: ${originalUrl.substring(0, 80)}`);
 
-              // onSuccess에서 context.url을 원본 URL로 복원
-              // HLS.js가 m3u8 내 상대 경로를 원본 서버 기준으로 해석하게 함
-              const origOnSuccess = callbacks.onSuccess;
-              const patchedCallbacks = Object.assign({}, callbacks, {
-                onSuccess: (response, stats, ctx) => {
-                  ctx.url = originalUrl; // 원본 URL 복원 → 상대경로 해석 기준점 복원
-                  origOnSuccess(response, stats, ctx);
-                }
-              });
-              originalLoad(context, cfg, patchedCallbacks);
-              return;
+                const origOnSuccess = callbacks.onSuccess;
+                const patchedCallbacks = Object.assign({}, callbacks, {
+                  onSuccess: (response, stats, ctx) => {
+                    ctx.url = originalUrl;
+                    origOnSuccess(response, stats, ctx);
+                  }
+                });
+                originalLoad(context, cfg, patchedCallbacks);
+                return;
+              }
             }
           }
-          // 직접 접속 (로컬과 동일한 방식)
+          // 직접 접속 (기본)
           originalLoad(context, cfg, callbacks);
         };
         return loader;
@@ -1089,35 +1093,26 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
       console.warn('[HLS.js Error]', data.type, data.details, data.fatal);
       if (data.fatal) {
         if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-          // Capacitor 환경에서는 CORS 프록시를 통하는 것보다 네이티브 HLS 플레이어가 직접 재생하는 것이 적합 (CORS 제한 없음)
-          const isCapacitor = typeof window !== 'undefined' && 
+          const isCapacitorEnv = typeof window !== 'undefined' && 
                               (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
-          if (isCapacitor) {
-            debugLog(`직접 재생 실패. 네이티브 HLS 재생을 시도합니다...`);
+          if (isCapacitorEnv) {
+            debugLog(`Hls.js 로드 실패. 네이티브 HLS 재생 시도...`);
             playNatively();
             return;
           }
 
-          // 직접 접속 실패 → CORS 프록시로 재시도 (0 → 1 → 2 → 3 순서)
-          if (currentProxyIdx < CORS_PROXIES.length - 1) {
-            currentProxyIdx++; // -1→0→1→2→3
-            if (currentProxyIdx === 0) {
-              debugLog(`직접 접속 실패. CORS 프록시 1/${CORS_PROXIES.length}로 재시도...`);
-            } else {
-              debugLog(`프록시 실패. 프록시 ${currentProxyIdx + 1}/${CORS_PROXIES.length}로 재시도...`);
-            }
-            if (hls) {
-              hls.destroy();
-              hls = null;
-            }
+          // 직접 접속 실패 → Vercel 자체 프록시로 1회 재시도
+          const vercelProxyAvailable = !!getVercelStreamProxy(url);
+          if (currentProxyIdx < 0 && vercelProxyAvailable) {
+            currentProxyIdx = 0; // Vercel 프록시 활성화
+            debugLog(`직접 접속 실패. Vercel 스트림 프록시로 재시도...`);
+            if (hls) { hls.destroy(); hls = null; }
             setTimeout(() => {
-              if (activeChannelId === ch.id) {
-                playChannel(ch, urlIdx, startTime);
-              }
+              if (activeChannelId === ch.id) playChannel(ch, urlIdx, startTime);
             }, 300);
           } else {
-            // 직접접속 + 모든 프록시 소진 → 다음 URL로
-            debugLog(`직접접속 및 모든 프록시 실패. 다음 스트림 URL로 전환합니다.`);
+            // 프록시도 실패 → 다음 URL로
+            debugLog(`프록시 실패. 다음 스트림 URL로 전환...`);
             currentProxyIdx = -1;
             proxyRetryChannelId = null;
             if (hls) { hls.destroy(); hls = null; }
