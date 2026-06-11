@@ -1287,7 +1287,7 @@ async function showYouTubeIframePlayback(ch) {
     };
 
     // 1. 로컬 스토리지 캐시 우선 로드 (재생 대기 시간 0초)
-    let cachedVideoId = localStorage.getItem('yt_live_videoid_' + ch.id);
+    let cachedVideoId = localStorage.getItem('yt_live_videoid_v3_' + ch.id);
     if (cachedVideoId) {
       console.log(`[YouTube Live Playback] 로컬 스토리지 캐시된 비디오 ID 즉시 사용: ${cachedVideoId}`);
       ytIframe.src = `https://www.youtube.com/embed/${cachedVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
@@ -1304,7 +1304,7 @@ async function showYouTubeIframePlayback(ch) {
               const data = await res.json();
               if (data.ok && data.videoId && data.videoId !== cachedVideoId) {
                 console.log(`[YouTube Live Playback] 라이브 비디오 ID 변경 감지: ${cachedVideoId} -> ${data.videoId}`);
-                localStorage.setItem('yt_live_videoid_' + ch.id, data.videoId);
+                localStorage.setItem('yt_live_videoid_v3_' + ch.id, data.videoId);
                 // 현재 재생 중인 채널이 일치할 때만 src 업데이트
                 if (activeChannelId === ch.id) {
                   const currentIframe = isPC() ? ytIframePC : ytIframeMob;
@@ -1341,7 +1341,7 @@ async function showYouTubeIframePlayback(ch) {
           if (data.ok && data.videoId) {
             liveVideoId = data.videoId;
             console.log(`[YouTube Live Playback] 백엔드 분석 성공: ${liveVideoId}`);
-            localStorage.setItem('yt_live_videoid_' + ch.id, liveVideoId);
+            localStorage.setItem('yt_live_videoid_v3_' + ch.id, liveVideoId);
           }
         }
       } catch (e) {
@@ -2490,6 +2490,16 @@ async function checkAndRepairChannelUrls() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // 이전 버전의 손상된 유튜브 라이브 캐시 키 삭제
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('yt_live_videoid_') && !key.startsWith('yt_live_videoid_v3_')) {
+        localStorage.removeItem(key);
+      }
+    }
+  } catch (e) {}
+
   // Load cached repaired URLs first (synchronously)
   CHANNELS.forEach(ch => {
     const cached = localStorage.getItem('repaired_url_' + ch.id);
