@@ -36,7 +36,7 @@ function fetchUrl(targetUrl, redirectCount = 0) {
   });
 }
 
-async function getYoutubeLiveVideoId(handle) {
+async function getYoutubeLiveVideoId(handle, channelId) {
   const cached = ytLiveCache.get(handle);
   if (cached && Date.now() - cached.timestamp < YT_LIVE_CACHE_TTL) {
     return cached.videoId;
@@ -45,8 +45,18 @@ async function getYoutubeLiveVideoId(handle) {
   const url = `https://www.youtube.com/@${handle}/live`;
   const html = await fetchUrl(url);
   
-  if (html && (html.includes('consent.youtube.com') || html.includes('Before you continue') || html.includes('consent.google.com'))) {
-    throw new Error('Redirected to YouTube cookie consent page');
+  if (html) {
+    if (html.includes('consent.youtube.com') || html.includes('Before you continue') || html.includes('consent.google.com')) {
+      throw new Error('Redirected to YouTube cookie consent page');
+    }
+
+    const lowerHtml = html.toLowerCase();
+    const hasHandle = lowerHtml.includes(handle.toLowerCase());
+    const hasChannelId = channelId ? lowerHtml.includes(channelId.toLowerCase()) : false;
+
+    if (!hasHandle && !hasChannelId) {
+      throw new Error('Response HTML does not match the channel handle or ID');
+    }
   }
   
   let videoId = null;
@@ -87,15 +97,19 @@ export default async function handler(req, res) {
     return res.status(204).end();
   }
 
-  const { handle } = req.query;
+  const { handle, channelId } = req.query;
 
   if (!handle || !/^@?[\w\.-]+$/.test(handle)) {
     return res.status(400).json({ error: 'Invalid handle' });
   }
 
+  if (channelId && !/^UC[a-zA-Z0-9_-]{22}$/.test(channelId)) {
+    return res.status(400).json({ error: 'Invalid channel ID' });
+  }
+
   try {
     const cleanHandle = handle.replace('@', '');
-    const videoId = await getYoutubeLiveVideoId(cleanHandle);
+    const videoId = await getYoutubeLiveVideoId(cleanHandle, channelId);
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=600');
     return res.status(200).json({ ok: true, videoId });

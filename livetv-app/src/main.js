@@ -1303,7 +1303,7 @@ async function showYouTubeIframePlayback(ch) {
           try {
             const handle = ch.ytHandle.replace('@', '');
             const proxyBase = getProxyBaseUrl();
-            const res = await smartFetch(`${proxyBase}/api/youtube/live?handle=${handle}`, { timeout: 4000 });
+            const res = await smartFetch(`${proxyBase}/api/youtube/live?handle=${handle}&channelId=${ch.ytChannelId || ''}`, { timeout: 4000 });
             if (res.ok) {
               const data = await res.json();
               if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw' && data.videoId !== cachedVideoId) {
@@ -1336,7 +1336,7 @@ async function showYouTubeIframePlayback(ch) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const proxyBase = getProxyBaseUrl();
-        const proxyApiUrl = `${proxyBase}/api/youtube/live?handle=${handle}`;
+        const proxyApiUrl = `${proxyBase}/api/youtube/live?handle=${handle}&channelId=${ch.ytChannelId || ''}`;
         console.log(`[YouTube Live Playback] 자체 백엔드 라이브 분석기 호출: ${proxyApiUrl}`);
         
         const res = await smartFetch(proxyApiUrl, { timeout: 4000 });
