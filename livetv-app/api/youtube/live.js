@@ -104,7 +104,7 @@ export default async function handler(req, res) {
     return res.status(204).end();
   }
 
-  const { handle, channelId } = req.query;
+  const { handle, channelId, debug } = req.query;
 
   if (!handle || !/^@?[\w\.-]+$/.test(handle)) {
     return res.status(400).json({ error: 'Invalid handle' });
@@ -112,6 +112,31 @@ export default async function handler(req, res) {
 
   if (channelId && !/^UC[a-zA-Z0-9_-]{22}$/.test(channelId)) {
     return res.status(400).json({ error: 'Invalid channel ID' });
+  }
+
+  if (debug === 'true') {
+    try {
+      const cleanHandle = handle.replace('@', '');
+      const url = `https://www.youtube.com/@${cleanHandle}/live`;
+      const html = await fetchUrl(url);
+      const titleMatch = html.match(/<title>(.*?)<\/title>/);
+      const hasConsent = html.includes('consent') || html.includes('Before you continue') || html.includes('동의') || html.includes('redirect');
+      const matches = [];
+      let m;
+      const regex = /"videoId":"([a-zA-Z0-9_-]{11})"/g;
+      while ((m = regex.exec(html)) !== null) {
+        if (!matches.includes(m[1])) matches.push(m[1]);
+      }
+      return res.status(200).json({
+        title: titleMatch ? titleMatch[1] : 'Not found',
+        hasConsent,
+        url,
+        videoIds: matches.slice(0, 10),
+        htmlSnippet: html.substring(0, 1500)
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
   }
 
   try {
