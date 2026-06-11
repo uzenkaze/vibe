@@ -584,6 +584,7 @@ async function loadTrending() {
 }
 
 function loadRecent() {
+  currentSearchQuery = '';
   const listEl = document.getElementById('music-list');
   document.getElementById('loading-indicator').classList.add('active');
   listEl.innerHTML = '';
@@ -602,6 +603,7 @@ function loadRecent() {
 }
 
 function loadLikedSongs() {
+  currentSearchQuery = '';
   const listEl = document.getElementById('music-list');
   document.getElementById('loading-indicator').classList.add('active');
   listEl.innerHTML = '';
@@ -1249,7 +1251,7 @@ function initInfiniteScroll() {
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isSearchLoading && currentSearchQuery) {
       searchPageCount++;
-      const suffixes = [' 추천', ' 모음', ' 핫라인', ' 플레이리스트', ' 라이브', ' 베스트', ' 모음집'];
+      const suffixes = [' 인기곡', ' 히트곡', ' 베스트', ' 추천 플레이리스트', ' 노래모음', ' 최신 인기곡'];
       const nextQuery = currentSearchQuery + suffixes[(searchPageCount - 1) % suffixes.length];
       searchMusic(nextQuery, false, true);
     }
