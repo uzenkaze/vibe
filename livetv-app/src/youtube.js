@@ -1455,6 +1455,22 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
         ytPlayerInstance = null;
       }
 
+      // Recreate iframe if it does not exist or was destroyed/replaced by destroy()
+      let iframe = document.getElementById('yt-iframe');
+      if (!iframe) {
+        const wrap = document.querySelector('.yt-player-wrap');
+        if (wrap) {
+          iframe = document.createElement('iframe');
+          iframe.id = 'yt-iframe';
+          iframe.setAttribute('allowfullscreen', '');
+          iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+          iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+          iframe.style.opacity = '0';
+          iframe.style.transition = 'opacity 0.3s ease';
+          wrap.appendChild(iframe);
+        }
+      }
+
       ytPlayerInstance = new window.YT.Player('yt-iframe', {
         height: '100%',
         width: '100%',
@@ -1470,8 +1486,8 @@ function playVideo(videoId, title, searchQuery = '', channelId = '', channelName
         events: {
           onReady: (event) => {
             if (loading) loading.style.display = 'none';
-            const iframe = document.getElementById('yt-iframe');
-            if (iframe) iframe.style.opacity = '1';
+            const iframeEl = document.getElementById('yt-iframe');
+            if (iframeEl) iframeEl.style.opacity = '1';
             event.target.playVideo();
           },
           onStateChange: (event) => {
