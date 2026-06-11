@@ -665,11 +665,17 @@ function playMusic(song, index) {
   isPlaying = true;
 
   if (isPlayerReady && ytPlayer?.loadVideoById) {
-    ytPlayer.loadVideoById(song.videoId);
+    ytPlayer.loadVideoById({
+      videoId: song.videoId,
+      suggestedQuality: 'highres'
+    });
   } else {
     const iv = setInterval(() => {
       if (isPlayerReady && ytPlayer?.loadVideoById) {
-        ytPlayer.loadVideoById(song.videoId);
+        ytPlayer.loadVideoById({
+          videoId: song.videoId,
+          suggestedQuality: 'highres'
+        });
         clearInterval(iv);
       }
     }, 200);
