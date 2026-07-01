@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
-function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent }) {
+function InstallmentStatCard({ label, value, color, accent, bgGradient, icon, tooltipContent }) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -21,22 +21,51 @@ function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent
       className="installment-stat"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ '--stat-accent': accent, position: 'relative', zIndex: isHovered ? 100 : 1 }}
+      style={{ 
+        background: bgGradient || 'var(--card)', 
+        '--stat-accent': bgGradient ? 'transparent' : accent,
+        position: 'relative', 
+        zIndex: isHovered ? 100 : 1,
+        color: bgGradient ? '#ffffff' : 'inherit',
+        border: bgGradient ? 'none' : '1px solid var(--card-border)'
+      }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem' }}>
         <div style={{
           width: 30, height: 30, borderRadius: '8px',
-          background: accent + '15',
+          background: bgGradient ? 'rgba(255, 255, 255, 0.2)' : accent + '15',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: accent, flexShrink: 0,
+          color: bgGradient ? '#ffffff' : accent, flexShrink: 0,
         }}>
           {icon}
         </div>
-        <div className="installment-stat-label" style={{ margin: 0 }}>{label}</div>
+        <div 
+          className="installment-stat-label" 
+          style={{ 
+            margin: 0,
+            color: bgGradient ? 'rgba(255, 255, 255, 0.75)' : 'var(--text-muted)'
+          }}
+        >
+          {label}
+        </div>
       </div>
-      <div className="installment-stat-value num" style={{ color: color }}>
+      <div 
+        className="installment-stat-value num" 
+        style={{ 
+          color: bgGradient ? '#ffffff' : color 
+        }}
+      >
         {formatKRW(value)}
-        <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', marginLeft: 3 }}>원</span>
+        <span 
+          style={{ 
+            fontSize: '0.7rem', 
+            fontWeight: 600, 
+            color: bgGradient ? 'rgba(255, 255, 255, 0.75)' : 'var(--text-muted)', 
+            marginLeft: 3 
+          }}
+        >
+          원
+        </span>
       </div>
 
       {isHovered && tooltipContent && (
@@ -66,7 +95,7 @@ function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent
 
 
 export default function InstallmentOverview() {
-  const { getCurrentSections, year, month } = useApp();
+  const { getCurrentSections, year, month, getPrevMonthCompareData } = useApp();
 
   const sections = getCurrentSections();
   const installments = sections.installment || [];
@@ -136,6 +165,7 @@ export default function InstallmentOverview() {
       value: totalAmount,
       color: 'var(--text-primary)',
       accent: '#5B6BF8',
+      bgGradient: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -153,6 +183,7 @@ export default function InstallmentOverview() {
       value: remainTotal,
       color: 'var(--coral)',
       accent: '#FF6B6B',
+      bgGradient: 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="1" x2="12" y2="23"/>
@@ -198,6 +229,7 @@ export default function InstallmentOverview() {
       value: thisMonthTotal,
       color: 'var(--teal)',
       accent: '#2DC9A0',
+      bgGradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"/>
@@ -215,6 +247,7 @@ export default function InstallmentOverview() {
       value: nextMonthTotal,
       color: '#5B6BF8',
       accent: '#5B6BF8',
+      bgGradient: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -230,13 +263,15 @@ export default function InstallmentOverview() {
     },
   ];
 
+  const compareData = getPrevMonthCompareData ? getPrevMonthCompareData() : null;
+
   return (
     <div className="section-card installment-overview-card" style={{ marginBottom: '1.5rem' }}>
-      <div className="section-card-header">
-        <div className="section-card-title">
+      <div className="section-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="section-card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span className="section-dot" style={{ background: '#5B6BF8' }} />
           카드 할부 현황
-          <span style={{
+          <span className="col-hide-mobile" style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
             fontWeight: 600, letterSpacing: '0.05em',
             textTransform: 'uppercase', marginLeft: 4,
@@ -244,6 +279,32 @@ export default function InstallmentOverview() {
             Card Installment Overview
           </span>
         </div>
+
+        {compareData && compareData.hasPrev && compareData.cardDiff !== 0 && (
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '2px',
+            padding: '4px 10px',
+            borderRadius: '99px',
+            fontSize: '0.65rem',
+            fontWeight: 800,
+            background: compareData.cardDiff < 0 
+              ? 'rgba(46, 230, 111, 0.15)' 
+              : 'rgba(255, 0, 127, 0.15)',
+            color: compareData.cardDiff < 0 ? 'var(--teal)' : 'var(--coral)',
+            boxShadow: compareData.cardDiff < 0 
+              ? '0 0 10px rgba(46, 230, 111, 0.1)' 
+              : '0 0 10px rgba(255, 0, 127, 0.1)',
+          }} title={`전월 카드사용 지출 대비 ${compareData.cardDiff > 0 ? '증가' : '감소'}`}>
+            <span>카드지출 전월대비</span>
+            <span>{compareData.cardDiff > 0 ? '▲' : '▼'}</span>
+            <span>{Math.abs(compareData.cardRate).toFixed(1)}%</span>
+            <span style={{ opacity: 0.7, fontWeight: 600, marginLeft: '3px' }}>
+              ({compareData.cardDiff > 0 ? '+' : ''}{formatKRW(compareData.cardDiff)})
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="installment-grid">

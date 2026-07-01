@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
-function SummaryCard({ label, value, sub, subPositive, accentColor, icon, tooltipContent }) {
+function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, tooltipContent, compareDiff, compareRate, hasPrev }) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -15,7 +15,11 @@ function SummaryCard({ label, value, sub, subPositive, accentColor, icon, toolti
   const handleMouseLeave = () => {
     setIsHovered(false);
   };
-  
+
+  const isPositive = compareDiff > 0;
+  // 지출의 경우 증가(Positive)하면 핑크(부정적), 수입/순자산의 경우 증가하면 그린(긍정적)으로 컬러매치
+  const isGood = label === '총 지출' ? !isPositive : isPositive;
+
   return (
     <div 
       className="summary-card-outer"
@@ -28,22 +32,51 @@ function SummaryCard({ label, value, sub, subPositive, accentColor, icon, toolti
           <div style={{
             width: 28, height: 28,
             borderRadius: '50%',
-            background: accentColor + '18',
+            background: accentColorDim || 'rgba(0,0,0,0.05)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: accentColor, flexShrink: 0,
           }}>
             {icon}
           </div>
-          <div className="summary-card-label" style={{ margin: 0, fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'none', letterSpacing: 'normal' }}>
+          <div className="summary-card-label" style={{ margin: 0, fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
             {label}
           </div>
         </div>
         <div
           className="summary-card-value num"
-          style={{ color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 800, marginBottom: 0, letterSpacing: '-0.02em', textAlign: 'right' }}
+          style={{ color: 'var(--text-primary)', fontSize: '1.25rem', fontWeight: 900, marginBottom: 0, letterSpacing: '-0.02em', textAlign: 'right' }}
         >
           {formatKRW(value)}
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginLeft: 2, fontWeight: 600 }}>원</span>
         </div>
+
+        {/* 전월대비 증감율 캡슐 뱃지 */}
+        {hasPrev && compareDiff !== 0 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.45rem' }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '2px',
+              padding: '2px 8px',
+              borderRadius: '99px',
+              fontSize: '0.65rem',
+              fontWeight: 800,
+              background: isGood 
+                ? 'var(--teal-dim)' 
+                : 'var(--coral-dim)',
+              color: isGood ? 'var(--teal)' : 'var(--coral)',
+              boxShadow: isGood 
+                ? '0 0 10px var(--teal-dim)' 
+                : '0 0 10px var(--coral-dim)',
+            }}>
+              <span>{isPositive ? '▲' : '▼'}</span>
+              <span>{Math.abs(compareRate).toFixed(1)}%</span>
+              <span style={{ opacity: 0.65, marginLeft: '3px', fontWeight: 600 }}>
+                ({isPositive ? '+' : ''}{formatKRW(compareDiff)})
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {isHovered && tooltipContent && (
@@ -72,9 +105,99 @@ function SummaryCard({ label, value, sub, subPositive, accentColor, icon, toolti
 }
 
 export default function SummaryCards() {
-  const { getCurrentSections, year, month } = useApp();
+  const { getCurrentSections, year, month, yearData } = useApp();
   const sections = getCurrentSections();
 
+  const prevMonthCompare = useMemo(() => {
+    let prevYear = parseInt(year);
+    let prevMonth = parseInt(month) - 1;
+    if (prevMonth === 0) {
+      prevMonth = 12;
+      prevYear -= 1;
+    }
+    const prevYearStr = String(prevYear);
+    const prevMonthStr = String(prevMonth).padStart(2, '0');
+
+    // 1. 현재 데이터 집계
+    const sum = arr => (arr || []).reduce((a, r) => a + (Number(r.amount) || 0), 0);
+    const sumRem = arr => (arr || []).reduce((a, r) => a + (Number(r.remAmount) || 0), 0);
+
+    const sumC = sum(sections.cash);
+    const sumNC = sum(sections['non-cash']);
+    const sumRE = sum(sections['real-estate']);
+    const sumR = sum(sections.retirement);
+    const sumD = sumRem(sections.debt);
+    const sumI = sumRem(sections.installment);
+
+    const curIncome = sum(sections.income);
+    const curAsset = sumC + sumNC + sumRE + sumR;
+    const curDebt = sumD + sumI;
+    const curVExp = sum(sections['v-expense']);
+    const curFExp = sum(sections['f-expense']);
+
+    const currentMonthStr = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+    const curInstall = (sections.installment || [])
+      .filter(i => !i.endDate || i.endDate >= currentMonthStr)
+      .reduce((a, r) => a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0), 0);
+
+    const curExpense = curVExp + curFExp + curInstall;
+    const curNetWorth = curAsset - curDebt;
+    const curPnl = curIncome - curExpense;
+
+    // 2. 전월 데이터 집계
+    const prevYd = yearData[prevYearStr] || {};
+    const prevMonths = prevYd.months || {};
+    const prevMonthData = prevMonths[prevMonthStr] || {};
+    const prevSections = prevMonthData.sections;
+
+    if (!prevSections) {
+      return {
+        hasPrev: false,
+        income: { diff: 0, rate: 0 },
+        expense: { diff: 0, rate: 0 },
+        pnl: { diff: 0, rate: 0 },
+        netWorth: { diff: 0, rate: 0 }
+      };
+    }
+
+    const pC = sum(prevSections.cash);
+    const pNC = sum(prevSections['non-cash']);
+    const pRE = sum(prevSections['real-estate']);
+    const pR = sum(prevSections.retirement);
+    const pD = sumRem(prevSections.debt);
+    const pI = sumRem(prevSections.installment);
+
+    const prevIncome = sum(prevSections.income);
+    const prevAsset = pC + pNC + pRE + pR;
+    const prevDebt = pD + pI;
+    const prevVExp = sum(prevSections['v-expense']);
+    const prevFExp = sum(prevSections['f-expense']);
+
+    const prevMonthStrVal = `${String(prevYear).substring(2)}.${String(prevMonth).padStart(2, '0')}`;
+    const prevInstall = (prevSections.installment || [])
+      .filter(i => !i.endDate || i.endDate >= prevMonthStrVal)
+      .reduce((a, r) => a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0), 0);
+
+    const prevExpense = prevVExp + prevFExp + prevInstall;
+    const prevNetWorth = prevAsset - prevDebt;
+    const prevPnl = prevIncome - prevExpense;
+
+    const calcStat = (cur, prev) => {
+      const diff = cur - prev;
+      const rate = prev === 0 ? (cur === 0 ? 0 : 100) : (diff / prev) * 100;
+      return { diff, rate };
+    };
+
+    return {
+      hasPrev: true,
+      income: calcStat(curIncome, prevIncome),
+      expense: calcStat(curExpense, prevExpense),
+      pnl: calcStat(curPnl, prevPnl),
+      netWorth: calcStat(curNetWorth, prevNetWorth)
+    };
+  }, [sections, year, month, yearData]);
+
+  // 하위 계산용 변수 재지정
   const {
     sumC, sumNC, sumRE, sumR, sumD, sumI,
     totalIncome, totalAsset, totalDebt,
@@ -97,7 +220,6 @@ export default function SummaryCards() {
     const totalVExp = sum(sections['v-expense']);
     const totalFExp = sum(sections['f-expense']);
 
-    // 이번 달 할부 납부액 (만료된 할부 제외)
     const currentMonthStr = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
     const totalInstallThisMonth = (sections.installment || [])
       .filter(i => !i.endDate || i.endDate >= currentMonthStr)
@@ -122,7 +244,10 @@ export default function SummaryCards() {
       label: '월 수입',
       value: totalIncome,
       accentColor: 'var(--teal)',
-      subPositive: true,
+      accentColorDim: 'var(--teal-dim)',
+      compareDiff: prevMonthCompare.income.diff,
+      compareRate: prevMonthCompare.income.rate,
+      hasPrev: prevMonthCompare.hasPrev,
       icon: (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
@@ -160,7 +285,10 @@ export default function SummaryCards() {
       label: '총 지출',
       value: totalExpense,
       accentColor: 'var(--coral)',
-      subPositive: false,
+      accentColorDim: 'var(--coral-dim)',
+      compareDiff: prevMonthCompare.expense.diff,
+      compareRate: prevMonthCompare.expense.rate,
+      hasPrev: prevMonthCompare.hasPrev,
       icon: (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
@@ -193,7 +321,10 @@ export default function SummaryCards() {
       label: '월 손익 (P&L)',
       value: monthPnl,
       accentColor: monthPnl >= 0 ? 'var(--teal)' : 'var(--coral)',
-      subPositive: monthPnl >= 0,
+      accentColorDim: monthPnl >= 0 ? 'var(--teal-dim)' : 'var(--coral-dim)',
+      compareDiff: prevMonthCompare.pnl.diff,
+      compareRate: prevMonthCompare.pnl.rate,
+      hasPrev: prevMonthCompare.hasPrev,
       icon: (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="1" x2="12" y2="23" />
@@ -225,7 +356,10 @@ export default function SummaryCards() {
       label: '순자산 (Net Worth)',
       value: netWorth,
       accentColor: 'var(--gold)',
-      subPositive: netWorth >= 0,
+      accentColorDim: 'var(--gold-dim)',
+      compareDiff: prevMonthCompare.netWorth.diff,
+      compareRate: prevMonthCompare.netWorth.rate,
+      hasPrev: prevMonthCompare.hasPrev,
       icon: (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -263,7 +397,7 @@ export default function SummaryCards() {
   return (
     <div className="summary-grid">
       {cards.map((card, i) => (
-        <SummaryCard key={i} {...card} sub={card.value} />
+        <SummaryCard key={i} {...card} />
       ))}
     </div>
   );

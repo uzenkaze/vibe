@@ -23,19 +23,72 @@ import Toast from './components/UI/Toast';
 import SummaryModal from './components/UI/SummaryModal';
 import DataModal from './components/UI/DataModal';
 import GitHubModal from './components/UI/GitHubModal';
+import ExpenseDetailModal from './components/UI/ExpenseDetailModal';
 
 function Dashboard() {
-  const { navSection, showToast, persistSections, getCurrentSections } = useApp();
+  const { navSection, showToast, persistSections, getCurrentSections, updateRow } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [summaryModal, setSummaryModal] = useState(null); // 'assets' | 'expenses' | null
   const [dataModal, setDataModal] = useState(false);
   const [manualModal, setManualModal] = useState(false);
   const [githubModal, setGithubModal] = useState(false);
+  const [expenseDetail, setExpenseDetail] = useState(null); // { item, sectionKey } | null
+  const [isSavingDetail, setIsSavingDetail] = useState(false);
+
+  const handleExpenseDetailOpen = (item, sectionKey) => {
+    setExpenseDetail({ item, sectionKey });
+  };
+
+  const handleExpenseDetailSave = async (sectionKey, itemId, details) => {
+    const sections = getCurrentSections();
+    const items = sections[sectionKey] || [];
+    const targetItem = items.find(i => i.id === itemId);
+    if (!targetItem) return;
+
+    // 1) 메모리 상태 업데이트
+    const newAmount = details.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+    updateRow(sectionKey, itemId, 'details', details);
+    updateRow(sectionKey, itemId, 'amount', newAmount);
+    if (sectionKey === 'debt') {
+      updateRow(sectionKey, itemId, 'remAmount', newAmount);
+    }
+
+    // 2) 즉시 로컬 + 서버 저장
+    setIsSavingDetail(true);
+    try {
+      // updateRow는 동기이므로 최신 sections를 다시 읽어와 저장
+      const latestSections = getCurrentSections();
+      // 방금 업데이트한 항목을 직접 패치해서 저장
+      const patchedSections = { ...latestSections };
+      const patchedItems = (patchedSections[sectionKey] || []).map(i =>
+        i.id === itemId
+          ? { ...i, details, amount: newAmount, ...(sectionKey === 'debt' ? { remAmount: newAmount } : {}) }
+          : i
+      );
+      patchedSections[sectionKey] = patchedItems;
+
+      const res = await persistSections(patchedSections, true);
+      if (res && res.success) {
+        if (res.target === 'github') {
+          showToast('상세 내역이 로컬 및 GitHub에 저장되었습니다.', 'success');
+        } else {
+          showToast('상세 내역이 저장되었습니다.', 'success');
+        }
+      } else {
+        showToast('저장 중 오류가 발생했습니다.', 'danger');
+      }
+    } catch (e) {
+      showToast('저장 중 오류가 발생했습니다.', 'danger');
+    } finally {
+      setIsSavingDetail(false);
+      setExpenseDetail(null);
+    }
+  };
 
   const handleSaveSync = async () => {
     const sections = getCurrentSections();
     showToast('저장 및 동기화 진행 중...', 'info');
-    const res = await persistSections(sections);
+    const res = await persistSections(sections, true);
     if (res && res.success) {
       if (res.target === 'github') {
         showToast('로컬 및 GitHub 동기화 저장이 완료되었습니다.', 'success');
@@ -93,6 +146,7 @@ function Dashboard() {
                 <AssetSection onSummary={() => setSummaryModal('assets')} />
                 <ExpenseSection
                   onSummary={() => setSummaryModal('expenses')}
+                  onExpenseDetail={handleExpenseDetailOpen}
                 />
               </div>
             </>
@@ -110,7 +164,10 @@ function Dashboard() {
           {navSection === 'expenses' && (
             <>
               <SummaryCards />
-              <ExpenseSection onSummary={() => setSummaryModal('expenses')} />
+              <ExpenseSection 
+                onSummary={() => setSummaryModal('expenses')} 
+                onExpenseDetail={handleExpenseDetailOpen}
+              />
             </>
           )}
 
@@ -141,6 +198,15 @@ function Dashboard() {
       )}
       {githubModal && (
         <GitHubModal onClose={() => setGithubModal(false)} />
+      )}
+      {expenseDetail && (
+        <ExpenseDetailModal
+          item={expenseDetail.item}
+          sectionKey={expenseDetail.sectionKey}
+          onClose={() => setExpenseDetail(null)}
+          onSave={handleExpenseDetailSave}
+          isSaving={isSavingDetail}
+        />
       )}
       {manualModal && (
         <div className="modal-overlay" onClick={() => setManualModal(false)}>

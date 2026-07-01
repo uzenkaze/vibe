@@ -14,13 +14,23 @@ export function getDataKey(year) {
 export async function saveData(year, data) {
   try {
     const password = sessionStorage.getItem('temp_master_pw');
-    let dataToSave = data;
+    
+    // 0. 최종 수정 시간 기록 (스마트 동기화용 타임스탬프)
+    const updatedAt = Date.now();
+    const updatedData = { ...data, updatedAt };
+
+    let dataToSave = updatedData;
     if (password) {
-      dataToSave = await encryptData(data, password);
+      dataToSave = await encryptData(updatedData, password);
+      // 복호화 없이도 비교할 수 있도록 암호화 래퍼 객체 최상위에도 updatedAt 주입
+      dataToSave.updatedAt = updatedAt;
+    } else {
+      dataToSave.updatedAt = updatedAt;
     }
 
     // 1. 항상 로컬 스토리지에 백업 저장
     localStorage.setItem(getDataKey(year), JSON.stringify(dataToSave));
+    localStorage.setItem(`${getDataKey(year)}_updatedAt`, String(updatedAt));
 
     // 2. 서버 API를 호출하여 서버 파일에 저장 시도
     const apiUrls = [
@@ -77,10 +87,39 @@ export async function loadData(year) {
       try {
         const res = await fetch(url);
         if (res.ok) {
-          data = await res.json();
-          console.log(`[Storage] Loaded latest data directly from server: ${url}`);
-          // 서버에서 받아온 최신 데이터를 로컬 스토리지에도 동기화
-          localStorage.setItem(getDataKey(year), JSON.stringify(data));
+          const serverData = await res.json();
+          if (!serverData) continue;
+          
+          console.log(`[Storage] Loaded data from server: ${url}`);
+          
+          // 로컬 스토리지의 최종 수정 시간과 서버 데이터 최종 수정 시간을 비교
+          const localRaw = localStorage.getItem(getDataKey(year));
+          let shouldOverwrite = true;
+          
+          if (localRaw) {
+            try {
+              const localData = JSON.parse(localRaw);
+              const localUpdatedAt = localData.updatedAt || parseInt(localStorage.getItem(`${getDataKey(year)}_updatedAt`) || '0', 10);
+              const serverUpdatedAt = serverData.updatedAt || 0;
+              
+              if (serverUpdatedAt < localUpdatedAt) {
+                console.warn(`[Storage] Server data is older (Server: ${serverUpdatedAt}, Local: ${localUpdatedAt}). Keeping local changes.`);
+                shouldOverwrite = false;
+                data = localData; // 서버보다 로컬이 더 최신인 경우 로컬 데이터를 우선 적용
+              }
+            } catch (err) {
+              console.error('[Storage] Error comparing timestamps', err);
+            }
+          }
+          
+          if (shouldOverwrite) {
+            data = serverData;
+            // 서버에서 받아온 최신 데이터를 로컬 스토리지에도 동기화
+            localStorage.setItem(getDataKey(year), JSON.stringify(serverData));
+            if (serverData.updatedAt) {
+              localStorage.setItem(`${getDataKey(year)}_updatedAt`, String(serverData.updatedAt));
+            }
+          }
           break;
         }
       } catch (err) {

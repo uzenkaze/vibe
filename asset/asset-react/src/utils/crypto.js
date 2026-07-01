@@ -22,9 +22,16 @@ export async function encryptData(dataObj, password) {
     combined.set(iv, salt.length);
     combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
 
+    // 호출 스택 크기 초과(Maximum call stack size exceeded) 방지를 위한 안전한 루프 방식의 base64 인코딩
+    let binary = '';
+    const len = combined.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(combined[i]);
+    }
+
     return {
         _isEncrypted: true,
-        payload: btoa(String.fromCharCode(...combined))
+        payload: btoa(binary)
     };
 }
 

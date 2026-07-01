@@ -4,7 +4,7 @@ import { formatKRW } from '../../utils/format';
 import NumberInput from '../UI/NumberInput';
 import CustomDropdown from '../UI/CustomDropdown';
 
-function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent }) {
+function InstallmentStatCard({ label, value, color, accent, bgGradient, icon, tooltipContent }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -12,22 +12,51 @@ function InstallmentStatCard({ label, value, color, accent, icon, tooltipContent
       className="installment-stat"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ '--stat-accent': accent, position: 'relative', zIndex: isHovered ? 100 : 1 }}
+      style={{ 
+        background: bgGradient || 'var(--card)', 
+        '--stat-accent': bgGradient ? 'transparent' : accent,
+        position: 'relative', 
+        zIndex: isHovered ? 100 : 1,
+        color: bgGradient ? '#ffffff' : 'inherit',
+        border: bgGradient ? 'none' : '1px solid var(--card-border)'
+      }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.625rem' }}>
         <div style={{
           width: 30, height: 30, borderRadius: '8px',
-          background: accent + '15',
+          background: bgGradient ? 'rgba(255, 255, 255, 0.2)' : accent + '15',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: accent, flexShrink: 0,
+          color: bgGradient ? '#ffffff' : accent, flexShrink: 0,
         }}>
           {icon}
         </div>
-        <div className="installment-stat-label" style={{ margin: 0 }}>{label}</div>
+        <div 
+          className="installment-stat-label" 
+          style={{ 
+            margin: 0,
+            color: bgGradient ? 'rgba(255, 255, 255, 0.75)' : 'var(--text-muted)'
+          }}
+        >
+          {label}
+        </div>
       </div>
-      <div className="installment-stat-value num" style={{ color: color }}>
+      <div 
+        className="installment-stat-value num" 
+        style={{ 
+          color: bgGradient ? '#ffffff' : color 
+        }}
+      >
         {formatKRW(value)}
-        <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', marginLeft: 3 }}>원</span>
+        <span 
+          style={{ 
+            fontSize: '0.7rem', 
+            fontWeight: 600, 
+            color: bgGradient ? 'rgba(255, 255, 255, 0.75)' : 'var(--text-muted)', 
+            marginLeft: 3 
+          }}
+        >
+          원
+        </span>
       </div>
 
       {isHovered && tooltipContent && (
@@ -198,6 +227,7 @@ export default function InstallmentPage() {
       value: totalAmount,
       color: 'var(--text-primary)',
       accent: '#5B6BF8',
+      bgGradient: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -215,6 +245,7 @@ export default function InstallmentPage() {
       value: remainTotal,
       color: 'var(--coral)',
       accent: '#FF6B6B',
+      bgGradient: 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="1" x2="12" y2="23"/>
@@ -260,6 +291,7 @@ export default function InstallmentPage() {
       value: thisMonthTotal,
       color: 'var(--teal)',
       accent: '#2DC9A0',
+      bgGradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"/>
@@ -277,6 +309,7 @@ export default function InstallmentPage() {
       value: nextMonthTotal,
       color: '#5B6BF8',
       accent: '#5B6BF8',
+      bgGradient: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -376,6 +409,25 @@ export default function InstallmentPage() {
 
     persistSections({ ...sections, installment: newArr });
     setActiveDetailId(null);
+  };
+
+  // 상세 회차별 납부 상태 토글
+  const handleTogglePaidMonth = (idx) => {
+    if (!activeDetailId) return;
+    const newArr = installments.map(item => {
+      if (item.id === activeDetailId) {
+        const currentPaid = item.paidMonths || [];
+        const updatedPaid = currentPaid.includes(idx)
+          ? currentPaid.filter(m => m !== idx)
+          : [...currentPaid, idx];
+        return {
+          ...item,
+          paidMonths: updatedPaid
+        };
+      }
+      return item;
+    });
+    persistSections({ ...sections, installment: newArr });
   };
 
   // 상세 스케줄 계산 로직 (모달 노출용)
@@ -704,18 +756,45 @@ export default function InstallmentPage() {
               </div>
             ) : (
               <div style={{ maxHeight: '250px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.25rem' }}>
-                {calculatedSchedule.map(s => (
-                  <div key={s.idx} style={{ borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{s.idx}회차</div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>예정일: {s.date}</div>
+                {calculatedSchedule.map(s => {
+                  const isPaid = (activeDetailItem.paidMonths || []).includes(s.idx);
+                  return (
+                    <div 
+                      key={s.idx} 
+                      style={{ 
+                        borderBottom: '1px solid var(--card-border)', 
+                        paddingBottom: '0.5rem', 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        opacity: isPaid ? 0.45 : 1,
+                        textDecoration: isPaid ? 'line-through' : 'none'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={isPaid}
+                          onChange={() => handleTogglePaidMonth(s.idx)}
+                          style={{ 
+                            cursor: 'pointer', 
+                            width: '15px', 
+                            height: '15px',
+                            accentColor: 'var(--teal)' 
+                          }}
+                        />
+                        <div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{s.idx}회차</div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>예정일: {s.date}</div>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatKRW(s.principal + s.fee)}원</div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>원금 {formatKRW(s.principal)} / 수수료 {formatKRW(s.fee)}</div>
+                      </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{formatKRW(s.principal + s.fee)}원</div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>원금 {formatKRW(s.principal)} / 수수료 {formatKRW(s.fee)}</div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

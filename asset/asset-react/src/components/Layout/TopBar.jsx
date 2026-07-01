@@ -106,7 +106,7 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
             value={year} 
             onChange={setYear} 
             options={years} 
-            suffix="년" 
+            suffix="" 
           />
           <span className="month-separator-dot">·</span>
           <CustomDropdown 

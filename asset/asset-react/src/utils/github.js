@@ -15,6 +15,13 @@ export function saveGithubConfig(config) {
   localStorage.setItem('assetGitHubConfig', JSON.stringify(config));
 }
 
+// Unicode-safe base64 encoding standard helper
+function b64EncodeUnicode(str) {
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+    return String.fromCharCode('0x' + p1);
+  }));
+}
+
 export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
   const config = getGithubConfig();
   if (!config.token || !config.repo) return null;
@@ -51,7 +58,7 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
 
       const body = {
         message: `Update asset data: ${yearKey}`,
-        content: btoa(unescape(encodeURIComponent(dataStr))),
+        content: b64EncodeUnicode(dataStr),
         branch: config.branch
       };
       if (sha) body.sha = sha;

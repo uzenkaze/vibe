@@ -178,6 +178,7 @@ export default function ExpenseSection({ onSummary, onExpenseDetail, onExpenseCh
         sectionKey="debt"
         columns={DEBT_COLS}
         accentColor="var(--coral)"
+        onDetail={onExpenseDetail}
       />
       <div className="divider" style={{ margin: '0 1.5rem' }} />
       <DataSection
