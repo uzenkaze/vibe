@@ -210,13 +210,13 @@
     {
       "categoryId": "cat_mp3p24bb_k3782",
       "title": "SD카드 포멧 관련",
-      "content": "1. PC에서 포맷할 때 '빠른 포맷' 대신 '일반 포맷' 진행\nPC에서 '빠른 포맷'을 하면 겉으로는 성공한 것처럼 보여도 데이터가 저장되는 실제 물리적 셀(Cell)의 오류나 불량 구역(배드 섹터)을 걸러내지 못합니다. [[1](https://images-eu.ssl-images-amazon.com/images/I/91%2BOb8-xeMS.pdf)]\n\n- **해결법**: PC에 카드를 다시 꽂고 포맷 창을 띄운 뒤, **[빠른 포맷] 체크박스를 해제**하고 일반 포맷을 진행하세요. (128GB 기준 다소 시간이 걸립니다.)\n- 만약 일반 포맷 도중 에러가 나거나 멈춘다면, 그 메모리 카드는 겉보기와 달리 수명이 다했거나 불량인 상태입니다. [[1](https://images-eu.ssl-images-amazon.com/images/I/91%2BOb8-xeMS.pdf), [2](https://www.tp-link.com/us/support/faq/2749/)]",
+      "content": "1. PC에서 포맷할 때 '빠른 포맷' 대신 '일반 포맷' 진행\nPC에서 '빠른 포맷'을 하면 겉으로는 성공한 것처럼 보여도 데이터가 저장되는 실제 물리적 셀(Cell)의 오류나 불량 구역(배드 섹터)을 걸러내지 못합니다. [[1](https://images-eu.ssl-images-amazon.com/images/I/91%2BOb8-xeMS.pdf)]\n\n- **해결법**: PC에 카드를 다시 꽂고 포맷 창을 띄운 뒤, **[빠른 포맷] 체크박스를 해제**하고 일반 포맷을 진행하세요. (128GB 기준 다소 시간이 걸립니다.)\n- 만약 일반 포맷 도중 에러가 나거나 멈춘다면, 그 메모리 카드는 겉보기와 달리 수명이 다했거나 불량인 상태입니다.",
       "references": [],
       "tags": [],
       "isPinned": true,
       "id": "art_mr1p35ro_ueapl",
       "createdAt": "2026-07-01T06:28:57.204Z",
-      "updatedAt": "2026-07-01T06:34:58.813Z",
+      "updatedAt": "2026-07-01T06:36:05.991Z",
       "color": "#000000"
     }
   ],
