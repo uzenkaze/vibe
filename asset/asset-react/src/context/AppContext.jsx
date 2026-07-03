@@ -209,7 +209,7 @@ export function AppProvider({ children }) {
           if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
             const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
             if (syncSuccess) {
-              showToast('GitHub 자동 저장됨', 'success');
+              showToast('☁️ 로컬 및 GitHub 서버 동기화 완료', 'success');
             }
           }
         } catch (e) {

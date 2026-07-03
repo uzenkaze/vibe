@@ -118,7 +118,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <link rel="icon" type="image/png" href="./assets/favicon-BraP8Net.png" />
+  <link rel="icon" type="image/png" href="./assets/favicon-Ba1RdxD8.png" />
   <!-- 모바일 홈 화면 추가 및 즐겨찾기 북마크 타이틀 지정 -->
   <meta name="apple-mobile-web-app-title" content="PlayTime" />
   <meta name="application-name" content="PlayTime" />
@@ -210,6 +210,36 @@
       }
     }
 
+    /* 모바일 전체화면(전체보기) 시 디바이스 해상도에 맞춰 100% 비율(contain) 렌더링 */
+    .mobile-player-fixed:fullscreen,
+    .mobile-player-fixed:-webkit-full-screen {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      background-color: #000 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .mobile-player-fixed:fullscreen video,
+    .mobile-player-fixed:-webkit-full-screen video {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      object-fit: contain !important;
+    }
+
+    .mobile-player-fixed:fullscreen iframe,
+    .mobile-player-fixed:-webkit-full-screen iframe {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+    }
+
     /* ============================================================
        TV / 빔프로젝터 전용 레이아웃
        html.tv-mode 클래스가 붙으면 PC 레이아웃을 강제 적용
@@ -262,29 +292,29 @@
     }
   </style>
   <script src="capacitor.js"></script>
-  <script type="module" crossorigin src="./assets/main-BQST9Ndy.js"></script>
+  <script type="module" crossorigin src="./assets/main-Zgnnn_D6.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 
-<body class="h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-black p-0" style="background-image: radial-gradient(circle at 50% 0%, rgba(109,40,217,0.15), transparent 60%);">
+<body class="h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-[#071112] p-0" style="background-image: radial-gradient(circle at 50% 0%, rgba(20, 55, 57, 0.4), transparent 70%);">
 
   <!-- Main Portal Device Container -->
-  <div id="app-container" class="relative w-full h-[100dvh] lg:max-w-[88.88vh] bg-[#0A0A0A] rounded-none border-none lg:border-x lg:border-white/5 flex flex-col overflow-hidden mx-auto z-0" style="background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 20px 20px;">
+  <div id="app-container" class="relative w-full h-[100dvh] lg:max-w-[88.88vh] bg-[#071112] rounded-none border-none lg:border-x lg:border-white/5 flex flex-col overflow-hidden mx-auto z-0" style="background-image: radial-gradient(circle at 50% 100%, rgba(255, 130, 62, 0.06), transparent 60%), radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 100% 100%, 20px 20px;">
     
-    <!-- Subtle Senthora Purple Glow -->
-    <div class="absolute top-[-150px] left-1/2 transform -translate-x-1/2 w-[120vw] max-w-[800px] h-[400px] bg-purple-600/10 blur-[140px] rounded-full pointer-events-none -z-10"></div>
+    <!-- Subtle Teal Glow -->
+    <div class="absolute top-[-150px] left-1/2 transform -translate-x-1/2 w-[120vw] max-w-[800px] h-[400px] bg-teal-500/8 blur-[140px] rounded-full pointer-events-none -z-10"></div>
 
     <!-- Header -->
     <header class="glass-nav h-16 flex items-center justify-between px-6 z-50 flex-shrink-0 border-b border-white/10 bg-zinc-950/40 backdrop-blur-md">
       <!-- PlayTime Logo & Title -->
       <a href="index.html" class="flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity">
-        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 border border-white/20">
+        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-teal-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-[#98FFD9] via-emerald-500 to-teal-600 border border-white/20">
           <div class="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
           <svg class="relative z-10 ml-0.5" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round">
             <polygon points="6 3 20 12 6 21 6 3" fill="white" />
           </svg>
         </div>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-purple-200 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#98FFD9]/80 to-emerald-100 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
       </a>
 
       <!-- 우측 상단: 시계 + 배터리 -->
@@ -354,7 +384,7 @@
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen></iframe>
 
-            <div id="player-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-[#0A0A0A] z-20">
+            <div id="player-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-[#071112] z-20">
               <div
                 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
                 PlayGround</div>
@@ -382,7 +412,7 @@
                     </svg>
                   </button>
                   <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="1"
-                    class="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                    class="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#98FFD9]">
                 </div>
 
                 <!-- Quality Selection (화질 선택) -->
@@ -419,11 +449,11 @@
             <div id="loading-overlay"
               class="absolute inset-0 bg-black flex flex-col items-center justify-center hidden z-50">
               <div class="relative flex items-center justify-center">
-                <div class="absolute w-16 h-16 rounded-full border border-indigo-500/30 animate-ping"></div>
-                <div class="w-12 h-12 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
-                <div class="absolute w-3 h-3 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full shadow-lg shadow-indigo-500/50"></div>
+                <div class="absolute w-16 h-16 rounded-full border border-[#98FFD9]/30 animate-ping"></div>
+                <div class="w-12 h-12 rounded-full border-2 border-[#98FFD9] border-t-transparent animate-spin"></div>
+                <div class="absolute w-3 h-3 bg-gradient-to-tr from-[#98FFD9] to-teal-500 rounded-full shadow-lg shadow-teal-500/50"></div>
               </div>
-              <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-purple-200 uppercase drop-shadow-md">연결 중...</span>
+              <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-emerald-100 via-white to-[#98FFD9] uppercase drop-shadow-md">연결 중...</span>
               <span class="mt-1 text-[10px] text-zinc-500 font-bold uppercase tracking-wider animate-pulse">Live Stream Loading</span>
             </div>
           </div> <!-- End Inner Screen -->
@@ -501,16 +531,16 @@
               <div id="loading-overlay-mobile"
                 class="absolute inset-0 bg-black flex flex-col items-center justify-center hidden z-50">
                 <div class="relative flex items-center justify-center">
-                  <div class="absolute w-16 h-16 rounded-full border border-indigo-500/30 animate-ping"></div>
-                  <div class="w-12 h-12 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
-                  <div class="absolute w-3 h-3 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full shadow-lg shadow-indigo-500/50"></div>
+                  <div class="absolute w-16 h-16 rounded-full border border-[#98FFD9]/30 animate-ping"></div>
+                  <div class="w-12 h-12 rounded-full border-2 border-[#98FFD9] border-t-transparent animate-spin"></div>
+                  <div class="absolute w-3 h-3 bg-gradient-to-tr from-[#98FFD9] to-teal-500 rounded-full shadow-lg shadow-teal-500/50"></div>
                 </div>
-                <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-purple-200 uppercase drop-shadow-md">연결 중...</span>
+                <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-emerald-100 via-white to-[#98FFD9] uppercase drop-shadow-md">연결 중...</span>
                 <span class="mt-1 text-[10px] text-zinc-500 font-bold uppercase tracking-wider animate-pulse">Live Stream Loading</span>
               </div>
 
               <div id="player-placeholder-mobile"
-                class="absolute inset-0 flex flex-col items-center justify-center bg-[#0A0A0A] z-20">
+                class="absolute inset-0 flex flex-col items-center justify-center bg-[#071112] z-20">
                 <div
                   class="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
                   PlayGround</div>
@@ -533,9 +563,9 @@
   </div>
 
   <!-- Sticky Bottom Navigation Bar (Floating Pill) -->
-  <div class="absolute bottom-6 inset-x-4 h-[64px] bg-[#111111]/95 backdrop-blur-2xl border border-white/5 rounded-[32px] z-50 flex items-center justify-around px-6 shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
+  <div class="absolute bottom-6 inset-x-4 h-[64px] bg-[#0c1416]/95 backdrop-blur-2xl border border-[#98FFD9]/10 rounded-[32px] z-50 flex items-center justify-around px-6 shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
     <!-- 홈 (Home) -->
-    <button onclick="window.switchTab('live')" id="tab-btn-live" class="flex flex-col items-center gap-1 text-indigo-400 transition-colors cursor-pointer group">
+    <button onclick="window.switchTab('live')" id="tab-btn-live" class="flex flex-col items-center gap-1 text-[#98FFD9] transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
         <polyline points="9 22 9 12 15 12 15 22"/>
@@ -561,7 +591,7 @@
     </button>
 
     <!-- 넷플릭스 -->
-    <button onclick="window.open('https://www.netflix.com', '_blank')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
+    <button onclick="window.openNetflix()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
       <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M4 2v20h3.5v-7.5L16 22h4V2h-3.5v7.5L8 2H4z"/>
       </svg>
@@ -666,7 +696,7 @@
   </script>
 
   <!-- 시스템 진단 로그 모달 UI -->
-  <button id="debug-log-toggle" onclick="document.getElementById('debug-log-modal').classList.remove('hidden')" class="fixed bottom-28 right-6 w-10 h-10 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all z-50 text-indigo-400 hover:text-white" title="시스템 진단 로그">
+  <button id="debug-log-toggle" onclick="document.getElementById('debug-log-modal').classList.remove('hidden')" class="fixed bottom-28 right-6 w-10 h-10 rounded-full bg-zinc-950/90 border border-[#FF823E]/20 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all z-50 text-[#FF823E] hover:text-[#FFA366]" title="시스템 진단 로그">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
       <circle cx="11" cy="11" r="8"></circle>
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -679,7 +709,7 @@
     <div class="bg-zinc-950/95 border border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[70vh]">
       <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-zinc-900/50">
         <div class="flex items-center gap-2">
-          <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+          <div class="w-2 h-2 rounded-full bg-[#FF823E] animate-pulse"></div>
           <span class="font-extrabold text-sm tracking-tight text-white">시스템 진단 로그</span>
         </div>
         <button onclick="document.getElementById('debug-log-modal').classList.add('hidden')" class="text-gray-400 hover:text-white transition-colors p-1">
@@ -694,7 +724,7 @@
       </div>
       <div class="px-6 py-4 border-t border-white/5 bg-zinc-900/50 flex items-center justify-end gap-3">
         <button onclick="window.__clearLogs()" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all active:scale-95">로그 초기화</button>
-        <button onclick="window.__copyLogs()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all active:scale-95">로그 복사</button>
+        <button onclick="window.__copyLogs()" class="px-4 py-2 bg-[#FF823E] hover:bg-[#FF823E]/80 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all active:scale-95">로그 복사</button>
       </div>
     </div>
   </div>

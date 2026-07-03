@@ -404,8 +404,31 @@ async function searchInvidious(query, page = 1, limitChannelVideos = false) {
                       window.location.protocol === 'capacitor:';
   const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
+  // Invidious API의 깊은 페이지 오류(429/500) 및 밴을 방지하기 위해 최대 4페이지로 제한 및 순환 가드 적용
+  let targetPage = page;
+  if (targetPage > 4) {
+    targetPage = ((targetPage - 1) % 4) + 1; // 1 -> 2 -> 3 -> 4 -> 1 -> 2 ... 로테이션
+  }
+
+  // 1. 프로덕션 사이트 웹 환경의 경우, CORS/429 우회를 위해 신설한 Vercel 백엔드 검색 API를 1순위로 찌름
+  if (!isCapacitor && !isLocal) {
+    try {
+      const base = window.location.hostname.includes('github.io') ? 'https://vibe-eight-iota.vercel.app' : '';
+      const res = await fetch(`${base}/api/youtube/search?q=${encodeURIComponent(query)}&page=${targetPage}`, { signal: AbortSignal.timeout(4500) });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.ok && Array.isArray(data.videos) && data.videos.length > 0) {
+          console.log(`[YouTube Vercel Search API Succeeded] Query: "${query}", Page: ${targetPage}`);
+          return data.videos;
+        }
+      }
+    } catch (e) {
+      console.warn('[YouTube Search] Vercel search API failed, falling back to local Invidious search...', e);
+    }
+  }
+
   // On local or Capacitor, we can scrape page 1 directly. On production browser, skip to avoid CORS proxy timeouts.
-  if (page === 1 && (isLocal || isCapacitor)) {
+  if (targetPage === 1 && (isLocal || isCapacitor)) {
     try {
       const results = await fetchYouTubeSearchScrape(query, limitChannelVideos);
       if (results && results.length > 0) {
@@ -417,7 +440,7 @@ async function searchInvidious(query, page = 1, limitChannelVideos = false) {
   }
 
   // Fallback for page 1 if scraping failed, or primary source for page > 1 (pagination support)
-  return await fetchInvidiousSearchApi(query, page);
+  return await fetchInvidiousSearchApi(query, targetPage);
 }
 
 function invidiousToVideo(item) {
@@ -1043,6 +1066,12 @@ function appendCards(videos) {
 
 // ── 다음 배치 로드 (RSS / 검색) ───────────────────────────────────────
 async function fetchNextPage(filter) {
+  // API 429 밴 및 오동작 방지: 채널 페이지네이션 한계(최대 4페이지) 및 순환 가드
+  if (channelPage[filter] && channelPage[filter] > 4) {
+    console.log(`[YouTube Page Guard] Max page limit reached for filter: ${filter}. Cycling back to page 1.`);
+    channelPage[filter] = 1;
+  }
+
   if (filter === 'recent') {
     const history = getWatchHistory();
     if (history.length === 0) {
@@ -1133,7 +1162,7 @@ async function fetchNextPage(filter) {
   let topKeywords = [];
   if (filter === 'all') {
     topKeywords = getTopWatchedKeywords(1); // 추천 키워드를 1개로 축소하여 최초 로딩 속도를 극대화
-    searchPromises = topKeywords.map(keyword => searchInvidious(keyword, 1, true));
+    searchPromises = topKeywords.map(keyword => searchInvidious(keyword, page, true));
   }
 
   // RSS와 키워드 추천 비디오 검색을 병렬로 동시에 로드
@@ -1189,12 +1218,65 @@ async function fetchNextPage(filter) {
     });
   }
 
+  const CAT_SEARCH_FALLBACKS = {
+    news: '뉴스 생방송',
+    opinion: '시사 이슈 토론',
+    movie: '영화 리뷰 추천',
+    documentary: '다큐멘터리 교양',
+    entertainment: '인기 예능 오락 레전드',
+    music: '인기 가요 교차편집'
+  };
+
+  // 만약 필터링된 VOD 개수가 5개 미만으로 적으면 전체 및 카테고리별 검색어 폴백으로 끝없이 리필
+  if (filtered.length < 5 && filter !== 'recent' && filter !== 'custom' && filter !== 'search') {
+    const kw = filter === 'all' ? '인기 급상승 예능 시사 레전드' : (CAT_SEARCH_FALLBACKS[filter] || '추천 동영상');
+    const fallbackPage = (channelPage[filter] || 1);
+    console.log(`[YouTube Infinite Scroll] VOD 소진. 검색 폴백 기동: "${kw}" page ${fallbackPage}`);
+    try {
+      const searchRaw = await searchInvidious(kw, fallbackPage, false);
+      if (searchRaw && searchRaw.length > 0) {
+        const mapped = searchRaw.map(v => {
+          v.channelCat = filter; // 카테고리 필터 통과 우회
+          return v;
+        });
+        filtered = filtered.concat(mapped);
+      }
+    } catch(e) {}
+  }
+
   return filtered;
 }
 
+// 카테고리/검색 캐싱 SWR 시스템
+function getCategoryCache(filter) {
+  try {
+    const raw = localStorage.getItem(`yt_cat_cache_${filter}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch(e) { return null; }
+}
+
+function setCategoryCache(filter, videos) {
+  try {
+    if (Array.isArray(videos)) {
+      localStorage.setItem(`yt_cat_cache_${filter}`, JSON.stringify(videos));
+    }
+  } catch(e) {}
+}
+
 // ── 무한 스크롤 ───────────────────────────────────────────────────────────
+let lastLoadMoreTime = 0;
+
 async function loadMore() {
   if (isFetchingMore) return;
+
+  // 디바이스 연속 스크롤로 인한 API 연속 중복 찌르기 방지 (최소 1.2초 디바운스 락)
+  const now = Date.now();
+  if (now - lastLoadMoreTime < 1200) {
+    console.log('[YouTube Scroll Guard] 너무 빠른 연속 로드 차단');
+    return;
+  }
 
   // 이미 로드된 것 중 미렌더된 것 먼저 표시
   const unrendered = loadedVideos.slice(renderedCount, renderedCount + PAGE_SIZE);
@@ -1206,6 +1288,7 @@ async function loadMore() {
   }
 
   isFetchingMore = true;
+  lastLoadMoreTime = Date.now();
   showSentinel(true);
 
   const filterBefore = currentFilter;
@@ -1221,6 +1304,12 @@ async function loadMore() {
   });
 
   loadedVideos.push(...deduped);
+  
+  // 1페이지 로드 완료 시 해당 필터 캐시에 저장 (SWR 용)
+  if (renderedCount === 0 && loadedVideos.length > 0 && currentFilter !== 'recent') {
+    const cacheKey = currentFilter === 'search' ? `search_${searchState['search'].query}` : currentFilter;
+    setCategoryCache(cacheKey, loadedVideos.slice(0, PAGE_SIZE));
+  }
   
   // 방금 받아온 것까지 합쳐서 렌더링
   const toRender = loadedVideos.slice(renderedCount, renderedCount + PAGE_SIZE);
@@ -1332,7 +1421,44 @@ async function switchCategory(filter, btnEl) {
 
   const title = filter === 'all' ? '' : (CAT_MAP[filter] || '');
   initGrid(title);
-  await loadMore();
+
+  // Stale-While-Revalidate (SWR) 패턴 적용: 캐시 존재 시 즉시 표출
+  const cached = getCategoryCache(filter);
+  if (cached && cached.length > 0 && filter !== 'recent') {
+    console.log(`[YouTube SWR] 로컬 캐시 즉각 렌더링: ${filter}`);
+    loadedVideos = [...cached];
+    appendCards(cached);
+    showSentinel(false); // 즉시 노출 완료 후 스피너 끔
+    
+    // 백그라운드 갱신 개시
+    isFetchingMore = true;
+    try {
+      const fresh = await fetchNextPage(filter);
+      if (currentFilter === filter) {
+        if (fresh && fresh.length > 0) {
+          // 캐시 업데이트
+          setCategoryCache(filter, fresh.slice(0, PAGE_SIZE));
+          
+          // 화면에 바인딩된 목록 부드럽게 갈아끼우기 (깜빡임 최소화)
+          const grid = document.getElementById('yt-grid-container');
+          if (grid) {
+            grid.innerHTML = '';
+            renderedCount = 0;
+            loadedVideos = [...fresh];
+            appendCards(fresh.slice(0, PAGE_SIZE));
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[YouTube SWR] Background sync failed:', e);
+    }
+    isFetchingMore = false;
+    updateSentinel();
+    setTimeout(() => prefetchNext(), 1000);
+  } else {
+    // 캐시가 없거나 최근재생 탭은 다이렉트로 로딩 구동
+    await loadMore();
+  }
 }
 
 window.filterCat = (cat, btn) => switchCategory(cat, btn);
@@ -1370,8 +1496,39 @@ window.doSearch = async function () {
 
   searchState['search'] = { query: q, page: 1 };
   
+  const cacheKey = `search_${q}`;
   initGrid(`"${q}" 검색 결과`);
-  await loadMore();
+
+  // 검색 결과도 SWR 캐싱 지원하여 초고속 진입 지원
+  const cached = getCategoryCache(cacheKey);
+  if (cached && cached.length > 0) {
+    console.log(`[YouTube Search SWR] 검색 캐시 즉각 렌더링: ${q}`);
+    loadedVideos = [...cached];
+    appendCards(cached);
+    showSentinel(false);
+
+    isFetchingMore = true;
+    try {
+      const fresh = await searchInvidious(q, 1, false);
+      if (currentFilter === 'search' && searchState['search'].query === q) {
+        if (fresh && fresh.length > 0) {
+          setCategoryCache(cacheKey, fresh.slice(0, PAGE_SIZE));
+          const grid = document.getElementById('yt-grid-container');
+          if (grid) {
+            grid.innerHTML = '';
+            renderedCount = 0;
+            loadedVideos = [...fresh];
+            appendCards(fresh.slice(0, PAGE_SIZE));
+          }
+        }
+      }
+    } catch(e) {}
+    isFetchingMore = false;
+    updateSentinel();
+    setTimeout(() => prefetchNext(), 1000);
+  } else {
+    await loadMore();
+  }
 };
 
 // ── 플레이어 ──────────────────────────────────────────────────────────────
@@ -1878,6 +2035,20 @@ document.addEventListener('DOMContentLoaded', () => {
   initPlayerControls();
   initFullscreenHandler();
   initPullToRefresh();
+
+  // IntersectionObserver 오동작 대비 이중 백업 스크롤 리스너 탑재
+  window.addEventListener('scroll', () => {
+    if (isFetchingMore) return;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const clientHeight = window.innerHeight;
+    
+    // 바닥 근처 180px 이내 도달 시 강제 loadMore 호출
+    if (scrollHeight - scrollTop - clientHeight < 180) {
+      console.log('[YouTube Scroll Backup Guard] 스크롤 바닥 180px 도달 감지로 loadMore() 강제 보완 구동');
+      loadMore();
+    }
+  }, { passive: true });
 });
 
 // ── 초기화 ────────────────────────────────────────────────────────────────
@@ -1897,4 +2068,70 @@ window.removeHistoryVideo = function(videoId) {
   } catch (e) {
     console.error(e);
   }
+};
+
+// 넷플릭스 앱 자동 실행 및 동적 웹 폴백 우회 런처
+window.openNetflix = async function() {
+  const isCapacitor = typeof window !== 'undefined' && 
+                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  let fallbackWebUrl = 'https://kr43.topgirl.co';
+  try {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const base = isLocal ? `http://${window.location.hostname}:5174` : 'https://vibe-eight-iota.vercel.app';
+    const res = await fetch(`${base}/api/netflix/domain`, { timeout: 1800 }).catch(() => null);
+    if (res && res.ok) {
+      const data = await res.json();
+      if (data && data.domain) {
+        fallbackWebUrl = data.domain;
+      }
+    }
+  } catch (e) {
+    console.warn('[Netflix Redirect] Dynamic domain fetch failed, using default:', e);
+  }
+
+  // 1. Capacitor 하이브리드 앱 환경
+  if (isCapacitor && window.Capacitor?.Plugins?.AppLauncher) {
+    try {
+      const { AppLauncher } = window.Capacitor.Plugins;
+      const isAndroid = /android/i.test(navigator.userAgent);
+      const checkOptions = isAndroid 
+        ? { packageName: 'com.netflix.mediaclient' }
+        : { url: 'nflx://' };
+        
+      const canOpen = await AppLauncher.canOpenUrl(checkOptions).catch(() => ({ value: false }));
+      if (canOpen.value) {
+        await AppLauncher.openUrl({ url: 'nflx://' });
+        return;
+      }
+    } catch (e) {
+      console.warn('[Netflix AppLauncher] Failed to open native netflix:', e);
+    }
+  }
+
+  // 2. 모바일 브라우저 환경 딥링크 기동
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /ipad|iphone|ipod/i.test(ua) && !window.MSStream;
+
+  if (isAndroid) {
+    // 안드로이드 intent:// 구동 및 미설치 시 fallbackWebUrl 자동 연결
+    const intentUrl = `intent://#Intent;package=com.netflix.mediaclient;scheme=nflx;S.browser_fallback_url=${encodeURIComponent(fallbackWebUrl)};end`;
+    window.location.href = intentUrl;
+    return;
+  } 
+  
+  if (isIOS) {
+    const start = Date.now();
+    window.location.href = 'nflx://';
+    setTimeout(() => {
+      if (Date.now() - start < 2000) {
+        window.location.href = fallbackWebUrl;
+      }
+    }, 1500);
+    return;
+  }
+
+  // 3. PC 데스크톱 웹 환경: 동적 웹 우회 도메인 열기
+  window.open(fallbackWebUrl, '_blank');
 };

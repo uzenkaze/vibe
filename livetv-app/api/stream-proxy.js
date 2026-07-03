@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     'hyundaihmall.com', 'nsmall.com', 'catenoid.net',
     'tvchosun.com', 'ichannela.com', 'mbn.co.kr',
     'ytnscience.com', 'ntruss.com', 'streamlock.net',
-    'vtvprime.vn', 'liveh12'
+    'vtvprime.vn', 'liveh12', 'ktcdn.co.kr'
   ];
 
   const urlHost = new URL(targetUrl).hostname;
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
     else if (urlHost.includes('mbc')) referer = 'https://www.mbc.co.kr/';
     else if (urlHost.includes('sbs')) referer = 'https://www.sbs.co.kr/';
     else if (urlHost.includes('tvchosun')) referer = 'http://broadcast.tvchosun.com/';
-    else if (urlHost.includes('ichannela')) referer = 'https://ichannela.com/';
+    else if (urlHost.includes('ichannela') || urlHost.includes('ktcdn.co.kr')) referer = 'https://ichannela.com/';
     else if (urlHost.includes('mbn')) referer = 'https://www.mbn.co.kr/';
 
     const headers = {
@@ -88,6 +88,10 @@ export default async function handler(req, res) {
       const text = await upstream.text();
       const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
       
+      const host = req.headers['x-forwarded-host'] || req.headers.host || 'vibe-eight-iota.vercel.app';
+      const scheme = host.includes('localhost') ? 'http' : 'https';
+      const proxyDomain = `${scheme}://${host}`;
+      
       // 세그먼트 URL 및 AES 키 URL을 프록시를 통하도록 교체
       const proxied = text.split('\n').map(line => {
         line = line.trim();
@@ -101,7 +105,7 @@ export default async function handler(req, res) {
             if (!keyUrl.startsWith('http')) {
               keyUrl = baseUrl + keyUrl;
             }
-            const proxiedKeyUrl = `/api/stream-proxy?url=${encodeURIComponent(keyUrl)}`;
+            const proxiedKeyUrl = `${proxyDomain}/api/stream-proxy?url=${encodeURIComponent(keyUrl)}`;
             line = line.replace(keyRegex, `URI="${proxiedKeyUrl}"`);
           }
           return line;
@@ -115,7 +119,7 @@ export default async function handler(req, res) {
           segmentUrl = baseUrl + segmentUrl;
         }
         // 프록시 URL로 변환 (ts 세그먼트 및 중첩 m3u8)
-        return `/api/stream-proxy?url=${encodeURIComponent(segmentUrl)}`;
+        return `${proxyDomain}/api/stream-proxy?url=${encodeURIComponent(segmentUrl)}`;
       }).join('\n');
       
       return res.status(200).send(proxied);

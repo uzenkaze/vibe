@@ -322,12 +322,20 @@ async function ensureInvidiousInstances() {
 
 async function searchInvidiousMusic(query) {
   await ensureInvidiousInstances();
-  const instances = dynamicInvidiousInstances;
-  for (const instance of instances) {
+  
+  // 가용한 인스턴스 중 상위 최대 7개 추출
+  const instances = dynamicInvidiousInstances.slice(0, 7);
+  if (instances.length === 0) return [];
+
+  console.log(`[YT Music Parallel] Starting parallel race search across ${instances.length} instances for: ${query}`);
+
+  // 병렬 요청들을 담은 Promise 배열 생성
+  const promises = instances.map(async (instance) => {
     const invidiousUrl = `${instance}/api/v1/search?q=${encodeURIComponent(query)}+official+audio&type=video`;
     try {
-      const res = await smartFetch(invidiousUrl, { timeout: 3000 });
-      if (!res.ok) continue;
+      const res = await smartFetch(invidiousUrl, { timeout: 2500 });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      
       const json = await res.json();
       if (Array.isArray(json) && json.length > 0) {
         const songs = json.map(item => {
@@ -348,16 +356,65 @@ async function searchInvidiousMusic(query) {
             thumb: `https://i.ytimg.com/vi/${videoId}/default.jpg`
           };
         }).filter(Boolean);
+        
         if (songs.length > 0) {
-          console.log(`[Invidious Search] Successfully retrieved songs using: ${instance}`);
-          return songs;
+          console.log(`[YT Music Parallel] Instance succeeded first: ${instance}`);
+          return { songs, instance };
         }
       }
+      throw new Error('Empty result');
     } catch (e) {
-      // try next
+      throw e;
     }
-  }
-  return [];
+  });
+
+  // 병렬 레이싱용 Promise 커스텀 구현 (Promise.any가 없는 구형 디바이스 웹뷰 대응 폴백 포함)
+  return new Promise((resolve) => {
+    let resolved = false;
+    let failedCount = 0;
+    
+    promises.forEach(p => {
+      p.then(result => {
+        if (!resolved) {
+          resolved = true;
+          resolve(result.songs);
+        }
+      }).catch(() => {
+        failedCount++;
+        if (failedCount === promises.length && !resolved) {
+          resolved = true;
+          resolve([]); // 모든 인스턴스 실패 시 빈 배열 반환
+        }
+      });
+    });
+
+    // 전체 세이프가드 타임아웃 (3초 내 무조건 응답 보장)
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        console.warn('[YT Music Parallel] Race timeout triggered.');
+        resolve([]);
+      }
+    }, 3000);
+  });
+}
+
+// YT Music 캐싱 SWR 시스템
+function getMusicCache(query) {
+  try {
+    const raw = localStorage.getItem(`ytm_search_cache_${query}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch(e) { return null; }
+}
+
+function setMusicCache(query, songs) {
+  try {
+    if (Array.isArray(songs)) {
+      localStorage.setItem(`ytm_search_cache_${query}`, JSON.stringify(songs));
+    }
+  } catch(e) {}
 }
 
 /* ══════════════ SEARCH ══════════════ */
@@ -377,8 +434,24 @@ async function searchMusic(query, setInput = true, isAppend = false) {
       document.querySelectorAll('.yt-cat').forEach(p => p.classList.remove('active'));
     }
     document.getElementById('music-list').innerHTML = '';
+
+    // SWR 캐시 즉각 사용 (0초 로딩 체감!)
+    const cached = getMusicCache(query);
+    if (cached && cached.length > 0) {
+      console.log(`[YT Music SWR] 로컬 캐시 즉시 렌더링: ${query}`);
+      currentPlaylist = cached;
+      renderMusicList(cached, false);
+      
+      // 백그라운드 갱신 (UI 블록킹 해제)
+      setTimeout(() => executeSearchNetwork(query, isAppend), 100);
+      return;
+    }
   }
 
+  await executeSearchNetwork(query, isAppend);
+}
+
+async function executeSearchNetwork(query, isAppend = false) {
   isSearchLoading = true;
   const listEl = document.getElementById('music-list');
   const loadEl = isAppend ? document.getElementById('bottom-loading') : document.getElementById('loading-indicator');
@@ -388,164 +461,184 @@ async function searchMusic(query, setInput = true, isAppend = false) {
     else loadEl.classList.add('active');
   }
 
-  const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
-  const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
-  
-  let html = '';
-  const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
-                      (window.location.hostname === 'localhost' && window.location.port === '') || 
-                      window.location.protocol === 'capacitor:';
-  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
+  try {
+    const targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
+    const pathUrl = `/results?search_query=${encodeURIComponent(query)}+official+audio&sp=EgIQAQ%253D%253D&app=desktop`;
+    
+    let html = '';
+    const isCapacitor = !!window.Capacitor?.isNativePlatform?.() || 
+                        (window.location.hostname === 'localhost' && window.location.port === '') || 
+                        window.location.protocol === 'capacitor:';
+    const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
 
-  // On production browser, go straight to Invidious to avoid CORS proxy block timeouts (huge speed boost!)
-  if (!isCapacitor && !isLocal) {
-    console.log('[YT Music] Production website detected. Going straight to Invidious search for instant load.');
-    const fallbackSongs = await searchInvidiousMusic(query);
-    if (fallbackSongs && fallbackSongs.length > 0) {
-      if (isAppend) {
-        const newSongs = fallbackSongs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
-        currentPlaylist = currentPlaylist.concat(newSongs);
-        renderMusicList(newSongs, true);
-      } else {
-        currentPlaylist = fallbackSongs;
-        renderMusicList(fallbackSongs, false);
+    // On production browser, query Vercel backend proxy API (avoids CORS blocks 100%!)
+    if (!isCapacitor && !isLocal) {
+      console.log('[YT Music] Production website detected. Fetching via Vercel Backend Proxy API...');
+      try {
+        const base = window.location.hostname.includes('github.io') ? 'https://vibe-eight-iota.vercel.app' : '';
+        const res = await smartFetch(`${base}/api/youtube/music?q=${encodeURIComponent(query)}`, { timeout: 4500 });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && Array.isArray(data.songs) && data.songs.length > 0) {
+            const fallbackSongs = data.songs;
+            if (isAppend) {
+              const newSongs = fallbackSongs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
+              currentPlaylist = currentPlaylist.concat(newSongs);
+              renderMusicList(newSongs, true);
+            } else {
+              currentPlaylist = fallbackSongs;
+              renderMusicList(fallbackSongs, false);
+            }
+            if (!isAppend && currentPlaylist.length > 0) {
+              setMusicCache(query, currentPlaylist.slice(0, 50));
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('[YT Music] Vercel proxy fetch failed, trying local client-side Invidious search...', e);
       }
-      if (loadEl) {
-        if (isAppend) loadEl.style.display = 'none';
-        else loadEl.classList.remove('active');
+
+      // Vercel 프록시가 실패했을 경우 클라이언트 단에서 직접 병렬 Invidious 레이싱 시도
+      const fallbackSongs = await searchInvidiousMusic(query);
+      if (fallbackSongs && fallbackSongs.length > 0) {
+        if (isAppend) {
+          const newSongs = fallbackSongs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
+          currentPlaylist = currentPlaylist.concat(newSongs);
+          renderMusicList(newSongs, true);
+        } else {
+          currentPlaylist = fallbackSongs;
+          renderMusicList(fallbackSongs, false);
+        }
+        if (!isAppend && currentPlaylist.length > 0) {
+          setMusicCache(query, currentPlaylist.slice(0, 50));
+        }
+        return;
       }
-      isSearchLoading = false;
+    }
+
+    try {
+      if (isCapacitor) {
+        const res = await smartFetch(targetUrl);
+        if (res.ok) html = await res.text();
+      } else if (isLocal) {
+        const res = await smartFetch('/yt-proxy' + pathUrl);
+        if (res.ok) html = await res.text();
+      }
+    } catch (e) {}
+
+    if (!html || !html.includes('ytInitialData')) {
+      const proxies = [
+        u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+        u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+        u => `https://corsproxy.io/?${encodeURIComponent(u)}`
+      ];
+      for (const makeProxy of proxies) {
+        try {
+          const res = await smartFetch(makeProxy(targetUrl), { timeout: 4000 });
+          if (!res.ok) continue;
+          if (makeProxy(targetUrl).includes('allorigins')) {
+            html = (await res.json()).contents;
+          } else {
+            html = await res.text();
+          }
+          if (html && html.includes('ytInitialData')) break;
+        } catch (e) { /* try next */ }
+      }
+    }
+
+    const handleInvidiousFallback = async () => {
+      console.log('[YT Music] Direct fetch and CORS proxies failed. Trying Invidious fallback...');
+      const fallbackSongs = await searchInvidiousMusic(query);
+      if (fallbackSongs && fallbackSongs.length > 0) {
+        if (isAppend) {
+          const newSongs = fallbackSongs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
+          currentPlaylist = currentPlaylist.concat(newSongs);
+          renderMusicList(newSongs, true);
+        } else {
+          currentPlaylist = fallbackSongs;
+          renderMusicList(fallbackSongs, false);
+        }
+        if (!isAppend && currentPlaylist.length > 0) {
+          setMusicCache(query, currentPlaylist.slice(0, 50));
+        }
+        return true;
+      }
+      return false;
+    };
+
+    if (!html) {
+      const ok = await handleInvidiousFallback();
+      if (ok) return;
+      if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">검색 결과를 불러올 수 없습니다.<br>잠시 후 다시 시도해 주세요.</div>`;
       return;
     }
-  }
 
-  try {
-    if (isCapacitor) {
-      const res = await smartFetch(targetUrl);
-      if (res.ok) html = await res.text();
-    } else if (isLocal) {
-      const res = await smartFetch('/yt-proxy' + pathUrl);
-      if (res.ok) html = await res.text();
+    let jsonStr = '';
+    const match = html.match(/(?:var\s+ytInitialData\s*=|window\["ytInitialData"\]\s*=)\s*(.*?)\s*;</);
+    if (match) {
+      jsonStr = match[1];
+    } else {
+      const ok = await handleInvidiousFallback();
+      if (ok) return;
+      if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">데이터 구조가 변경되었습니다.</div>`;
+      return;
     }
-  } catch (e) {}
 
-  if (!html || !html.includes('ytInitialData')) {
-    const proxies = [
-      u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-      u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-      u => `https://corsproxy.io/?${encodeURIComponent(u)}`
-    ];
-    for (const makeProxy of proxies) {
-      try {
-        const res = await smartFetch(makeProxy(targetUrl), { timeout: 4000 });
-        if (!res.ok) continue;
-        if (makeProxy(targetUrl).includes('allorigins')) {
-          html = (await res.json()).contents;
-        } else {
-          html = await res.text();
-        }
-        if (html && html.includes('ytInitialData')) break;
-      } catch (e) { /* try next */ }
-    }
-  }
+    let data;
+    try {
+      try { data = JSON.parse(jsonStr); }
+      catch { data = new Function('return ' + jsonStr)(); }
+      if (typeof data === 'string') data = JSON.parse(data);
 
-  const handleInvidiousFallback = async () => {
-    console.log('[YT Music] Direct fetch and CORS proxies failed. Trying Invidious fallback...');
-    const fallbackSongs = await searchInvidiousMusic(query);
-    if (fallbackSongs && fallbackSongs.length > 0) {
+      let contents = [];
+      if (data.contents?.twoColumnSearchResultsRenderer) {
+        contents = data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+      } else if (data.contents?.sectionListRenderer) {
+        contents = data.contents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+      }
+
+      const songs = [];
+      for (const item of contents) {
+        if (!item.videoRenderer) continue;
+        const v = item.videoRenderer;
+        songs.push({
+          title:    v.title.runs[0].text,
+          videoId:  v.videoId,
+          artist:   v.ownerText?.runs[0].text || 'Unknown',
+          duration: v.lengthText?.simpleText || '',
+          thumb:    v.thumbnail.thumbnails.slice(-1)[0].url.split('?')[0]
+        });
+        if (songs.length >= 50) break;
+      }
+
       if (isAppend) {
-        const newSongs = fallbackSongs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
+        const newSongs = songs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
         currentPlaylist = currentPlaylist.concat(newSongs);
         renderMusicList(newSongs, true);
       } else {
-        currentPlaylist = fallbackSongs;
-        renderMusicList(fallbackSongs, false);
+        currentPlaylist = songs;
+        renderMusicList(songs, false);
       }
-      if (loadEl) {
-        if (isAppend) loadEl.style.display = 'none';
-        else loadEl.classList.remove('active');
+      if (!isAppend && currentPlaylist.length > 0) {
+        setMusicCache(query, currentPlaylist.slice(0, 50));
       }
-      isSearchLoading = false;
-      return true;
+    } catch (e) {
+      console.error('Parse error', e);
+      const ok = await handleInvidiousFallback();
+      if (!ok) {
+        if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">결과 분석 중 오류가 발생했습니다.</div>`;
+      }
     }
-    return false;
-  };
-
-  if (!html) {
-    const ok = await handleInvidiousFallback();
-    if (ok) return;
-    if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">검색 결과를 불러올 수 없습니다.<br>잠시 후 다시 시도해 주세요.</div>`;
+  } catch (err) {
+    console.error('[YT Music Fetch Network Error]:', err);
+  } finally {
     if (loadEl) {
       if (isAppend) loadEl.style.display = 'none';
       else loadEl.classList.remove('active');
     }
     isSearchLoading = false;
-    return;
   }
-
-  let jsonStr = '';
-  const match = html.match(/(?:var\s+ytInitialData\s*=|window\["ytInitialData"\]\s*=)\s*(.*?)\s*;</);
-  if (match) {
-    jsonStr = match[1];
-  } else {
-    const ok = await handleInvidiousFallback();
-    if (ok) return;
-    if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">데이터 구조가 변경되었습니다.</div>`;
-    if (loadEl) {
-      if (isAppend) loadEl.style.display = 'none';
-      else loadEl.classList.remove('active');
-    }
-    isSearchLoading = false;
-    return;
-  }
-
-  let data;
-  try {
-    try { data = JSON.parse(jsonStr); }
-    catch { data = new Function('return ' + jsonStr)(); }
-    if (typeof data === 'string') data = JSON.parse(data);
-
-    let contents = [];
-    if (data.contents?.twoColumnSearchResultsRenderer) {
-      contents = data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
-    } else if (data.contents?.sectionListRenderer) {
-      contents = data.contents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
-    }
-
-    const songs = [];
-    for (const item of contents) {
-      if (!item.videoRenderer) continue;
-      const v = item.videoRenderer;
-      songs.push({
-        title:    v.title.runs[0].text,
-        videoId:  v.videoId,
-        artist:   v.ownerText?.runs[0].text || 'Unknown',
-        duration: v.lengthText?.simpleText || '',
-        thumb:    v.thumbnail.thumbnails.slice(-1)[0].url.split('?')[0]
-      });
-      if (songs.length >= 50) break;
-    }
-
-    if (isAppend) {
-      const newSongs = songs.filter(s => !currentPlaylist.find(p => p.videoId === s.videoId));
-      currentPlaylist = currentPlaylist.concat(newSongs);
-      renderMusicList(newSongs, true);
-    } else {
-      currentPlaylist = songs;
-      renderMusicList(songs, false);
-    }
-  } catch (e) {
-    console.error('Parse error', e);
-    const ok = await handleInvidiousFallback();
-    if (!ok) {
-      if (!isAppend) listEl.innerHTML = `<div class="tab-placeholder">결과 분석 중 오류가 발생했습니다.</div>`;
-    }
-  }
-  if (loadEl) {
-    if (isAppend) loadEl.style.display = 'none';
-    else loadEl.classList.remove('active');
-  }
-  isSearchLoading = false;
 }
 
 /* ══════════════ PILL / TABS ══════════════ */
@@ -560,19 +653,54 @@ async function loadTrending() {
   
   const cacheKey = 'ytm_trending_cache';
   const cached = localStorage.getItem(cacheKey);
+  let cachedSongs = null;
+  let cacheAge = Infinity;
+  
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
-      if (Date.now() - parsed.timestamp < 216000000) { // 2.5 days
-        currentSearchQuery = '인기곡 플레이리스트';
-        searchPageCount = 0;
-        currentPlaylist = parsed.songs;
-        renderMusicList(parsed.songs, false);
-        return;
+      if (parsed && Array.isArray(parsed.songs)) {
+        cachedSongs = parsed.songs;
+        cacheAge = Date.now() - (parsed.timestamp || 0);
       }
     } catch(e) {}
   }
+
+  // 1. 캐시가 6시간 이내의 극 최신 상태인 경우: 네트워크 요청 없이 즉각 리턴 (0초 렌더)
+  if (cachedSongs && cacheAge < 21600000) { // 6 hours
+    currentSearchQuery = '인기곡 플레이리스트';
+    searchPageCount = 0;
+    currentPlaylist = cachedSongs;
+    renderMusicList(cachedSongs, false);
+    return;
+  }
   
+  // 2. 캐시가 6시간 초과 2.5일 이하인 경우 (Stale-While-Revalidate): 즉각 화면을 캐시로 그리고 백그라운드 갱신
+  if (cachedSongs && cacheAge < 216000000) { // 2.5 days
+    console.log('[YT Music Trending SWR] Stale 캐시 즉각 표출 및 백그라운드 갱신');
+    currentSearchQuery = '인기곡 플레이리스트';
+    searchPageCount = 0;
+    currentPlaylist = cachedSongs;
+    renderMusicList(cachedSongs, false);
+
+    // 비동기 백그라운드 갱신 개시 (화면의 인디케이터나 로딩 스피너 작동 없이 부드럽게 갱신)
+    setTimeout(async () => {
+      try {
+        const freshSongs = await searchInvidiousMusic('인기곡 플레이리스트');
+        if (freshSongs && freshSongs.length > 0 && currentSearchQuery === '인기곡 플레이리스트') {
+          currentPlaylist = freshSongs;
+          renderMusicList(freshSongs, false);
+          localStorage.setItem(cacheKey, JSON.stringify({
+            timestamp: Date.now(),
+            songs: freshSongs.slice(0, 50)
+          }));
+        }
+      } catch (err) {}
+    }, 150);
+    return;
+  }
+  
+  // 3. 캐시가 없거나 너무 오래된 경우: 정상 다이렉트 네트워크 서치 개시
   await searchMusic('인기곡 플레이리스트', false);
   
   if (currentSearchQuery === '인기곡 플레이리스트' && currentPlaylist.length > 0) {
@@ -1291,10 +1419,78 @@ Object.assign(window, {
   activatePill,
   loadTrending,
   loadRecent,
+  loadLikedSongs,
   searchMusic,
   toggleLike,
-  switchMode
+  switchMode,
+  openNetflix
 });
+
+// 넷플릭스 앱 자동 실행 및 동적 웹 폴백 우회 런처
+async function openNetflix() {
+  const isCapacitor = typeof window !== 'undefined' && 
+                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  let fallbackWebUrl = 'https://kr43.topgirl.co';
+  try {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const base = isLocal ? `http://${window.location.hostname}:5174` : 'https://vibe-eight-iota.vercel.app';
+    const res = await fetch(`${base}/api/netflix/domain`, { timeout: 1800 }).catch(() => null);
+    if (res && res.ok) {
+      const data = await res.json();
+      if (data && data.domain) {
+        fallbackWebUrl = data.domain;
+      }
+    }
+  } catch (e) {
+    console.warn('[Netflix Redirect] Dynamic domain fetch failed, using default:', e);
+  }
+
+  // 1. Capacitor 하이브리드 앱 환경
+  if (isCapacitor && window.Capacitor?.Plugins?.AppLauncher) {
+    try {
+      const { AppLauncher } = window.Capacitor.Plugins;
+      const isAndroid = /android/i.test(navigator.userAgent);
+      const checkOptions = isAndroid 
+        ? { packageName: 'com.netflix.mediaclient' }
+        : { url: 'nflx://' };
+        
+      const canOpen = await AppLauncher.canOpenUrl(checkOptions).catch(() => ({ value: false }));
+      if (canOpen.value) {
+        await AppLauncher.openUrl({ url: 'nflx://' });
+        return;
+      }
+    } catch (e) {
+      console.warn('[Netflix AppLauncher] Failed to open native netflix:', e);
+    }
+  }
+
+  // 2. 모바일 브라우저 환경 딥링크 기동
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /ipad|iphone|ipod/i.test(ua) && !window.MSStream;
+
+  if (isAndroid) {
+    // 안드로이드 intent:// 구동 및 미설치 시 fallbackWebUrl 자동 연결
+    const intentUrl = `intent://#Intent;package=com.netflix.mediaclient;scheme=nflx;S.browser_fallback_url=${encodeURIComponent(fallbackWebUrl)};end`;
+    window.location.href = intentUrl;
+    return;
+  } 
+  
+  if (isIOS) {
+    const start = Date.now();
+    window.location.href = 'nflx://';
+    setTimeout(() => {
+      if (Date.now() - start < 2000) {
+        window.location.href = fallbackWebUrl;
+      }
+    }, 1500);
+    return;
+  }
+
+  // 3. PC 데스크톱 웹 환경: 동적 웹 우회 도메인 열기
+  window.open(fallbackWebUrl, '_blank');
+}
 
 
 

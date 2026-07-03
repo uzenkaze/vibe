@@ -651,20 +651,33 @@ html.dark .topbar-btn:hover {
   box-shadow: var(--shadow-orange);
 }
 
-/* Git 연결 완료 시 오렌지 테마 */
+/* Git 연결 완료 시 녹색 테마 */
 .topbar-btn.github-sync-btn.connected {
-  color: var(--orange) !important;
-  border-color: var(--orange-dim) !important;
-  background: var(--orange-dim) !important;
-  box-shadow: 0 4px 12px var(--orange-glow) !important;
+  color: #2E7D32 !important;
+  border-color: rgba(46, 125, 50, 0.3) !important;
+  background: rgba(46, 125, 50, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.15) !important;
+}
+
+html.dark .topbar-btn.github-sync-btn.connected {
+  color: #81C784 !important;
+  border-color: rgba(129, 199, 132, 0.3) !important;
+  background: rgba(129, 199, 132, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(129, 199, 132, 0.1) !important;
 }
 
 @media (hover: hover) {
   .topbar-btn.github-sync-btn.connected:hover {
     color: #ffffff !important;
-    border-color: var(--orange) !important;
-    background: var(--orange) !important;
-    box-shadow: var(--shadow-orange) !important;
+    border-color: #2E7D32 !important;
+    background: #2E7D32 !important;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3) !important;
+  }
+  html.dark .topbar-btn.github-sync-btn.connected:hover {
+    color: #ffffff !important;
+    border-color: #4CAF50 !important;
+    background: #4CAF50 !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4) !important;
   }
 }
 

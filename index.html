@@ -454,10 +454,16 @@
             const frame = document.getElementById('contentFrame');
             if (!frame) return;
 
-            // 신규 리액트 기반 자산관리 프로젝트(asset-react) 매핑
+            // 대소문자 경로 보정 (Asset -> asset)
             let resolvedUrl = url;
-            if (url === 'asset/asset.html' || url.startsWith('asset/asset.html') || 
-                url === 'asset/asset-react/dist/index.html' || url.startsWith('asset/asset-react/dist/index.html')) {
+            if (resolvedUrl.startsWith('Asset/')) {
+                resolvedUrl = 'asset/' + resolvedUrl.substring(6);
+            }
+
+            // 신규 리액트 기반 자산관리 프로젝트(asset-react) 매핑
+            const lowerUrl = resolvedUrl.toLowerCase();
+            if (lowerUrl === 'asset/asset.html' || lowerUrl.startsWith('asset/asset.html') || 
+                lowerUrl === 'asset/asset-react/dist/index.html' || lowerUrl.startsWith('asset/asset-react/dist/index.html')) {
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     resolvedUrl = 'http://localhost:5173/';
                 } else {

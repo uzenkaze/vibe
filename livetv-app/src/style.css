@@ -3,7 +3,7 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0d0d0f;
+  background: #071112;
   color: #fff;
   height: 100dvh;
   overflow: hidden;
@@ -33,8 +33,8 @@ body {
   background: rgba(255,255,255,0.05);
 }
 .channel-row-pc.active {
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: rgba(152, 255, 217, 0.12);
+  border: 1px solid rgba(152, 255, 217, 0.25);
 }
 
 .channel-thumb-pc {
@@ -127,9 +127,9 @@ body {
   background: rgba(255,255,255,0.04);
 }
 .cat-tab.active {
-  color: #c4b5fd;
-  background: rgba(139, 92, 246, 0.1);
-  border-color: rgba(139, 92, 246, 0.25);
+  color: #98ffd9;
+  background: rgba(152, 255, 217, 0.1);
+  border-color: rgba(152, 255, 217, 0.25);
 }
 
 /* ===================== */
@@ -148,7 +148,7 @@ body {
   background: rgba(255,255,255,0.05);
 }
 .channel-card-mobile.active {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(152, 255, 217, 0.1);
 }
 .channel-thumb-mobile {
   width: 72px;

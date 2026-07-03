@@ -4,7 +4,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #0f0f0f;
+  background-color: #071112;
   color: #fff;
   font-family: 'Inter', sans-serif;
   height: auto;
@@ -302,7 +302,7 @@ body {
   padding: 8px 0;
 }
 .bottom-bar button:hover { color: #fff; }
-.bottom-bar button.active { color: #818cf8; }
+.bottom-bar button.active { color: #98ffd9; }
 
 /* ???? Modals ???? */
 .add-modal {
@@ -334,7 +334,7 @@ body {
 .full-player {
   position: fixed;
   inset: 0;
-  background: #0f0f0f;
+  background: #071112;
   z-index: 200;
   display: flex;
   flex-direction: column;
@@ -560,7 +560,7 @@ body {
   width: 48px; height: 48px;
 }
 .icon-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
-.icon-btn.active { color: #1ed760; }
+.icon-btn.active { color: #98ffd9; }
 
 .play-circle-btn {
   background: #fff;
@@ -678,10 +678,10 @@ body {
   margin-top: 2px;
 }
 .next-track-playing {
-  background: rgba(30,215,96,0.1);
+  background: rgba(152, 255, 217, 0.1);
   border-radius: 4px;
 }
-.next-track-playing .next-track-title { color: #1ed760; }
+.next-track-playing .next-track-title { color: #98ffd9; }
 
 /* Lyrics / Related placeholder */
 .tab-placeholder {
@@ -772,7 +772,7 @@ body {
   text-align: center;
   flex-shrink: 0;
 }
-.playlist-item.current .playlist-item-num { color: #1ed760; }
+.playlist-item.current .playlist-item-num { color: #98ffd9; }
 .playlist-item-thumb {
   width: 40px; height: 40px;
   border-radius: 4px;
@@ -789,7 +789,7 @@ body {
   text-overflow: ellipsis;
   color: #fff;
 }
-.playlist-item.current .playlist-item-title { color: #1ed760; }
+.playlist-item.current .playlist-item-title { color: #98ffd9; }
 .playlist-item-artist {
   font-size: 11px;
   color: #777;

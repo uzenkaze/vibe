@@ -4,11 +4,9 @@
 const CHANNELS = [
   // 지상파 (KBS, MBC, SBS, EBS)
   { id: 'kbs1', name: 'KBS 1TV', network: 'KBS1', category: '지상파', kbsApiCode: '11', ytHandle: '@kbs1tv', ytChannelId: 'UCcQTRi69dsVYHN3exePtZ1A', urls: [
-    'https://kbs-hls.gcdn.ntruss.com/kbs/kbs1hd/playlist.m3u8',
     'https://624a79c87201d.streamlock.net/kbs1/live/playlist.m3u8'
   ] },
   { id: 'kbs2', name: 'KBS 2TV', network: 'KBS2', category: '지상파', kbsApiCode: '12', ytHandle: '@kbs2tv', ytChannelId: 'UC_x5XG1OV2P6uZZ5FSM9Ttw', urls: [
-    'https://kbs-hls.gcdn.ntruss.com/kbs/kbs2hd/playlist.m3u8',
     'https://624a79c87201d.streamlock.net/kbs2/live/playlist.m3u8'
   ] },
   { id: 'mbc', name: 'MBC', network: 'MBC', category: '지상파', ytHandle: '@MBCNEWS', ytChannelId: 'UCF4Wxdo3inmxP-Y59wXDsFw', urls: [
@@ -31,11 +29,9 @@ const CHANNELS = [
 
   // 방송/오락
   { id: 'kbs_joy', name: 'KBS Joy', network: 'KBS_JOY', category: '방송/오락', kbsApiCode: 'N92', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N92&ch_type=globalList', urls: [
-    'https://kbs-hls.gcdn.ntruss.com/kbs/kbsjoy/playlist.m3u8',
     'https://624a79c87201d.streamlock.net/kbsjoy/live/playlist.m3u8'
   ]},
   { id: 'kbs_drama', name: 'KBS Drama', network: 'KBS_DRAMA', category: '방송/오락', kbsApiCode: 'N91', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N91&ch_type=globalList', urls: [
-    'https://kbs-hls.gcdn.ntruss.com/kbs/kbsdrama/playlist.m3u8',
     'https://624a79c87201d.streamlock.net/kbsdrama/live/playlist.m3u8'
   ]},
   { id: 'kbs_story', name: 'KBS Story', network: 'KBS_STORY', category: '방송/오락', kbsApiCode: 'N94', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N94&ch_type=globalList', urls: [] },
@@ -44,7 +40,7 @@ const CHANNELS = [
   { id: 'kbs_world', name: 'KBS World', network: 'KBS_WORLD', category: '방송/오락', kbsApiCode: '14', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=14&ch_type=globalList', urls: [
     'https://liveh12.vtvprime.vn/hls/KBS/03.m3u8'
   ]},
-  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', urls: [
+  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', ytChannelId: 'UC-VbFgagk6GJGDJgRQIMpZw', noPlayableHls: true, urls: [
     'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
   ] },
   { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', ytHandle: '@mbc_drama', urls: [
@@ -53,7 +49,7 @@ const CHANNELS = [
   { id: 'mbc_on', name: 'MBC On', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=3', urls: [
     'https://live3.mbcmpp.co.kr/etc3/_definst_/on/playlist.m3u8'
   ] },
-  { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=4', urls: [
+  { id: 'mbc_m', name: 'MBC M', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=4', ytHandle: '@ALLTHEKPOP', ytChannelId: 'UCPde4guD9yFBRzkxk2PatoA', noPlayableHls: true, urls: [
     'https://live3.mbcmpp.co.kr/etc4/_definst_/m/playlist.m3u8'
   ] },
 
@@ -71,17 +67,26 @@ const CHANNELS = [
 
   // 종합편성
   { id: 'kbs_24', name: 'KBS24', network: 'KBS', category: '종합편성', kbsApiCode: '81', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=81&ch_type=globalList', urls: [] },
-  { id: 'ytn_science', name: 'YTN 사이언스', network: 'YTN', category: '종합편성', ytHandle: '@YTNSC', ytChannelId: 'UCZdBJIbJz0P9xyFipgOj1fA', ytVideoId: '', officialUrl: 'https://science.ytn.co.kr/', noPlayableHls: true, urls: ['https://ytnscience-hls.gcdn.ntruss.com/ytnscience/ytnsciencehd/playlist.m3u8'] },
   { id: 'jtbc', name: 'JTBC', network: 'JTBC', category: '종합편성', jtbcApiCode: 'onair', ytHandle: '@jtbc_news', ytChannelId: 'UCsU-I-vHLiaMfV_ceaYz5rQ', officialUrl: 'https://onair.jtbc.co.kr/', urls: [] },
-  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', urls: ['https://tvchosun-hls.gcdn.ntruss.com/tvchosun/tvchosunhd/playlist.m3u8'] },
-  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', urls: ['https://ichannela-hls.gcdn.ntruss.com/ichannela/ichannelahd/playlist.m3u8'] },
-  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', urls: ['https://mbn-hls.gcdn.ntruss.com/mbn/mbnhd/playlist.m3u8'] },
+  { id: 'tv_chosun', name: 'TV조선', network: 'TV_CHOSUN', category: '종합편성', ytHandle: '@tvchosunnews', ytChannelId: 'UCWlV3Lz_55UaX4JsMj-z__Q', officialUrl: 'https://broadcast.tvchosun.com/onair/on.cstv', urls: [
+    'http://onair.cdn.tvchosun.com/origin1/_definst_/tvchosun_s1/playlist.m3u8',
+    'http://onair2.cdn.tvchosun.com/origin2/_definst_/tvchosun_s3/playlist.m3u8'
+  ] },
+  { id: 'channel_a', name: '채널A', network: 'CHANNEL_A', category: '종합편성', ytHandle: '@channelA-news', ytChannelId: 'UCfq4V1DAuaojnr2ryvWNysw', officialUrl: 'https://ichannela.com/com/cmm/onair.do', urls: [
+    'http://channelalive.ktcdn.co.kr/chalivepc/_definst_/atv2/playlist.m3u8',
+    'https://ichannela-hls.gcdn.ntruss.com/ichannela/ichannelahd/playlist.m3u8'
+  ] },
+  { id: 'mbn', name: 'MBN', network: 'MBN', category: '종합편성', ytHandle: '@mbn', ytChannelId: 'UCG9aFJTZ-lMCHAiO1KJsirg', officialUrl: 'https://www.mbn.co.kr/vod/onair', urls: [
+    'https://hls-live.mbn.co.kr/mbn-on-air/1000k/playlist.m3u8',
+    'https://hls-live.mbn.co.kr/mbn-on-air/600k/playlist.m3u8',
+    'https://mbn-hls.gcdn.ntruss.com/mbn/mbnhd/playlist.m3u8'
+  ] },
 
   // 뉴스/경제
   { id: 'ytn', name: 'YTN', network: 'YTN', category: '뉴스/경제', ytHandle: '@ytnnews24', ytChannelId: 'UChlgI3UHCOnwUGzWzbJ3H5w', ytVideoId: '', officialUrl: 'https://www.ytn.co.kr/live/', noPlayableHls: true, urls: [] },
   { id: 'yonhap', name: '연합뉴스TV', network: 'YONHAP', category: '뉴스/경제', ytHandle: '@yonhapnewstv23', ytChannelId: 'UCTHCOPwqNfZ0uiKOvFyhGwg', ytVideoId: '', officialUrl: 'https://www.yonhapnewstv.co.kr/ext/live/', noPlayableHls: true, urls: [] },
   { id: 'sbsbiz', name: 'SBS Biz', network: 'SBS_BIZ', category: '뉴스/경제', ytHandle: '@SBSBiz2021', ytChannelId: 'UCbMjg2EvXs_RUGW-KrdM3pw', officialUrl: 'https://biz.sbs.co.kr/onair.html', noPlayableHls: true, urls: [] },
-  { id: 'mk', name: '매일경제TV', network: 'MK', category: '뉴스/경제', ytHandle: '@MKeconomy_TV', ytChannelId: 'UCW_rE_QzXm5b7w7O21tE22A', officialUrl: 'https://www.mk.co.kr/', noPlayableHls: true, urls: [] },
+  { id: 'mk', name: '매일경제TV', network: 'MK', category: '뉴스/경제', ytHandle: '@MKeconomy_TV', ytChannelId: 'UCnfwIKyFYRuqZzzKBDt6JOA', officialUrl: 'https://www.mk.co.kr/', noPlayableHls: true, urls: [] },
   { id: 'mtn', name: 'MTN 머니투데이', network: 'MTN', category: '뉴스/경제', ytHandle: '@mtn', ytChannelId: 'UCaQREsefLy-W8ruWcJ7IDtg', officialUrl: 'https://www.mtn.co.kr/tv-live', noPlayableHls: true, urls: [] },
   { id: 'ktv', name: 'KTV 국민방송', network: 'KTV', category: '뉴스/경제', ytHandle: '@KTVKorea', ytChannelId: 'UCj8Snyrs1y-wnBQiUmGrTjw', urls: [
     'https://hlive.ktv.go.kr/live/klive_h.stream/playlist.m3u8',
@@ -150,8 +155,14 @@ const getVercelStreamProxy = (url) => {
     return null; // Local browser development directly connects to the stream
   }
   
+  // TV조선 및 채널A HLS CDN은 HTTPS를 미지원하므로 프록시 통신 시 http:// 주소를 유지해야 함
+  let targetUrl = url;
+  if (targetUrl && (targetUrl.includes('tvchosun.com') || targetUrl.includes('ktcdn.co.kr') || targetUrl.includes('ichannela.com'))) {
+    targetUrl = targetUrl.replace('https://', 'http://');
+  }
+
   const proxyBase = getProxyBaseUrl();
-  return `${proxyBase}/api/stream-proxy?url=${encodeURIComponent(url)}`;
+  return `${proxyBase}/api/stream-proxy?url=${encodeURIComponent(targetUrl)}`;
 };
 
 // 레거시 호환성 유지 (직접 접속만 시도 - 외부 프록시 제거)
@@ -160,6 +171,10 @@ const CORS_PROXIES = [];
 // GitHub Pages(HTTPS) 환경에서 http:// URL은 Mixed Content로 차단됨 → https://로 자동 업그레이드
 function upgradeToHttps(url) {
   if (url && url.startsWith('http://') && window.location.protocol === 'https:') {
+    // TV조선 및 채널A HLS CDN 서버는 HTTPS를 지원하지 않으므로 업그레이드 제외
+    if (url.includes('tvchosun.com') || url.includes('ktcdn.co.kr')) {
+      return url;
+    }
     return url.replace('http://', 'https://');
   }
   return url;
@@ -201,8 +216,9 @@ function getProxyBaseUrl() {
                   window.location.hostname.startsWith('192.168.');
   const isCapacitor = typeof window !== 'undefined' && 
                       (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  const isGitHub = window.location.hostname.includes('github.io') || window.location.hostname.includes('github.com');
   
-  if (isCapacitor) {
+  if (isCapacitor || isGitHub) {
     return 'https://vibe-eight-iota.vercel.app';
   }
   if (isLocal) {
@@ -707,6 +723,16 @@ function getChannelCardStyleAndContent(ch, active) {
 
 function updateChannelStatusUI(chId, status) {
   channelStatus[chId] = status;
+  
+  // ON AIR 배지 표시 여부 동적 제어
+  document.querySelectorAll(`[data-onair-id="${chId}"]`).forEach(badge => {
+    if (status === 'ok' || status === 'repaired') {
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  });
+
   document.querySelectorAll(`[data-status-id="${chId}"]`).forEach(dot => {
     dot.className = "absolute top-2 left-2 w-2 h-2 rounded-full z-20 transition-all duration-300";
     let title = '점검 대기 중';
@@ -732,14 +758,13 @@ function updateChannelStatusUI(chId, status) {
 function createCard(ch) {
   const active = activeChannelId === ch.id;
   const cardStyle = getChannelCardStyleAndContent(ch, active);
-  const isRealtime = !ch.noPlayableHls && ((ch.urls && ch.urls.length > 0) || ch.kbsApiCode || ch.url);
   
-  // 1. Futuristic ON AIR Badge (Neon Glow)
-  const onAirBadgeHtml = isRealtime ? `
-    <div class="absolute top-2 right-2 px-1.5 py-0.5 bg-red-600/90 text-white border border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.8)] backdrop-blur-md rounded-full text-[8px] font-black flex items-center gap-1 uppercase tracking-widest z-20">
+  // 1. Futuristic ON AIR Badge (Neon Glow) - 초기에는 hidden 처리하여 자가점검 성공 시에만 노출
+  const onAirBadgeHtml = `
+    <div data-onair-id="${ch.id}" class="absolute top-2 right-2 px-1.5 py-0.5 bg-red-600/90 text-white border border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.8)] backdrop-blur-md rounded-full text-[8px] font-black flex items-center gap-1 uppercase tracking-widest z-20 hidden">
       <span class="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,1)] animate-pulse"></span>ON AIR
     </div>
-  ` : '';
+  `;
 
   // 2. Dynamic Status indicator dot (Top-left)
   const currentStatus = channelStatus[ch.id] || 'pending';
@@ -1125,19 +1150,23 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     });
 
     let mediaErrorRetries = 0;
+    let nonFatalNetworkErrorCount = 0;
     hls.on(Hls.Events.ERROR, (e, data) => { 
       console.warn('[HLS.js Error]', data.type, data.details, data.fatal);
+      
+      // 비치명적(non-fatal) 네트워크 에러가 누적되면 (CORS로 인한 fragLoadError 등) 프록시 페일오버를 강제함
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR && !data.fatal) {
+        nonFatalNetworkErrorCount++;
+        if (nonFatalNetworkErrorCount >= 3) {
+          console.warn('[HLS.js] Non-fatal network errors exceeded threshold (3). Forcing proxy failover...');
+          nonFatalNetworkErrorCount = 0;
+          data.fatal = true;
+        }
+      }
+
       if (data.fatal) {
         if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-          const isCapacitorEnv = typeof window !== 'undefined' && 
-                              (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
-          if (isCapacitorEnv) {
-            debugLog(`Hls.js 로드 실패. 네이티브 HLS 재생 시도...`);
-            playNatively();
-            return;
-          }
-
-          // 직접 접속 실패 → Vercel 자체 프록시로 1회 재시도
+          // 직접 접속 실패 → Vercel 자체 프록시로 1회 재시도 (Capacitor 환경도 동일하게 프록시 시도)
           const vercelProxyAvailable = !!getVercelStreamProxy(url);
           if (currentProxyIdx < 0 && vercelProxyAvailable) {
             currentProxyIdx = 0; // Vercel 프록시 활성화
@@ -1176,14 +1205,14 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
     playNatively();
   }
 
-  // 12초 내에 playing 이벤트가 발생하지 않으면 다음 URL로 전환
+  // 4.5초 내에 playing 이벤트가 발생하지 않으면 다음 URL로 전환 (사용자 체감 대기 대폭 축소)
   playbackTimeout = setTimeout(() => {
     if (target.paused || target.currentTime === 0) {
-      console.warn(`12초 타임아웃 - 다음 URL 시도: ${ch.name} (index: ${urlIdx})`);
+      console.warn(`4.5초 타임아웃 - 다음 URL 시도: ${ch.name} (index: ${urlIdx})`);
       if (hls) { hls.destroy(); hls = null; }
       tryNextUrl(ch, urlIdx);
     }
-  }, 12000);
+  }, 4500);
 }
 
 let isFetchingStreams = false;
@@ -1287,11 +1316,25 @@ async function showYouTubeIframePlayback(ch) {
     };
 
     // 1. 로컬 스토리지 캐시 우선 로드 (재생 대기 시간 0초)
-    let cachedVideoId = localStorage.getItem('yt_live_videoid_v4_' + ch.id);
-    if (cachedVideoId === 'C3aa-Vv4Fzw') {
-      localStorage.removeItem('yt_live_videoid_v4_' + ch.id);
-      cachedVideoId = null;
+    let cachedVideoId = null;
+    try {
+      const cachedStr = localStorage.getItem('yt_live_videoid_v5_' + ch.id);
+      if (cachedStr) {
+        const cachedData = JSON.parse(cachedStr);
+        // 10분(600,000ms) 만료 검사
+        if (cachedData && cachedData.videoId && cachedData.timestamp && (Date.now() - cachedData.timestamp < 10 * 60 * 1000)) {
+          if (cachedData.videoId !== 'C3aa-Vv4Fzw') {
+            cachedVideoId = cachedData.videoId;
+          }
+        } else {
+          console.log(`[YouTube Live Playback] 캐시 만료됨 또는 무효: ${cachedData.videoId}`);
+          localStorage.removeItem('yt_live_videoid_v5_' + ch.id);
+        }
+      }
+    } catch (e) {
+      console.warn('[YouTube Live Playback] 캐시 파싱 에러:', e);
     }
+
     if (cachedVideoId) {
       console.log(`[YouTube Live Playback] 로컬 스토리지 캐시된 비디오 ID 즉시 사용: ${cachedVideoId}`);
       ytIframe.src = `https://www.youtube.com/embed/${cachedVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
@@ -1308,7 +1351,7 @@ async function showYouTubeIframePlayback(ch) {
               const data = await res.json();
               if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw' && data.videoId !== cachedVideoId) {
                 console.log(`[YouTube Live Playback] 라이브 비디오 ID 변경 감지: ${cachedVideoId} -> ${data.videoId}`);
-                localStorage.setItem('yt_live_videoid_v4_' + ch.id, data.videoId);
+                localStorage.setItem('yt_live_videoid_v5_' + ch.id, JSON.stringify({ videoId: data.videoId, timestamp: Date.now() }));
                 // 현재 재생 중인 채널이 일치할 때만 src 업데이트
                 if (activeChannelId === ch.id) {
                   const currentIframe = isPC() ? ytIframePC : ytIframeMob;
@@ -1345,7 +1388,7 @@ async function showYouTubeIframePlayback(ch) {
           if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw') {
             liveVideoId = data.videoId;
             console.log(`[YouTube Live Playback] 백엔드 분석 성공: ${liveVideoId}`);
-            localStorage.setItem('yt_live_videoid_v4_' + ch.id, liveVideoId);
+            localStorage.setItem('yt_live_videoid_v5_' + ch.id, JSON.stringify({ videoId: liveVideoId, timestamp: Date.now() }));
           }
         }
       } catch (e) {
@@ -1353,20 +1396,20 @@ async function showYouTubeIframePlayback(ch) {
       }
     }
 
-    // 2순위: ytChannelId 기반 iframe (GitHub Pages / 정적 환경에서 가장 안정적)
-    // ytVideoId/로컬백엔드로 live videoId를 못 얻은 경우 channelId 기반 embed로 폴백
-    // → 아래에서 liveVideoId가 없으면 ch.ytChannelId를 사용해 embed URL 생성
-
-    // 3순위: 로컬 환경에서만 클라이언트 사이드 CORS 프록시 스크래핑 시도
-    // (GitHub Pages 등 정적 배포 환경에서는 YouTube가 봇 차단하므로 생략)
-    if (!liveVideoId && ch.ytHandle && isLocal) {
+    // 3순위: 로컬 및 네이티브 모바일 환경에서 클라이언트 사이드 스크래핑 시도
+    // (네이티브는 CORS 제한이 없고 주거지 IP를 사용하므로 직접 유튜브 페이지 긁어오기 가능)
+    if (!liveVideoId && ch.ytHandle && (isLocal || isNative)) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const url = `https://www.youtube.com/@${handle}/live`;
-        const proxies = [
-          `/yt-proxy/@${handle}/live`,
-          `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-        ];
+        const proxies = [];
+        if (isNative) {
+          proxies.push(url); // 네이티브 모바일에서는 직접 접속 우선
+        }
+        if (isLocal) {
+          proxies.push(`/yt-proxy/@${handle}/live`);
+        }
+        proxies.push(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
 
         for (const proxyUrl of proxies) {
           try {
@@ -1419,20 +1462,12 @@ async function showYouTubeIframePlayback(ch) {
     if (liveVideoId) {
       console.log(`[YouTube Live Playback] 실시간 라이브 비디오 ID: ${liveVideoId}`);
       ytIframe.src = `https://www.youtube.com/embed/${liveVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
-    } else if (ch.ytChannelId) {
-      // ytChannelId 기반 라이브 스트림 embed (GitHub Pages 정적 환경에서 가장 안정적인 폴백)
-      console.log(`[YouTube Live Playback] ytChannelId 기반 라이브 embed: ${ch.ytChannelId}`);
-      ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
-    } else if (ch.ytHandle) {
-      // ytHandle 기반 폴백 (ytChannelId 없을 때)
-      const handle = ch.ytHandle.replace('@', '');
-      console.log(`[YouTube Live Playback] ytHandle 기반 폴백: ${handle}`);
-      // embed/live_stream은 channelId 필수이므로 showYouTubeFallback으로 재위임
-      showLoading(false);
-      showYouTubeFallback(ch);
-      return;
+      // 스크래핑 성공 시 v5 로컬스토리지 캐시에 한 번 더 최신 저장
+      localStorage.setItem('yt_live_videoid_v5_' + ch.id, JSON.stringify({ videoId: liveVideoId, timestamp: Date.now() }));
     } else {
-      console.warn(`[YouTube Live Playback] videoId/channelId 모두 없음. 폴백 UI 표시.`);
+      // 유튜브 임베드 차단 정책으로 인해 채널ID 기반 live_stream iframe은 더이상 지원하지 않음
+      // 실시간 비디오 ID를 직접 구하지 못했을 경우 즉시 수동 폴백 UI로 유도
+      console.warn(`[YouTube Live Playback] 실시간 라이브 비디오 ID 획득 실패. 폴백 UI 표시.`);
       showLoading(false);
       showYouTubeFallback(ch);
       return;
@@ -2311,11 +2346,19 @@ async function testUrlPlayability(url) {
     
     // 직접 접근 실패 시 CORS 프록시 체인으로 시도
     if ((!res || !res.ok) && needsCorsProxy()) {
-      for (const proxyFn of CORS_PROXIES) {
+      const vercelProxyUrl = getVercelStreamProxy(url);
+      if (vercelProxyUrl) {
         try {
-          res = await smartFetch(proxyFn(url), { timeout: 4000 }).catch(() => null);
-          if (res && res.ok) break;
-        } catch(e) { /* 다음 프록시 시도 */ }
+          res = await smartFetch(vercelProxyUrl, { timeout: 4000 }).catch(() => null);
+        } catch(e) {}
+      }
+      if (!res || !res.ok) {
+        for (const proxyFn of CORS_PROXIES) {
+          try {
+            res = await smartFetch(proxyFn(url), { timeout: 4000 }).catch(() => null);
+            if (res && res.ok) break;
+          } catch(e) { /* 다음 프록시 시도 */ }
+        }
       }
     }
     
@@ -2419,11 +2462,12 @@ function findAlternativeUrlsInM3u(ch, m3uChannels) {
 async function checkAndRepairChannelUrls() {
   console.log('[LiveTV] Starting channel self-healing validation...');
   
-  // Only check HLS channels (skip YouTube / official-only ones)
   const hlsChannels = CHANNELS.filter(ch => !ch.noPlayableHls && ((ch.urls && ch.urls.length > 0) || ch.url));
+  const ytChannels = CHANNELS.filter(ch => ch.noPlayableHls && (ch.ytChannelId || ch.ytHandle));
   
-  // Check in batches of 5 to avoid network congestion
   const batchSize = 5;
+  
+  // 1. HLS 채널 검증 및 복구
   for (let i = 0; i < hlsChannels.length; i += batchSize) {
     const batch = hlsChannels.slice(i, i + batchSize);
     await Promise.all(batch.map(async (ch) => {
@@ -2455,7 +2499,7 @@ async function checkAndRepairChannelUrls() {
       
       let workingUrl = null;
       
-      // 1. Test existing URLs
+      // Test existing URLs
       for (const url of urlsToCheck) {
         const playable = await testUrlPlayability(url);
         if (playable) {
@@ -2465,13 +2509,12 @@ async function checkAndRepairChannelUrls() {
       }
       
       if (workingUrl) {
-        // Active URL is working, update to ok status
         ch.urls = [workingUrl, ...ch.urls.filter(u => u !== workingUrl)];
         updateChannelStatusUI(ch.id, 'ok');
         return;
       }
       
-      // 2. Self-healing fallback: find new working URL
+      // Self-healing fallback: find new working URL
       console.log(`[Self-Healing] Channel "${ch.name}" has no working streams. Searching alternatives...`);
       const m3uList = await fetchIptvList();
       const candidates = findAlternativeUrlsInM3u(ch, m3uList);
@@ -2491,6 +2534,29 @@ async function checkAndRepairChannelUrls() {
       
       if (!foundNewWorking) {
         console.warn(`[Self-Healing] Failed to find alternative working stream for "${ch.name}"`);
+        updateChannelStatusUI(ch.id, 'failed');
+      }
+    }));
+  }
+
+  // 2. 유튜브 라이브 기반 채널 실시간 상태 검증 및 ON AIR 제어
+  for (let i = 0; i < ytChannels.length; i += batchSize) {
+    const batch = ytChannels.slice(i, i + batchSize);
+    await Promise.all(batch.map(async (ch) => {
+      updateChannelStatusUI(ch.id, 'checking');
+      try {
+        const handle = ch.ytHandle ? ch.ytHandle.replace('@', '') : '';
+        const proxyBase = getProxyBaseUrl();
+        const res = await smartFetch(`${proxyBase}/api/youtube/live?handle=${handle}&channelId=${ch.ytChannelId || ''}`, { timeout: 4500 });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && data.videoId && data.videoId !== 'C3aa-Vv4Fzw') {
+            updateChannelStatusUI(ch.id, 'ok');
+            return;
+          }
+        }
+        updateChannelStatusUI(ch.id, 'failed');
+      } catch (e) {
         updateChannelStatusUI(ch.id, 'failed');
       }
     }));
@@ -2538,4 +2604,70 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkAndRepairChannelUrls();
   })();
 });
+
+// 넷플릭스 앱 자동 실행 및 동적 웹 폴백 우회 런처
+window.openNetflix = async function() {
+  const isCapacitor = typeof window !== 'undefined' && 
+                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
+  
+  let fallbackWebUrl = 'https://kr43.topgirl.co';
+  try {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const base = isLocal ? `http://${window.location.hostname}:5174` : 'https://vibe-eight-iota.vercel.app';
+    const res = await fetch(`${base}/api/netflix/domain`, { timeout: 1800 }).catch(() => null);
+    if (res && res.ok) {
+      const data = await res.json();
+      if (data && data.domain) {
+        fallbackWebUrl = data.domain;
+      }
+    }
+  } catch (e) {
+    console.warn('[Netflix Redirect] Dynamic domain fetch failed, using default:', e);
+  }
+
+  // 1. Capacitor 하이브리드 앱 환경
+  if (isCapacitor && window.Capacitor?.Plugins?.AppLauncher) {
+    try {
+      const { AppLauncher } = window.Capacitor.Plugins;
+      const isAndroid = /android/i.test(navigator.userAgent);
+      const checkOptions = isAndroid 
+        ? { packageName: 'com.netflix.mediaclient' }
+        : { url: 'nflx://' };
+        
+      const canOpen = await AppLauncher.canOpenUrl(checkOptions).catch(() => ({ value: false }));
+      if (canOpen.value) {
+        await AppLauncher.openUrl({ url: 'nflx://' });
+        return;
+      }
+    } catch (e) {
+      console.warn('[Netflix AppLauncher] Failed to open native netflix:', e);
+    }
+  }
+
+  // 2. 모바일 브라우저 환경 딥링크 기동
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /ipad|iphone|ipod/i.test(ua) && !window.MSStream;
+
+  if (isAndroid) {
+    // 안드로이드 intent:// 구동 및 미설치 시 fallbackWebUrl 자동 연결
+    const intentUrl = `intent://#Intent;package=com.netflix.mediaclient;scheme=nflx;S.browser_fallback_url=${encodeURIComponent(fallbackWebUrl)};end`;
+    window.location.href = intentUrl;
+    return;
+  } 
+  
+  if (isIOS) {
+    const start = Date.now();
+    window.location.href = 'nflx://';
+    setTimeout(() => {
+      if (Date.now() - start < 2000) {
+        window.location.href = fallbackWebUrl;
+      }
+    }, 1500);
+    return;
+  }
+
+  // 3. PC 데스크톱 웹 환경: 동적 웹 우회 도메인 열기
+  window.open(fallbackWebUrl, '_blank');
+};
 // Re-deploy trigger 3

@@ -91,13 +91,13 @@ function Dashboard() {
     const res = await persistSections(sections, true);
     if (res && res.success) {
       if (res.target === 'github') {
-        showToast('로컬 및 GitHub 동기화 저장이 완료되었습니다.', 'success');
+        showToast('✅ 로컬 및 GitHub 서버에 성공적으로 동기화 저장되었습니다.', 'success');
       } else if (res.target === 'local_only_sync_fail') {
-        showToast('로컬에 저장되었습니다. (GitHub 동기화 실패)', 'warning');
+        showToast('⚠️ 로컬 저장소에 저장되었습니다. (GitHub 서버 동기화 실패)', 'warning');
       } else if (res.target === 'server') {
-        showToast('서버 및 로컬에 안전하게 저장되었습니다.', 'success');
+        showToast('✅ 로컬 및 서버 백엔드에 안전하게 저장되었습니다.', 'success');
       } else {
-        showToast('로컬 저장소에 저장되었습니다.', 'success');
+        showToast('ℹ️ 로컬 브라우저 저장소에만 저장되었습니다. (GitHub 서버 연동 필요)', 'info');
       }
     } else {
       showToast('저장 중 오류가 발생했습니다.', 'danger');

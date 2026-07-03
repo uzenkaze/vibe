@@ -36,7 +36,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#0f0f0f;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:80px;}
+    body{background:#071112;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:80px;}
     .glass-nav{
       background:rgba(12,12,18,0.8);
       backdrop-filter:blur(20px);
@@ -54,7 +54,7 @@
         height:calc(4.5rem + env(safe-area-inset-top,0px))!important;
       }
     }
-    .yt-sticky-top{position:sticky;top:0;z-index:100;background:rgba(12,12,18,0.95);border-bottom:1px solid rgba(255,255,255,0.08)}
+    .yt-sticky-top{position:sticky;top:0;z-index:100;background:rgba(7,17,18,0.95);border-bottom:1px solid rgba(255,255,255,0.08)}
     .yt-header{display:flex;align-items:center;gap:10px;padding:0 12px 0 16px;flex-shrink:0;width:100%;min-width:0}
     .yt-logo-link{flex-shrink:0;text-decoration:none}
     .yt-logo-text{white-space:nowrap}
@@ -81,7 +81,7 @@
     .yt-cats::-webkit-scrollbar{display:none}
     .yt-cat{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;white-space:nowrap;background:rgba(255,255,255,0.08);color:#ccc;transition:all .15s}
     .yt-cat:hover{background:rgba(255,255,255,0.14);color:#fff}
-    .yt-cat.active{background:#fff;color:#0f0f0f;font-weight:700}
+    .yt-cat.active{background:#98ffd9;color:#071112;font-weight:700}
 
     /* 그리드 */
     .yt-main{padding:16px 16px 40px}
@@ -181,7 +181,7 @@
 
     /* 로딩 / 스피너 */
     .yt-loading{display:flex;flex-direction:row;align-items:center;justify-content:center;padding:28px;gap:12px;color:#555}
-    .yt-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.06);border-top-color:#FF0000;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+    .yt-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.06);border-top-color:#98ffd9;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
     @keyframes spin{to{transform:rotate(360deg)}}
 
     .section-title{font-size:17px;font-weight:800;padding:0 4px 14px;color:#f1f1f1}
@@ -301,7 +301,7 @@
     .yt-player-loading .yt-spinner{
       width:44px;height:44px;
       border-width:3px;
-      border-top-color:#FF0000;
+      border-top-color:#98ffd9;
     }
     .yt-player-loading span{font-size:13px;color:#888;font-weight:500}
 
@@ -334,7 +334,7 @@
     .bottom-bar{position:fixed;bottom:0;left:0;right:0;height:64px;background:rgba(9,9,11,0.88);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.08);z-index:150;display:flex;align-items:center;justify-content:space-around;padding:0 24px;padding-bottom:env(safe-area-inset-bottom,0px)}
     .bottom-bar button{background:none;border:none;color:#71717a;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:color .15s}
     .bottom-bar button:hover{color:#aaa}
-    .bottom-bar button.active{color:#818cf8}
+    .bottom-bar button.active{color:#98ffd9}
 
     /* 모바일 반응형 */
     @media(max-width:600px){
@@ -349,21 +349,21 @@
     }
   </style>
   <script src="capacitor.js"></script>
-  <script type="module" crossorigin src="./assets/youtube-BvGB4sNH.js"></script>
+  <script type="module" crossorigin src="./assets/youtube-Q8tbjgtl.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="stylesheet" crossorigin href="./assets/tailwind-aDbzsnRJ.css">
+  <link rel="stylesheet" crossorigin href="./assets/tailwind-ZT6zaQJT.css">
 </head>
 <body>
   <div class="yt-sticky-top">
     <header class="glass-nav yt-header">
       <a href="index.html" class="yt-logo-link flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity">
-        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 border border-white/20">
+        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-teal-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-[#98FFD9] via-emerald-500 to-teal-600 border border-white/20">
           <div class="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
           <svg class="relative z-10 ml-0.5" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round">
             <polygon points="6 3 20 12 6 21 6 3" fill="white" />
           </svg>
         </div>
-        <span class="yt-logo-text text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-purple-200 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
+        <span class="yt-logo-text text-transparent bg-clip-text bg-gradient-to-r from-white via-[#98FFD9]/80 to-emerald-100 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
       </a>
       <div class="yt-search">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -466,8 +466,22 @@
     <button onclick="window.location.href='index.html'" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span style="font-size:10px;font-weight:700">홈</span></button>
     <button class="active" onclick="window.location.href='youtube.html'" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg><span style="font-size:10px;font-weight:700">유튜브</span></button>
     <button onclick="window.location.href='ytmusic.html'" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/></svg><span style="font-size:10px;font-weight:700">YT Music</span></button>
-    <button onclick="window.open('https://www.netflix.com', '_blank')" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M4 2v20h3.5v-7.5L16 22h4V2h-3.5v7.5L8 2H4z"/></svg><span style="font-size:10px;font-weight:700">넷플릭스</span></button>
-
-  </div>
+    <button onclick="window.openNetflix()" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M4 2v20h3.5v-7.5L16 22h4V2h-3.5v7.5L8 2H4z"/></svg><span style="font-size:10px;font-weight:700">넷플릭스</span></button>
+  </div>
+  <div id="error-debug-overlay" style="position:fixed;bottom:60px;left:10px;right:10px;background:rgba(239,68,68,0.9);color:#fff;font-size:11px;padding:10px;border-radius:6px;z-index:999999;display:none;word-break:break-all;font-family:monospace;box-shadow:0 4px 12px rgba(0,0,0,0.5);border:1.5px solid rgba(255,255,255,0.3)">
+    <div style="font-weight:bold;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:3px">⚠️ 런타임 스크립트 에러 감지됨</div>
+  </div>
+  <script>
+    window.addEventListener('error', function(e) {
+      const el = document.getElementById('error-debug-overlay');
+      if (el) {
+        el.style.display = 'block';
+        const p = document.createElement('div');
+        p.style.marginTop = '4px';
+        p.textContent = e.message + ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')';
+        el.appendChild(p);
+      }
+    });
+  </script>
 </body>
 </html>

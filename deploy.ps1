@@ -107,6 +107,9 @@ foreach ($folder in $staticFolders) {
             New-Item -ItemType Directory -Path "$deployDir/asset" -Force | Out-Null
             if (Test-Path "asset/favicon.png") { Copy-Item -Path "asset/favicon.png" -Destination "$deployDir/asset/" -Force }
             if (Test-Path "asset/data") { Copy-Item -Path "asset/data" -Destination "$deployDir/asset/" -Recurse -Force }
+            # HTML 및 JS 등 레거시 웹 페이지 복사 추가
+            if (Test-Path "asset/*.html") { Copy-Item -Path "asset/*.html" -Destination "$deployDir/asset/" -Force }
+            if (Test-Path "asset/*.js") { Copy-Item -Path "asset/*.js" -Destination "$deployDir/asset/" -Force }
             if (Test-Path "asset/asset-react/dist") {
                 New-Item -ItemType Directory -Path "$deployDir/asset/asset-react" -Force | Out-Null
                 Copy-Item -Path "asset/asset-react/dist" -Destination "$deployDir/asset/asset-react/" -Recurse -Force

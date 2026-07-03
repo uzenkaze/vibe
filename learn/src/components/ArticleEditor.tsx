@@ -211,7 +211,16 @@ export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: 
   const [isPinned, setIsPinned] = useState(false);
   const [color, setColor] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [enableSmartPaste, setEnableSmartPaste] = useState<boolean>(() => {
+    const saved = localStorage.getItem('learnVaultSmartPaste');
+    // 기본값은 false(비활성화)로 지정하여 복사한 내용 그대로 줄바꿈 등이 변경되지 않고 붙여넣어지게 합니다.
+    return saved === 'true';
+  });
   const nativeColorRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem('learnVaultSmartPaste', String(enableSmartPaste));
+  }, [enableSmartPaste]);
 
   useEffect(() => {
     if (isOpen) {
@@ -470,7 +479,15 @@ export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: 
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-bold text-text-muted uppercase tracking-wider">내용 (Markdown 지원)</label>
-                <span className="text-[9px] text-text-muted">문서나 웹사이트를 복사하면 마크다운 포맷으로 자동 정제되어 붙여넣어집니다.</span>
+                <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-text-muted select-none hover:text-text-primary transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={enableSmartPaste}
+                    onChange={e => setEnableSmartPaste(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-border bg-bg-secondary text-accent focus:ring-accent transition-all cursor-pointer"
+                  />
+                  <span>스마트 붙여넣기 (마크다운 자동 변환)</span>
+                </label>
               </div>
               <textarea
                 value={content}
@@ -479,28 +496,34 @@ export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: 
                   const htmlData = e.clipboardData.getData('text/html');
                   const textData = e.clipboardData.getData('text/plain');
                   
-                  if (htmlData && htmlData.trim() !== '') {
-                    // 글자 서식이나 문단 등 구조화된 HTML 태그가 있는지 검출
-                    const hasFormatting = /<(p|div|span|b|strong|i|em|u|mark|h[1-6]|ul|ol|li|a|hr|blockquote|img|pre|code)\b/i.test(htmlData);
-                    
-                    if (hasFormatting) {
-                      e.preventDefault();
-                      const convertedMarkdown = htmlToMarkdown(htmlData);
+                  if (enableSmartPaste && htmlData && htmlData.trim() !== '') {
+                    // 사용자가 복사한 텍스트 자체가 이미 HTML 태그 형태를 띠고 있다면(소스코드 자체 복사 등),
+                    // 리치 텍스트 렌더링 결과물이 아니므로 마크다운 변환을 건너뛰고 text/plain을 그대로 주입합니다.
+                    const hasHtmlTagsInPlain = textData && /<\/?(html|body|head|meta|link|script|style|div|span|p|a|h[1-6]|ul|ol|li|pre|code|table|thead|tbody|tr|td|th|img|br|hr|strong|b|em|i|u|mark|iframe|section|article|header|footer|button|input|textarea|form|select|option|svg|path)\b/i.test(textData);
+
+                    if (!hasHtmlTagsInPlain) {
+                      // 글자 서식이나 문단 등 구조화된 HTML 태그가 있는지 검출
+                      const hasFormatting = /<(p|div|span|b|strong|i|em|u|mark|h[1-6]|ul|ol|li|a|hr|blockquote|img|pre|code)\b/i.test(htmlData);
                       
-                      if (convertedMarkdown) {
-                        const success = document.execCommand('insertText', false, convertedMarkdown);
-                        if (success) return;
+                      if (hasFormatting) {
+                        e.preventDefault();
+                        const convertedMarkdown = htmlToMarkdown(htmlData);
                         
-                        // Fallback
-                        const target = e.target as HTMLTextAreaElement;
-                        const startPos = target.selectionStart;
-                        const endPos = target.selectionEnd;
-                        const newContent = content.substring(0, startPos) + convertedMarkdown + content.substring(endPos);
-                        setContent(newContent);
-                        setTimeout(() => {
-                          target.selectionStart = target.selectionEnd = startPos + convertedMarkdown.length;
-                        }, 0);
-                        return;
+                        if (convertedMarkdown) {
+                          const success = document.execCommand('insertText', false, convertedMarkdown);
+                          if (success) return;
+                          
+                          // Fallback
+                          const target = e.target as HTMLTextAreaElement;
+                          const startPos = target.selectionStart;
+                          const endPos = target.selectionEnd;
+                          const newContent = content.substring(0, startPos) + convertedMarkdown + content.substring(endPos);
+                          setContent(newContent);
+                          setTimeout(() => {
+                            target.selectionStart = target.selectionEnd = startPos + convertedMarkdown.length;
+                          }, 0);
+                          return;
+                        }
                       }
                     }
                   }

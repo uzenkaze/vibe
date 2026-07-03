@@ -35,23 +35,23 @@
   <title>PlayTime - YT Music</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="capacitor.js"></script>
-  <script type="module" crossorigin src="./assets/ytmusic-DO2BVr5F.js"></script>
+  <script type="module" crossorigin src="./assets/ytmusic-DekbjH-p.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="stylesheet" crossorigin href="./assets/ytmusic-DQ829fKp.css">
-  <link rel="stylesheet" crossorigin href="./assets/tailwind-GUaBgN5O.css">
+  <link rel="stylesheet" crossorigin href="./assets/ytmusic-C8nDyRgD.css">
+  <link rel="stylesheet" crossorigin href="./assets/tailwind-ZT6zaQJT.css">
 </head>
 <body>
 
   <div class="yt-sticky-top">
     <header class="glass-nav yt-header">
       <a href="index.html" class="yt-logo-link flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity">
-        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 border border-white/20">
+        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-teal-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-[#98FFD9] via-emerald-500 to-teal-600 border border-white/20">
           <div class="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
           <svg class="relative z-10 ml-0.5" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round">
             <polygon points="6 3 20 12 6 21 6 3" fill="white" />
           </svg>
         </div>
-        <span class="yt-logo-text text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-purple-200 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
+        <span class="yt-logo-text text-transparent bg-clip-text bg-gradient-to-r from-white via-[#98FFD9]/80 to-emerald-100 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
       </a>
       <div class="yt-search">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -65,12 +65,18 @@
       </div>
     </header>
     <div class="yt-cats" id="music-cat-tabs">
-      <button class="yt-cat active" type="button" onclick="activatePill(this); loadTrending()">홈 (추천)</button>
-      <button class="yt-cat" type="button" onclick="activatePill(this); loadRecent()">최근 재생</button>
-      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('뉴진스')">K-Pop</button>
-      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('팝송')">팝</button>
-      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('인디음악')">인디</button>
-      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('발라드')">발라드</button>
+      <button class="yt-cat active" type="button" onclick="activatePill(this); loadTrending()">✨ 투데이 추천</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); loadRecent()">🕒 최근 감상</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); loadLikedSongs()">❤️ 마이 보관함</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('K-Pop 최신곡')">🇰🇷 K-POP</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('Billboard Hot 100')">🇺🇸 US POP</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('Mexican Pop Musica')">🇲🇽 LATIN</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('European Pop Hits')">🇪🇺 EURO POP</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('J-Pop 인기곡')">🇯🇵 J-POP</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('인디음악 카페')">🎸 INDIE</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('감성 발라드')">🎵 BALLAD</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('클래식 명곡 베스트')">🎻 CLASSIC</button>
+      <button class="yt-cat" type="button" onclick="activatePill(this); searchMusic('재즈 카페 음악')">🎷 JAZZ</button>
     </div>
     </div>
   </div>
@@ -260,7 +266,7 @@
       </svg>
       <span style="font-size:10px; font-weight:700;">YT Music</span>
     </button>
-    <button onclick="window.open('https://www.netflix.com', '_blank')">
+    <button onclick="window.openNetflix()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
         <path d="M4 2v20h3.5v-7.5L16 22h4V2h-3.5v7.5L8 2H4z"/>
       </svg>
@@ -268,7 +274,21 @@
     </button>
 
   </div>
-
+  <div id="error-debug-overlay" style="position:fixed;bottom:60px;left:10px;right:10px;background:rgba(239,68,68,0.9);color:#fff;font-size:11px;padding:10px;border-radius:6px;z-index:999999;display:none;word-break:break-all;font-family:monospace;box-shadow:0 4px 12px rgba(0,0,0,0.5);border:1.5px solid rgba(255,255,255,0.3)">
+    <div style="font-weight:bold;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:3px">⚠️ 런타임 스크립트 에러 감지됨</div>
+  </div>
+  <script>
+    window.addEventListener('error', function(e) {
+      const el = document.getElementById('error-debug-overlay');
+      if (el) {
+        el.style.display = 'block';
+        const p = document.createElement('div');
+        p.style.marginTop = '4px';
+        p.textContent = e.message + ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')';
+        el.appendChild(p);
+      }
+    });
+  </script>
   <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>

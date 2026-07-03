@@ -39,6 +39,7 @@ async function loadHeader(config) {
             if (typeof initSelectors === 'function') {
                 initSelectors();
             }
+            updateCloudMenuStatus();
         }
     } catch (error) {
         console.error('Error loading header:', error);
@@ -73,7 +74,10 @@ function closeDashboardMenu() {
     }
 }
 
-function goToPage(url) {
+async function goToPage(url) {
+    if (typeof flushPendingSync === 'function') {
+        await flushPendingSync();
+    }
     if (url.includes('mindmap.html')) {
         location.href = url;
         return;
@@ -112,6 +116,28 @@ function toggleTheme() {
     const isDark = document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateThemeUI(isDark);
+    updateCloudMenuStatus();
+}
+
+function updateCloudMenuStatus() {
+    try {
+        const ghConfig = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
+        const isConnected = !!(ghConfig.token && ghConfig.repo);
+        const cloudMenu = Array.from(document.querySelectorAll('a')).find(el => el.textContent.trim().endsWith('Cloud') || el.innerText.includes('Cloud'));
+        if (cloudMenu) {
+            if (isConnected) {
+                const isDark = document.documentElement.classList.contains('dark');
+                const greenColor = isDark ? '#81C784' : '#2E7D32';
+                cloudMenu.innerHTML = `☁️ <span style="color: ${greenColor} !important;">Cloud</span>`;
+                cloudMenu.style.setProperty('color', greenColor, 'important');
+            } else {
+                cloudMenu.innerHTML = 'Cloud';
+                cloudMenu.style.removeProperty('color');
+            }
+        }
+    } catch (e) {
+        console.error('Error updating Cloud menu status:', e);
+    }
 }
 
 function updateThemeUI(isDark) {
@@ -128,16 +154,28 @@ function updateThemeUI(isDark) {
     }
 })();
 
+// Unicode-safe base64 encoding standard helper
+function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+        return String.fromCharCode('0x' + p1);
+    }));
+}
+
 // Background GitHub Auto-Sync (Option B)
 let autoSyncTimeout = null;
-async function backgroundGitHubSync() {
+window.pendingSyncPromise = null;
+window.pendingSyncResolver = null;
+
+async function backgroundGitHubSync(immediate = false) {
     const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
     if (!config.token || !config.repo) return; // GitHub not configured
 
-    // Debounce to prevent hitting API limits on rapid saves
-    if (autoSyncTimeout) clearTimeout(autoSyncTimeout);
-    
-    autoSyncTimeout = setTimeout(async () => {
+    if (autoSyncTimeout) {
+        clearTimeout(autoSyncTimeout);
+        autoSyncTimeout = null;
+    }
+
+    const performSync = async () => {
         try {
             const yearKey = typeof getYearKey === 'function' ? getYearKey() : null;
             if (!yearKey) return;
@@ -145,8 +183,9 @@ async function backgroundGitHubSync() {
             const yearDataStr = localStorage.getItem(yearKey);
             if (!yearDataStr) return;
 
-            const filePath = `Asset/data/${yearKey}.json`;
-            const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${config.branch}`;
+            const filePath = `asset/data/${yearKey}.json`;
+            const branch = config.branch || 'main';
+            const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${branch}`;
             const headers = {
                 'Authorization': `token ${config.token}`,
                 'Accept': 'application/vnd.github.v3+json',
@@ -164,8 +203,8 @@ async function backgroundGitHubSync() {
             // 2. Push to GitHub
             const body = {
                 message: `Auto-sync: Update ${yearKey} from ${window.location.pathname.split('/').pop()}`,
-                content: btoa(unescape(encodeURIComponent(yearDataStr))),
-                branch: config.branch
+                content: b64EncodeUnicode(yearDataStr),
+                branch: branch
             };
             if (sha) body.sha = sha;
 
@@ -184,9 +223,49 @@ async function backgroundGitHubSync() {
             }
         } catch (e) {
             console.error("[AutoSync] Exception:", e);
+        } finally {
+            window.pendingSyncPromise = null;
+            window.pendingSyncResolver = null;
         }
-    }, 2000); // 2초 디바운싱
+    };
+
+    if (immediate) {
+        window.pendingSyncPromise = performSync();
+        return window.pendingSyncPromise;
+    } else {
+        window.pendingSyncPromise = new Promise((resolve) => {
+            window.pendingSyncResolver = resolve;
+            autoSyncTimeout = setTimeout(async () => {
+                autoSyncTimeout = null;
+                await performSync();
+                resolve();
+            }, 2000);
+        });
+        return window.pendingSyncPromise;
+    }
 }
+
+// Global function to flush any pending sync immediately
+async function flushPendingSync() {
+    if (autoSyncTimeout && window.pendingSyncResolver) {
+        clearTimeout(autoSyncTimeout);
+        autoSyncTimeout = null;
+        const resolver = window.pendingSyncResolver;
+        await backgroundGitHubSync(true);
+        resolver();
+    } else if (window.pendingSyncPromise) {
+        await window.pendingSyncPromise;
+    }
+}
+
+// Add beforeunload listener to warn the user if a sync is pending
+window.addEventListener('beforeunload', (e) => {
+    if (autoSyncTimeout || window.pendingSyncPromise) {
+        e.preventDefault();
+        e.returnValue = '데이터가 아직 GitHub에 동기화되지 않았습니다. 페이지를 벗어나시겠습니까?';
+        return e.returnValue;
+    }
+});
 
 function showAutoSyncToast() {
     const existing = document.getElementById('autoSyncToast');
@@ -195,7 +274,7 @@ function showAutoSyncToast() {
     const toast = document.createElement('div');
     toast.id = 'autoSyncToast';
     toast.style.cssText = `position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:white; padding:8px 16px; border-radius:20px; font-size:0.8rem; z-index:10000; animation: fadeOut 3s forwards; pointer-events:none; display:flex; align-items:center; gap:6px;`;
-    toast.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> GitHub 자동 저장됨`;
+    toast.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> 로컬 및 GitHub 서버 동기화 완료`;
     
     // Add fadeOut animation if not exists
     if (!document.getElementById('toastKeyframes')) {
