@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Portal</title>
+    <title>Asset Management</title>
+    <link rel="icon" type="image/png" href="asset/favicon.png">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
@@ -559,8 +560,8 @@
                 document.title = 'PlayTime';
                 faviconLink.href = APP_BASE + 'livetv-favicon.png';
             } else {
-                document.title = 'Vibe Portal';
-                faviconLink.href = '';
+                document.title = 'Asset Management';
+                faviconLink.href = APP_BASE + 'asset/favicon.png';
             }
 
             if (url && (url.includes('home.html') || url === './' || url === '/')) {
