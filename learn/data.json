@@ -238,6 +238,17 @@
       "id": "art_mr46zki7_fujah",
       "createdAt": "2026-07-03T00:25:35.119Z",
       "updatedAt": "2026-07-03T02:05:08.242Z"
+    },
+    {
+      "categoryId": "cat_mr46ymt7_p3bvv",
+      "title": "수리부위",
+      "content": "",
+      "references": [],
+      "tags": [],
+      "isPinned": false,
+      "id": "art_mr4aplt2_fd7v2",
+      "createdAt": "2026-07-03T02:09:48.710Z",
+      "updatedAt": "2026-07-03T02:09:48.710Z"
     }
   ],
   "memos": [
