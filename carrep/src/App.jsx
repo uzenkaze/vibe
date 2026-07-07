@@ -4,10 +4,8 @@ import AppLayout from './components/AppLayout'
 import Step1Vehicle from './pages/Step1Vehicle'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
-import { getGithubJson, saveGithubJson } from './utils/githubDb'
 
-const REPORTS_PATH = 'carrep/public/data/reports.json'
-const MYCAR_PATH = 'carrep/public/data/mycar.json'
+const API_BASE = 'http://localhost:5500'
 
 export default function App() {
   const [step, setStep] = useState(1)
@@ -19,45 +17,37 @@ export default function App() {
   const [reports, setReports] = useState([])
   const [savedReportId, setSavedReportId] = useState(null)
   const [myCar, setMyCar] = useState(null)
-  
-  // GitHub token state (stored in sessionStorage for safety)
-  const [githubToken, setGithubToken] = useState(sessionStorage.getItem('carrep_github_token') || '')
+  const [dbConnected, setDbConnected] = useState(false)
 
-  const updateGithubToken = (token) => {
-    setGithubToken(token)
-    if (token) {
-      sessionStorage.setItem('carrep_github_token', token)
-    } else {
-      sessionStorage.removeItem('carrep_github_token')
-    }
-  }
-
-  // Load database records directly from GitHub Contents API
-  const loadData = async (tokenVal = githubToken) => {
+  // Fetch reports list and my car profile directly from server SQLite DB
+  const loadData = async () => {
     try {
-      // 1. Fetch reports list
-      const reportsRes = await getGithubJson(REPORTS_PATH, tokenVal)
-      if (reportsRes && reportsRes.content) {
-        setReports(reportsRes.content)
+      // 1. Fetch reports
+      const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
+      if (reportsRes.ok) {
+        const reportsData = await reportsRes.json()
+        setReports(reportsData)
+        setDbConnected(true)
       } else {
-        setReports([])
+        console.error('Failed to load reports from database')
+        setDbConnected(false)
       }
       
-      // 2. Fetch MyCar profile
-      const myCarRes = await getGithubJson(MYCAR_PATH, tokenVal)
-      if (myCarRes && myCarRes.content) {
-        setMyCar(myCarRes.content)
-      } else {
-        setMyCar(null)
+      // 2. Fetch myCar profile
+      const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
+      if (myCarRes.ok) {
+        const myCarData = await myCarRes.json()
+        setMyCar(myCarData)
       }
     } catch (e) {
-      console.warn('[CarRep] Failed to load data from GitHub. The files might not exist yet.', e)
+      console.error('SQLite DB server is not running or reachable:', e)
+      setDbConnected(false)
     }
   }
 
   useEffect(() => {
     loadData()
-  }, [githubToken])
+  }, [])
 
   const goNext = () => setStep(s => Math.min(s + 1, 3))
   const goPrev = () => setStep(s => Math.max(s - 1, 1))
@@ -89,38 +79,28 @@ export default function App() {
 
   const handleDeleteReport = async (id, e) => {
     e.stopPropagation()
-    if (!githubToken) {
-      alert('⚠️ 데이터를 삭제하려면 먼저 GitHub API 토큰을 입력해야 합니다.')
-      return
-    }
-    if (!window.confirm('이 보고서를 GitHub 데이터베이스에서 영구 삭제하시겠습니까?')) return
+    if (!window.confirm('이 보고서를 서버 SQLite 데이터베이스에서 영구 삭제하시겠습니까?')) return
 
     try {
-      const updatedReports = reports.filter(r => r.id !== id)
-      await saveGithubJson(
-        REPORTS_PATH,
-        updatedReports,
-        githubToken,
-        `chore(data): delete repair report ${id}`
-      )
-      
-      setReports(updatedReports)
-      if (savedReportId === id) {
-        handleReset()
+      const res = await fetch(`${API_BASE}/api/carrep/reports/${id}`, {
+        method: 'DELETE'
+      })
+      if (res.ok) {
+        setReports(prev => prev.filter(r => r.id !== id))
+        if (savedReportId === id) {
+          handleReset()
+        }
+        alert('보고서가 SQLite 데이터베이스에서 삭제되었습니다.')
+      } else {
+        alert('삭제 실패: 데이터베이스 서버 오류')
       }
-      alert('보고서가 GitHub 데이터베이스에서 정상 삭제되었습니다!')
     } catch (err) {
-      console.error('Delete via GitHub API failed', err)
-      alert(`⚠️ 삭제 실패: ${err.message}\n토큰 권한(repo) 및 유효성을 점검해 주세요.`)
+      console.error('Delete via API failed', err)
+      alert('⚠️ 데이터베이스 서버 연결 오류: 삭제를 완료할 수 없습니다.')
     }
   }
 
   const handleSaveReport = async () => {
-    if (!githubToken) {
-      alert('⚠️ 데이터를 저장하려면 먼저 GitHub API 토큰을 입력해야 합니다.')
-      return
-    }
-
     const newReport = {
       id: savedReportId || Date.now(),
       createdAt: new Date().toISOString(),
@@ -129,37 +109,27 @@ export default function App() {
       attachedImages
     }
 
-    let updatedReports = []
-    if (savedReportId) {
-      updatedReports = reports.map(r => r.id === savedReportId ? newReport : r)
-    } else {
-      updatedReports = [newReport, ...reports]
-    }
-
     try {
-      await saveGithubJson(
-        REPORTS_PATH,
-        updatedReports,
-        githubToken,
-        savedReportId ? `chore(data): update repair report ${newReport.id}` : `chore(data): create repair report ${newReport.id}`
-      )
-      
-      setReports(updatedReports)
-      setSavedReportId(newReport.id)
-      alert('보고서가 GitHub 데이터베이스에 성공적으로 저장되었습니다!')
-      setStep(3)
+      const res = await fetch(`${API_BASE}/api/carrep/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReport)
+      })
+      if (res.ok) {
+        await loadData()
+        setSavedReportId(newReport.id)
+        alert('보고서가 서버 SQLite 데이터베이스에 성공적으로 저장되었습니다!')
+        setStep(3)
+      } else {
+        alert('저장 실패: 데이터베이스 서버 스키마 검증 오류')
+      }
     } catch (err) {
-      console.error('Save via GitHub API failed', err)
-      alert(`⚠️ 저장 실패: ${err.message}\n토큰 권한(repo) 및 유효성을 점검해 주세요.`)
+      console.error('Save via API failed', err)
+      alert('⚠️ 데이터베이스 서버 연결 오류: 서버의 SQLite DB에 저장할 수 없습니다.')
     }
   }
 
   const handleSaveMyCar = async (carInfo) => {
-    if (!githubToken) {
-      alert('⚠️ 내 차량 정보를 등록하려면 먼저 GitHub API 토큰을 입력해야 합니다.')
-      return
-    }
-
     const myCarData = {
       maker: carInfo.maker,
       model: carInfo.model,
@@ -168,17 +138,20 @@ export default function App() {
     }
 
     try {
-      await saveGithubJson(
-        MYCAR_PATH,
-        myCarData,
-        githubToken,
-        'chore(data): update MyCar profile'
-      )
-      setMyCar(myCarData)
-      alert('내 차량 정보가 GitHub 데이터베이스에 정상 등록되었습니다!')
+      const res = await fetch(`${API_BASE}/api/carrep/mycar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(myCarData)
+      })
+      if (res.ok) {
+        setMyCar(myCarData)
+        alert('내 차량 정보가 서버 SQLite 데이터베이스에 등록되었습니다!')
+      } else {
+        alert('내 차량 등록 실패: 서버 오류')
+      }
     } catch (err) {
-      console.error('Save My Car via GitHub API failed', err)
-      alert(`⚠️ 등록 실패: ${err.message}\n토큰 권한(repo) 및 유효성을 점검해 주세요.`)
+      console.error('Save My Car via API failed', err)
+      alert('⚠️ 데이터베이스 서버 연결 오류: 내 차량 정보를 등록할 수 없습니다.')
     }
   }
 
@@ -190,8 +163,7 @@ export default function App() {
           setVehicleInfo={setVehicleInfo}
           reports={reports}
           myCar={myCar}
-          githubToken={githubToken}
-          onGithubTokenChange={updateGithubToken}
+          dbConnected={dbConnected}
           onSaveMyCar={handleSaveMyCar}
           onSelectReport={handleSelectReport}
           onEditReport={handleEditReport}
