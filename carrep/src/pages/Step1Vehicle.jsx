@@ -8,7 +8,8 @@ export default function Step1Vehicle({
   setVehicleInfo,
   reports = [],
   myCar,
-  dbSource = 'local',
+  githubToken,
+  onGithubTokenChange,
   onSaveMyCar,
   onSelectReport,
   onEditReport,
@@ -48,23 +49,46 @@ export default function Step1Vehicle({
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>차량 정보 입력</h1>
-          {dbSource === 'sqlite' && (
-            <span className={`${styles.badge} ${styles.badgeSqlite}`} title="로컬 SQLite 데이터베이스와 연동되어 실시간 저장 및 Git 푸시 배포가 작동합니다.">
-              🟢 SQLite 실시간 DB 연결됨
+          {githubToken ? (
+            <span className={`${styles.badge} ${styles.badgeSqlite}`} title="GitHub 토큰이 유효하여 클라우드 DB에 쓰기/수정 권한이 활성화되었습니다.">
+              🟢 GitHub Cloud DB 연결됨
             </span>
-          )}
-          {dbSource === 'github' && (
-            <span className={`${styles.badge} ${styles.badgeGithub}`} title="GitHub 원격 저장소에 동기화 배포된 DB 데이터를 안전하게 로드했습니다.">
-              🔵 GitHub 원격 동기화 DB
-            </span>
-          )}
-          {dbSource === 'local' && (
-            <span className={`${styles.badge} ${styles.badgeLocal}`} title="데이터베이스 서버가 꺼져 있어 브라우저 로컬 저장소 모드로 작동합니다.">
-              🟡 브라우저 로컬 저장소
+          ) : (
+            <span className={`${styles.badge} ${styles.badgeLocal}`} title="토큰이 입력되지 않아 조회만 가능한 읽기 전용 상태입니다.">
+              🟡 GitHub 읽기 전용 모드
             </span>
           )}
         </div>
         <p className={styles.subtitle}>정비 보고서를 생성할 차량의 기본 정보를 입력하거나, 이전 정비 보고서 목록을 선택하세요.</p>
+      </div>
+
+      {/* GitHub Token Config Card */}
+      <div className={styles.tokenCard}>
+        <div className={styles.tokenHeader}>
+          <span className={styles.tokenIcon}>🔑</span>
+          <div className={styles.tokenMeta}>
+            <span className={styles.tokenTitle}>GitHub Cloud DB 설정</span>
+            <span className={styles.tokenSub}>데이터를 쓰고 수정하려면 GitHub Personal Access Token(classic - repo 권한)이 필요합니다.</span>
+          </div>
+        </div>
+        <div className={styles.tokenInputRow}>
+          <input
+            className={styles.tokenInput}
+            type="password"
+            placeholder="GitHub Personal Access Token 입력 (ghp_...)"
+            value={githubToken}
+            onChange={(e) => onGithubTokenChange(e.target.value)}
+          />
+          {githubToken && (
+            <button
+              type="button"
+              className={styles.tokenClearBtn}
+              onClick={() => onGithubTokenChange('')}
+            >
+              초기화
+            </button>
+          )}
+        </div>
       </div>
 
       <div className={styles.mainLayout}>

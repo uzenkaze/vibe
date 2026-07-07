@@ -4,8 +4,10 @@ import AppLayout from './components/AppLayout'
 import Step1Vehicle from './pages/Step1Vehicle'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
+import { getGithubJson, saveGithubJson } from './utils/githubDb'
 
-const API_BASE = 'http://localhost:5500'
+const REPORTS_PATH = 'carrep/public/data/reports.json'
+const MYCAR_PATH = 'carrep/public/data/mycar.json'
 
 export default function App() {
   const [step, setStep] = useState(1)
@@ -18,78 +20,44 @@ export default function App() {
   const [savedReportId, setSavedReportId] = useState(null)
   const [myCar, setMyCar] = useState(null)
   
-  // Connection state: 'sqlite' (🟢 로컬 실시간 DB) | 'github' (🔵 GitHub 원격 동기화 DB) | 'local' (🟡 브라우저 로컬 저장소)
-  const [dbSource, setDbSource] = useState('local')
+  // GitHub token state (stored in sessionStorage for safety)
+  const [githubToken, setGithubToken] = useState(sessionStorage.getItem('carrep_github_token') || '')
 
-  // Hybrid Data Loading Chain
-  const loadData = async () => {
-    // 1. Try loading from Live Local SQLite DB Server (localhost:5500)
+  const updateGithubToken = (token) => {
+    setGithubToken(token)
+    if (token) {
+      sessionStorage.setItem('carrep_github_token', token)
+    } else {
+      sessionStorage.removeItem('carrep_github_token')
+    }
+  }
+
+  // Load database records directly from GitHub Contents API
+  const loadData = async (tokenVal = githubToken) => {
     try {
-      const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
-      if (reportsRes.ok) {
-        const reportsData = await reportsRes.json()
-        setReports(reportsData)
-        
-        const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
-        if (myCarRes.ok) {
-          const myCarData = await myCarRes.json()
-          setMyCar(myCarData)
-        }
-        setDbSource('sqlite')
-        console.log('[CarRep] Loaded data from SQLite DB Server.')
-        return
+      // 1. Fetch reports list
+      const reportsRes = await getGithubJson(REPORTS_PATH, tokenVal)
+      if (reportsRes && reportsRes.content) {
+        setReports(reportsRes.content)
+      } else {
+        setReports([])
+      }
+      
+      // 2. Fetch MyCar profile
+      const myCarRes = await getGithubJson(MYCAR_PATH, tokenVal)
+      if (myCarRes && myCarRes.content) {
+        setMyCar(myCarRes.content)
+      } else {
+        setMyCar(null)
       }
     } catch (e) {
-      console.warn('[CarRep] SQLite DB server not reachable, trying GitHub static DB...')
+      console.warn('[CarRep] Failed to load data from GitHub. The files might not exist yet.', e)
     }
-
-    // 2. Try loading from GitHub Pages deployed Static JSON files
-    try {
-      // Determine base path to fetch reports.json
-      const basePath = window.location.pathname.includes('/vibe') ? '/vibe/carrep' : '/carrep'
-      const reportsRes = await fetch(`${basePath}/data/reports.json?t=${Date.now()}`)
-      if (reportsRes.ok) {
-        const reportsData = await reportsRes.json()
-        setReports(reportsData)
-
-        const myCarRes = await fetch(`${basePath}/data/mycar.json?t=${Date.now()}`)
-        if (myCarRes.ok) {
-          const myCarData = await myCarRes.json()
-          setMyCar(myCarData)
-        }
-        setDbSource('github')
-        console.log('[CarRep] Loaded data from GitHub remote static JSON database.')
-        return
-      }
-    } catch (e) {
-      console.warn('[CarRep] GitHub static JSON database not reachable, trying LocalStorage...')
-    }
-
-    // 3. Fallback to LocalStorage
-    const saved = localStorage.getItem('carrep_reports')
-    if (saved) {
-      try {
-        setReports(JSON.parse(saved))
-      } catch (e) {
-        console.error('Failed to parse reports', e)
-      }
-    }
-
-    const savedMyCar = localStorage.getItem('carrep_my_car')
-    if (savedMyCar) {
-      try {
-        setMyCar(JSON.parse(savedMyCar))
-      } catch (e) {
-        console.error('Failed to parse my car', e)
-      }
-    }
-    setDbSource('local')
-    console.log('[CarRep] Fallback: Loaded data from LocalStorage.')
   }
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [githubToken])
 
   const goNext = () => setStep(s => Math.min(s + 1, 3))
   const goPrev = () => setStep(s => Math.max(s - 1, 1))
@@ -121,33 +89,38 @@ export default function App() {
 
   const handleDeleteReport = async (id, e) => {
     e.stopPropagation()
-    if (!window.confirm('이 보고서를 삭제하시겠습니까?')) return
-
-    if (dbSource === 'sqlite') {
-      try {
-        const res = await fetch(`${API_BASE}/api/carrep/reports/${id}`, {
-          method: 'DELETE'
-        })
-        if (res.ok) {
-          setReports(prev => prev.filter(r => r.id !== id))
-          if (savedReportId === id) handleReset()
-          alert('SQLite 데이터베이스에서 삭제되었습니다.')
-          return
-        }
-      } catch (err) {
-        console.error('Delete via API failed', err)
-      }
+    if (!githubToken) {
+      alert('⚠️ 데이터를 삭제하려면 먼저 GitHub API 토큰을 입력해야 합니다.')
+      return
     }
+    if (!window.confirm('이 보고서를 GitHub 데이터베이스에서 영구 삭제하시겠습니까?')) return
 
-    // LocalStorage Fallback for offline mode
-    const updated = reports.filter(r => r.id !== id)
-    setReports(updated)
-    localStorage.setItem('carrep_reports', JSON.stringify(updated))
-    if (savedReportId === id) handleReset()
-    alert('브라우저 임시 저장소(LocalStorage)에서 삭제되었습니다.')
+    try {
+      const updatedReports = reports.filter(r => r.id !== id)
+      await saveGithubJson(
+        REPORTS_PATH,
+        updatedReports,
+        githubToken,
+        `chore(data): delete repair report ${id}`
+      )
+      
+      setReports(updatedReports)
+      if (savedReportId === id) {
+        handleReset()
+      }
+      alert('보고서가 GitHub 데이터베이스에서 정상 삭제되었습니다!')
+    } catch (err) {
+      console.error('Delete via GitHub API failed', err)
+      alert(`⚠️ 삭제 실패: ${err.message}\n토큰 권한(repo) 및 유효성을 점검해 주세요.`)
+    }
   }
 
   const handleSaveReport = async () => {
+    if (!githubToken) {
+      alert('⚠️ 데이터를 저장하려면 먼저 GitHub API 토큰을 입력해야 합니다.')
+      return
+    }
+
     const newReport = {
       id: savedReportId || Date.now(),
       createdAt: new Date().toISOString(),
@@ -156,40 +129,37 @@ export default function App() {
       attachedImages
     }
 
-    if (dbSource === 'sqlite') {
-      try {
-        const res = await fetch(`${API_BASE}/api/carrep/reports`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newReport)
-        })
-        if (res.ok) {
-          await loadData()
-          setSavedReportId(newReport.id)
-          alert('보고서가 SQLite DB에 저장되었으며, GitHub로 자동 동기화 배포를 트리거했습니다!')
-          setStep(3)
-          return
-        }
-      } catch (err) {
-        console.error('Save via API failed', err)
-      }
-    }
-
-    // LocalStorage Fallback for offline mode
     let updatedReports = []
     if (savedReportId) {
       updatedReports = reports.map(r => r.id === savedReportId ? newReport : r)
     } else {
       updatedReports = [newReport, ...reports]
-      setSavedReportId(newReport.id)
     }
-    setReports(updatedReports)
-    localStorage.setItem('carrep_reports', JSON.stringify(updatedReports))
-    alert('⚠️ 서버 미연결 상태: 보고서가 현재 브라우저(LocalStorage)에 임시 보존되었습니다. 로컬에서 서버(node server.js)를 구동하여 저장하시면 SQLite DB와 GitHub 전체로 자동 동기화됩니다.')
-    setStep(3)
+
+    try {
+      await saveGithubJson(
+        REPORTS_PATH,
+        updatedReports,
+        githubToken,
+        savedReportId ? `chore(data): update repair report ${newReport.id}` : `chore(data): create repair report ${newReport.id}`
+      )
+      
+      setReports(updatedReports)
+      setSavedReportId(newReport.id)
+      alert('보고서가 GitHub 데이터베이스에 성공적으로 저장되었습니다!')
+      setStep(3)
+    } catch (err) {
+      console.error('Save via GitHub API failed', err)
+      alert(`⚠️ 저장 실패: ${err.message}\n토큰 권한(repo) 및 유효성을 점검해 주세요.`)
+    }
   }
 
   const handleSaveMyCar = async (carInfo) => {
+    if (!githubToken) {
+      alert('⚠️ 내 차량 정보를 등록하려면 먼저 GitHub API 토큰을 입력해야 합니다.')
+      return
+    }
+
     const myCarData = {
       maker: carInfo.maker,
       model: carInfo.model,
@@ -197,27 +167,19 @@ export default function App() {
       mileage: carInfo.mileage
     }
 
-    if (dbSource === 'sqlite') {
-      try {
-        const res = await fetch(`${API_BASE}/api/carrep/mycar`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(myCarData)
-        })
-        if (res.ok) {
-          setMyCar(myCarData)
-          alert('내 차량 정보가 SQLite DB에 저장되었으며, GitHub로 자동 동기화 배포를 트리거했습니다!')
-          return
-        }
-      } catch (err) {
-        console.error('Save My Car via API failed', err)
-      }
+    try {
+      await saveGithubJson(
+        MYCAR_PATH,
+        myCarData,
+        githubToken,
+        'chore(data): update MyCar profile'
+      )
+      setMyCar(myCarData)
+      alert('내 차량 정보가 GitHub 데이터베이스에 정상 등록되었습니다!')
+    } catch (err) {
+      console.error('Save My Car via GitHub API failed', err)
+      alert(`⚠️ 등록 실패: ${err.message}\n토큰 권한(repo) 및 유효성을 점검해 주세요.`)
     }
-
-    // LocalStorage Fallback for offline mode
-    setMyCar(myCarData)
-    localStorage.setItem('carrep_my_car', JSON.stringify(myCarData))
-    alert('내 차량 정보가 현재 브라우저(LocalStorage)에 임시 등록되었습니다.')
   }
 
   return (
@@ -228,7 +190,8 @@ export default function App() {
           setVehicleInfo={setVehicleInfo}
           reports={reports}
           myCar={myCar}
-          dbSource={dbSource}
+          githubToken={githubToken}
+          onGithubTokenChange={updateGithubToken}
           onSaveMyCar={handleSaveMyCar}
           onSelectReport={handleSelectReport}
           onEditReport={handleEditReport}
