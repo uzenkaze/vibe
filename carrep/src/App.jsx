@@ -14,8 +14,9 @@ export default function App() {
   const [attachedImages, setAttachedImages] = useState([])
   const [reports, setReports] = useState([])
   const [savedReportId, setSavedReportId] = useState(null)
+  const [myCar, setMyCar] = useState(null)
 
-  // Load reports from LocalStorage on mount
+  // Load reports and my car from LocalStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('carrep_reports')
     if (saved) {
@@ -23,6 +24,15 @@ export default function App() {
         setReports(JSON.parse(saved))
       } catch (e) {
         console.error('Failed to parse reports', e)
+      }
+    }
+
+    const savedMyCar = localStorage.getItem('carrep_my_car')
+    if (savedMyCar) {
+      try {
+        setMyCar(JSON.parse(savedMyCar))
+      } catch (e) {
+        console.error('Failed to parse my car', e)
       }
     }
   }, [])
@@ -78,6 +88,18 @@ export default function App() {
     alert('보고서가 성공적으로 저장되었습니다!')
   }
 
+  const handleSaveMyCar = (carInfo) => {
+    const myCarData = {
+      maker: carInfo.maker,
+      model: carInfo.model,
+      year: carInfo.year,
+      mileage: carInfo.mileage
+    }
+    setMyCar(myCarData)
+    localStorage.setItem('carrep_my_car', JSON.stringify(myCarData))
+    alert('내 차량 정보가 성공적으로 등록되었습니다!')
+  }
+
   return (
     <AppLayout step={step} goToStep={goToStep}>
       {step === 1 && (
@@ -85,6 +107,8 @@ export default function App() {
           vehicleInfo={vehicleInfo}
           setVehicleInfo={setVehicleInfo}
           reports={reports}
+          myCar={myCar}
+          onSaveMyCar={handleSaveMyCar}
           onSelectReport={handleSelectReport}
           onDeleteReport={handleDeleteReport}
           onNext={goNext}

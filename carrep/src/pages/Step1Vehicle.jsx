@@ -7,6 +7,8 @@ export default function Step1Vehicle({
   vehicleInfo,
   setVehicleInfo,
   reports = [],
+  myCar,
+  onSaveMyCar,
   onSelectReport,
   onDeleteReport,
   onNext
@@ -25,6 +27,20 @@ export default function Step1Vehicle({
     }
   }
 
+  const handleLoadMyCar = () => {
+    if (myCar) {
+      setVehicleInfo(prev => ({
+        ...prev,
+        maker: myCar.maker || '',
+        model: myCar.model || '',
+        year: myCar.year || '',
+        mileage: myCar.mileage || ''
+      }))
+    }
+  }
+
+  const isFormFilledForMyCar = vehicleInfo.maker && vehicleInfo.model && vehicleInfo.year
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -35,9 +51,21 @@ export default function Step1Vehicle({
       <div className={styles.mainLayout}>
         <div className={styles.formSection}>
           <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <span className={styles.cardIcon}>🚗</span>
-              <span>차량 기본 정보</span>
+            <div className={styles.cardHeaderRow}>
+              <div className={styles.cardHeader}>
+                <span className={styles.cardIcon}>🚗</span>
+                <span>차량 기본 정보</span>
+              </div>
+              {myCar && (
+                <button
+                  type="button"
+                  className={styles.loadMyCarBtn}
+                  onClick={handleLoadMyCar}
+                  title={`${myCar.maker} ${myCar.model} 불러오기`}
+                >
+                  🚗 내 차량 불러오기
+                </button>
+              )}
             </div>
 
             <div className={styles.grid}>
@@ -118,6 +146,18 @@ export default function Step1Vehicle({
                 />
               </div>
             </div>
+
+            {isFormFilledForMyCar && (
+              <div className={styles.cardFooter}>
+                <button
+                  type="button"
+                  className={styles.registerMyCarBtn}
+                  onClick={() => onSaveMyCar(vehicleInfo)}
+                >
+                  💾 현재 정보를 '내 차량'으로 등록
+                </button>
+              </div>
+            )}
           </div>
 
           {vehicleInfo.maker && vehicleInfo.model && vehicleInfo.year && (
