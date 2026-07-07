@@ -21,7 +21,7 @@ export default function GitHubModal({ isOpen, onClose, onSave, currentToken }) {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <span className={styles.title}>⚙️ GitHub Cloud DB 설정</span>
+          <span className={styles.title}>⚙️ GitHub 설정</span>
           <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
         <div className={styles.body}>

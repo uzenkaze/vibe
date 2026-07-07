@@ -47,9 +47,9 @@
 }
 
 .badgeLocal {
-  background: rgba(241, 196, 15, 0.08);
-  border-color: rgba(241, 196, 15, 0.25);
-  color: #f1c40f;
+  background: rgba(255, 59, 48, 0.08);
+  border-color: rgba(255, 59, 48, 0.25);
+  color: var(--accent-red);
 }
 
 /* GitHub Token Config Card Styles */

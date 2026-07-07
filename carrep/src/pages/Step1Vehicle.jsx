@@ -48,18 +48,12 @@ export default function Step1Vehicle({
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>차량 정보 입력</h1>
-          {dbStatus === 'local' && (
-            <span className={`${styles.badge} ${styles.badgeSqlite}`} title="로컬 백엔드 서버와 연결되어 데이터 저장 시 GitHub에 즉시 동기화됩니다.">
-              🟢 GitHub 동기화 서버 연결됨
+          {(dbStatus === 'local' || dbStatus === 'cloud') ? (
+            <span className={`${styles.badge} ${styles.badgeSqlite}`} title="GitHub 동기화 및 데이터 저장이 정상적으로 연결되었습니다.">
+              🟢 GitHub 데이터 연결
             </span>
-          )}
-          {dbStatus === 'remote' && (
-            <span className={`${styles.badge} ${styles.badgeGithub}`} title="GitHub Pages에 동기화된 JSON 데이터를 안전하게 불러왔습니다. (읽기 전용)">
-              🔵 GitHub 원격 데이터 로드됨
-            </span>
-          )}
-          {dbStatus === 'offline' && (
-            <span className={`${styles.badge} ${styles.badgeLocal}`} title="GitHub 데이터 서버에 연결할 수 없습니다. 네트워크 및 서버 상태를 확인하세요.">
+          ) : (
+            <span className={`${styles.badge} ${styles.badgeLocal}`} title="GitHub 데이터 서버에 연결할 수 없습니다. 우측 상단의 [GitHub 설정]에서 토큰을 입력해 권한을 활성화하세요.">
               🔴 GitHub 데이터 미연결
             </span>
           )}
