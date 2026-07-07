@@ -1,0 +1,48 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model MyCar {
+  id      Int    @id @default(1)
+  maker   String
+  model   String
+  year    Int
+  mileage Int?
+}
+
+model Report {
+  id             String          @id
+  createdAt      DateTime        @default(now())
+  maker          String
+  model          String
+  year           Int
+  mileage        Int?
+  repairDate     String?
+  shopName       String?
+  repairItems    RepairItem[]
+  attachedImages AttachedImage[]
+}
+
+model RepairItem {
+  id        String  @id
+  name      String
+  category  String
+  partsCost Int
+  laborCost Int
+  note      String?
+  reportId  String
+  report    Report  @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}
+
+model AttachedImage {
+  id       String @id
+  name     String
+  dataUrl  String
+  reportId String
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}

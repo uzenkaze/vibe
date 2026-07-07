@@ -5,3 +5,13 @@ Asset/data/*.json
 
 # Keep JSON files inside asset-react project
 !Asset/asset-react/**/*.json
+
+# Node modules
+node_modules/
+dist/
+
+# Local databases & env
+.env
+*.db
+*.db-journal
+dev.db
