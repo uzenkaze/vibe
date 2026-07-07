@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import styles from './Step1Vehicle.module.css'
 
 const CAR_MAKERS = ['현대', '기아', '쉐보레', 'BMW', '벤츠', '아우디', '도요타', '혼다', '닛산', '폭스바겐', '볼보', '포드', '기타']
@@ -5,6 +6,17 @@ const CAR_MAKERS = ['현대', '기아', '쉐보레', 'BMW', '벤츠', '아우디
 export default function Step1Vehicle({ vehicleInfo, setVehicleInfo, onNext }) {
   const set = (key, val) => setVehicleInfo(prev => ({ ...prev, [key]: val }))
   const canNext = vehicleInfo.maker && vehicleInfo.model && vehicleInfo.year
+  const dateInputRef = useRef(null)
+
+  const handleCalendarClick = () => {
+    if (dateInputRef.current) {
+      if (typeof dateInputRef.current.showPicker === 'function') {
+        dateInputRef.current.showPicker()
+      } else {
+        dateInputRef.current.focus()
+      }
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -68,12 +80,23 @@ export default function Step1Vehicle({ vehicleInfo, setVehicleInfo, onNext }) {
 
           <div className={styles.field}>
             <label className={styles.label}>정비 일자</label>
-            <input
-              className={styles.input}
-              type="date"
-              value={vehicleInfo.repairDate}
-              onChange={e => set('repairDate', e.target.value)}
-            />
+            <div className={styles.dateContainer}>
+              <input
+                ref={dateInputRef}
+                className={`${styles.input} ${styles.dateInput}`}
+                type="date"
+                value={vehicleInfo.repairDate}
+                onChange={e => set('repairDate', e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.calendarBtn}
+                onClick={handleCalendarClick}
+                title="달력 열기"
+              >
+                📅
+              </button>
+            </div>
           </div>
 
           <div className={styles.field}>
