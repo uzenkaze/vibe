@@ -139,6 +139,56 @@ public class MainActivity extends BridgeActivity {
                 }
 
                 @JavascriptInterface
+                public void updatePlaybackPosition(double currentTimeSec, double durationSec, boolean playing) {
+                    Intent serviceIntent = new Intent(MainActivity.this, BackgroundAudioService.class);
+                    serviceIntent.putExtra("update_progress", true);
+                    serviceIntent.putExtra("position", (long)(currentTimeSec * 1000));
+                    serviceIntent.putExtra("duration", (long)(durationSec * 1000));
+                    serviceIntent.putExtra("playing", playing);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent);
+                    } else {
+                        startService(serviceIntent);
+                    }
+                }
+
+                /**
+                 * 넷플릭스 앱을 PackageManager로 직접 실행 (딥링크 스키마 납치 방지)
+                 * @return true: 실행 성공, false: 앱 미설치 또는 실행 실패
+                 */
+                @JavascriptInterface
+                public boolean launchNetflixApp() {
+                    try {
+                        android.content.pm.PackageManager pm = getPackageManager();
+                        Intent launchIntent = pm.getLaunchIntentForPackage("com.netflix.mediaclient");
+                        if (launchIntent != null) {
+                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(launchIntent);
+                            return true;
+                        } else {
+                            return false; // 미설치
+                        }
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+
+                /**
+                 * 넷플릭스 앱 설치 여부 확인
+                 * @return true: 설치됨, false: 미설치
+                 */
+                @JavascriptInterface
+                public boolean checkNetflixInstalled() {
+                    try {
+                        android.content.pm.PackageManager pm = getPackageManager();
+                        pm.getPackageInfo("com.netflix.mediaclient", 0);
+                        return true;
+                    } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+                        return false;
+                    }
+                }
+
+                @JavascriptInterface
                 public String fetchKbsApi(String channelCode) {
                     try {
                         java.net.URL url = new java.net.URL("https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/" + channelCode + "?_=" + System.currentTimeMillis());

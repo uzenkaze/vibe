@@ -1,0 +1,139 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* Header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(11,12,16,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  gap: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.logoIcon { font-size: 1.5rem; }
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
+}
+
+.logoAccent { color: var(--accent-orange); }
+
+/* Stepper */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.stepWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepBtn.active {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  box-shadow: 0 0 12px rgba(69,243,255,0.3);
+}
+
+.stepBtn.done {
+  border-color: var(--accent-green);
+  background: var(--accent-green);
+  color: #000;
+  cursor: pointer;
+}
+
+.stepBtn:disabled { opacity: 0.4; cursor: default; }
+
+.stepLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.activeLabel { color: var(--accent-blue); font-weight: 600; }
+
+.stepLine {
+  width: 40px;
+  height: 2px;
+  background: var(--border);
+  margin: 0 6px;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+
+.lineDone { background: var(--accent-green); }
+
+.headerRight {}
+.badge {
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--accent-orange);
+  color: var(--accent-orange);
+  background: rgba(250,130,49,0.08);
+  white-space: nowrap;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  padding: 40px 32px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .header { padding: 12px 16px; }
+  .main { padding: 24px 16px; }
+  .stepLabel { display: none; }
+  .stepLine { width: 24px; }
+  .badge { display: none; }
+}

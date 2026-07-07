@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Book, Folder, StickyNote } from 'lucide-react';
+import { Search, Book, Folder, StickyNote, GitBranch } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../hooks/useStore';
 import { globalSearch, type SearchResult } from '../services/storage';
@@ -18,12 +18,20 @@ export default function SearchBar() {
     if (result.type === 'article') navigate(`/article/${result.data.id}`);
     if (result.type === 'category') navigate(`/category/${result.data.id}`);
     if (result.type === 'memo') navigate(`/memos?id=${result.data.id}`);
+    if (result.type === 'mindmap') {
+      const { pageId, nodeId } = result.data;
+      const url = nodeId 
+        ? `/mindmap?pageId=${pageId}&nodeId=${nodeId}`
+        : `/mindmap?pageId=${pageId}`;
+      navigate(url);
+    }
   };
 
   const getResultIcon = (type: SearchResult['type']) => {
     if (type === 'article') return <Book size={12} />;
     if (type === 'category') return <Folder size={12} />;
     if (type === 'memo') return <StickyNote size={12} />;
+    if (type === 'mindmap') return <GitBranch size={12} />;
     return null;
   };
 
@@ -31,6 +39,7 @@ export default function SearchBar() {
     if (result.type === 'article') return result.data.title;
     if (result.type === 'category') return result.data.name;
     if (result.type === 'memo') return result.data.title || result.data.content.slice(0, 20) + '...';
+    if (result.type === 'mindmap') return result.data.title;
     return '';
   };
 
@@ -41,6 +50,11 @@ export default function SearchBar() {
     }
     if (result.type === 'category') return '카테고리';
     if (result.type === 'memo') return '메모';
+    if (result.type === 'mindmap') {
+      return result.data.content.length > 25 
+        ? result.data.content.slice(0, 25) + '...'
+        : result.data.content;
+    }
     return '';
   };
 
@@ -102,8 +116,7 @@ export default function SearchBar() {
             <>
               <div className="max-h-80 overflow-y-auto">
                 {results.slice(0, 10).map((result, idx) => {
-                  const id = result.type === 'article' ? result.data.id : 
-                             result.type === 'category' ? result.data.id : result.data.id;
+                  const id = result.data.id;
                   return (
                     <button
                       key={`${result.type}-${id}-${idx}`}

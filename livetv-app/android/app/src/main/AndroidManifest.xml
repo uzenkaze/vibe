@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- 패키지 쿼리 허용 선언 (Android 11+ 앱 실행 감지 대응) -->
+    <queries>
+        <!-- 넷플릭스 앱 실행용 선언 -->
+        <package android:name="com.netflix.mediaclient" />
+        <!-- 인텐트 스키마 매핑용 선언 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="nflx" />
+        </intent>
+    </queries>
+
     <!-- TV / 빔프로젝터에서 터치스크린 없이도 실행 가능하도록 선언 -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.hardware.wifi" android:required="false" />

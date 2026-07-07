@@ -1,0 +1,296 @@
+.wrapper { display: flex; flex-direction: column; gap: 20px; }
+
+/* Actions Bar */
+.actionsBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.actionRight { display: flex; gap: 10px; }
+
+/* Report Card */
+.report {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+
+/* Report Header */
+.reportHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #0d1521, #1a2235);
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+.reportBrand {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--accent-orange);
+  white-space: nowrap;
+}
+.reportMeta { text-align: center; flex: 1; }
+.reportTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+.reportSubtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
+.reportDate { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; }
+
+/* Sections */
+.section { padding: 28px 32px; border-bottom: 1px solid var(--border); }
+
+.sectionTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-blue);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Vehicle Info */
+.vehicleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.vehicleItem {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vehicleKey { font-size: 0.73rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.vehicleVal { font-size: 1rem; font-weight: 700; color: var(--text-main); }
+
+/* Diagram + Cost Row */
+.diagramRow {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.diagramBox {
+  padding: 28px 24px;
+  border-right: 1px solid var(--border);
+}
+.diagramWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 16px;
+}
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.legendDot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* Cost Box */
+.costBox {
+  padding: 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.costCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.costCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.costIcon { font-size: 1.3rem; margin-bottom: 4px; }
+.costLabel { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+.costValue { font-size: 1.15rem; font-weight: 800; }
+.costUnit { font-size: 0.7rem; color: var(--text-muted); }
+
+.grandTotalBox {
+  background: linear-gradient(135deg, rgba(69,243,255,0.08), rgba(250,130,49,0.08));
+  border: 1px solid rgba(69,243,255,0.3);
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gtLabel { font-size: 1rem; font-weight: 700; color: var(--text-main); }
+.gtValue {
+  font-size: 2rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #45f3ff, #fa8231);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.gtUnit { font-size: 0.85rem; color: var(--text-muted); }
+
+/* Category Breakdown */
+.catBreakdown { display: flex; flex-direction: column; gap: 8px; }
+.catBreakTitle { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+.catRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+.catDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.catName { width: 110px; color: var(--text-muted); flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.catBar { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.catBarFill { height: 100%; border-radius: 3px; transition: width 0.8s ease; opacity: 0.8; }
+.catPct { width: 30px; text-align: right; color: var(--text-muted); font-size: 0.75rem; flex-shrink: 0; }
+.catAmt { width: 90px; text-align: right; color: var(--text-main); font-weight: 600; flex-shrink: 0; font-size: 0.8rem; }
+
+/* Category sections in detail table */
+.catSection { margin-bottom: 20px; }
+.catSection:last-child { margin-bottom: 0; }
+.catHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.02);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.catHeaderDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.catHeaderCount {
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.1);
+  padding: 2px 8px;
+  border-radius: 20px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* Items Table */
+.tableWrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.table th {
+  background: rgba(255,255,255,0.03);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+.table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: rgba(255,255,255,0.02); }
+.num { text-align: right; font-family: 'Outfit', monospace; }
+.subCol { color: var(--accent-blue); font-weight: 700; }
+.noteCol { color: var(--text-muted); font-size: 0.8rem; }
+
+/* Gallery */
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+.galleryItem {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: rgba(0,0,0,0.3);
+}
+.galleryImg { width: 100%; height: 140px; object-fit: cover; display: block; }
+.galleryName { padding: 8px 10px; font-size: 0.75rem; color: var(--text-muted); }
+
+/* Report Footer */
+.reportFooter {
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: rgba(0,0,0,0.2);
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btnGhost {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.btnGhost:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
+.btnPrint {
+  background: linear-gradient(135deg, rgba(250,130,49,0.15), rgba(247,183,49,0.15));
+  border: 1px solid rgba(250,130,49,0.4);
+  color: var(--accent-orange);
+}
+.btnPrint:hover { background: rgba(250,130,49,0.25); transform: translateY(-1px); }
+
+/* Print Styles */
+@media print {
+  #reportActions { display: none !important; }
+  .report {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .wrapper { gap: 0; }
+}
+
+@media (max-width: 900px) {
+  .diagramRow { grid-template-columns: 1fr; }
+  .diagramBox { border-right: none; border-bottom: 1px solid var(--border); }
+  .costCards { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .reportHeader { flex-direction: column; text-align: center; }
+  .section { padding: 20px 16px; }
+  .costBox { padding: 20px 16px; }
+  .diagramBox { padding: 20px 16px; }
+  .costCards { grid-template-columns: 1fr; }
+  .grandTotalBox { flex-direction: column; text-align: center; }
+  .gtValue { font-size: 1.5rem; }
+  .catName { width: 80px; }
+  .catAmt { width: 70px; }
+}

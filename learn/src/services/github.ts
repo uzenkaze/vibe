@@ -32,10 +32,12 @@ export function saveGitHubConfig(config: GitHubConfig): void {
 export async function downloadFromGitHub<T>(config: GitHubConfig, path: string = DATA_PATH): Promise<T | null> {
   if (!config.token || !config.repo) return null;
 
-  const url = `https://api.github.com/repos/${config.repo}/contents/${path}?ref=${config.branch}`;
+  const url = `https://api.github.com/repos/${config.repo}/contents/${path}?ref=${config.branch}&t=${Date.now()}`;
   const headers: Record<string, string> = {
     'Authorization': `token ${config.token}`,
     'Accept': 'application/vnd.github.v3+json',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
   };
 
   try {

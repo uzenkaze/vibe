@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { BookOpen, Home, Settings, Database, Sun, Moon, FileText, StickyNote, GitBranch } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import SearchBar from './SearchBar';
 import Toast from './Toast';
 
 export default function Layout() {
+  const navigate = useNavigate();
   const { dataSource, theme, toggleTheme } = useStore();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -65,7 +66,10 @@ export default function Layout() {
             }}
           >
             {/* ── Logo ── */}
-            <NavLink to="/" className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-full transition-all hover:bg-white/5">
+            <div
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-full transition-all hover:bg-white/5 cursor-pointer"
+            >
               <div
                 className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)', boxShadow: '0 4px 12px rgba(139,92,246,0.4)' }}
@@ -73,12 +77,12 @@ export default function Layout() {
                 <BookOpen size={13} className="text-white" />
               </div>
               <span
-                className="text-sm font-black tracking-tight hidden lg:inline"
+                className="text-sm font-black tracking-tight hidden sm:inline"
                 style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
               >
                 Han's Knowledge
               </span>
-            </NavLink>
+            </div>
 
             {/* ── Nav Items ── */}
             <div className="flex items-center">

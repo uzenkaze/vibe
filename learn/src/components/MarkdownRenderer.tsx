@@ -1,4 +1,5 @@
 import { useEffect, useRef, useMemo, useState, useCallback } from 'react';
+import { X } from 'lucide-react';
 
 /**
  * Minimal Markdown → HTML renderer (no external libraries)
@@ -121,6 +122,8 @@ export function renderMarkdown(markdown: string): string {
   const html: string[] = [];
   let inCodeBlock = false;
   let inHtmlPre = false;
+  let inHtmlStyle = false;
+  let inHtmlScript = false;
   let codeContent: string[] = [];
   let currentLinkGroup: string[] = [];
   let inList = false;
@@ -161,12 +164,50 @@ export function renderMarkdown(markdown: string): string {
 
     const hasPreStart = /<pre\b/i.test(line);
     const hasPreEnd = /<\/pre>/i.test(line);
+    const hasStyleStart = /<style\b/i.test(line);
+    const hasStyleEnd = /<\/style>/i.test(line);
+    const hasScriptStart = /<script\b/i.test(line);
+    const hasScriptEnd = /<\/script>/i.test(line);
+
+    if (inHtmlStyle) {
+      html.push(line);
+      if (hasStyleEnd) {
+        inHtmlStyle = false;
+      }
+      continue;
+    }
+
+    if (inHtmlScript) {
+      html.push(line);
+      if (hasScriptEnd) {
+        inHtmlScript = false;
+      }
+      continue;
+    }
 
     if (inHtmlPre) {
       html.push(parseInline(line));
       if (hasPreEnd) {
         inHtmlPre = false;
       }
+      continue;
+    }
+
+    if (hasStyleStart) {
+      inHtmlStyle = !hasStyleEnd;
+      flushLinkGroup();
+      closeList();
+      flushParagraph();
+      html.push(line);
+      continue;
+    }
+
+    if (hasScriptStart) {
+      inHtmlScript = !hasScriptEnd;
+      flushLinkGroup();
+      closeList();
+      flushParagraph();
+      html.push(line);
       continue;
     }
 
@@ -219,7 +260,7 @@ export function renderMarkdown(markdown: string): string {
     }
 
     // 0-1. 블록 HTML 태그가 포함된 줄 → 인라인 파싱만 수행하고 단락(<p>) 감싸기 건너뜀
-    const htmlBlockRegex = /^\s*<\/?(table|tr|td|th|thead|tbody|tfoot|details|summary|div|p|ul|ol|li|pre|code|blockquote|h[1-6]|hr|img|a|input|br|em|strong|iframe|section|article|header|footer)\b/i;
+    const htmlBlockRegex = /^\s*<\/?(table|tr|td|th|thead|tbody|tfoot|details|summary|div|p|ul|ol|li|pre|code|blockquote|h[1-6]|hr|img|a|input|br|em|strong|iframe|section|article|header|footer|style|script)\b/i;
     const isMdBlock = /^(#{1,6}\s+|>\s+|[-*+]\s+|\d+\.\s+|(-{3,}|\*{3,}|_{3,})$)/.test(line.trim());
 
     if (htmlBlockRegex.test(line) && !isMdBlock) {
@@ -355,14 +396,34 @@ export function renderMarkdown(markdown: string): string {
 interface MarkdownRendererProps {
   content: string;
   className?: string;
+  isFullscreen?: boolean;
+  autoExpandFirstIframe?: boolean;
 }
 
-export default function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
+export default function MarkdownRenderer({ content, className = '', isFullscreen = false, autoExpandFirstIframe = false }: MarkdownRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [version, setVersion] = useState(0);
   const [fullscreenCode, setFullscreenCode] = useState<{ code: string; lang: string } | null>(null);
+  const [fullscreenIframe, setFullscreenIframe] = useState<{ src: string; localId?: string | null } | null>(null);
 
   const renderedHtml = useMemo(() => renderMarkdown(content), [content, version]);
+
+  // 자동 iframe 전체화면 확장: autoExpandFirstIframe=true 일 때 첫 번째 iframe을 자동으로 fullscreen으로 열기
+  useEffect(() => {
+    if (!autoExpandFirstIframe || !containerRef.current) return;
+    // DOM이 렌더링된 직후 첫 번째 iframe을 찾아 자동 전체화면
+    const timer = setTimeout(() => {
+      if (!containerRef.current) return;
+      const iframe = containerRef.current.querySelector('iframe');
+      if (iframe) {
+        const src = iframe.getAttribute('src') || '';
+        const localId = iframe.getAttribute('data-local-id');
+        setFullscreenIframe({ src, localId });
+      }
+    }, 80); // DOM 렌더링 완료 대기
+    return () => clearTimeout(timer);
+  }, [renderedHtml, autoExpandFirstIframe]);
+
 
   // OG 프리뷰 fetch
   useEffect(() => {
@@ -388,6 +449,32 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     };
     fetchAll();
   }, [renderedHtml]);
+
+  // 주입된 HTML 내의 <script> 태그를 동적으로 실행시키는 훅
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const scripts = containerRef.current.querySelectorAll('script');
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach(attr => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      newScript.textContent = oldScript.textContent;
+      oldScript.parentNode?.replaceChild(newScript, oldScript);
+    });
+  }, [renderedHtml]);
+
+  // ESC 키로 전체화면 모달 닫기
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setFullscreenCode(null);
+        setFullscreenIframe(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // 코드 블록에 "전체보기" 버튼 주입
   const openFullscreen = useCallback((code: string, lang: string) => {
@@ -462,6 +549,94 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     if (!containerRef.current) return;
     const iframes = containerRef.current.querySelectorAll<HTMLIFrameElement>('iframe');
     iframes.forEach(iframe => {
+      // 크게보기 버튼 중복 생성 방지 처리
+      const hasBtn = iframe.getAttribute('data-fullscreen-btn-added');
+      if (hasBtn !== 'true') {
+        iframe.setAttribute('data-fullscreen-btn-added', 'true');
+        
+        const btn = document.createElement('button');
+        btn.className = 'iframe-fullscreen-btn';
+        btn.innerHTML = '🔍 크게보기';
+        btn.style.cssText = [
+          'position: absolute',
+          'top: 12px',
+          'right: 12px',
+          'z-index: 10',
+          'background: rgba(15, 23, 42, 0.75)',
+          'backdrop-filter: blur(4px)',
+          'border: 1px solid rgba(255, 255, 255, 0.1)',
+          'color: #f8fafc',
+          'font-size: 11px',
+          'font-weight: 700',
+          'padding: 6px 12px',
+          'border-radius: 8px',
+          'cursor: pointer',
+          'transition: all 0.2s',
+          'box-shadow: 0 4px 12px rgba(0,0,0,0.25)',
+          'display: flex',
+          'align-items: center',
+          'gap: 4px',
+        ].join(';');
+
+        btn.onmouseenter = () => {
+          btn.style.background = 'rgba(99, 102, 241, 0.9)';
+          btn.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+          btn.style.transform = 'scale(1.05)';
+        };
+        btn.onmouseleave = () => {
+          btn.style.background = 'rgba(15, 23, 42, 0.75)';
+          btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          btn.style.transform = 'scale(1)';
+        };
+
+        btn.onclick = (e) => {
+          e.preventDefault();
+          const currentSrc = iframe.src;
+          const currentLocalId = iframe.getAttribute('data-local-id');
+          setFullscreenIframe({ src: currentSrc, localId: currentLocalId });
+        };
+
+        const parent = iframe.parentElement;
+        if (parent) {
+          const computedStyle = window.getComputedStyle(parent);
+          if (computedStyle.position === 'static') {
+            parent.style.position = 'relative';
+          }
+          parent.appendChild(btn);
+        }
+      }
+
+      // 1. 로컬 HTML 문서 첨부 iframe인 경우 IndexedDB Blob URL 매핑
+      const localId = iframe.getAttribute('data-local-id');
+      if (localId) {
+        import('../services/indexedDb').then(({ getHtmlFromDb }) => {
+          getHtmlFromDb(localId).then(htmlContent => {
+            if (htmlContent) {
+              const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+              const blobUrl = URL.createObjectURL(blob);
+              iframe.src = blobUrl;
+            }
+          }).catch(err => console.error('IndexedDB HTML 로딩 실패:', err));
+        });
+      }
+
+      // 전체화면 모드 or 로컬 docs iframe: 16:9 래핑 없이 꽉 채워 표시
+      if (isFullscreen || localId || iframe.src.includes('/docs/')) {
+        iframe.removeAttribute('width');
+        iframe.removeAttribute('height');
+        iframe.style.cssText = [
+          'width:100%',
+          'min-height:80vh',
+          'height:80vh',
+          'display:block',
+          'border:none',
+          'border-radius:12px',
+          'box-shadow:0 2px 12px rgba(0,0,0,0.15)',
+          'margin:12px 0',
+        ].join(';');
+        return;
+      }
+
       // 이미 래핑됐으면 skip
       if (iframe.parentElement?.classList.contains('iframe-responsive-wrapper')) return;
 
@@ -494,7 +669,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
       iframe.parentNode?.insertBefore(wrapper, iframe);
       wrapper.appendChild(iframe);
     });
-  }, [renderedHtml]);
+  }, [renderedHtml, isFullscreen]);
 
   return (
     <>
@@ -566,6 +741,51 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
             >
               <code>{fullscreenCode.code}</code>
             </pre>
+          </div>
+        </div>
+      )}
+
+      {/* Fullscreen Iframe Modal */}
+      {fullscreenIframe && (
+        <div className="fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-md flex flex-col p-4 md:p-6 animate-fade-in">
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
+            <h3 className="text-sm font-bold text-white tracking-wide uppercase flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              📄 HTML 문서 크게보기
+            </h3>
+            <button
+              onClick={() => setFullscreenIframe(null)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-red-500 hover:text-white text-slate-300 text-xs font-bold rounded-lg border border-white/10 transition-colors cursor-pointer"
+            >
+              <X size={14} />
+              <span>닫기 (ESC)</span>
+            </button>
+          </div>
+          <div className="flex-1 w-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
+            <iframe
+              src={fullscreenIframe.src}
+              data-local-id={fullscreenIframe.localId}
+              ref={(el) => {
+                if (el && fullscreenIframe.localId) {
+                  import('../services/indexedDb').then(({ getHtmlFromDb }) => {
+                    getHtmlFromDb(fullscreenIframe.localId!).then(htmlContent => {
+                      if (htmlContent) {
+                        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                        const blobUrl = URL.createObjectURL(blob);
+                        el.src = blobUrl;
+                      }
+                    }).catch(err => console.error('Fullscreen IndexedDB HTML 로딩 실패:', err));
+                  });
+                }
+              }}
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                display: 'block',
+                background: '#ffffff',
+              }}
+            />
           </div>
         </div>
       )}

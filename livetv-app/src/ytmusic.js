@@ -492,6 +492,11 @@ async function executeSearchNetwork(query, isAppend = false) {
             if (!isAppend && currentPlaylist.length > 0) {
               setMusicCache(query, currentPlaylist.slice(0, 50));
             }
+            if (loadEl) {
+              if (isAppend) loadEl.style.display = 'none';
+              else loadEl.classList.remove('active');
+            }
+            isSearchLoading = false;
             return;
           }
         }
@@ -513,6 +518,11 @@ async function executeSearchNetwork(query, isAppend = false) {
         if (!isAppend && currentPlaylist.length > 0) {
           setMusicCache(query, currentPlaylist.slice(0, 50));
         }
+        if (loadEl) {
+          if (isAppend) loadEl.style.display = 'none';
+          else loadEl.classList.remove('active');
+        }
+        isSearchLoading = false;
         return;
       }
     }
@@ -1236,7 +1246,19 @@ function updateProgress() {
     bar.style.background = `linear-gradient(to right, #fff ${pct}%, rgba(255,255,255,0.2) ${pct}%)`;
   }
   document.getElementById('time-current').textContent = formatTime(cur);
-  document.getElementById('time-total').textContent   = formatTime(total);
+  
+  // 남은 시간 표기 (예: -2:45)
+  const remaining = total - cur;
+  document.getElementById('time-total').textContent   = '-' + formatTime(remaining >= 0 ? remaining : 0);
+
+  // 안드로이드 네이티브 상태바로 시간 위치 정보 전송
+  if (window.AndroidNative && typeof window.AndroidNative.updatePlaybackPosition === 'function') {
+    try {
+      window.AndroidNative.updatePlaybackPosition(cur, total, isPlaying);
+    } catch (e) {
+      console.error('[Background Audio] updatePlaybackPosition error:', e);
+    }
+  }
 }
 
 function formatTime(sec) {
@@ -1381,18 +1403,48 @@ function openInYouTube(event) {
 }
 
 /* ══════════════ INFINITE SCROLL ══════════════ */
+let lastMusicLoadTime = 0;
+
 function initInfiniteScroll() {
+  const loadNextPage = () => {
+    if (isSearchLoading || !currentSearchQuery) return;
+    
+    // 디바이스 연속 스크롤로 인한 API 연속 중복 찌르기 방지 (최소 1.2초 디바운스 락)
+    const now = Date.now();
+    if (now - lastMusicLoadTime < 1200) {
+      console.log('[YT Music Scroll Guard] 너무 빠른 연속 로드 차단');
+      return;
+    }
+    lastMusicLoadTime = Date.now();
+
+    searchPageCount++;
+    console.log(`[YT Music Infinite Scroll] Loading page ${searchPageCount} for query: ${currentSearchQuery}`);
+    const suffixes = [' 인기곡', ' 히트곡', ' 베스트', ' 추천 플레이리스트', ' 노래모음', ' 최신 인기곡'];
+    const nextQuery = currentSearchQuery + suffixes[(searchPageCount - 1) % suffixes.length];
+    searchMusic(nextQuery, false, true);
+  };
+
   const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isSearchLoading && currentSearchQuery) {
-      searchPageCount++;
-      const suffixes = [' 인기곡', ' 히트곡', ' 베스트', ' 추천 플레이리스트', ' 노래모음', ' 최신 인기곡'];
-      const nextQuery = currentSearchQuery + suffixes[(searchPageCount - 1) % suffixes.length];
-      searchMusic(nextQuery, false, true);
+    if (entries[0].isIntersecting) {
+      loadNextPage();
     }
   }, { rootMargin: '400px' });
   
   const anchor = document.getElementById('scroll-anchor');
   if (anchor) observer.observe(anchor);
+
+  // IntersectionObserver 오동작 대비 이중 백업 스크롤 리스너 탑재
+  window.addEventListener('scroll', () => {
+    if (isSearchLoading) return;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const clientHeight = window.innerHeight;
+    
+    // 바닥 근처 180px 이내 도달 시 강제 무한 스크롤 구동
+    if (scrollHeight - scrollTop - clientHeight < 180) {
+      loadNextPage();
+    }
+  }, { passive: true });
 
   // Periodically refresh list
   setInterval(() => {
@@ -1426,53 +1478,71 @@ Object.assign(window, {
   openNetflix
 });
 
-// 넷플릭스 앱 자동 실행 및 동적 웹 폴백 우회 런처
+// 넷플릭스 앱 자동 실행 및 기기별 앱스토어 연동 런처
 async function openNetflix() {
-  const isCapacitor = typeof window !== 'undefined' && 
-                      (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
-  
-  let fallbackWebUrl = 'https://kr43.topgirl.co';
-  try {
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const base = isLocal ? `http://${window.location.hostname}:5174` : 'https://vibe-eight-iota.vercel.app';
-    const res = await fetch(`${base}/api/netflix/domain`, { timeout: 1800 }).catch(() => null);
-    if (res && res.ok) {
-      const data = await res.json();
-      if (data && data.domain) {
-        fallbackWebUrl = data.domain;
-      }
-    }
-  } catch (e) {
-    console.warn('[Netflix Redirect] Dynamic domain fetch failed, using default:', e);
+  const isCapacitor = typeof window !== 'undefined' && window.Capacitor && typeof window.Capacitor.getPlatform === 'function';
+  let platform = 'web';
+  if (isCapacitor) {
+    platform = window.Capacitor.getPlatform();
   }
 
-  // 1. Capacitor 하이브리드 앱 환경
-  if (isCapacitor && window.Capacitor?.Plugins?.AppLauncher) {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = (platform === 'android') || (!isCapacitor && /android/i.test(ua));
+  const isIOS = (platform === 'ios') || (!isCapacitor && /ipad|iphone|ipod/i.test(ua) && !window.MSStream);
+  const isMac = !isIOS && (/macintosh|mac os x/i.test(ua));
+  const isWindows = !isAndroid && !isIOS && /windows/i.test(ua);
+
+  const storeUrls = {
+    android: 'https://play.google.com/store/apps/details?id=com.netflix.mediaclient',
+    ios: 'https://apps.apple.com/app/netflix/id363801352',
+    windows: 'https://apps.microsoft.com/detail/9wzdncrfj3tj',
+    mac: 'https://apps.apple.com/app/netflix/id363801352',
+    fallback: 'https://play.google.com/store/apps/details?id=com.netflix.mediaclient'
+  };
+
+  // ★ 1순위: AndroidNative 브릿지로 PackageManager를 통한 직접 실행 (딥링크 스키마 납치 완전 방지)
+  if (platform === 'android' && window.AndroidNative && typeof window.AndroidNative.launchNetflixApp === 'function') {
     try {
-      const { AppLauncher } = window.Capacitor.Plugins;
-      const isAndroid = /android/i.test(navigator.userAgent);
-      const checkOptions = isAndroid 
-        ? { packageName: 'com.netflix.mediaclient' }
-        : { url: 'nflx://' };
-        
-      const canOpen = await AppLauncher.canOpenUrl(checkOptions).catch(() => ({ value: false }));
-      if (canOpen.value) {
-        await AppLauncher.openUrl({ url: 'nflx://' });
+      const launched = window.AndroidNative.launchNetflixApp();
+      if (launched) {
+        return;
+      } else {
+        const goStore = confirm('넷플릭스 앱이 기기에 설치되어 있지 않습니다.\n설치를 위해 Play 스토어로 이동하시겠습니까?');
+        if (goStore) {
+          window.location.href = storeUrls.android;
+        }
         return;
       }
     } catch (e) {
-      console.warn('[Netflix AppLauncher] Failed to open native netflix:', e);
+      console.warn('[Netflix] AndroidNative.launchNetflixApp failed:', e);
     }
   }
 
-  // 2. 모바일 브라우저 환경 딥링크 기동
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  const isAndroid = /android/i.test(ua);
-  const isIOS = /ipad|iphone|ipod/i.test(ua) && !window.MSStream;
+  // 2순위: iOS Capacitor 환경
+  if (platform === 'ios' && isCapacitor && window.Capacitor?.Plugins?.AppLauncher) {
+    try {
+      const { AppLauncher } = window.Capacitor.Plugins;
+      const canOpen = await AppLauncher.canOpenUrl({ url: 'nflx://' }).catch(() => ({ value: false }));
+      if (canOpen.value) {
+        await AppLauncher.openUrl({ url: 'nflx://' });
+        return;
+      } else {
+        const goStore = confirm('넷플릭스 앱이 기기에 설치되어 있지 않습니다.\n설치를 위해 App Store로 이동하시겠습니까?');
+        if (goStore) {
+          await AppLauncher.openUrl({ url: storeUrls.ios }).catch(() => {
+            window.location.href = storeUrls.ios;
+          });
+        }
+        return;
+      }
+    } catch (e) {
+      console.warn('[Netflix AppLauncher] iOS failed:', e);
+    }
+  }
 
+  // 3순위: 모바일 브라우저 환경
   if (isAndroid) {
-    // 안드로이드 intent:// 구동 및 미설치 시 fallbackWebUrl 자동 연결
-    const intentUrl = `intent://#Intent;package=com.netflix.mediaclient;scheme=nflx;S.browser_fallback_url=${encodeURIComponent(fallbackWebUrl)};end`;
+    const intentUrl = `intent://#Intent;package=com.netflix.mediaclient;scheme=nflx;S.browser_fallback_url=${encodeURIComponent(storeUrls.android)};end`;
     window.location.href = intentUrl;
     return;
   } 
@@ -1482,14 +1552,26 @@ async function openNetflix() {
     window.location.href = 'nflx://';
     setTimeout(() => {
       if (Date.now() - start < 2000) {
-        window.location.href = fallbackWebUrl;
+        const goStore = confirm('넷플릭스 앱이 설치되어 있지 않은 것 같습니다.\n설치 스토어로 이동하시겠습니까?');
+        if (goStore) {
+          window.location.href = storeUrls.ios;
+        }
       }
     }, 1500);
     return;
   }
 
-  // 3. PC 데스크톱 웹 환경: 동적 웹 우회 도메인 열기
-  window.open(fallbackWebUrl, '_blank');
+  // 4순위: PC 데스크톱 웹 환경
+  const goStore = confirm('넷플릭스 앱이 설치되어 있지 않습니다.\n다운로드 스토어 페이지로 이동하시겠습니까?');
+  if (goStore) {
+    if (isWindows) {
+      window.open(storeUrls.windows, '_blank');
+    } else if (isMac) {
+      window.open(storeUrls.mac, '_blank');
+    } else {
+      window.open(storeUrls.fallback, '_blank');
+    }
+  }
 }
 
 

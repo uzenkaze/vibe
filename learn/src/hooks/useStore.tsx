@@ -84,21 +84,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const uploadOk = await uploadToGitHub(ghConfig, newData);
       
       if (uploadOk) {
-        // After successful upload, fetch back to ensure 100% consistency
-        const verifiedData = await downloadFromGitHub<AppData>(ghConfig);
-        if (verifiedData) {
-          setData(verifiedData);
-          saveData(verifiedData);
-          dataRef.current = verifiedData;
-          setDataSource('github');
-          return;
-        }
+        setDataSource('github');
+        return;
       }
-      setDataSource(uploadOk ? 'github' : 'local');
+      // 실패 시에도 'local'로 영구 격하하지 않고 설정에 따라 'github' 모드를 유지하되 토스트 안내
+      setDataSource('github');
+      showToast('GitHub 자동 동기화 일시 지연 (나중에 재시도됨)');
     } else {
       setDataSource('local');
     }
-  }, [ghConfig]);
+  }, [ghConfig, showToast]);
 
   // functional helper for state updates
   const updateData = useCallback(async (fn: (prev: AppData) => AppData) => {
@@ -261,9 +256,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           saveData(merged);
           setDataSource('github');
         } else {
-          setDataSource('local');
+          // 불러오기 실패 시에도 GitHub 설정 모드이므로 'github' 상태 유지 후 로컬 캐시 적용
+          setDataSource('github');
+          showToast('GitHub 데이터를 읽어오지 못했습니다. 로컬 캐시를 임시 사용합니다.');
         }
-      }).catch(() => setDataSource('local'));
+      }).catch(() => {
+        setDataSource('github');
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

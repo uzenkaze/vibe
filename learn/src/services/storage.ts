@@ -142,7 +142,8 @@ export function getRecentArticles(data: AppData, limit: number = 5): Article[] {
 export type SearchResult = 
   | { type: 'article', data: Article }
   | { type: 'category', data: Category }
-  | { type: 'memo', data: Memo };
+  | { type: 'memo', data: Memo }
+  | { type: 'mindmap', data: { id: string; pageId: number; nodeId?: number; title: string; content: string } };
 
 // 한-영 동적 키워드 사전 정의
 const BILINGUAL_MAP: Record<string, string> = {
@@ -163,35 +164,45 @@ export function globalSearch(data: AppData, query: string): SearchResult[] {
   const q = query.toLowerCase().trim();
   if (!q) return [];
   
-  // 연관 영문/한글 매핑 키워드 획득
-  const mappedKeywords = Object.entries(BILINGUAL_MAP)
-    .filter(([key]) => key.includes(q) || q.includes(key))
-    .map(([, val]) => val);
+  // 공백으로 단어 분리 (AND 검색 지원)
+  const words = q.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [];
 
-  const isMatched = (text: string) => {
+  const isMatched = (text: string | undefined | null) => {
+    if (!text) return false;
     const lowerText = text.toLowerCase();
-    if (lowerText.includes(q)) return true;
-    return mappedKeywords.some(kw => lowerText.includes(kw));
+    
+    // 입력한 모든 키워드가 텍스트 내에 포함되어야 함 (AND 검색)
+    return words.every(word => {
+      if (lowerText.includes(word)) return true;
+      
+      // Bilingual mapping 검사
+      const mappedKeywords = Object.entries(BILINGUAL_MAP)
+        .filter(([key]) => key.includes(word) || word.includes(key))
+        .map(([, val]) => val);
+        
+      return mappedKeywords.some(kw => lowerText.includes(kw));
+    });
   };
   
   const results: SearchResult[] = [];
   
-  // Search Categories first (so we can associate articles later)
+  // Search Categories
   const matchedCategoryIds = new Set<string>();
-  data.categories.forEach(c => {
-    if (isMatched(c.name) || isMatched(c.description || '')) {
+  const categories = Array.isArray(data?.categories) ? data.categories : [];
+  categories.forEach(c => {
+    if (isMatched(c.name) || isMatched(c.description)) {
       results.push({ type: 'category', data: c });
       matchedCategoryIds.add(c.id);
     }
   });
 
   // Search Articles
-  data.articles.forEach(a => {
-    // 제목, 내용 매칭 검사
+  const articles = Array.isArray(data?.articles) ? data.articles : [];
+  articles.forEach(a => {
     const contentMatch = isMatched(a.title) || isMatched(a.content);
-    // 아티클의 카테고리가 이미 매칭되었거나, 카테고리명 자체가 매칭되는지 검사
     const categoryMatch = matchedCategoryIds.has(a.categoryId) || (() => {
-      const cat = data.categories.find(c => c.id === a.categoryId);
+      const cat = categories.find(c => c.id === a.categoryId);
       return cat ? isMatched(cat.name) : false;
     })();
 
@@ -201,11 +212,49 @@ export function globalSearch(data: AppData, query: string): SearchResult[] {
   });
   
   // Search Memos
-  data.memos.forEach(m => {
-    if (isMatched(m.title || '') || isMatched(m.content)) {
+  const memos = Array.isArray(data?.memos) ? data.memos : [];
+  memos.forEach(m => {
+    if (isMatched(m.title) || isMatched(m.content)) {
       results.push({ type: 'memo', data: m });
     }
   });
+
+  // Search Mindmap Nodes and Pages
+  const mindmap = data?.mindmap;
+  if (mindmap && Array.isArray(mindmap.pages)) {
+    mindmap.pages.forEach(page => {
+      // 페이지 제목 검색
+      if (isMatched(page.title)) {
+        results.push({
+          type: 'mindmap',
+          data: {
+            id: `mind-${page.id}`,
+            pageId: page.id,
+            title: `마인드맵 • ${page.title}`,
+            content: `마인드맵 페이지: ${page.title}`
+          }
+        });
+      }
+      
+      // 페이지 노드 검색
+      if (Array.isArray(page.nodes)) {
+        page.nodes.forEach(node => {
+          if (isMatched(node.label) || isMatched(node.memo)) {
+            results.push({
+              type: 'mindmap',
+              data: {
+                id: `mind-${page.id}-${node.id}`,
+                pageId: page.id,
+                nodeId: node.id,
+                title: `마인드맵 • ${node.label || '노드'}`,
+                content: node.memo || `마인드맵 ${page.title} 내 노드`
+              }
+            });
+          }
+        });
+      }
+    });
+  }
   
   return results;
 }

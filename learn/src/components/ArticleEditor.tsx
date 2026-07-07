@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { X, Plus, Trash2, Link as LinkIcon, Check, Palette } from 'lucide-react';
 import type { Article, Reference } from '../types';
 import { useStore } from '../hooks/useStore';
+import { saveHtmlToDb } from '../services/indexedDb';
+import { uploadToGitHub } from '../services/github';
 
 const CARD_COLORS = [
   '',          // 기본 (카테고리 색상 적용)
@@ -195,6 +197,39 @@ function htmlToMarkdown(htmlStr: string): string {
   return markdown;
 }
 
+function compressAndConvertToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const MAX_WIDTH = 1000;
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(e.target?.result as string);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        resolve(dataUrl);
+      };
+      img.onerror = () => reject(new Error('이미지 로딩 실패'));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error('파일 읽기 실패'));
+    reader.readAsDataURL(file);
+  });
+}
+
 interface ArticleEditorProps {
   isOpen: boolean;
   onClose: () => void;
@@ -203,7 +238,7 @@ interface ArticleEditorProps {
 }
 
 export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: ArticleEditorProps) {
-  const { addArticle, editArticle, data } = useStore();
+  const { addArticle, editArticle, data, ghConfig } = useStore();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
@@ -217,6 +252,79 @@ export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: 
     return saved === 'true';
   });
   const nativeColorRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const htmlFileInputRef = useRef<HTMLInputElement>(null);
+
+  const insertTextAtCursor = (textarea: HTMLTextAreaElement, textToInsert: string) => {
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+    const currentVal = textarea.value;
+    
+    const newVal = currentVal.substring(0, startPos) + textToInsert + currentVal.substring(endPos);
+    setContent(newVal);
+    
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = startPos + textToInsert.length;
+    }, 0);
+  };
+
+  const handleHtmlFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const htmlContent = event.target?.result as string;
+        if (!htmlContent) return;
+
+        const docId = `doc_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        
+        try {
+          await saveHtmlToDb(docId, htmlContent);
+        } catch (dbErr) {
+          console.error('IndexedDB 저장 실패:', dbErr);
+        }
+
+        if (ghConfig.token && ghConfig.repo) {
+          uploadToGitHub(ghConfig, htmlContent, `learn/public/docs/${file.name}`, `Upload document: ${file.name}`)
+            .then(ok => {
+              if (ok) console.log('HTML 깃허브 업로드 완료:', file.name);
+            })
+            .catch(err => console.error('HTML 깃허브 업로드 에러:', err));
+        }
+
+        const textarea = document.getElementById('editor-textarea') as HTMLTextAreaElement;
+        const iframeMarkdown = `\n<iframe src="/vibe/learn/docs/${file.name}" data-local-id="${docId}" style="width: 100%; height: 800px; border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"></iframe>\n`;
+        if (textarea) {
+          insertTextAtCursor(textarea, iframeMarkdown);
+        } else {
+          setContent(prev => prev + iframeMarkdown);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      compressAndConvertToBase64(file).then(base64Data => {
+        const textarea = document.getElementById('editor-textarea') as HTMLTextAreaElement;
+        const markdownImg = `\n![이미지](${base64Data})\n`;
+        if (textarea) {
+          insertTextAtCursor(textarea, markdownImg);
+        } else {
+          setContent(prev => prev + markdownImg);
+        }
+      }).catch(err => {
+        console.error('파일 첨부 실패:', err);
+      }).finally(() => {
+        if (e.target) e.target.value = '';
+      });
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('learnVaultSmartPaste', String(enableSmartPaste));
@@ -478,7 +586,37 @@ export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: 
             {/* Content */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-text-muted uppercase tracking-wider">내용 (Markdown 지원)</label>
+                <div className="flex items-center gap-3">
+                  <label className="block text-xs font-bold text-text-muted uppercase tracking-wider">내용 (Markdown 지원)</label>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-1 text-[10px] font-bold text-accent hover:text-accent-hover bg-accent/5 px-2 py-0.5 rounded-lg border border-accent/10 transition-colors"
+                  >
+                    📷 이미지 첨부
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="sr-only"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => htmlFileInputRef.current?.click()}
+                    className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 hover:text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded-lg border border-emerald-500/10 transition-colors"
+                  >
+                    📄 HTML 첨부
+                  </button>
+                  <input
+                    type="file"
+                    ref={htmlFileInputRef}
+                    onChange={handleHtmlFileChange}
+                    accept=".html,.htm"
+                    className="sr-only"
+                  />
+                </div>
                 <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-text-muted select-none hover:text-text-primary transition-colors">
                   <input
                     type="checkbox"
@@ -490,9 +628,48 @@ export default function ArticleEditor({ isOpen, onClose, categoryId, initial }: 
                 </label>
               </div>
               <textarea
+                id="editor-textarea"
                 value={content}
                 onChange={e => setContent(e.target.value)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  const files = e.dataTransfer.files;
+                  if (files && files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                      e.preventDefault();
+                      compressAndConvertToBase64(file).then(base64Data => {
+                        const markdownImg = `\n![이미지](${base64Data})\n`;
+                        insertTextAtCursor(e.target as HTMLTextAreaElement, markdownImg);
+                      }).catch(err => {
+                        console.error('이미지 드롭 처리 실패:', err);
+                      });
+                    }
+                  }
+                }}
                 onPaste={(e) => {
+                  const items = e.clipboardData.items;
+                  let hasImage = false;
+                  
+                  for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                      const file = items[i].getAsFile();
+                      if (file) {
+                        e.preventDefault();
+                        hasImage = true;
+                        compressAndConvertToBase64(file).then(base64Data => {
+                          const markdownImg = `\n![이미지](${base64Data})\n`;
+                          insertTextAtCursor(e.target as HTMLTextAreaElement, markdownImg);
+                        }).catch(err => {
+                          console.error('클립보드 이미지 처리 실패:', err);
+                        });
+                        break;
+                      }
+                    }
+                  }
+                  
+                  if (hasImage) return;
+
                   const htmlData = e.clipboardData.getData('text/html');
                   const textData = e.clipboardData.getData('text/plain');
                   

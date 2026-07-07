@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit3, Trash2, ExternalLink, Pin, Tag, Clock, Calendar } from 'lucide-react';
+import { ArrowLeft, Edit3, Trash2, ExternalLink, Pin, Tag, Clock, Calendar, X, Maximize2 } from 'lucide-react';
 import { useStore } from '../hooks/useStore';
 import { getArticleById, getCategoryById } from '../services/storage';
 import MarkdownRenderer from '../components/MarkdownRenderer';
@@ -47,6 +47,17 @@ export default function ArticlePage() {
   const [fabHovered, setFabHovered] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
+  const [isFullscreenContent, setIsFullscreenContent] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsFullscreenContent(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleSaveTitle = () => {
     if (article && editedTitle.trim() && editedTitle.trim() !== article.title) {
@@ -78,8 +89,8 @@ export default function ArticlePage() {
 
   const togglePin = () => editArticle(article.id, { isPinned: !article.isPinned });
 
-  // Hero color: category color → default indigo
-  const heroColor = category?.color || '#6366f1';
+  // Hero color: article color → category color → default indigo
+  const heroColor = article.color || category?.color || '#6366f1';
   const textMode = getTextColor(heroColor);
   const isLight = textMode === 'dark';
   const textPrimary = isLight ? '#111827' : '#ffffff';
@@ -202,13 +213,23 @@ export default function ArticlePage() {
 
       {/* ── Content ── */}
       <div
-        className="animate-slide-up rounded-3xl border border-border p-5 sm:p-10"
+        className="animate-slide-up rounded-3xl border border-border p-5 sm:p-10 relative group/content"
         style={{ 
           background: 'var(--color-bg-elevated)', 
           boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
           ...contentOverrideStyles
         }}
       >
+        {article.content && (
+          <button
+            onClick={() => setIsFullscreenContent(true)}
+            className="absolute top-4 right-4 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary hover:bg-accent text-text-primary hover:text-white text-xs font-bold rounded-xl border border-border transition-all shadow-md opacity-90 hover:opacity-100 cursor-pointer"
+          >
+            <Maximize2 size={12} />
+            <span>크게보기</span>
+          </button>
+        )}
+
         {article.content ? (
           <MarkdownRenderer content={article.content} />
         ) : (
@@ -498,6 +519,31 @@ export default function ArticlePage() {
         categoryId={article.categoryId}
         initial={article}
       />
+
+      {/* 본문 전체화면 모달 */}
+      {isFullscreenContent && (
+        <div className="fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-md flex flex-col p-4 md:p-6 animate-fade-in">
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
+            <h3 className="text-sm font-bold text-white tracking-wide uppercase flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+              📄 아티클 크게보기
+            </h3>
+            <button
+              onClick={() => setIsFullscreenContent(false)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-red-500 hover:text-white text-slate-300 text-xs font-bold rounded-lg border border-white/10 transition-colors cursor-pointer"
+            >
+              <X size={14} />
+              <span>닫기 (ESC)</span>
+            </button>
+          </div>
+          <div 
+            className="flex-1 w-full bg-slate-900 rounded-2xl overflow-y-auto shadow-2xl border border-white/5 p-6 md:p-10"
+            style={contentOverrideStyles}
+          >
+            <MarkdownRenderer content={article.content} isFullscreen={true} autoExpandFirstIframe={true} className="max-w-5xl mx-auto" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

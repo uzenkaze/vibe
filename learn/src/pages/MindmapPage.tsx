@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Plus, Trash2,  Maximize, Minimize, Focus,
   Type, ZoomIn, ZoomOut,
@@ -42,6 +43,7 @@ function Tooltip({ label, children }: TooltipProps) {
 export default function MindmapPage() {
   const { data, setMindmap, theme, showToast, syncUp } = useStore();
   const mindmapStore = data.mindmap as MindmapStore;
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [localMindmap, setLocalMindmap] = useState<MindmapStore>(mindmapStore);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -97,6 +99,48 @@ export default function MindmapPage() {
     setTimeout(() => fitView(), 200);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePageId]);
+
+  // URL에서 pageId 및 nodeId를 감지하여 해당 마인드맵 및 노드 위치로 강제 이동 및 포커싱
+  useEffect(() => {
+    const pageIdStr = searchParams.get('pageId');
+    if (pageIdStr) {
+      const pId = parseInt(pageIdStr, 10);
+      if (!isNaN(pId)) {
+        const pageExists = localMindmap.pages.some(p => p.id === pId);
+        if (pageExists) {
+          setActivePageId(pId);
+
+          const nodeIdStr = searchParams.get('nodeId');
+          if (nodeIdStr) {
+            const nId = parseInt(nodeIdStr, 10);
+            if (!isNaN(nId)) {
+              setSelectedNodeIds([nId]);
+              
+              // 해당 노드의 위치를 찾아 그곳이 화면 중앙으로 오도록 오프셋 조절
+              const targetPage = localMindmap.pages.find(p => p.id === pId);
+              const targetNode = targetPage?.nodes.find(n => n.id === nId);
+              if (targetNode && canvasRef.current) {
+                const width = canvasRef.current.clientWidth || window.innerWidth;
+                const height = canvasRef.current.clientHeight || window.innerHeight;
+                const nz = 1.0; // 줌 배율 100%
+                const nx = width / 2 - targetNode.x * nz;
+                const ny = height / 2 - targetNode.y * nz;
+                setZoom(nz);
+                setPan({ x: nx, y: ny });
+              }
+            }
+          }
+        }
+        
+        // 브라우저 리프레시나 히스토리 백 이동 시 팝업 방지를 위해 URL 쿼리 파라미터는 즉시 클리어 처리
+        setSearchParams(prev => {
+          prev.delete('pageId');
+          prev.delete('nodeId');
+          return prev;
+        }, { replace: true });
+      }
+    }
+  }, [searchParams, localMindmap.pages, setSearchParams]);
 
   const selectedNode = useMemo(() => nodes.find(n => n.id === selectedNodeIds[0]), [nodes, selectedNodeIds]);
 

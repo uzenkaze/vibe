@@ -500,6 +500,10 @@
                     resolvedUrl = 'learn/index.html';
                 }
             }
+            // carrep 경로 요청 시 carrep/dist/index.html로 라우팅
+            if (url.startsWith('carrep/') || url === 'carrep') {
+                resolvedUrl = 'carrep/dist/index.html';
+            }
 
             try {
                 // Normalize URL for comparison using APP_BASE instead of origin
