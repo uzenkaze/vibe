@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { exec } = require('child_process');
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
@@ -23,6 +24,91 @@ const MIME_TYPES = {
   '.m3u8': 'application/vnd.apple.mpegurl',
   '.wav': 'audio/wav',
 };
+
+// Sync database records to JSON files and push to GitHub Pages
+async function syncAndDeployCarRep() {
+  try {
+    console.log('[Server] Starting CarRep SQLite DB Sync with GitHub...');
+
+    // 1. Fetch reports from DB
+    const reports = await prisma.report.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        repairItems: true,
+        attachedImages: true
+      }
+    });
+
+    const formattedReports = reports.map(r => ({
+      id: isNaN(Number(r.id)) ? r.id : Number(r.id),
+      createdAt: r.createdAt,
+      vehicleInfo: {
+        maker: r.maker,
+        model: r.model,
+        year: r.year,
+        mileage: r.mileage || '',
+        repairDate: r.repairDate || '',
+        shopName: r.shopName || ''
+      },
+      repairItems: r.repairItems.map(it => ({
+        id: isNaN(Number(it.id)) ? it.id : Number(it.id),
+        name: it.name,
+        category: it.category,
+        partsCost: it.partsCost || '',
+        laborCost: it.laborCost || '',
+        note: it.note || ''
+      })),
+      attachedImages: r.attachedImages.map(img => ({
+        id: isNaN(Number(img.id)) ? img.id : Number(img.id),
+        name: img.name,
+        dataUrl: img.dataUrl
+      }))
+    }));
+
+    // 2. Fetch MyCar profile from DB
+    const myCar = await prisma.myCar.findUnique({
+      where: { id: 1 }
+    });
+    
+    const formattedMyCar = myCar ? {
+      maker: myCar.maker,
+      model: myCar.model,
+      year: myCar.year,
+      mileage: myCar.mileage || ''
+    } : null;
+
+    // 3. Write data to public/data folder for deployment
+    const dataDir = path.join(__dirname, 'carrep', 'public', 'data');
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    fs.writeFileSync(path.join(dataDir, 'reports.json'), JSON.stringify(formattedReports, null, 2), 'utf8');
+    fs.writeFileSync(path.join(dataDir, 'mycar.json'), JSON.stringify(formattedMyCar, null, 2), 'utf8');
+    console.log('[Server] Successfully exported DB to JSON files.');
+
+    // 4. Git auto commit and push JSON database changes to main branch
+    exec(`git add carrep/public/data/reports.json carrep/public/data/mycar.json && git commit -m "chore(data): auto-sync database JSON dumps" && git push origin main`, (err, stdout, stderr) => {
+      if (err) {
+        console.error('[Server] CarRep Git Sync Failed:', err);
+      } else {
+        console.log('[Server] CarRep Git Sync Success:', stdout);
+      }
+    });
+
+    // 5. Build and Deploy updated client assets to gh-pages branch
+    exec(`powershell -ExecutionPolicy Bypass -File ./deploy.ps1`, (err, stdout, stderr) => {
+      if (err) {
+        console.error('[Server] CarRep GitHub Pages Deploy Failed:', err);
+      } else {
+        console.log('[Server] CarRep GitHub Pages Deploy Success');
+      }
+    });
+
+  } catch (err) {
+    console.error('[Server] syncAndDeployCarRep process error:', err);
+  }
+}
 
 const server = http.createServer(async (req, res) => {
   // Enable CORS
@@ -64,7 +150,6 @@ const server = http.createServer(async (req, res) => {
         console.log(`[Server] Saved asset data for ${year} to ${filePath}`);
 
         // git auto commit & push
-        const { exec } = require('child_process');
         exec(`git add asset/data/assetData_${year}.json && git commit -m "chore(data): auto-update asset data for year ${year}" && git push origin main`, (err, stdout, stderr) => {
           if (err) {
             console.error('[Server] Git sync error:', err);
@@ -193,6 +278,10 @@ const server = http.createServer(async (req, res) => {
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, message: 'Report saved successfully' }));
+
+        // Async sync in background
+        syncAndDeployCarRep();
+
       } catch (e) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: e.message }));
@@ -218,6 +307,10 @@ const server = http.createServer(async (req, res) => {
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: true, message: 'Report deleted successfully' }));
+
+      // Async sync in background
+      syncAndDeployCarRep();
+
     } catch (e) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message }));
@@ -286,6 +379,10 @@ const server = http.createServer(async (req, res) => {
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, myCar }));
+
+        // Async sync in background
+        syncAndDeployCarRep();
+
       } catch (e) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: e.message }));

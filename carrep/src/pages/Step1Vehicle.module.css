@@ -11,6 +11,48 @@
 }
 .subtitle { color: var(--text-muted); font-size: 0.95rem; }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.titleRow .title {
+  margin-bottom: 0;
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badgeSqlite {
+  background: rgba(46, 204, 113, 0.08);
+  border-color: rgba(46, 204, 113, 0.25);
+  color: var(--accent-green);
+}
+
+.badgeGithub {
+  background: rgba(52, 152, 219, 0.08);
+  border-color: rgba(52, 152, 219, 0.25);
+  color: var(--accent-blue);
+}
+
+.badgeLocal {
+  background: rgba(241, 196, 15, 0.08);
+  border-color: rgba(241, 196, 15, 0.25);
+  color: #f1c40f;
+}
+
+
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);

@@ -8,6 +8,7 @@ export default function Step1Vehicle({
   setVehicleInfo,
   reports = [],
   myCar,
+  dbSource = 'local',
   onSaveMyCar,
   onSelectReport,
   onEditReport,
@@ -45,7 +46,24 @@ export default function Step1Vehicle({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>차량 정보 입력</h1>
+        <div className={styles.titleRow}>
+          <h1 className={styles.title}>차량 정보 입력</h1>
+          {dbSource === 'sqlite' && (
+            <span className={`${styles.badge} ${styles.badgeSqlite}`} title="로컬 SQLite 데이터베이스와 연동되어 실시간 저장 및 Git 푸시 배포가 작동합니다.">
+              🟢 SQLite 실시간 DB 연결됨
+            </span>
+          )}
+          {dbSource === 'github' && (
+            <span className={`${styles.badge} ${styles.badgeGithub}`} title="GitHub 원격 저장소에 동기화 배포된 DB 데이터를 안전하게 로드했습니다.">
+              🔵 GitHub 원격 동기화 DB
+            </span>
+          )}
+          {dbSource === 'local' && (
+            <span className={`${styles.badge} ${styles.badgeLocal}`} title="데이터베이스 서버가 꺼져 있어 브라우저 로컬 저장소 모드로 작동합니다.">
+              🟡 브라우저 로컬 저장소
+            </span>
+          )}
+        </div>
         <p className={styles.subtitle}>정비 보고서를 생성할 차량의 기본 정보를 입력하거나, 이전 정비 보고서 목록을 선택하세요.</p>
       </div>
 
