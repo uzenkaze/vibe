@@ -5,7 +5,7 @@ import Step1Vehicle from './pages/Step1Vehicle'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
 import GitHubModal from './components/GitHubModal'
-import { getGithubJson, saveGithubJson } from './utils/githubDb'
+import { getGithubJson, saveGithubJson, validateGithubToken } from './utils/githubDb'
 
 const API_BASE = 'http://localhost:5500'
 const REPORTS_PATH = 'carrep/public/data/reports.json'
@@ -53,20 +53,24 @@ export default function App() {
 
     // 2. Try loading from direct GitHub Contents API (if token is available)
     if (tokenVal) {
-      try {
-        const reportsRes = await getGithubJson(REPORTS_PATH, tokenVal)
-        if (reportsRes) {
-          setReports(reportsRes.content || [])
+      const isValid = await validateGithubToken(tokenVal)
+      if (isValid) {
+        try {
+          const reportsRes = await getGithubJson(REPORTS_PATH, tokenVal)
+          // Even if file doesn't exist yet (reportsRes is null), the connection itself is valid
+          setReports(reportsRes ? (reportsRes.content || []) : [])
           
           const myCarRes = await getGithubJson(MYCAR_PATH, tokenVal)
-          if (myCarRes) setMyCar(myCarRes.content || null)
+          setMyCar(myCarRes ? (myCarRes.content || null) : null)
           
           setDbStatus('cloud')
-          console.log('[CarRep] Loaded data directly via GitHub Contents API (Cloud Mode).')
+          console.log('[CarRep] GitHub Cloud DB connection established (Direct API Mode).')
           return
+        } catch (e) {
+          console.warn('[CarRep] GitHub API read error, falling back to static Pages...', e)
         }
-      } catch (e) {
-        console.warn('[CarRep] Direct GitHub API fetch failed, falling back to static Pages...')
+      } else {
+        console.warn('[CarRep] GitHub token is invalid or expired.')
       }
     }
 
@@ -128,18 +132,26 @@ export default function App() {
     setStep(1)
   }
 
-  // Handle Token registration and save to localStorage
-  const handleSaveToken = (token) => {
+  // Handle Token registration and save to localStorage (with validation check)
+  const handleSaveToken = async (token) => {
     if (token) {
+      const isValid = await validateGithubToken(token)
+      if (!isValid) {
+        alert('⚠️ 입력하신 GitHub 토큰이 유효하지 않거나 만료되었습니다.\n권한 범위(Scopes) 중 [repo]가 체크되었는지 다시 한 번 확인해 주세요.')
+        return
+      }
       localStorage.setItem('carrep_github_token', token)
       setGithubToken(token)
+      setIsModalOpen(false)
+      alert('GitHub 토큰 인증에 성공했습니다! 데이터 연결이 활성화됩니다.')
+      loadData(token)
     } else {
       localStorage.removeItem('carrep_github_token')
       setGithubToken('')
+      setIsModalOpen(false)
+      alert('GitHub 설정 정보가 삭제되었습니다. 읽기 전용 모드로 전환됩니다.')
+      loadData('')
     }
-    setIsModalOpen(false)
-    alert('GitHub 설정이 저장되었습니다. 데이터를 동기화합니다.')
-    loadData(token)
   }
 
   const handleDeleteReport = async (id, e) => {
@@ -174,11 +186,11 @@ export default function App() {
         )
         setReports(updatedReports)
         if (savedReportId === id) handleReset()
-        alert('보고서가 GitHub 클라우드 저장소에서 정상 삭제(커밋)되었습니다!')
+        alert('보고서가 GitHub 저장소에서 직접 정상 삭제되었습니다!')
         return
       } catch (err) {
         console.error('Delete via GitHub API failed', err)
-        alert(`⚠️ GitHub 클라우드 삭제 실패: ${err.message}\n토큰 유효성 및 권한(repo)을 확인하세요.`)
+        alert(`⚠️ GitHub 저장소 삭제 실패: ${err.message}\n토큰 권한 및 파일 상태를 확인해 주세요.`)
         return
       }
     }
@@ -234,12 +246,12 @@ export default function App() {
 
         setReports(updatedReports)
         setSavedReportId(newReport.id)
-        alert('보고서가 GitHub 클라우드 저장소에 직접 정상 저장(커밋)되었습니다!')
+        alert('보고서가 GitHub 저장소에 직접 정상 저장(커밋)되었습니다!')
         setStep(3)
         return
       } catch (err) {
         console.error('Save via GitHub API failed', err)
-        alert(`⚠️ GitHub 클라우드 저장 실패: ${err.message}\n토큰 유효성 및 권한(repo)을 확인하세요.`)
+        alert(`⚠️ GitHub 저장소 저장 실패: ${err.message}\n토큰 유효성 및 권한(repo)을 확인하세요.`)
         return
       }
     }
@@ -283,11 +295,11 @@ export default function App() {
           'chore(data): update MyCar profile'
         )
         setMyCar(myCarData)
-        alert('내 차량 정보가 GitHub 클라우드 저장소에 직접 등록(커밋)되었습니다!')
+        alert('내 차량 정보가 GitHub 저장소에 직접 등록(커밋)되었습니다!')
         return
       } catch (err) {
         console.error('Save My Car via GitHub API failed', err)
-        alert(`⚠️ GitHub 클라우드 저장 실패: ${err.message}`)
+        alert(`⚠️ GitHub 저장소 저장 실패: ${err.message}`)
         return
       }
     }

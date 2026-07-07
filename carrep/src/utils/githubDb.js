@@ -1,6 +1,23 @@
 const OWNER = 'uzenkaze';
 const REPO = 'vibe';
 
+// Check if the provided GitHub token is valid
+export async function validateGithubToken(token) {
+  if (!token) return false;
+  try {
+    const res = await fetch('https://api.github.com/user', {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+    return res.ok;
+  } catch (err) {
+    console.error('Token validation request failed:', err);
+    return false;
+  }
+}
+
 // Fetch JSON from GitHub Contents API
 export async function getGithubJson(path, token) {
   try {
@@ -14,7 +31,7 @@ export async function getGithubJson(path, token) {
     
     const res = await fetch(`${url}?t=${Date.now()}`, { headers });
     if (!res.ok) {
-      if (res.status === 404) return null;
+      if (res.status === 404) return null; // File doesn't exist yet
       throw new Error(`GitHub API returned status ${res.status}`);
     }
     
