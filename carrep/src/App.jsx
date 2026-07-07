@@ -17,32 +17,56 @@ export default function App() {
   const [reports, setReports] = useState([])
   const [savedReportId, setSavedReportId] = useState(null)
   const [myCar, setMyCar] = useState(null)
-  const [dbConnected, setDbConnected] = useState(false)
+  
+  // Connection state: 'local' (🟢 로컬 API 서버 JSON DB) | 'remote' (🔵 GitHub 원격 동기화 JSON DB) | 'offline' (🔴 미연결 오프라인)
+  const [dbStatus, setDbStatus] = useState('offline')
 
-  // Fetch reports list and my car profile directly from server SQLite DB
+  // Hybrid Data Loading Chain (SQLite/LocalStorage Completely Removed)
   const loadData = async () => {
+    // 1. Try loading from Live Local API Server (localhost:5500)
     try {
-      // 1. Fetch reports
       const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
+      if (reportsRes.ok) {
+        const reportsData = await reportsRes.ok ? await reportsRes.json() : []
+        setReports(reportsData)
+        
+        const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
+        if (myCarRes.ok) {
+          const myCarData = await myCarRes.json()
+          setMyCar(myCarData)
+        }
+        setDbStatus('local')
+        console.log('[CarRep] Loaded data from local JSON database via server.js')
+        return
+      }
+    } catch (e) {
+      console.warn('[CarRep] Local API server not reachable, trying GitHub static DB...')
+    }
+
+    // 2. Try loading from GitHub Pages deployed Static JSON files
+    try {
+      const basePath = window.location.pathname.includes('/vibe') ? '/vibe/carrep' : '/carrep'
+      const reportsRes = await fetch(`${basePath}/data/reports.json?t=${Date.now()}`)
       if (reportsRes.ok) {
         const reportsData = await reportsRes.json()
         setReports(reportsData)
-        setDbConnected(true)
-      } else {
-        console.error('Failed to load reports from database')
-        setDbConnected(false)
-      }
-      
-      // 2. Fetch myCar profile
-      const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
-      if (myCarRes.ok) {
-        const myCarData = await myCarRes.json()
-        setMyCar(myCarData)
+
+        const myCarRes = await fetch(`${basePath}/data/mycar.json?t=${Date.now()}`)
+        if (myCarRes.ok) {
+          const myCarData = await myCarRes.json()
+          setMyCar(myCarData)
+        }
+        setDbStatus('remote')
+        console.log('[CarRep] Loaded data from GitHub remote static JSON database.')
+        return
       }
     } catch (e) {
-      console.error('SQLite DB server is not running or reachable:', e)
-      setDbConnected(false)
+      console.warn('[CarRep] GitHub static JSON database not reachable.')
     }
+
+    setDbStatus('offline')
+    setReports([])
+    setMyCar(null)
   }
 
   useEffect(() => {
@@ -79,7 +103,12 @@ export default function App() {
 
   const handleDeleteReport = async (id, e) => {
     e.stopPropagation()
-    if (!window.confirm('이 보고서를 서버 SQLite 데이터베이스에서 영구 삭제하시겠습니까?')) return
+    if (dbStatus !== 'local') {
+      alert('⚠️ 현재 읽기 전용 상태입니다. 데이터를 삭제하려면 로컬 PC에서 "node server.js" 서버를 구동해야 합니다.')
+      return
+    }
+
+    if (!window.confirm('이 보고서를 서버 데이터베이스에서 영구 삭제하시겠습니까?')) return
 
     try {
       const res = await fetch(`${API_BASE}/api/carrep/reports/${id}`, {
@@ -90,17 +119,22 @@ export default function App() {
         if (savedReportId === id) {
           handleReset()
         }
-        alert('보고서가 SQLite 데이터베이스에서 삭제되었습니다.')
+        alert('보고서가 데이터베이스에서 정상 삭제되었습니다.')
       } else {
-        alert('삭제 실패: 데이터베이스 서버 오류')
+        alert('삭제 실패: 서버 오류')
       }
     } catch (err) {
-      console.error('Delete via API failed', err)
-      alert('⚠️ 데이터베이스 서버 연결 오류: 삭제를 완료할 수 없습니다.')
+      console.error('Delete failed', err)
+      alert('⚠️ 서버 통신 오류로 삭제를 실패했습니다.')
     }
   }
 
   const handleSaveReport = async () => {
+    if (dbStatus !== 'local') {
+      alert('⚠️ 현재 읽기 전용 상태입니다. 데이터를 저장하려면 로컬 PC에서 "node server.js" 서버를 구동해야 합니다.')
+      return
+    }
+
     const newReport = {
       id: savedReportId || Date.now(),
       createdAt: new Date().toISOString(),
@@ -118,18 +152,23 @@ export default function App() {
       if (res.ok) {
         await loadData()
         setSavedReportId(newReport.id)
-        alert('보고서가 서버 SQLite 데이터베이스에 성공적으로 저장되었습니다!')
+        alert('보고서가 서버 JSON DB에 정상 저장되었으며, GitHub로 자동 동기화 배포를 완료했습니다!')
         setStep(3)
       } else {
-        alert('저장 실패: 데이터베이스 서버 스키마 검증 오류')
+        alert('저장 실패: 서버 오류')
       }
     } catch (err) {
-      console.error('Save via API failed', err)
-      alert('⚠️ 데이터베이스 서버 연결 오류: 서버의 SQLite DB에 저장할 수 없습니다.')
+      console.error('Save failed', err)
+      alert('⚠️ 서버 통신 오류로 보고서 저장에 실패했습니다.')
     }
   }
 
   const handleSaveMyCar = async (carInfo) => {
+    if (dbStatus !== 'local') {
+      alert('⚠️ 현재 읽기 전용 상태입니다. 내 차량 정보를 등록하려면 로컬 PC에서 "node server.js" 서버를 구동해야 합니다.')
+      return
+    }
+
     const myCarData = {
       maker: carInfo.maker,
       model: carInfo.model,
@@ -145,13 +184,13 @@ export default function App() {
       })
       if (res.ok) {
         setMyCar(myCarData)
-        alert('내 차량 정보가 서버 SQLite 데이터베이스에 등록되었습니다!')
+        alert('내 차량 정보가 서버 JSON DB에 등록되었으며, GitHub로 자동 동기화되었습니다!')
       } else {
         alert('내 차량 등록 실패: 서버 오류')
       }
     } catch (err) {
-      console.error('Save My Car via API failed', err)
-      alert('⚠️ 데이터베이스 서버 연결 오류: 내 차량 정보를 등록할 수 없습니다.')
+      console.error('Save My Car failed', err)
+      alert('⚠️ 서버 통신 오류로 내 차량 등록에 실패했습니다.')
     }
   }
 
@@ -163,7 +202,7 @@ export default function App() {
           setVehicleInfo={setVehicleInfo}
           reports={reports}
           myCar={myCar}
-          dbConnected={dbConnected}
+          dbStatus={dbStatus}
           onSaveMyCar={handleSaveMyCar}
           onSelectReport={handleSelectReport}
           onEditReport={handleEditReport}

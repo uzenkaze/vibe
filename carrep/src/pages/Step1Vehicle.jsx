@@ -8,7 +8,7 @@ export default function Step1Vehicle({
   setVehicleInfo,
   reports = [],
   myCar,
-  dbConnected = false,
+  dbStatus = 'offline',
   onSaveMyCar,
   onSelectReport,
   onEditReport,
@@ -48,13 +48,19 @@ export default function Step1Vehicle({
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>차량 정보 입력</h1>
-          {dbConnected ? (
-            <span className={`${styles.badge} ${styles.badgeSqlite}`} title="서버의 SQLite 데이터베이스와 정상적으로 연결되었습니다.">
-              🟢 SQLite 서버 DB 연결됨
+          {dbStatus === 'local' && (
+            <span className={`${styles.badge} ${styles.badgeSqlite}`} title="로컬 백엔드 서버(localhost:5500)의 JSON 데이터베이스 파일과 연결되어 저장이 가능합니다.">
+              🟢 로컬 서버 JSON DB 연결됨
             </span>
-          ) : (
-            <span className={`${styles.badge} ${styles.badgeLocal}`} title="서버에 연결할 수 없습니다. node server.js 서버를 확인하세요.">
-              🔴 SQLite 서버 DB 미연결
+          )}
+          {dbStatus === 'remote' && (
+            <span className={`${styles.badge} ${styles.badgeGithub}`} title="GitHub Pages 서버에 동기화 배포된 공통 DB 데이터를 안전하게 조회했습니다.">
+              🔵 GitHub 원격 DB (조회 전용)
+            </span>
+          )}
+          {dbStatus === 'offline' && (
+            <span className={`${styles.badge} ${styles.badgeLocal}`} title="데이터를 불러올 수 없습니다. node server.js 서버 상태를 점검해 주세요.">
+              🔴 DB 연결 끊김
             </span>
           )}
         </div>

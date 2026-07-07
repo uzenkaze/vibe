@@ -2,9 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient();
 const PORT = 5500;
 
 const MIME_TYPES = {
@@ -25,92 +23,46 @@ const MIME_TYPES = {
   '.wav': 'audio/wav',
 };
 
-// Sync database records to JSON files and push to GitHub Pages
-async function syncAndDeployCarRep() {
-  try {
-    console.log('[Server] Starting CarRep SQLite DB Sync with GitHub...');
+const DATA_DIR = path.join(__dirname, 'carrep', 'public', 'data');
+const REPORTS_FILE = path.join(DATA_DIR, 'reports.json');
+const MYCAR_FILE = path.join(DATA_DIR, 'mycar.json');
 
-    // 1. Fetch reports from DB
-    const reports = await prisma.report.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        repairItems: true,
-        attachedImages: true
-      }
-    });
-
-    const formattedReports = reports.map(r => ({
-      id: isNaN(Number(r.id)) ? r.id : Number(r.id),
-      createdAt: r.createdAt,
-      vehicleInfo: {
-        maker: r.maker,
-        model: r.model,
-        year: r.year,
-        mileage: r.mileage || '',
-        repairDate: r.repairDate || '',
-        shopName: r.shopName || ''
-      },
-      repairItems: r.repairItems.map(it => ({
-        id: isNaN(Number(it.id)) ? it.id : Number(it.id),
-        name: it.name,
-        category: it.category,
-        partsCost: it.partsCost || '',
-        laborCost: it.laborCost || '',
-        note: it.note || ''
-      })),
-      attachedImages: r.attachedImages.map(img => ({
-        id: isNaN(Number(img.id)) ? img.id : Number(img.id),
-        name: img.name,
-        dataUrl: img.dataUrl
-      }))
-    }));
-
-    // 2. Fetch MyCar profile from DB
-    const myCar = await prisma.myCar.findUnique({
-      where: { id: 1 }
-    });
-    
-    const formattedMyCar = myCar ? {
-      maker: myCar.maker,
-      model: myCar.model,
-      year: myCar.year,
-      mileage: myCar.mileage || ''
-    } : null;
-
-    // 3. Write data to public/data folder for deployment
-    const dataDir = path.join(__dirname, 'carrep', 'public', 'data');
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-
-    fs.writeFileSync(path.join(dataDir, 'reports.json'), JSON.stringify(formattedReports, null, 2), 'utf8');
-    fs.writeFileSync(path.join(dataDir, 'mycar.json'), JSON.stringify(formattedMyCar, null, 2), 'utf8');
-    console.log('[Server] Successfully exported DB to JSON files.');
-
-    // 4. Git auto commit and push JSON database changes to main branch
-    exec(`git add carrep/public/data/reports.json carrep/public/data/mycar.json && git commit -m "chore(data): auto-sync database JSON dumps" && git push origin main`, (err, stdout, stderr) => {
-      if (err) {
-        console.error('[Server] CarRep Git Sync Failed:', err);
-      } else {
-        console.log('[Server] CarRep Git Sync Success:', stdout);
-      }
-    });
-
-    // 5. Build and Deploy updated client assets to gh-pages branch
-    exec(`powershell -ExecutionPolicy Bypass -File ./deploy.ps1`, (err, stdout, stderr) => {
-      if (err) {
-        console.error('[Server] CarRep GitHub Pages Deploy Failed:', err);
-      } else {
-        console.log('[Server] CarRep GitHub Pages Deploy Success');
-      }
-    });
-
-  } catch (err) {
-    console.error('[Server] syncAndDeployCarRep process error:', err);
+// Ensure data folder and empty JSON files exist
+function ensureDataFiles() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(REPORTS_FILE)) {
+    fs.writeFileSync(REPORTS_FILE, JSON.stringify([], null, 2), 'utf8');
+  }
+  if (!fs.existsSync(MYCAR_FILE)) {
+    fs.writeFileSync(MYCAR_FILE, JSON.stringify(null, null, 2), 'utf8');
   }
 }
+ensureDataFiles();
 
-const server = http.createServer(async (req, res) => {
+// Helper to trigger Git sync and GitHub Pages deployment
+function triggerGitSyncAndDeploy(message) {
+  console.log('[Server] Triggering Git push & deploy for CarRep updates...');
+  
+  exec(`git add carrep/public/data/reports.json carrep/public/data/mycar.json && git commit -m "${message || 'chore(data): update CarRep JSON DB'}" && git push origin main`, (err, stdout, stderr) => {
+    if (err) {
+      console.error('[Server] Git sync error:', err);
+    } else {
+      console.log('[Server] Git sync success:', stdout);
+    }
+  });
+
+  exec(`powershell -ExecutionPolicy Bypass -File ./deploy.ps1`, (err, stdout, stderr) => {
+    if (err) {
+      console.error('[Server] GitHub Pages deploy failed:', err);
+    } else {
+      console.log('[Server] GitHub Pages deploy successfully triggered');
+    }
+  });
+}
+
+const server = http.createServer((req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -122,11 +74,11 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Parse URL to get file path
+  // Parse URL
   let parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   const pathname = parsedUrl.pathname;
 
-  // 1. API: Save Asset data (기존 API 유지)
+  // 1. API: Save Asset data (기존 API)
   if (req.method === 'POST' && pathname === '/api/save-asset') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -149,22 +101,14 @@ const server = http.createServer(async (req, res) => {
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
         console.log(`[Server] Saved asset data for ${year} to ${filePath}`);
 
-        // git auto commit & push
+        // git sync
         exec(`git add asset/data/assetData_${year}.json && git commit -m "chore(data): auto-update asset data for year ${year}" && git push origin main`, (err, stdout, stderr) => {
-          if (err) {
-            console.error('[Server] Git sync error:', err);
-          } else {
-            console.log('[Server] Git sync success:', stdout);
-          }
+          if (err) console.error('[Server] Git sync error:', err);
         });
 
-        // gh-pages deploy in background
+        // deploy
         exec(`powershell -ExecutionPolicy Bypass -File ./deploy.ps1`, (err, stdout, stderr) => {
-          if (err) {
-            console.error('[Server] gh-pages deploy error:', err);
-          } else {
-            console.log('[Server] gh-pages deploy success');
-          }
+          if (err) console.error('[Server] gh-pages deploy error:', err);
         });
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -177,46 +121,13 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 2. API: CarRep - Get reports list
+  // 2. API: CarRep - Get reports list from JSON File
   if (req.method === 'GET' && pathname === '/api/carrep/reports') {
     try {
-      const reports = await prisma.report.findMany({
-        orderBy: { createdAt: 'desc' },
-        include: {
-          repairItems: true,
-          attachedImages: true
-        }
-      });
-      
-      // format to match client structure
-      const formatted = reports.map(r => ({
-        id: isNaN(Number(r.id)) ? r.id : Number(r.id),
-        createdAt: r.createdAt,
-        vehicleInfo: {
-          maker: r.maker,
-          model: r.model,
-          year: r.year,
-          mileage: r.mileage || '',
-          repairDate: r.repairDate || '',
-          shopName: r.shopName || ''
-        },
-        repairItems: r.repairItems.map(it => ({
-          id: isNaN(Number(it.id)) ? it.id : Number(it.id),
-          name: it.name,
-          category: it.category,
-          partsCost: it.partsCost || '',
-          laborCost: it.laborCost || '',
-          note: it.note || ''
-        })),
-        attachedImages: r.attachedImages.map(img => ({
-          id: isNaN(Number(img.id)) ? img.id : Number(img.id),
-          name: img.name,
-          dataUrl: img.dataUrl
-        }))
-      }));
-
+      ensureDataFiles();
+      const content = fs.readFileSync(REPORTS_FILE, 'utf8');
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(formatted));
+      res.end(content);
     } catch (e) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message }));
@@ -224,14 +135,15 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 3. API: CarRep - Save report (Create or Update)
+  // 3. API: CarRep - Save / Update report inside JSON File
   if (req.method === 'POST' && pathname === '/api/carrep/reports') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', async () => {
+    req.on('end', () => {
       try {
-        const payload = JSON.parse(body);
-        const { id, vehicleInfo, repairItems, attachedImages } = payload;
+        ensureDataFiles();
+        const newReport = JSON.parse(body);
+        const { id, vehicleInfo } = newReport;
 
         if (!id || !vehicleInfo) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -239,49 +151,22 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const reportIdStr = id.toString();
+        const reports = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+        const idx = reports.findIndex(r => r.id === id);
+        
+        if (idx !== -1) {
+          // Update
+          reports[idx] = newReport;
+        } else {
+          // Create (Insert at start)
+          reports.unshift(newReport);
+        }
 
-        // Transaction: delete old report details if exists, then recreate everything
-        await prisma.$transaction([
-          prisma.repairItem.deleteMany({ where: { reportId: reportIdStr } }),
-          prisma.attachedImage.deleteMany({ where: { reportId: reportIdStr } }),
-          prisma.report.deleteMany({ where: { id: reportIdStr } }),
-          prisma.report.create({
-            data: {
-              id: reportIdStr,
-              maker: vehicleInfo.maker,
-              model: vehicleInfo.model,
-              year: Number(vehicleInfo.year),
-              mileage: vehicleInfo.mileage ? Number(vehicleInfo.mileage) : null,
-              repairDate: vehicleInfo.repairDate || null,
-              shopName: vehicleInfo.shopName || null,
-              repairItems: {
-                create: (repairItems || []).map(it => ({
-                  id: it.id.toString(),
-                  name: it.name,
-                  category: it.category,
-                  partsCost: Number(it.partsCost || 0),
-                  laborCost: Number(it.laborCost || 0),
-                  note: it.note || null
-                }))
-              },
-              attachedImages: {
-                create: (attachedImages || []).map(img => ({
-                  id: img.id.toString(),
-                  name: img.name,
-                  dataUrl: img.dataUrl
-                }))
-              }
-            }
-          })
-        ]);
-
+        fs.writeFileSync(REPORTS_FILE, JSON.stringify(reports, null, 2), 'utf8');
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, message: 'Report saved successfully' }));
+        res.end(JSON.stringify({ success: true, message: 'Report saved inside JSON database' }));
 
-        // Async sync in background
-        syncAndDeployCarRep();
-
+        triggerGitSyncAndDeploy(`chore(data): save repair report ${id}`);
       } catch (e) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: e.message }));
@@ -290,54 +175,33 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 4. API: CarRep - Delete report
+  // 4. API: CarRep - Delete report from JSON File
   if (req.method === 'DELETE' && pathname.startsWith('/api/carrep/reports/')) {
     try {
-      const reportId = pathname.substring('/api/carrep/reports/'.length);
-      if (!reportId) {
+      ensureDataFiles();
+      const reportIdStr = pathname.substring('/api/carrep/reports/'.length);
+      if (!reportIdStr) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Report ID required' }));
         return;
       }
-      
-      // Cascade delete is handled by database foreign key constraint onDelete: Cascade
-      await prisma.report.delete({
-        where: { id: reportId.toString() }
-      });
 
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, message: 'Report deleted successfully' }));
+      const targetId = isNaN(Number(reportIdStr)) ? reportIdStr : Number(reportIdStr);
+      let reports = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+      const originalLen = reports.length;
+      reports = reports.filter(r => r.id !== targetId);
 
-      // Async sync in background
-      syncAndDeployCarRep();
-
-    } catch (e) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: e.message }));
-    }
-    return;
-  }
-
-  // 5. API: CarRep - Get my car profile
-  if (req.method === 'GET' && pathname === '/api/carrep/mycar') {
-    try {
-      const myCar = await prisma.myCar.findUnique({
-        where: { id: 1 }
-      });
-      
-      if (!myCar) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(null));
+      if (reports.length === originalLen) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Report not found' }));
         return;
       }
 
+      fs.writeFileSync(REPORTS_FILE, JSON.stringify(reports, null, 2), 'utf8');
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        maker: myCar.maker,
-        model: myCar.model,
-        year: myCar.year,
-        mileage: myCar.mileage || ''
-      }));
+      res.end(JSON.stringify({ success: true, message: 'Report deleted from JSON database' }));
+
+      triggerGitSyncAndDeploy(`chore(data): delete repair report ${targetId}`);
     } catch (e) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message }));
@@ -345,44 +209,34 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 6. API: CarRep - Save my car profile
+  // 5. API: CarRep - Get my car profile from JSON File
+  if (req.method === 'GET' && pathname === '/api/carrep/mycar') {
+    try {
+      ensureDataFiles();
+      const content = fs.readFileSync(MYCAR_FILE, 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(content);
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // 6. API: CarRep - Save my car profile to JSON File
   if (req.method === 'POST' && pathname === '/api/carrep/mycar') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', async () => {
+    req.on('end', () => {
       try {
-        const payload = JSON.parse(body);
-        const { maker, model, year, mileage } = payload;
+        ensureDataFiles();
+        const myCarData = JSON.parse(body);
         
-        if (!maker || !model || !year) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Maker, model and year are required' }));
-          return;
-        }
-
-        const myCar = await prisma.myCar.upsert({
-          where: { id: 1 },
-          update: {
-            maker,
-            model,
-            year: Number(year),
-            mileage: mileage ? Number(mileage) : null
-          },
-          create: {
-            id: 1,
-            maker,
-            model,
-            year: Number(year),
-            mileage: mileage ? Number(mileage) : null
-          }
-        });
-
+        fs.writeFileSync(MYCAR_FILE, JSON.stringify(myCarData, null, 2), 'utf8');
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, myCar }));
+        res.end(JSON.stringify({ success: true, myCar: myCarData }));
 
-        // Async sync in background
-        syncAndDeployCarRep();
-
+        triggerGitSyncAndDeploy('chore(data): update MyCar profile');
       } catch (e) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: e.message }));
