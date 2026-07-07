@@ -143,9 +143,9 @@ export default function Step3Report({
 
             <div className={styles.diagramWrap}>
               {diagramMode === '3d' ? (
-                <CarDiagram repairItems={repairItems} />
+                <CarDiagram repairItems={repairItems} vehicleInfo={vehicleInfo} />
               ) : (
-                <RealCarDiagram repairItems={repairItems} />
+                <RealCarDiagram repairItems={repairItems} vehicleInfo={vehicleInfo} attachedImages={attachedImages} />
               )}
             </div>
             {/* Legend */}

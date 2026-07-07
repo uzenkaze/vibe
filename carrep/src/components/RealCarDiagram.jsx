@@ -103,94 +103,238 @@ const ANNOTATIONS = {
   }
 }
 
-export default function RealCarDiagram() {
+// Fallback universal hotspots for non-Mohave vehicles without custom uploads
+const UNIVERSAL_REAL_HOTSPOTS = {
+  '엔진':   { label: '엔진룸 정비', top: '22%', left: '50%', color: '#fd9644' },
+  '오일류': { label: '오일 및 케미컬 교환', top: '32%', left: '50%', color: '#f5cd79' },
+  '조향계': { label: '조향 링키지 장치', top: '42%', left: '50%', color: '#ff3b30' },
+  '현가계': { label: '서스펜션 쇼바/링크', top: '50%', left: '50%', color: '#fa8231' },
+  '구동계': { label: '변속기 (미션) 동력부', top: '62%', left: '50%', color: '#45f3ff' },
+  '제동계': { label: '브레이크 패드/디스크', top: '78%', left: '50%', color: '#f7b731' },
+  '냉각계': { label: '냉각수/라디에이터', top: '12%', left: '50%', color: '#26de81' },
+  '전기계': { label: '배터리 및 제네레이터', top: '30%', left: '35%', color: '#a29bfe' },
+  '외장':   { label: '판금 도색/외관 케어', top: '50%', left: '18%', color: '#74b9ff' },
+  '내장':   { label: '실내 필터/내장 클리닝', top: '50%', left: '82%', color: '#fd79a8' },
+  '진단점검': { label: '스캐너 진단 컴퓨터', top: '5%', left: '80%', color: '#a0a8b3' },
+  '기타':   { label: '기타 보충 정비', top: '90%', left: '50%', color: '#bef264' },
+}
+
+export default function RealCarDiagram({ repairItems, vehicleInfo, attachedImages }) {
   const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'suspension' | 'transmission'
   const [selectedLabel, setSelectedLabel] = useState(null)
+  
+  // Custom upload gallery index
+  const [activeImgIdx, setActiveImgIdx] = useState(0)
 
   const IMAGE_BASE = window.location.pathname.includes('/vibe') ? '/vibe' : ''
-  const currentView = ANNOTATIONS[activeTab]
+  const isMohave = vehicleInfo?.model?.includes('모하비') || vehicleInfo?.model?.toLowerCase()?.includes('mohave')
+  
+  // -------------------------------------------------------------
+  // Scenario A: Mohave Real Photo Mode (With CAD mapping annotations)
+  // -------------------------------------------------------------
+  if (isMohave) {
+    const currentView = ANNOTATIONS[activeTab]
 
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.controls}>
+          <button
+            type="button"
+            className={`${styles.ctrlBtn} ${activeTab === 'overview' ? styles.active : ''}`}
+            onClick={() => {
+              setActiveTab('overview')
+              setSelectedLabel(null)
+            }}
+          >
+            🔍 하체 전체 요약 (실사)
+          </button>
+          <button
+            type="button"
+            className={`${styles.ctrlBtn} ${activeTab === 'suspension' ? styles.active : ''}`}
+            onClick={() => {
+              setActiveTab('suspension')
+              setSelectedLabel(null)
+            }}
+          >
+            🔧 조향/서스펜션 앞바퀴
+          </button>
+          <button
+            type="button"
+            className={`${styles.ctrlBtn} ${activeTab === 'transmission' ? styles.active : ''}`}
+            onClick={() => {
+              setActiveTab('transmission')
+              setSelectedLabel(null)
+            }}
+          >
+            ⚙️ 자동변속기 미션
+          </button>
+        </div>
+
+        <div className={styles.container}>
+          <img
+            src={`${IMAGE_BASE}${currentView.image}`}
+            alt={currentView.title}
+            className={styles.bgImage}
+          />
+          <div className={styles.scanOverlay} />
+
+          <div className={styles.infoOverlay}>
+            <div className={styles.viewTitle}>{currentView.title}</div>
+            <div className={styles.viewSubtitle}>{currentView.subtitle}</div>
+          </div>
+
+          {currentView.labels.map((label, labelIdx) => {
+            return label.targets.map((target, targetIdx) => {
+              const isSelected = selectedLabel?.title === label.title
+              
+              return (
+                <div
+                  key={`${labelIdx}-${targetIdx}`}
+                  className={`${styles.hotspot} ${isSelected ? styles.hotspotActive : ''}`}
+                  style={{
+                    left: `${target.x / 10}%`,
+                    top: `${target.y / 10}%`,
+                    '--part-color': label.color
+                  }}
+                  onClick={() => setSelectedLabel(label)}
+                >
+                  <div className={styles.pulseRing} />
+                  <div className={styles.pulseRingSecondary} />
+                  <div className={styles.centerDot} />
+                  <div className={styles.labelTooltip}>{label.title}</div>
+                </div>
+              )
+            })
+          })}
+
+          {selectedLabel && (
+            <div
+              className={styles.fullCard}
+              style={{ borderColor: selectedLabel.color }}
+            >
+              <div className={styles.cardHeader} style={{ color: selectedLabel.color }}>
+                📌 {selectedLabel.title}
+              </div>
+              <button className={styles.closeCardBtn} onClick={() => setSelectedLabel(null)}>✕</button>
+              <div className={styles.cardBody}>
+                {selectedLabel.desc.split('\n').map((line, idx) => (
+                  <div key={idx} className={styles.cardLine}>{line}</div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // -------------------------------------------------------------
+  // Scenario B: User Custom Uploaded Images Gallery Mode (Non-Mohave)
+  // -------------------------------------------------------------
+  if (attachedImages && attachedImages.length > 0) {
+    return (
+      <div className={styles.customGalleryWrapper}>
+        <div className={styles.galleryHeader}>
+          📸 등록된 실제 차량 정비 사진 ({attachedImages.length}장)
+        </div>
+        
+        <div className={styles.galleryContent}>
+          <div className={styles.mainImageContainer}>
+            <img
+              src={attachedImages[activeImgIdx]}
+              alt={`정비 첨부 사진 ${activeImgIdx + 1}`}
+              className={styles.galleryMainImage}
+            />
+            <div className={styles.imageIndexBadge}>
+              {activeImgIdx + 1} / {attachedImages.length}
+            </div>
+          </div>
+
+          {/* Thumbnail list */}
+          <div className={styles.thumbnails}>
+            {attachedImages.map((img, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`${styles.thumbBtn} ${idx === activeImgIdx ? styles.thumbActive : ''}`}
+                onClick={() => setActiveImgIdx(idx)}
+              >
+                <img src={img} alt={`썸네일 ${idx + 1}`} className={styles.thumbImg} />
+              </button>
+            ))}
+          </div>
+
+          {/* Quick info card on repairs */}
+          <div className={styles.galleryInfoBox}>
+            <div className={styles.infoBoxTitle}>🔧 보고서 첨부 실사 내역</div>
+            <p className={styles.infoBoxDesc}>
+              수리 진행 과정 중 첨부된 정확한 실제 정비 및 부품 교체 현장 사진입니다.
+            </p>
+            <div className={styles.repairSpecsList}>
+              {repairItems.map((it, idx) => (
+                <div key={it.id || idx} className={styles.specItem}>
+                  <span className={styles.specDot} />
+                  <span className={styles.specName}>{it.name}</span>
+                  <span className={styles.specVal}>({it.category})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // -------------------------------------------------------------
+  // Scenario C: Fallback Generic Undercarriage Lift Hotspot Mode
+  // -------------------------------------------------------------
+  const repairedCats = [...new Set(repairItems.map(it => it.category))]
+  
   return (
     <div className={styles.wrapper}>
-      {/* Viewer Tab Controls */}
-      <div className={styles.controls}>
-        <button
-          type="button"
-          className={`${styles.ctrlBtn} ${activeTab === 'overview' ? styles.active : ''}`}
-          onClick={() => {
-            setActiveTab('overview')
-            setSelectedLabel(null)
-          }}
-        >
-          🔍 하체 전체 요약
-        </button>
-        <button
-          type="button"
-          className={`${styles.ctrlBtn} ${activeTab === 'suspension' ? styles.active : ''}`}
-          onClick={() => {
-            setActiveTab('suspension')
-            setSelectedLabel(null)
-          }}
-        >
-          🔧 조향/서스펜션 앞바퀴
-        </button>
-        <button
-          type="button"
-          className={`${styles.ctrlBtn} ${activeTab === 'transmission' ? styles.active : ''}`}
-          onClick={() => {
-            setActiveTab('transmission')
-            setSelectedLabel(null)
-          }}
-        >
-          ⚙️ 자동변속기 미션
-        </button>
+      <div className={styles.fallbackHeader}>
+        🚘 {vehicleInfo?.maker} {vehicleInfo?.model} 정비 부위 매핑 (실사 매칭)
       </div>
-
+      
       <div className={styles.container}>
-        {/* Real Vehicle Repair Photo */}
         <img
-          src={`${IMAGE_BASE}${currentView.image}`}
-          alt={currentView.title}
+          src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=600&auto=format&fit=crop"
+          alt="Generic Vehicle Undercarriage Lift"
           className={styles.bgImage}
         />
         <div className={styles.scanOverlay} />
 
-        {/* Info Header overlay */}
-        <div className={styles.infoOverlay}>
-          <div className={styles.viewTitle}>{currentView.title}</div>
-          <div className={styles.viewSubtitle}>{currentView.subtitle}</div>
-        </div>
+        {repairedCats.map(cat => {
+          const part = UNIVERSAL_REAL_HOTSPOTS[cat]
+          if (!part) return null
+          const isSelected = selectedLabel?.title === part.label
 
-        {/* Hotspot Marks mapped via coordinates */}
-        {currentView.labels.map((label, labelIdx) => {
-          return label.targets.map((target, targetIdx) => {
-            const isSelected = selectedLabel?.title === label.title
-            
-            return (
-              <div
-                key={`${labelIdx}-${targetIdx}`}
-                className={`${styles.hotspot} ${isSelected ? styles.hotspotActive : ''}`}
-                style={{
-                  left: `${target.x / 10}%`,
-                  top: `${target.y / 10}%`,
-                  '--part-color': label.color
-                }}
-                onClick={() => setSelectedLabel(label)}
-              >
-                <div className={styles.pulseRing} />
-                <div className={styles.pulseRingSecondary} />
-                <div className={styles.centerDot} />
+          // Get items for this category to list inside fullCard
+          const items = repairItems.filter(it => it.category === cat)
 
-                {/* Direct Small Tooltip */}
-                <div className={styles.labelTooltip}>
-                  {label.title}
-                </div>
-              </div>
-            )
-          })
+          return (
+            <div
+              key={cat}
+              className={`${styles.hotspot} ${isSelected ? styles.hotspotActive : ''}`}
+              style={{
+                top: part.top,
+                left: part.left,
+                '--part-color': part.color
+              }}
+              onClick={() => setSelectedLabel({
+                title: part.label,
+                color: part.color,
+                desc: items.map(it => `• ${it.name} (${(Number(it.partsCost) || 0).toLocaleString()}원)`).join('\n')
+              })}
+            >
+              <div className={styles.pulseRing} />
+              <div className={styles.pulseRingSecondary} />
+              <div className={styles.centerDot} />
+              <div className={styles.labelTooltip}>{part.label}</div>
+            </div>
+          )
         })}
 
-        {/* Detailed Full Tooltip Overlay when a hotspot is clicked */}
         {selectedLabel && (
           <div
             className={styles.fullCard}

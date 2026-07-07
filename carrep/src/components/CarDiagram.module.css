@@ -3,14 +3,26 @@
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.modelHeader {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  background: rgba(250, 130, 49, 0.08);
+  border: 1px solid rgba(250, 130, 49, 0.2);
+  padding: 5px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
 }
 
 .svg {
   width: 100%;
   height: 100%;
-  max-height: 500px;
+  max-height: 420px;
 }
 
 .zoneGroup {
@@ -83,14 +95,216 @@
   color: rgba(255, 255, 255, 0.15);
 }
 
-.itemNote {
-  font-size: 0.7rem;
-  color: var(--accent-orange);
-  background: rgba(250, 130, 49, 0.06);
-  padding: 2px 6px;
-  border-radius: 4px;
+/* --- Mohave Detailed CAD Layout Styles --- */
+.mohaveWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.mohaveControls {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  padding: 6px;
+  border-radius: 12px;
+  justify-content: center;
+}
+
+.mohaveCtrlBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.mohaveCtrlBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+
+.mohaveCtrlBtn.mohaveActiveBtn {
+  background: var(--accent-orange);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(250, 130, 49, 0.25);
+}
+
+.mohaveContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 500px;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.mohaveBgImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mohaveScanOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.mohaveInfoOverlay {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(11, 12, 16, 0.82);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 10px;
+  pointer-events: none;
+  max-width: 80%;
+  z-index: 10;
+}
+
+.mohaveViewTitle {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.mohaveViewSubtitle {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   margin-top: 2px;
-  border-left: 2px solid var(--accent-orange);
+}
+
+/* Hotspots */
+.mohaveHotspot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 20;
+}
+
+.mohaveCenterDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--part-color);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px var(--part-color);
+}
+
+.mohavePulseRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--part-color);
+  animation: pulseScale 2s infinite linear;
+  transform-origin: center;
+}
+
+.mohaveLabelTooltip {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(11, 12, 16, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.mohaveHotspot:hover .mohaveLabelTooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* Full detail card on click */
+.mohaveFullCard {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  background: rgba(11, 12, 16, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  animation: slideCardUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mohaveCardHeader {
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  padding-right: 20px;
+}
+
+.mohaveCloseCardBtn {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.mohaveCloseCardBtn:hover {
+  color: var(--accent-red);
+}
+
+.mohaveCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mohaveCardLine {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.45;
 }
 
 @keyframes pulseOpacity {
@@ -100,10 +314,15 @@
 
 @keyframes pulseScale {
   0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
 @keyframes tooltipFade {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideCardUp {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
