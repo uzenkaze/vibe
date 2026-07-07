@@ -1,6 +1,7 @@
-import { useRef } from 'react'
+import { useState, useRef } from 'react'
 import styles from './Step3Report.module.css'
 import CarDiagram from '../components/CarDiagram'
+import RealCarDiagram from '../components/RealCarDiagram'
 
 const PART_MAP = {
   '조향계': { label: '조향 장치', color: '#ff3b30' },
@@ -22,8 +23,17 @@ function formatDate(dateStr) {
   return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`
 }
 
-export default function Step3Report({ vehicleInfo, repairItems, attachedImages, onPrev }) {
+export default function Step3Report({
+  vehicleInfo,
+  repairItems,
+  attachedImages,
+  onPrev,
+  onReset,
+  onSave,
+  isSaved
+}) {
   const reportRef = useRef()
+  const [diagramMode, setDiagramMode] = useState('3d') // '3d' | 'real'
 
   const totalParts = repairItems.reduce((s, it) => s + (Number(it.partsCost) || 0), 0)
   const totalLabor = repairItems.reduce((s, it) => s + (Number(it.laborCost) || 0), 0)
@@ -49,10 +59,18 @@ export default function Step3Report({ vehicleInfo, repairItems, attachedImages, 
     <div className={styles.wrapper} ref={reportRef}>
       {/* Actions Bar */}
       <div className={styles.actionsBar} id="reportActions">
-        <button className={`${styles.btn} ${styles.btnGhost}`} onClick={onPrev}>
-          ← 수정하기
-        </button>
+        <div className={styles.actionLeft}>
+          <button className={`${styles.btn} ${styles.btnGhost}`} onClick={onPrev}>
+            ← 수정하기
+          </button>
+          <button className={`${styles.btn} ${styles.btnHome}`} onClick={onReset}>
+            🏠 홈으로 (새 보고서)
+          </button>
+        </div>
         <div className={styles.actionRight}>
+          <button className={`${styles.btn} ${styles.btnSave}`} onClick={onSave}>
+            {isSaved ? '💾 보고서 수정저장' : '💾 보고서 저장하기'}
+          </button>
           <button className={`${styles.btn} ${styles.btnPrint}`} onClick={handlePrint}>
             🖨️ 인쇄 / PDF 저장
           </button>
@@ -103,9 +121,32 @@ export default function Step3Report({ vehicleInfo, repairItems, attachedImages, 
         <div className={styles.diagramRow}>
           {/* Car Diagram */}
           <div className={styles.diagramBox}>
-            <div className={styles.sectionTitle}>수리 부위 시각화</div>
+            <div className={styles.sectionHeaderRow}>
+              <div className={styles.sectionTitle}>수리 부위 시각화</div>
+              <div className={styles.tabToggle} id="diagramTabs">
+                <button
+                  type="button"
+                  className={`${styles.tabBtn} ${diagramMode === '3d' ? styles.tabBtnActive : ''}`}
+                  onClick={() => setDiagramMode('3d')}
+                >
+                  3D 그래픽
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.tabBtn} ${diagramMode === 'real' ? styles.tabBtnActive : ''}`}
+                  onClick={() => setDiagramMode('real')}
+                >
+                  실물 사진
+                </button>
+              </div>
+            </div>
+
             <div className={styles.diagramWrap}>
-              <CarDiagram repairItems={repairItems} />
+              {diagramMode === '3d' ? (
+                <CarDiagram repairItems={repairItems} />
+              ) : (
+                <RealCarDiagram repairItems={repairItems} />
+              )}
             </div>
             {/* Legend */}
             <div className={styles.legend}>

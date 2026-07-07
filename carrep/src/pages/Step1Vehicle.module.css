@@ -155,6 +155,116 @@
   color: var(--text-main);
 }
 
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reportsSection {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  max-height: 520px;
+}
+
+.reportList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.reportItem {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.reportItem:hover {
+  border-color: var(--accent-blue);
+  background: rgba(69, 243, 255, 0.03);
+  transform: translateY(-1px);
+}
+
+.reportItemMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.reportItemTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reportItemDate {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.reportItemPriceRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.reportItemPrice {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--accent-orange);
+  font-family: 'Outfit', sans-serif;
+}
+
+.deleteReportBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.deleteReportBtn:hover {
+  color: var(--accent-red);
+}
+
+@media (max-width: 900px) {
+  .mainLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 640px) {
   .grid { grid-template-columns: 1fr; }
   .title { font-size: 1.5rem; }
