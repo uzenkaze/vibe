@@ -31,13 +31,23 @@ export default function Step1Vehicle({
 
   const handleLoadMyCar = () => {
     if (myCar) {
-      setVehicleInfo(prev => ({
-        ...prev,
-        maker: myCar.maker || '',
-        model: myCar.model || '',
-        year: myCar.year || '',
-        mileage: myCar.mileage || ''
-      }))
+      setVehicleInfo(prev => {
+        const updated = {
+          ...prev,
+          maker: myCar.maker || '',
+          model: myCar.model || '',
+          year: myCar.year || '',
+          mileage: myCar.mileage || ''
+        }
+        
+        // Fast-forward automatically to Step 2 if info is valid
+        if (updated.maker && updated.model && updated.year) {
+          setTimeout(() => {
+            onNext()
+          }, 150)
+        }
+        return updated
+      })
     }
   }
 

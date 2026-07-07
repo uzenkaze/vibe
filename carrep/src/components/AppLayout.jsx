@@ -6,7 +6,7 @@ const steps = [
   { num: 3, label: '보고서' },
 ]
 
-export default function AppLayout({ step, goToStep, onOpenSetting, children }) {
+export default function AppLayout({ step, goToStep, onOpenSetting, onOpenMyCar, children }) {
   return (
     <div className={styles.shell}>
       {/* Header */}
@@ -33,6 +33,14 @@ export default function AppLayout({ step, goToStep, onOpenSetting, children }) {
           ))}
         </div>
         <div className={styles.headerRight}>
+          <button 
+            type="button" 
+            className={styles.settingBtn} 
+            onClick={onOpenMyCar}
+            title="내 차량 정보 등록 및 관리"
+          >
+            🚗 내차 정보관리
+          </button>
           <button 
             type="button" 
             className={styles.settingBtn} 

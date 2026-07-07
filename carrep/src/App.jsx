@@ -5,6 +5,7 @@ import Step1Vehicle from './pages/Step1Vehicle'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
 import GitHubModal from './components/GitHubModal'
+import MyCarModal from './components/MyCarModal'
 import { getGithubJson, saveGithubJson, validateGithubToken } from './utils/githubDb'
 
 const API_BASE = 'http://localhost:5500'
@@ -25,6 +26,7 @@ export default function App() {
   // GitHub integration & modal states
   const [githubToken, setGithubToken] = useState(localStorage.getItem('carrep_github_token') || '')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isMyCarModalOpen, setIsMyCarModalOpen] = useState(false)
   
   // Connection status: 'local' | 'cloud' | 'remote' | 'offline'
   const [dbStatus, setDbStatus] = useState('offline')
@@ -308,7 +310,12 @@ export default function App() {
   }
 
   return (
-    <AppLayout step={step} goToStep={goToStep} onOpenSetting={() => setIsModalOpen(true)}>
+    <AppLayout
+      step={step}
+      goToStep={goToStep}
+      onOpenSetting={() => setIsModalOpen(true)}
+      onOpenMyCar={() => setIsMyCarModalOpen(true)}
+    >
       {step === 1 && (
         <Step1Vehicle
           vehicleInfo={vehicleInfo}
@@ -351,6 +358,14 @@ export default function App() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveToken}
         currentToken={githubToken}
+      />
+
+      {/* My Car Management Layer Modal */}
+      <MyCarModal
+        isOpen={isMyCarModalOpen}
+        onClose={() => setIsMyCarModalOpen(false)}
+        onSave={handleSaveMyCar}
+        currentMyCar={myCar}
       />
     </AppLayout>
   )
