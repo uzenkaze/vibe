@@ -1,7 +1,54 @@
 import { useState, useRef } from 'react'
 import styles from './Step2Repairs.module.css'
 
-const CATEGORIES = ['조향계', '현가계', '구동계', '제동계', '엔진', '냉각계', '전기계', '외장', '내장', '진단점검', '기타']
+const CATEGORIES = ['엔진', '조향계', '현가계', '구동계', '제동계', '냉각계', '전기계', '외장', '내장', '진단점검', '기타']
+
+const CATEGORY_DETAILS = {
+  '엔진': {
+    label: '엔진 (구동 핵심 부품)',
+    desc: '엔진오일 교체, 타이밍 벨트/체인, 엔진 마운트(미미), 점화플러그, 에어필터, 연료필터, 가스켓 교환 등'
+  },
+  '조향계': {
+    label: '조향계 (핸들 및 방향 조절)',
+    desc: '파워스티어링 오일/기어/펌프(오무기어), 타이로드 엔드, 스티어링 휠 링키지 등 방향 조절 부위'
+  },
+  '현가계': {
+    label: '현가계 (서스펜션 및 바퀴 충격완화)',
+    desc: '로어암, 어퍼암, 활대링크, 볼조인트, 쇼크업소버(쇼바), 스프링, 하부암 어셈블리 등 승차감 관련 하체 부품'
+  },
+  '구동계': {
+    label: '구동계 (변속기 및 미션 동력전달)',
+    desc: '자동/수동 변속기 오일(미션오일), 변속기 오일팬, 등속조인트, 드라이브샤프트, 클러치 등 바퀴 구동 부위'
+  },
+  '제동계': {
+    label: '제동계 (브레이크 및 멈춤 장치)',
+    desc: '브레이크 패드/디스크 로터 교체, 브레이크 캘리퍼, 브레이크 오일, 라이닝 등 제동 관련 부품'
+  },
+  '냉각계': {
+    label: '냉각계 (엔진 열 식힘 장치)',
+    desc: '라디에이터 교환, 냉각수(부동액) 순환 교환, 워터펌프, 냉각 팬, 서모스탯 등 엔진 냉각 부품'
+  },
+  '전기계': {
+    label: '전기계 (배터리 및 전장 기기)',
+    desc: '배터리 교체, 제네레이터(발전기), 시동 모터, 전구류(헤드램프/테일램프), 퓨즈, 경음기 등 전장 부품'
+  },
+  '외장': {
+    label: '외장 (차체 외관 및 판금)',
+    desc: '앞/뒤 범퍼 교체, 사이드 미러, 도어/본넷 도색, 유리창 교환, 썬팅, 와이퍼 블레이드 등 외부 파츠'
+  },
+  '내장': {
+    label: '내장 (실내 공간 및 에어컨 필터)',
+    desc: '캐빈 에어컨 필터 교체, 가죽 시트 복원, 실내 매트, 블랙박스/내비게이션 장착 등 내부 파츠'
+  },
+  '진단점검': {
+    label: '진단점검 (스캐너 검사 및 공임 점검)',
+    desc: 'GDS/KDS 컴퓨터 스캔 진단 점검, 휠 얼라이먼트 조정, 정기 종합 검사 대행 등 진단 분석 공임'
+  },
+  '기타': {
+    label: '기타 정비 (분류 외 작업)',
+    desc: '위 분류에 해당하지 않는 가벼운 소모품 정비, 엔진룸 크리닝, 실내 탈취 작업 등'
+  }
+}
 
 const EMPTY_ITEM = { id: '', name: '', category: '기타', partsCost: '', laborCost: '', note: '' }
 
@@ -21,6 +68,7 @@ export default function Step2Repairs({
   const imgRef = useRef()
 
   const setF = (k, v) => setForm(p => ({ ...p, [k]: v }))
+
 
   const addItem = () => {
     if (!form.name) return
@@ -111,7 +159,7 @@ export default function Step2Repairs({
             <div className={styles.field}>
               <label className={styles.label}>부위 구분</label>
               <select className={styles.select} value={form.category} onChange={e => setF('category', e.target.value)}>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_DETAILS[c].label}</option>)}
               </select>
             </div>
             <div className={styles.field}>
@@ -133,6 +181,16 @@ export default function Step2Repairs({
                 value={form.laborCost}
                 onChange={e => setF('laborCost', e.target.value)}
               />
+            </div>
+            {/* Real-time category selection helper */}
+            <div className={`${styles.field} ${styles.fieldWide} ${styles.guideBox}`}>
+              <span className={styles.guideIcon}>💡</span>
+              <div className={styles.guideContent}>
+                <strong style={{ color: 'var(--accent-blue)', fontSize: '0.8rem' }}>
+                  {CATEGORY_DETAILS[form.category].label} 선택 가이드:
+                </strong>
+                <p className={styles.guideDesc}>{CATEGORY_DETAILS[form.category].desc}</p>
+              </div>
             </div>
             <div className={`${styles.field} ${styles.fieldWide}`}>
               <label className={styles.label}>비고</label>
