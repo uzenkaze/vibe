@@ -4,8 +4,12 @@ import AppLayout from './components/AppLayout'
 import Step1Vehicle from './pages/Step1Vehicle'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
+import GitHubModal from './components/GitHubModal'
+import { getGithubJson, saveGithubJson } from './utils/githubDb'
 
 const API_BASE = 'http://localhost:5500'
+const REPORTS_PATH = 'carrep/public/data/reports.json'
+const MYCAR_PATH = 'carrep/public/data/mycar.json'
 
 export default function App() {
   const [step, setStep] = useState(1)
@@ -18,16 +22,20 @@ export default function App() {
   const [savedReportId, setSavedReportId] = useState(null)
   const [myCar, setMyCar] = useState(null)
   
-  // Connection state: 'local' (🟢 로컬 API 서버 JSON DB) | 'remote' (🔵 GitHub 원격 동기화 JSON DB) | 'offline' (🔴 미연결 오프라인)
+  // GitHub integration & modal states
+  const [githubToken, setGithubToken] = useState(localStorage.getItem('carrep_github_token') || '')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  
+  // Connection status: 'local' | 'cloud' | 'remote' | 'offline'
   const [dbStatus, setDbStatus] = useState('offline')
 
-  // Hybrid Data Loading Chain (SQLite/LocalStorage Completely Removed)
-  const loadData = async () => {
+  // Hybrid Data Loading Chain
+  const loadData = async (tokenVal = githubToken) => {
     // 1. Try loading from Live Local API Server (localhost:5500)
     try {
       const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
       if (reportsRes.ok) {
-        const reportsData = await reportsRes.ok ? await reportsRes.json() : []
+        const reportsData = await reportsRes.json()
         setReports(reportsData)
         
         const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
@@ -36,14 +44,33 @@ export default function App() {
           setMyCar(myCarData)
         }
         setDbStatus('local')
-        console.log('[CarRep] Loaded data from local JSON database via server.js')
+        console.log('[CarRep] Loaded data from local backend server JSON.')
         return
       }
     } catch (e) {
-      console.warn('[CarRep] Local API server not reachable, trying GitHub static DB...')
+      console.warn('[CarRep] Local API server not reachable, trying direct GitHub API / Pages...')
     }
 
-    // 2. Try loading from GitHub Pages deployed Static JSON files
+    // 2. Try loading from direct GitHub Contents API (if token is available)
+    if (tokenVal) {
+      try {
+        const reportsRes = await getGithubJson(REPORTS_PATH, tokenVal)
+        if (reportsRes) {
+          setReports(reportsRes.content || [])
+          
+          const myCarRes = await getGithubJson(MYCAR_PATH, tokenVal)
+          if (myCarRes) setMyCar(myCarRes.content || null)
+          
+          setDbStatus('cloud')
+          console.log('[CarRep] Loaded data directly via GitHub Contents API (Cloud Mode).')
+          return
+        }
+      } catch (e) {
+        console.warn('[CarRep] Direct GitHub API fetch failed, falling back to static Pages...')
+      }
+    }
+
+    // 3. Try loading from GitHub Pages deployed Static JSON files (anonymous public)
     try {
       const basePath = window.location.pathname.includes('/vibe') ? '/vibe/carrep' : '/carrep'
       const reportsRes = await fetch(`${basePath}/data/reports.json?t=${Date.now()}`)
@@ -57,11 +84,11 @@ export default function App() {
           setMyCar(myCarData)
         }
         setDbStatus('remote')
-        console.log('[CarRep] Loaded data from GitHub remote static JSON database.')
+        console.log('[CarRep] Loaded data from GitHub Pages static JSON (Read-only).')
         return
       }
     } catch (e) {
-      console.warn('[CarRep] GitHub static JSON database not reachable.')
+      console.warn('[CarRep] GitHub Pages static JSON database not reachable.')
     }
 
     setDbStatus('offline')
@@ -71,7 +98,7 @@ export default function App() {
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [githubToken])
 
   const goNext = () => setStep(s => Math.min(s + 1, 3))
   const goPrev = () => setStep(s => Math.max(s - 1, 1))
@@ -101,40 +128,65 @@ export default function App() {
     setStep(1)
   }
 
+  // Handle Token registration and save to localStorage
+  const handleSaveToken = (token) => {
+    if (token) {
+      localStorage.setItem('carrep_github_token', token)
+      setGithubToken(token)
+    } else {
+      localStorage.removeItem('carrep_github_token')
+      setGithubToken('')
+    }
+    setIsModalOpen(false)
+    alert('GitHub 설정이 저장되었습니다. 데이터를 동기화합니다.')
+    loadData(token)
+  }
+
   const handleDeleteReport = async (id, e) => {
     e.stopPropagation()
-    if (dbStatus !== 'local') {
-      alert('⚠️ 현재 읽기 전용 상태입니다. 데이터를 삭제하려면 로컬 PC에서 "node server.js" 서버를 구동해야 합니다.')
-      return
-    }
 
-    if (!window.confirm('이 보고서를 서버 데이터베이스에서 영구 삭제하시겠습니까?')) return
+    if (!window.confirm('이 보고서를 영구 삭제하시겠습니까?')) return
 
-    try {
-      const res = await fetch(`${API_BASE}/api/carrep/reports/${id}`, {
-        method: 'DELETE'
-      })
-      if (res.ok) {
-        setReports(prev => prev.filter(r => r.id !== id))
-        if (savedReportId === id) {
-          handleReset()
+    // Scenario A: Local backend server is active
+    if (dbStatus === 'local') {
+      try {
+        const res = await fetch(`${API_BASE}/api/carrep/reports/${id}`, { method: 'DELETE' })
+        if (res.ok) {
+          setReports(prev => prev.filter(r => r.id !== id))
+          if (savedReportId === id) handleReset()
+          alert('보고서가 로컬 서버를 통해 정상 삭제되었습니다.')
+          return
         }
-        alert('보고서가 데이터베이스에서 정상 삭제되었습니다.')
-      } else {
-        alert('삭제 실패: 서버 오류')
+      } catch (err) {
+        console.error('Delete via server failed', err)
       }
-    } catch (err) {
-      console.error('Delete failed', err)
-      alert('⚠️ 서버 통신 오류로 삭제를 실패했습니다.')
     }
+
+    // Scenario B: Client-side direct GitHub Cloud DB commit
+    if (githubToken) {
+      try {
+        const updatedReports = reports.filter(r => r.id !== id)
+        await saveGithubJson(
+          REPORTS_PATH,
+          updatedReports,
+          githubToken,
+          `chore(data): delete repair report ${id}`
+        )
+        setReports(updatedReports)
+        if (savedReportId === id) handleReset()
+        alert('보고서가 GitHub 클라우드 저장소에서 정상 삭제(커밋)되었습니다!')
+        return
+      } catch (err) {
+        console.error('Delete via GitHub API failed', err)
+        alert(`⚠️ GitHub 클라우드 삭제 실패: ${err.message}\n토큰 유효성 및 권한(repo)을 확인하세요.`)
+        return
+      }
+    }
+
+    alert('⚠️ 읽기 전용 상태입니다. 삭제 권한이 없습니다. 우측 상단의 [GitHub 설정] 버튼을 클릭해 Personal Access Token을 입력하여 등록해 주세요.')
   }
 
   const handleSaveReport = async () => {
-    if (dbStatus !== 'local') {
-      alert('⚠️ 현재 읽기 전용 상태입니다. 데이터를 저장하려면 로컬 PC에서 "node server.js" 서버를 구동해야 합니다.')
-      return
-    }
-
     const newReport = {
       id: savedReportId || Date.now(),
       createdAt: new Date().toISOString(),
@@ -143,32 +195,59 @@ export default function App() {
       attachedImages
     }
 
-    try {
-      const res = await fetch(`${API_BASE}/api/carrep/reports`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newReport)
-      })
-      if (res.ok) {
-        await loadData()
-        setSavedReportId(newReport.id)
-        alert('보고서가 서버 JSON DB에 정상 저장되었으며, GitHub로 자동 동기화 배포를 완료했습니다!')
-        setStep(3)
-      } else {
-        alert('저장 실패: 서버 오류')
+    // Scenario A: Local backend server is active
+    if (dbStatus === 'local') {
+      try {
+        const res = await fetch(`${API_BASE}/api/carrep/reports`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newReport)
+        })
+        if (res.ok) {
+          await loadData()
+          setSavedReportId(newReport.id)
+          alert('보고서가 로컬 서버를 통해 저장 및 동기화되었습니다!')
+          setStep(3)
+          return
+        }
+      } catch (err) {
+        console.error('Save via server failed', err)
       }
-    } catch (err) {
-      console.error('Save failed', err)
-      alert('⚠️ 서버 통신 오류로 보고서 저장에 실패했습니다.')
     }
+
+    // Scenario B: Client-side direct GitHub Cloud DB commit
+    if (githubToken) {
+      try {
+        let updatedReports = []
+        if (savedReportId) {
+          updatedReports = reports.map(r => r.id === savedReportId ? newReport : r)
+        } else {
+          updatedReports = [newReport, ...reports]
+        }
+
+        await saveGithubJson(
+          REPORTS_PATH,
+          updatedReports,
+          githubToken,
+          savedReportId ? `chore(data): update repair report ${newReport.id}` : `chore(data): create repair report ${newReport.id}`
+        )
+
+        setReports(updatedReports)
+        setSavedReportId(newReport.id)
+        alert('보고서가 GitHub 클라우드 저장소에 직접 정상 저장(커밋)되었습니다!')
+        setStep(3)
+        return
+      } catch (err) {
+        console.error('Save via GitHub API failed', err)
+        alert(`⚠️ GitHub 클라우드 저장 실패: ${err.message}\n토큰 유효성 및 권한(repo)을 확인하세요.`)
+        return
+      }
+    }
+
+    alert('⚠️ 읽기 전용 상태입니다. 저장 권한이 없습니다. 우측 상단의 [GitHub 설정] 버튼을 클릭해 Personal Access Token을 입력하여 등록해 주세요.')
   }
 
   const handleSaveMyCar = async (carInfo) => {
-    if (dbStatus !== 'local') {
-      alert('⚠️ 현재 읽기 전용 상태입니다. 내 차량 정보를 등록하려면 로컬 PC에서 "node server.js" 서버를 구동해야 합니다.')
-      return
-    }
-
     const myCarData = {
       maker: carInfo.maker,
       model: carInfo.model,
@@ -176,26 +255,48 @@ export default function App() {
       mileage: carInfo.mileage
     }
 
-    try {
-      const res = await fetch(`${API_BASE}/api/carrep/mycar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(myCarData)
-      })
-      if (res.ok) {
-        setMyCar(myCarData)
-        alert('내 차량 정보가 서버 JSON DB에 등록되었으며, GitHub로 자동 동기화되었습니다!')
-      } else {
-        alert('내 차량 등록 실패: 서버 오류')
+    // Scenario A: Local backend server is active
+    if (dbStatus === 'local') {
+      try {
+        const res = await fetch(`${API_BASE}/api/carrep/mycar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(myCarData)
+        })
+        if (res.ok) {
+          setMyCar(myCarData)
+          alert('내 차량 정보가 로컬 서버를 통해 저장 및 동기화되었습니다!')
+          return
+        }
+      } catch (err) {
+        console.error('Save My Car via server failed', err)
       }
-    } catch (err) {
-      console.error('Save My Car failed', err)
-      alert('⚠️ 서버 통신 오류로 내 차량 등록에 실패했습니다.')
     }
+
+    // Scenario B: Client-side direct GitHub Cloud DB commit
+    if (githubToken) {
+      try {
+        await saveGithubJson(
+          MYCAR_PATH,
+          myCarData,
+          githubToken,
+          'chore(data): update MyCar profile'
+        )
+        setMyCar(myCarData)
+        alert('내 차량 정보가 GitHub 클라우드 저장소에 직접 등록(커밋)되었습니다!')
+        return
+      } catch (err) {
+        console.error('Save My Car via GitHub API failed', err)
+        alert(`⚠️ GitHub 클라우드 저장 실패: ${err.message}`)
+        return
+      }
+    }
+
+    alert('⚠️ 읽기 전용 상태입니다. 내 차량 등록 권한이 없습니다. 우측 상단의 [GitHub 설정] 버튼을 클릭해 Personal Access Token을 입력하여 등록해 주세요.')
   }
 
   return (
-    <AppLayout step={step} goToStep={goToStep}>
+    <AppLayout step={step} goToStep={goToStep} onOpenSetting={() => setIsModalOpen(true)}>
       {step === 1 && (
         <Step1Vehicle
           vehicleInfo={vehicleInfo}
@@ -231,6 +332,14 @@ export default function App() {
           isSaved={!!savedReportId}
         />
       )}
+
+      {/* GitHub Token Config Layer Modal */}
+      <GitHubModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveToken}
+        currentToken={githubToken}
+      />
     </AppLayout>
   )
 }

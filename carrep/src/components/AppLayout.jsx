@@ -6,7 +6,7 @@ const steps = [
   { num: 3, label: '보고서' },
 ]
 
-export default function AppLayout({ step, goToStep, children }) {
+export default function AppLayout({ step, goToStep, onOpenSetting, children }) {
   return (
     <div className={styles.shell}>
       {/* Header */}
@@ -33,6 +33,14 @@ export default function AppLayout({ step, goToStep, children }) {
           ))}
         </div>
         <div className={styles.headerRight}>
+          <button 
+            type="button" 
+            className={styles.settingBtn} 
+            onClick={onOpenSetting}
+            title="GitHub Personal Access Token 설정"
+          >
+            ⚙️ GitHub 설정
+          </button>
           <span className={styles.badge}>차량 정비 보고서</span>
         </div>
       </header>
