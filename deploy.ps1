@@ -52,11 +52,28 @@ try {
     Set-Location ../..
 }
 
+# 2-3. 'carrep' 프로젝트 빌드
+Write-Host "> 'carrep' 프로젝트 빌드 중..." -ForegroundColor Yellow
+try {
+    Set-Location carrep
+    npm.cmd run build
+    Set-Location ..
+} catch {
+    Write-Host "> 'carrep' 프로젝트 빌드 실패" -ForegroundColor Red
+    Set-Location ..
+}
+
 # 3. 'learn' 빌드 결과물 복사
 Write-Host "> 'learn' 빌드 결과물 복사 중..."
 if (Test-Path "$deployDir/learn") { Remove-Item -Recurse -Force "$deployDir/learn" }
 New-Item -ItemType Directory -Path "$deployDir/learn" | Out-Null
 Copy-Item -Path "learn/dist/*" -Destination "$deployDir/learn" -Recurse -Force
+
+# 3-1. 'carrep' 빌드 결과물 복사
+Write-Host "> 'carrep' 빌드 결과물 복사 중..."
+if (Test-Path "$deployDir/carrep") { Remove-Item -Recurse -Force "$deployDir/carrep" }
+New-Item -ItemType Directory -Path "$deployDir/carrep" | Out-Null
+Copy-Item -Path "carrep/dist/*" -Destination "$deployDir/carrep" -Recurse -Force
 
 # 3-2. 'livetv-app' 프로젝트 빌드 (건너뛰고 정적 직접 복사 방식 사용)
 Write-Host "> 'livetv-app' 프로젝트 빌드는 건너뜁니다 (정적 소스 직접 복사)" -ForegroundColor Yellow
@@ -155,3 +172,4 @@ Write-Host "접속 주소:"
 Write-Host "- Learn: https://uzenkaze.github.io/vibe/learn/"
 Write-Host "- Task: https://uzenkaze.github.io/vibe/task/task-manager.html"
 Write-Host "- Asset: https://uzenkaze.github.io/vibe/asset/asset-react/dist/index.html"
+Write-Host "- CarRep: https://uzenkaze.github.io/vibe/carrep/"
