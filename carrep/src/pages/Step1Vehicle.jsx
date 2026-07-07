@@ -10,6 +10,7 @@ export default function Step1Vehicle({
   myCar,
   onSaveMyCar,
   onSelectReport,
+  onEditReport,
   onDeleteReport,
   onNext
 }) {
@@ -206,6 +207,17 @@ export default function Step1Vehicle({
                       <span className={styles.reportItemPrice}>{grandTotal.toLocaleString()}원</span>
                       <button
                         type="button"
+                        className={styles.editReportBtn}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onEditReport(r)
+                        }}
+                        title="보고서 수정"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        type="button"
                         className={styles.deleteReportBtn}
                         onClick={(e) => onDeleteReport(r.id, e)}
                         title="보고서 삭제"
@@ -223,3 +235,4 @@ export default function Step1Vehicle({
     </div>
   )
 }
+

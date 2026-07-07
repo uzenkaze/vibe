@@ -5,7 +5,7 @@ import Step1Vehicle from './pages/Step1Vehicle'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
 
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE = 'http://localhost:5500'
 
 export default function App() {
   const [step, setStep] = useState(1)
@@ -18,50 +18,32 @@ export default function App() {
   const [savedReportId, setSavedReportId] = useState(null)
   const [myCar, setMyCar] = useState(null)
 
-  // Load reports and my car (hybrid: API server or LocalStorage)
-  useEffect(() => {
-    const initLoad = async () => {
-      if (isLocal) {
-        try {
-          // 1. Load reports
-          const reportsRes = await fetch('/api/carrep/reports')
-          if (reportsRes.ok) {
-            const reportsData = await reportsRes.json()
-            setReports(reportsData)
-          }
-          // 2. Load myCar
-          const myCarRes = await fetch('/api/carrep/mycar')
-          if (myCarRes.ok) {
-            const myCarData = await myCarRes.json()
-            setMyCar(myCarData)
-          }
-          return // API loading success
-        } catch (e) {
-          console.warn('Backend API server not reachable, fallback to LocalStorage', e)
-        }
+  // Fetch reports list and my car profile from backend SQLite DB on mount
+  const loadData = async () => {
+    try {
+      // 1. Fetch reports
+      const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
+      if (reportsRes.ok) {
+        const reportsData = await reportsRes.json()
+        setReports(reportsData)
+      } else {
+        console.error('Failed to load reports from database')
       }
-
-      // LocalStorage fallback
-      const saved = localStorage.getItem('carrep_reports')
-      if (saved) {
-        try {
-          setReports(JSON.parse(saved))
-        } catch (e) {
-          console.error('Failed to parse reports', e)
-        }
+      
+      // 2. Fetch myCar profile
+      const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
+      if (myCarRes.ok) {
+        const myCarData = await myCarRes.json()
+        setMyCar(myCarData)
       }
-
-      const savedMyCar = localStorage.getItem('carrep_my_car')
-      if (savedMyCar) {
-        try {
-          setMyCar(JSON.parse(savedMyCar))
-        } catch (e) {
-          console.error('Failed to parse my car', e)
-        }
-      }
+    } catch (e) {
+      console.error('SQLite DB server is not running or reachable:', e)
+      alert('⚠️ SQLite 데이터베이스 서버(localhost:5500)에 연결할 수 없습니다.\n로컬에서 "node server.js" 서버가 구동 중인지 확인해 주세요.')
     }
+  }
 
-    initLoad()
+  useEffect(() => {
+    loadData()
   }, [])
 
   const goNext = () => setStep(s => Math.min(s + 1, 3))
@@ -84,34 +66,35 @@ export default function App() {
     setStep(3)
   }
 
+  // Load report data directly into Step 1 input fields for immediate editing
+  const handleEditReport = (report) => {
+    setVehicleInfo(report.vehicleInfo)
+    setRepairItems(report.repairItems)
+    setAttachedImages(report.attachedImages || [])
+    setSavedReportId(report.id)
+    setStep(1) // Go to Step 1 input form instead of Step 3 report view
+  }
+
   const handleDeleteReport = async (id, e) => {
     e.stopPropagation()
-    if (!window.confirm('이 보고서를 삭제하시겠습니까?')) return
+    if (!window.confirm('이 보고서를 데이터베이스에서 영구 삭제하시겠습니까?')) return
 
-    if (isLocal) {
-      try {
-        const res = await fetch(`/api/carrep/reports/${id}`, {
-          method: 'DELETE'
-        })
-        if (res.ok) {
-          const updated = reports.filter(r => r.id !== id)
-          setReports(updated)
-          if (savedReportId === id) {
-            handleReset()
-          }
-          return
+    try {
+      const res = await fetch(`${API_BASE}/api/carrep/reports/${id}`, {
+        method: 'DELETE'
+      })
+      if (res.ok) {
+        setReports(prev => prev.filter(r => r.id !== id))
+        if (savedReportId === id) {
+          handleReset()
         }
-      } catch (err) {
-        console.error('Delete via API failed, trying LocalStorage fallback', err)
+        alert('보고서가 데이터베이스에서 삭제되었습니다.')
+      } else {
+        alert('삭제 실패: 데이터베이스 서버 오류')
       }
-    }
-
-    // LocalStorage fallback
-    const updated = reports.filter(r => r.id !== id)
-    setReports(updated)
-    localStorage.setItem('carrep_reports', JSON.stringify(updated))
-    if (savedReportId === id) {
-      handleReset()
+    } catch (err) {
+      console.error('Delete via API failed', err)
+      alert('⚠️ 데이터베이스 서버 연결 끊김: 삭제를 완료할 수 없습니다.')
     }
   }
 
@@ -124,40 +107,26 @@ export default function App() {
       attachedImages
     }
 
-    if (isLocal) {
-      try {
-        const res = await fetch('/api/carrep/reports', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newReport)
-        })
-        if (res.ok) {
-          // Reload from DB to keep sync
-          const listRes = await fetch('/api/carrep/reports')
-          if (listRes.ok) {
-            const reportsData = await listRes.json()
-            setReports(reportsData)
-          }
-          setSavedReportId(newReport.id)
-          alert('보고서가 SQLite 데이터베이스에 성공적으로 저장되었습니다!')
-          return
-        }
-      } catch (err) {
-        console.error('Save via API failed, trying LocalStorage fallback', err)
+    try {
+      const res = await fetch(`${API_BASE}/api/carrep/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReport)
+      })
+      if (res.ok) {
+        // Sync and refresh state
+        await loadData()
+        setSavedReportId(newReport.id)
+        alert('보고서가 SQLite 데이터베이스에 성공적으로 저장되었습니다!')
+        // Move to Step 3 report view automatically after saving
+        setStep(3)
+      } else {
+        alert('저장 실패: 데이터베이스 스키마 검증 실패')
       }
+    } catch (err) {
+      console.error('Save via API failed', err)
+      alert('⚠️ 데이터베이스 서버 연결 끊김: 보고서를 저장할 수 없습니다.')
     }
-
-    // LocalStorage fallback
-    let updatedReports = []
-    if (savedReportId) {
-      updatedReports = reports.map(r => r.id === savedReportId ? newReport : r)
-    } else {
-      updatedReports = [newReport, ...reports]
-      setSavedReportId(newReport.id)
-    }
-    setReports(updatedReports)
-    localStorage.setItem('carrep_reports', JSON.stringify(updatedReports))
-    alert('보고서가 로컬 브라우저(LocalStorage)에 저장되었습니다!')
   }
 
   const handleSaveMyCar = async (carInfo) => {
@@ -168,27 +137,22 @@ export default function App() {
       mileage: carInfo.mileage
     }
 
-    if (isLocal) {
-      try {
-        const res = await fetch('/api/carrep/mycar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(myCarData)
-        })
-        if (res.ok) {
-          setMyCar(myCarData)
-          alert('내 차량 정보가 SQLite 데이터베이스에 등록되었습니다!')
-          return
-        }
-      } catch (err) {
-        console.error('Save My Car via API failed, trying LocalStorage fallback', err)
+    try {
+      const res = await fetch(`${API_BASE}/api/carrep/mycar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(myCarData)
+      })
+      if (res.ok) {
+        setMyCar(myCarData)
+        alert('내 차량 정보가 SQLite 데이터베이스에 등록되었습니다!')
+      } else {
+        alert('내 차량 등록 실패: 서버 오류')
       }
+    } catch (err) {
+      console.error('Save My Car via API failed', err)
+      alert('⚠️ 데이터베이스 서버 연결 끊김: 내 차량 정보를 등록할 수 없습니다.')
     }
-
-    // LocalStorage fallback
-    setMyCar(myCarData)
-    localStorage.setItem('carrep_my_car', JSON.stringify(myCarData))
-    alert('내 차량 정보가 로컬 브라우저(LocalStorage)에 등록되었습니다!')
   }
 
   return (
@@ -201,6 +165,7 @@ export default function App() {
           myCar={myCar}
           onSaveMyCar={handleSaveMyCar}
           onSelectReport={handleSelectReport}
+          onEditReport={handleEditReport}
           onDeleteReport={handleDeleteReport}
           onNext={goNext}
         />

@@ -259,6 +259,25 @@
   color: var(--accent-red);
 }
 
+.editReportBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.editReportBtn:hover {
+  color: var(--accent-blue);
+  transform: scale(1.15);
+}
+
+
 @media (max-width: 900px) {
   .mainLayout {
     grid-template-columns: 1fr;
