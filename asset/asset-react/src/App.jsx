@@ -16,6 +16,7 @@ import AssetSection from './components/Dashboard/AssetSection';
 import ExpenseSection from './components/Dashboard/ExpenseSection';
 import InstallmentOverview from './components/Dashboard/InstallmentOverview';
 import InstallmentPage from './components/Pages/InstallmentPage';
+import CardPaymentsPage from './components/Pages/CardPaymentsPage';
 import PensionPage from './components/Pages/PensionPage';
 
 // UI
@@ -176,6 +177,14 @@ function Dashboard() {
             <>
               <SummaryCards />
               <InstallmentPage />
+            </>
+          )}
+
+          {/* 카드 납부 내역 */}
+          {navSection === 'cardPayments' && (
+            <>
+              <SummaryCards />
+              <CardPaymentsPage />
             </>
           )}
 

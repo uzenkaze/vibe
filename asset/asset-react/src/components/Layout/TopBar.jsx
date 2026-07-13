@@ -7,6 +7,7 @@ const PAGE_TITLES = {
   assets: '자산 · 수입',
   expenses: '부채 · 지출',
   installment: '카드 내역',
+  cardPayments: '납부(예정)내역',
   pension: '연금 정보',
 };
 
