@@ -37,13 +37,15 @@ export default function CardPaymentsPage() {
     const yd = yearData[year] || {};
     const monthsData = yd.months || {};
     return Array.from({ length: 12 }, (_, i) => {
-      const m = String(i + 1);
-      const mData = monthsData[m] || {};
+      const mNum = i + 1;
+      const mKeyPadded = String(mNum).padStart(2, '0');
+      const mKeyUnpadded = String(mNum);
+      const mData = monthsData[mKeyPadded] || monthsData[mKeyUnpadded] || {};
       const mSections = mData.sections || {};
       const payments = mSections.cardPayments || [];
       const total = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
       return {
-        month: `${m}월`,
+        month: `${mNum}월`,
         total: total
       };
     });
