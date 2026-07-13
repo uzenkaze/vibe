@@ -175,7 +175,7 @@ const calculateInstallmentWithoutFeeUpdate = (item) => {
 };
 
 export default function InstallmentPage() {
-  const { getCurrentSections, persistSections, year, month } = useApp();
+  const { getCurrentSections, persistSections, year, month, dark } = useApp();
   const [activeDetailId, setActiveDetailId] = useState(null);
   const [activeTab, setActiveTab] = useState('installment'); // 'installment' or 'payments'
 
@@ -544,7 +544,8 @@ export default function InstallmentPage() {
         display: 'flex',
         gap: '4px',
         margin: '1.25rem 1.5rem',
-        background: 'var(--input-bg)',
+        background: dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
+        border: dark ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid rgba(0, 0, 0, 0.03)',
         borderRadius: '16px',
         padding: '4px'
       }}>
@@ -560,11 +561,11 @@ export default function InstallmentPage() {
             borderRadius: '12px',
             fontSize: '0.8rem',
             fontWeight: '700',
-            border: 'none',
+            border: activeTab === 'installment' ? (dark ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid rgba(0, 0, 0, 0.05)') : '1px solid transparent',
             cursor: 'pointer',
-            background: activeTab === 'installment' ? 'var(--card)' : 'transparent',
-            color: activeTab === 'installment' ? 'var(--text-primary)' : 'var(--text-muted)',
-            boxShadow: activeTab === 'installment' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+            background: activeTab === 'installment' ? (dark ? 'rgba(255, 255, 255, 0.16)' : 'var(--card)') : 'transparent',
+            color: activeTab === 'installment' ? (dark ? '#ffffff' : 'var(--text-primary)') : (dark ? 'rgba(255, 255, 255, 0.6)' : 'var(--text-muted)'),
+            boxShadow: activeTab === 'installment' ? (dark ? '0 4px 12px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0,0,0,0.08)') : 'none',
             transition: 'all 0.25s ease'
           }}
         >
@@ -587,11 +588,11 @@ export default function InstallmentPage() {
             borderRadius: '12px',
             fontSize: '0.8rem',
             fontWeight: '700',
-            border: 'none',
+            border: activeTab === 'payments' ? (dark ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid rgba(0, 0, 0, 0.05)') : '1px solid transparent',
             cursor: 'pointer',
-            background: activeTab === 'payments' ? 'var(--card)' : 'transparent',
-            color: activeTab === 'payments' ? 'var(--text-primary)' : 'var(--text-muted)',
-            boxShadow: activeTab === 'payments' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+            background: activeTab === 'payments' ? (dark ? 'rgba(255, 255, 255, 0.16)' : 'var(--card)') : 'transparent',
+            color: activeTab === 'payments' ? (dark ? '#ffffff' : 'var(--text-primary)') : (dark ? 'rgba(255, 255, 255, 0.6)' : 'var(--text-muted)'),
+            boxShadow: activeTab === 'payments' ? (dark ? '0 4px 12px rgba(0, 0, 0, 0.25)' : '0 2px 8px rgba(0,0,0,0.08)') : 'none',
             transition: 'all 0.25s ease'
           }}
         >
