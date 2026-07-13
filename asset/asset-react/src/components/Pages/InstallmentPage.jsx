@@ -226,11 +226,22 @@ export default function InstallmentPage() {
   };
 
   // --- 납부(예정)내역 CRUD ---
+  const displayPayDate = (payDate) => {
+    if (!payDate) return '매달 1일';
+    if (String(payDate).startsWith('매달')) return payDate;
+    const parts = String(payDate).split('-');
+    if (parts.length === 3) {
+      const day = parseInt(parts[2], 10);
+      return `매달 ${day}일`;
+    }
+    return payDate;
+  };
+
   const handleAddPayment = () => {
     const now = new Date();
     const newPayment = {
       id: Date.now(),
-      payDate: `${year}-${month.toString().padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
+      payDate: `매달 ${now.getDate()}일`,
       item: '',
       amount: 0
     };
@@ -855,11 +866,16 @@ export default function InstallmentPage() {
                         </svg>
                       </td>
                       <td>
-                        <input 
-                          type="date" 
-                          value={p.payDate || ''} 
-                          onChange={(e) => handlePaymentFieldChange(p.id, 'payDate', e.target.value)} 
-                          style={{ fontSize: '0.85rem' }}
+                        <CustomDropdown
+                          value={displayPayDate(p.payDate)}
+                          onChange={(val) => handlePaymentFieldChange(p.id, 'payDate', val)}
+                          options={[
+                            ...Array.from({ length: 31 }, (_, i) => {
+                              const d = String(i + 1);
+                              return { value: `매달 ${d}일`, label: `매달 ${d}일` };
+                            }),
+                            { value: '매달 말일', label: '매달 말일' }
+                          ]}
                         />
                       </td>
                       <td>
