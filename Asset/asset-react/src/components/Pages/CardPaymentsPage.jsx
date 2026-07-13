@@ -14,9 +14,9 @@ export default function CardPaymentsPage() {
   const getDayValue = (payDate) => {
     if (!payDate) return 1;
     const str = String(payDate);
-    if (str === '매달 말일' || str === 'last') return 99;
+    if (str.includes('말일') || str === 'last') return 99;
     
-    const match = str.match(/매달\s*(\d+)일/);
+    const match = str.match(/(\d+)일/);
     if (match) return parseInt(match[1], 10);
     
     const parts = str.split('-');
@@ -34,12 +34,16 @@ export default function CardPaymentsPage() {
 
   // --- CRUD Handlers ---
   const displayPayDate = (payDate) => {
-    if (!payDate) return '매달 1일';
-    if (String(payDate).startsWith('매달')) return payDate;
-    const parts = String(payDate).split('-');
+    if (!payDate) return '1일';
+    const str = String(payDate);
+    if (str.includes('말일')) return '말일';
+    if (str.startsWith('매달 ')) {
+      return str.replace('매달 ', '');
+    }
+    const parts = str.split('-');
     if (parts.length === 3) {
       const day = parseInt(parts[2], 10);
-      return `매달 ${day}일`;
+      return `${day}일`;
     }
     return payDate;
   };
@@ -48,7 +52,7 @@ export default function CardPaymentsPage() {
     const now = new Date();
     const newPayment = {
       id: Date.now(),
-      payDate: `매달 ${now.getDate()}일`,
+      payDate: `${now.getDate()}일`,
       item: '',
       amount: 0
     };
@@ -145,9 +149,9 @@ export default function CardPaymentsPage() {
                         options={[
                           ...Array.from({ length: 31 }, (_, i) => {
                             const d = String(i + 1);
-                            return { value: `매달 ${d}일`, label: `매달 ${d}일` };
+                            return { value: `${d}일`, label: `${d}일` };
                           }),
-                          { value: '매달 말일', label: '매달 말일' }
+                          { value: '말일', label: '말일' }
                         ]}
                       />
                     </td>

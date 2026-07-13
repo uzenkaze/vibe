@@ -1039,12 +1039,16 @@
             }
 
             function displayPayDate(payDate) {
-                if (!payDate) return '매달 1일';
-                if (String(payDate).startsWith('매달')) return payDate;
-                const parts = String(payDate).split('-');
+                if (!payDate) return '1일';
+                const str = String(payDate);
+                if (str.includes('말일')) return '말일';
+                if (str.startsWith('매달 ')) {
+                    return str.replace('매달 ', '');
+                }
+                const parts = str.split('-');
                 if (parts.length === 3) {
                     const day = parseInt(parts[2], 10);
-                    return `매달 ${day}일`;
+                    return `${day}일`;
                 }
                 return payDate;
             }
@@ -1054,7 +1058,7 @@
                 const now = new Date();
                 const payment = {
                     id: Date.now(),
-                    payDate: `매달 ${now.getDate()}일`,
+                    payDate: `${now.getDate()}일`,
                     item: '',
                     amount: 0
                 };
@@ -1104,12 +1108,12 @@
                         
                         let selectHtml = `<select onchange="updatePayment(${p.id}, 'payDate', this.value)" style="width:100%; background:transparent; border:none; color:inherit; font-size:0.85rem; font-weight:bold; cursor:pointer;">`;
                         for (let i = 1; i <= 31; i++) {
-                            const optVal = `매달 ${i}일`;
+                            const optVal = `${i}일`;
                             const isSelected = displayPayDate(p.payDate) === optVal ? 'selected' : '';
                             selectHtml += `<option value="${optVal}" ${isSelected} style="background:var(--card-bg); color:var(--text-primary);">${optVal}</option>`;
                         }
-                        const isLastSelected = displayPayDate(p.payDate) === '매달 말일' ? 'selected' : '';
-                        selectHtml += `<option value="매달 말일" ${isLastSelected} style="background:var(--card-bg); color:var(--text-primary);">매달 말일</option>`;
+                        const isLastSelected = displayPayDate(p.payDate) === '말일' ? 'selected' : '';
+                        selectHtml += `<option value="말일" ${isLastSelected} style="background:var(--card-bg); color:var(--text-primary);">말일</option>`;
                         selectHtml += `</select>`;
 
                         tr.innerHTML = `
