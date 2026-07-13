@@ -84,13 +84,13 @@ export default function CardPaymentsPage() {
       <div className="section-card-header">
         <div className="section-card-title">
           <span className="section-dot" style={{ background: '#FF8A00' }} />
-          금월 납부 내역
+          금월 필요 자금
           <span style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
             fontWeight: 600, letterSpacing: '0.05em',
             textTransform: 'uppercase', marginLeft: 4,
           }}>
-            Card Payments for This Month
+            Required Funds for This Month
           </span>
         </div>
         <button className="btn btn-dark" onClick={handleAddPayment}>+ 납부 추가</button>
@@ -104,28 +104,28 @@ export default function CardPaymentsPage() {
                 <th style={{ width: 90, textAlign: 'center' }}>입금여부</th>
                 <th style={{ width: 180 }}>납부일</th>
                 <th>항목</th>
-                <th style={{ width: 220, textAlign: 'right' }}>금액</th>
-                <th style={{ width: 90, textAlign: 'center' }}>관리</th>
+                <th style={{ width: 180, textAlign: 'right' }}>금액 (원)</th>
+                <th style={{ width: 100, textAlign: 'center' }}>작업</th>
               </tr>
             </thead>
             <tbody>
               {sortedCardPayments.length === 0 && (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-                    등록된 납부(예정) 내역이 없습니다.
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '3rem 0', opacity: 0.4, fontSize: '0.85rem' }}>
+                    등록된 납부 내역이 없습니다.
                   </td>
                 </tr>
               )}
               {sortedCardPayments.map((p) => {
-                const isRowPaid = p.isPaid || false;
+                const isRowPaid = !!p.isPaid;
                 return (
                   <tr 
                     key={p.id}
-                    style={{
+                    style={{ 
                       backgroundColor: isRowPaid 
-                        ? (dark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(59, 130, 246, 0.08)')
+                        ? (dark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(59, 130, 246, 0.08)') 
                         : 'transparent',
-                      transition: 'background-color 0.2s ease',
+                      transition: 'background-color 0.25s ease'
                     }}
                   >
                     <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
@@ -198,7 +198,7 @@ export default function CardPaymentsPage() {
           justifyContent: 'space-between' 
         }}>
           <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
-            이번 달 납부(예정) 합계
+            이번 달 필요 자금 합계
           </span>
           <span style={{ 
             fontSize: '1.8rem', 
