@@ -182,10 +182,7 @@ function Dashboard() {
 
           {/* 카드 납부 내역 */}
           {navSection === 'cardPayments' && (
-            <>
-              <SummaryCards />
-              <CardPaymentsPage />
-            </>
+            <CardPaymentsPage />
           )}
 
           {/* 연금 정보 관리 */}
