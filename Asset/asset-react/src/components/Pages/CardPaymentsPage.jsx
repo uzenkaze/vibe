@@ -328,7 +328,7 @@ export default function CardPaymentsPage() {
         <div className="section-card-header">
           <div className="section-card-title">
             <span className="section-dot" style={{ background: '#FF8A00' }} />
-            금월 필요 자금 ({month}월)
+            납부(예정) 내역 ({month}월)
             <span style={{
               fontSize: '0.65rem', color: 'var(--text-muted)',
               fontWeight: 600, letterSpacing: '0.05em',
@@ -337,7 +337,7 @@ export default function CardPaymentsPage() {
               Required Funds for This Month
             </span>
           </div>
-          <button className="btn btn-dark" onClick={handleAddPayment}>+ 납부 추가</button>
+          <button className="btn btn-dark" onClick={handleAddPayment}>+ 항목추가</button>
         </div>
 
         <div style={{ animation: 'tabFadeIn 0.2s ease', marginTop: '1.5rem' }}>
@@ -345,11 +345,11 @@ export default function CardPaymentsPage() {
             <table className="data-table" style={{ minWidth: 650 }}>
               <thead>
                 <tr>
-                  <th style={{ width: 90, textAlign: 'center' }}>입금여부</th>
-                  <th style={{ width: 180 }}>납부일</th>
-                  <th>항목</th>
-                  <th style={{ width: 180, textAlign: 'right' }}>금액 (원)</th>
-                  <th style={{ width: 100, textAlign: 'center' }}>작업</th>
+                  <th style={{ width: 90, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>입금여부</th>
+                  <th style={{ width: 180, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>납부일</th>
+                  <th style={{ backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>항목</th>
+                  <th style={{ width: 180, textAlign: 'right', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액 (원)</th>
+                  <th style={{ width: 100, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>작업</th>
                 </tr>
               </thead>
               <tbody>
@@ -435,24 +435,27 @@ export default function CardPaymentsPage() {
           {/* Payments Total Summary */}
           <div style={{ 
             margin: '0 1.5rem 1.5rem', 
-            paddingTop: '1.5rem', 
-            borderTop: '1px solid var(--card-border)', 
+            padding: '1.25rem 1.5rem', 
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #ff8a00 0%, #ea580c 100%)', 
+            color: '#ffffff',
             display: 'flex', 
             alignItems: 'center', 
-            justifyContent: 'space-between' 
+            justifyContent: 'space-between',
+            boxShadow: '0 4px 14px rgba(255, 138, 0, 0.22)'
           }}>
-            <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
-              이번 달 필요 자금 합계
+            <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.9)' }}>
+              합계
             </span>
             <span style={{ 
               fontSize: '1.8rem', 
               fontWeight: 900, 
-              color: 'var(--text-primary)',
+              color: '#ffffff',
               fontFamily: 'Inter, sans-serif',
               letterSpacing: '-0.03em' 
             }}>
               {formatKRW(paymentsTotalAmount)}
-              <span style={{ fontSize: '0.9rem', fontWeight: 'bold', marginLeft: '4px', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.95rem', fontWeight: 'bold', marginLeft: '4px', color: 'rgba(255, 255, 255, 0.8)' }}>
                 원
               </span>
             </span>
