@@ -5,7 +5,7 @@ import NumberInput from '../UI/NumberInput';
 import CustomDropdown from '../UI/CustomDropdown';
 
 export default function CardPaymentsPage() {
-  const { getCurrentSections, persistSections, year, month, dark } = useApp();
+  const { getCurrentSections, persistSections, year, month, dark, yearData } = useApp();
 
   const sections = getCurrentSections();
   const cardPayments = sections.cardPayments || [];
@@ -31,6 +31,70 @@ export default function CardPaymentsPage() {
   const sortedCardPayments = useMemo(() => {
     return [...cardPayments].sort((a, b) => getDayValue(a.payDate) - getDayValue(b.payDate));
   }, [cardPayments]);
+
+  // --- 12개월 변동 추이 데이터 집계 ---
+  const chartData = useMemo(() => {
+    const yd = yearData[year] || {};
+    const monthsData = yd.months || {};
+    return Array.from({ length: 12 }, (_, i) => {
+      const m = String(i + 1);
+      const mData = monthsData[m] || {};
+      const mSections = mData.sections || {};
+      const payments = mSections.cardPayments || [];
+      const total = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      return {
+        month: `${m}월`,
+        total: total
+      };
+    });
+  }, [yearData, year]);
+
+  const [hoveredPoint, setHoveredPoint] = useState(null);
+
+  // --- SVG Chart Dimensions ---
+  const width = 800;
+  const height = 240;
+  const paddingLeft = 75;
+  const paddingRight = 40;
+  const paddingTop = 45;
+  const paddingBottom = 45;
+
+  const plotWidth = width - paddingLeft - paddingRight;
+  const plotHeight = height - paddingTop - paddingBottom;
+
+  const totals = chartData.map(d => d.total);
+  const maxVal = Math.max(...totals, 1000000); // 최소 100만원 기준
+
+  const points = chartData.map((d, i) => {
+    const x = paddingLeft + (i * (plotWidth / 11));
+    const y = paddingTop + plotHeight - (d.total / maxVal * plotHeight);
+    return { x, y, ...d, index: i };
+  });
+
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  const areaPath = `${linePath} L ${points[11].x} ${paddingTop + plotHeight} L ${points[0].x} ${paddingTop + plotHeight} Z`;
+
+  const columnWidth = plotWidth / 11;
+  const hoverZones = points.map((p, i) => {
+    const xStart = i === 0 ? paddingLeft : p.x - (columnWidth / 2);
+    const xEnd = i === 11 ? (paddingLeft + plotWidth) : p.x + (columnWidth / 2);
+    const x = xStart;
+    const w = xEnd - xStart;
+    return { x, w, index: i, point: p };
+  });
+
+  const gridLines = [0, 0.5, 1].map(ratio => {
+    const y = paddingTop + plotHeight - (ratio * plotHeight);
+    const val = ratio * maxVal;
+    return { y, val };
+  });
+
+  const formatShorthand = (val) => {
+    if (val >= 10000) {
+      return `${(val / 10000).toLocaleString(undefined, { maximumFractionDigits: 0 })}만원`;
+    }
+    return `${val.toLocaleString()}원`;
+  };
 
   // --- CRUD Handlers ---
   const displayPayDate = (payDate) => {
@@ -80,140 +144,321 @@ export default function CardPaymentsPage() {
   }, [cardPayments]);
 
   return (
-    <div className="section-card" style={{ marginBottom: '1.5rem', minHeight: '80vh' }}>
-      <div className="section-card-header">
-        <div className="section-card-title">
-          <span className="section-dot" style={{ background: '#FF8A00' }} />
-          금월 필요 자금
-          <span style={{
-            fontSize: '0.65rem', color: 'var(--text-muted)',
-            fontWeight: 600, letterSpacing: '0.05em',
-            textTransform: 'uppercase', marginLeft: 4,
-          }}>
-            Required Funds for This Month
-          </span>
+    <>
+      {/* 12개월 필요 자금 변동 추이 차트 */}
+      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+        <div className="section-card-header" style={{ marginBottom: '1.5rem' }}>
+          <div className="section-card-title">
+            <span className="section-dot" style={{ background: '#FF8A00' }} />
+            현금 납부 변동 추이 ({year}년)
+            <span style={{
+              fontSize: '0.65rem', color: 'var(--text-muted)',
+              fontWeight: 600, letterSpacing: '0.05em',
+              textTransform: 'uppercase', marginLeft: 4,
+            }}>
+              Monthly Trend of Required Funds
+            </span>
+          </div>
         </div>
-        <button className="btn btn-dark" onClick={handleAddPayment}>+ 납부 추가</button>
+        
+        <div style={{ position: 'relative', width: '100%', overflow: 'visible' }}>
+          <svg 
+            width="100%" 
+            height={height} 
+            viewBox={`0 0 ${width} ${height}`} 
+            style={{ overflow: 'visible' }}
+          >
+            <defs>
+              <linearGradient id="chartLineGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#ff8a00" />
+                <stop offset="100%" stopColor="#f97316" />
+              </linearGradient>
+              <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(255, 138, 0, 0.22)" />
+                <stop offset="100%" stopColor="rgba(255, 138, 0, 0.0)" />
+              </linearGradient>
+            </defs>
+
+            {/* Grid Lines */}
+            {gridLines.map((line, idx) => (
+              <g key={idx}>
+                <line
+                  x1={paddingLeft}
+                  y1={line.y}
+                  x2={width - paddingRight}
+                  y2={line.y}
+                  stroke="var(--card-border)"
+                  strokeWidth="1"
+                  strokeDasharray={idx === 0 ? "none" : "4 4"}
+                />
+                <text
+                  x={paddingLeft - 12}
+                  y={line.y + 4}
+                  textAnchor="end"
+                  fill="var(--text-muted)"
+                  fontSize="10"
+                  fontWeight="600"
+                  fontFamily="Inter, sans-serif"
+                >
+                  {formatShorthand(line.val)}
+                </text>
+              </g>
+            ))}
+
+            {/* Area Path */}
+            <path d={areaPath} fill="url(#chartAreaGrad)" />
+
+            {/* Line Path */}
+            <path 
+              d={linePath} 
+              fill="none" 
+              stroke="url(#chartLineGrad)" 
+              strokeWidth="3.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+            />
+
+            {/* Vertical Guide line on hover */}
+            {hoveredPoint && (
+              <line
+                x1={hoveredPoint.x}
+                y1={paddingTop}
+                x2={hoveredPoint.x}
+                y2={paddingTop + plotHeight}
+                stroke="#ff8a00"
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+                opacity="0.6"
+              />
+            )}
+
+            {/* Data Circles */}
+            {points.map((p, i) => (
+              <g key={i}>
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r="4"
+                  fill="var(--card)"
+                  stroke="#ff8a00"
+                  strokeWidth="2.5"
+                />
+                {hoveredPoint && hoveredPoint.index === i && (
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="8"
+                    fill="rgba(255, 138, 0, 0.3)"
+                    style={{ transition: 'all 0.1s ease' }}
+                  />
+                )}
+              </g>
+            ))}
+
+            {/* X Axis Labels */}
+            {points.map((p, i) => (
+              <text
+                key={i}
+                x={p.x}
+                y={height - paddingBottom + 22}
+                textAnchor="middle"
+                fill={hoveredPoint && hoveredPoint.index === i ? "var(--text-primary)" : "var(--text-muted)"}
+                fontSize="11"
+                fontWeight={hoveredPoint && hoveredPoint.index === i ? "700" : "600"}
+              >
+                {p.month}
+              </text>
+            ))}
+
+            {/* Tooltip via foreignObject to scale perfectly */}
+            {hoveredPoint && (
+              <foreignObject
+                x={hoveredPoint.x - 100}
+                y={hoveredPoint.y - 80}
+                width="200"
+                height="70"
+                style={{ overflow: 'visible', pointerEvents: 'none' }}
+              >
+                <div style={{
+                  background: dark ? 'rgba(30, 34, 54, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                  border: '1px solid rgba(255, 138, 0, 0.3)',
+                  borderRadius: '8px',
+                  padding: '6px 12px',
+                  boxShadow: 'var(--shadow-md)',
+                  textAlign: 'center',
+                  backdropFilter: 'blur(10px)',
+                  display: 'inline-flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: 'auto',
+                  minWidth: '130px',
+                  margin: '0 auto'
+                }}>
+                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    {hoveredPoint.month} 필요 자금
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)', marginTop: '2px' }}>
+                    {formatKRW(hoveredPoint.total)}원
+                  </span>
+                </div>
+              </foreignObject>
+            )}
+
+            {/* Interactive Hover Zones */}
+            {hoverZones.map((zone, idx) => (
+              <rect
+                key={idx}
+                x={zone.x}
+                y={paddingTop}
+                width={zone.w}
+                height={plotHeight}
+                fill="transparent"
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={() => setHoveredPoint(zone.point)}
+                onMouseLeave={() => setHoveredPoint(null)}
+              />
+            ))}
+          </svg>
+        </div>
       </div>
 
-      <div style={{ animation: 'tabFadeIn 0.2s ease', marginTop: '1.5rem' }}>
-        <div style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
-          <table className="data-table" style={{ minWidth: 650 }}>
-            <thead>
-              <tr>
-                <th style={{ width: 90, textAlign: 'center' }}>입금여부</th>
-                <th style={{ width: 180 }}>납부일</th>
-                <th>항목</th>
-                <th style={{ width: 180, textAlign: 'right' }}>금액 (원)</th>
-                <th style={{ width: 100, textAlign: 'center' }}>작업</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedCardPayments.length === 0 && (
+      {/* 금월 필요 자금 목록 카드 */}
+      <div className="section-card" style={{ marginBottom: '1.5rem', minHeight: '60vh' }}>
+        <div className="section-card-header">
+          <div className="section-card-title">
+            <span className="section-dot" style={{ background: '#FF8A00' }} />
+            금월 필요 자금 ({month}월)
+            <span style={{
+              fontSize: '0.65rem', color: 'var(--text-muted)',
+              fontWeight: 600, letterSpacing: '0.05em',
+              textTransform: 'uppercase', marginLeft: 4,
+            }}>
+              Required Funds for This Month
+            </span>
+          </div>
+          <button className="btn btn-dark" onClick={handleAddPayment}>+ 납부 추가</button>
+        </div>
+
+        <div style={{ animation: 'tabFadeIn 0.2s ease', marginTop: '1.5rem' }}>
+          <div style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
+            <table className="data-table" style={{ minWidth: 650 }}>
+              <thead>
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '3rem 0', opacity: 0.4, fontSize: '0.85rem' }}>
-                    등록된 납부 내역이 없습니다.
-                  </td>
+                  <th style={{ width: 90, textAlign: 'center' }}>입금여부</th>
+                  <th style={{ width: 180 }}>납부일</th>
+                  <th>항목</th>
+                  <th style={{ width: 180, textAlign: 'right' }}>금액 (원)</th>
+                  <th style={{ width: 100, textAlign: 'center' }}>작업</th>
                 </tr>
-              )}
-              {sortedCardPayments.map((p) => {
-                const isRowPaid = !!p.isPaid;
-                return (
-                  <tr 
-                    key={p.id}
-                    style={{ 
-                      backgroundColor: isRowPaid 
-                        ? (dark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(59, 130, 246, 0.08)') 
-                        : 'transparent',
-                      transition: 'background-color 0.25s ease'
-                    }}
-                  >
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={isRowPaid} 
-                        onChange={(e) => handlePaymentFieldChange(p.id, 'isPaid', e.target.checked)}
-                        style={{ 
-                          width: '16px', 
-                          height: '16px', 
-                          cursor: 'pointer',
-                          accentColor: 'var(--accent-blue, #5B6BF8)',
-                          verticalAlign: 'middle',
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <CustomDropdown
-                        value={displayPayDate(p.payDate)}
-                        onChange={(val) => handlePaymentFieldChange(p.id, 'payDate', val)}
-                        options={[
-                          ...Array.from({ length: 31 }, (_, i) => {
-                            const d = String(i + 1);
-                            return { value: `${d}일`, label: `${d}일` };
-                          }),
-                          { value: '말일', label: '말일' }
-                        ]}
-                      />
-                    </td>
-                    <td>
-                      <input 
-                        type="text" 
-                        value={p.item || ''} 
-                        placeholder="항목 입력"
-                        onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
-                      />
-                    </td>
-                    <td className="amount-cell">
-                      <NumberInput 
-                        value={p.amount || 0} 
-                        onChange={(val) => handlePaymentFieldChange(p.id, 'amount', val)} 
-                        style={{ textAlign: 'right', fontWeight: 'bold' }}
-                      />
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <button 
-                          className="btn btn-ghost btn-sm" 
-                          style={{ padding: '4px 8px', color: 'var(--coral)' }} 
-                          onClick={() => handleDeletePayment(p.id)}
-                        >
-                          삭제
-                        </button>
-                      </div>
+              </thead>
+              <tbody>
+                {sortedCardPayments.length === 0 && (
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: 'center', padding: '3rem 0', opacity: 0.4, fontSize: '0.85rem' }}>
+                      등록된 납부 내역이 없습니다.
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                )}
+                {sortedCardPayments.map((p) => {
+                  const isRowPaid = !!p.isPaid;
+                  return (
+                    <tr 
+                      key={p.id}
+                      style={{ 
+                        backgroundColor: isRowPaid 
+                          ? (dark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(59, 130, 246, 0.08)') 
+                          : 'transparent',
+                        transition: 'background-color 0.25s ease'
+                      }}
+                    >
+                      <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={isRowPaid} 
+                          onChange={(e) => handlePaymentFieldChange(p.id, 'isPaid', e.target.checked)}
+                          style={{ 
+                            width: '16px', 
+                            height: '16px', 
+                            cursor: 'pointer',
+                            accentColor: 'var(--accent-blue, #5B6BF8)',
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <CustomDropdown
+                          value={displayPayDate(p.payDate)}
+                          onChange={(val) => handlePaymentFieldChange(p.id, 'payDate', val)}
+                          options={[
+                            ...Array.from({ length: 31 }, (_, i) => {
+                              const d = String(i + 1);
+                              return { value: `${d}일`, label: `${d}일` };
+                            }),
+                            { value: '말일', label: '말일' }
+                          ]}
+                        />
+                      </td>
+                      <td>
+                        <input 
+                          type="text" 
+                          value={p.item || ''} 
+                          placeholder="항목 입력"
+                          onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
+                        />
+                      </td>
+                      <td className="amount-cell">
+                        <NumberInput 
+                          value={p.amount || 0} 
+                          onChange={(val) => handlePaymentFieldChange(p.id, 'amount', val)} 
+                          style={{ textAlign: 'right', fontWeight: 'bold' }}
+                        />
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                          <button 
+                            className="btn btn-ghost btn-sm" 
+                            style={{ padding: '4px 8px', color: 'var(--coral)' }} 
+                            onClick={() => handleDeletePayment(p.id)}
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-        {/* Payments Total Summary */}
-        <div style={{ 
-          margin: '0 1.5rem 1.5rem', 
-          paddingTop: '1.5rem', 
-          borderTop: '1px solid var(--card-border)', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between' 
-        }}>
-          <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
-            이번 달 필요 자금 합계
-          </span>
-          <span style={{ 
-            fontSize: '1.8rem', 
-            fontWeight: 900, 
-            color: 'var(--text-primary)',
-            fontFamily: 'Inter, sans-serif',
-            letterSpacing: '-0.03em' 
+          {/* Payments Total Summary */}
+          <div style={{ 
+            margin: '0 1.5rem 1.5rem', 
+            paddingTop: '1.5rem', 
+            borderTop: '1px solid var(--card-border)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between' 
           }}>
-            {formatKRW(paymentsTotalAmount)}
-            <span style={{ fontSize: '0.9rem', fontWeight: 'bold', marginLeft: '4px', color: 'var(--text-muted)' }}>
-              원
+            <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
+              이번 달 필요 자금 합계
             </span>
-          </span>
+            <span style={{ 
+              fontSize: '1.8rem', 
+              fontWeight: 900, 
+              color: 'var(--text-primary)',
+              fontFamily: 'Inter, sans-serif',
+              letterSpacing: '-0.03em' 
+            }}>
+              {formatKRW(paymentsTotalAmount)}
+              <span style={{ fontSize: '0.9rem', fontWeight: 'bold', marginLeft: '4px', color: 'var(--text-muted)' }}>
+                원
+              </span>
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
