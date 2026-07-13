@@ -148,10 +148,15 @@ export default function InstallmentOverview() {
   const { totalAmount, thisMonthTotal, nextMonthTotal, remainTotal } = useMemo(() => {
     const totalAmount = activeInstallments.reduce((a, r) => a + (Number(r.amount) || 0), 0);
     const thisMonthTotal = activeInstallments.reduce((a, r) => {
+      if (Number(r.currentMonth) === 0) return a;
       return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
     }, 0);
     const nextMonthTotal = activeInstallments.reduce((a, r) => {
-      const remaining = (Number(r.totalMonths) || 0) - (Number(r.currentMonth) || 0);
+      const currentMonthVal = Number(r.currentMonth) || 0;
+      if (currentMonthVal === 0) {
+        return a + (Number(r.monthlyPrincipal) || 0);
+      }
+      const remaining = (Number(r.totalMonths) || 0) - currentMonthVal;
       if (remaining > 1) return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
       return a;
     }, 0);
@@ -337,7 +342,7 @@ export default function InstallmentOverview() {
                     {r.currentMonth}/{r.totalMonths}
                   </td>
                   <td className="amount-cell num" style={{ color: 'var(--teal)' }}>
-                    {formatKRW((Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0))}
+                    {formatKRW(Number(r.currentMonth) === 0 ? 0 : (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0))}
                   </td>
                   <td className="amount-cell num" style={{ color: 'var(--coral)' }}>
                     {formatKRW(r.remAmount)}

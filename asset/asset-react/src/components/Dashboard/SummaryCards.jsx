@@ -147,7 +147,7 @@ export default function SummaryCards() {
 
     const currentMonthStr = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
     const curInstall = (sections.installment || [])
-      .filter(i => !i.endDate || i.endDate >= currentMonthStr)
+      .filter(i => (!i.endDate || i.endDate >= currentMonthStr) && Number(i.currentMonth) !== 0)
       .reduce((a, r) => a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0), 0);
 
     const curExpense = curVExp + curFExp + curInstall;
@@ -185,7 +185,7 @@ export default function SummaryCards() {
 
     const prevMonthStrVal = `${String(prevYear).substring(2)}.${String(prevMonth).padStart(2, '0')}`;
     const prevInstall = (prevSections.installment || [])
-      .filter(i => !i.endDate || i.endDate >= prevMonthStrVal)
+      .filter(i => (!i.endDate || i.endDate >= prevMonthStrVal) && Number(i.currentMonth) !== 0)
       .reduce((a, r) => a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0), 0);
 
     const prevExpense = prevVExp + prevFExp + prevInstall;
@@ -232,7 +232,7 @@ export default function SummaryCards() {
 
     const currentMonthStr = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
     const totalInstallThisMonth = (sections.installment || [])
-      .filter(i => !i.endDate || i.endDate >= currentMonthStr)
+      .filter(i => (!i.endDate || i.endDate >= currentMonthStr) && Number(i.currentMonth) !== 0)
       .reduce((a, r) => {
         return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
       }, 0);

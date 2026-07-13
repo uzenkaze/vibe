@@ -89,35 +89,54 @@ function InstallmentStatCard({ label, value, color, accent, bgGradient, icon, to
 const calculateInstallment = (item) => {
   const amount = Number(item.amount) || 0;
   const totalMonths = Math.max(1, parseInt(item.totalMonths) || 1);
-  const currentMonth = Math.max(1, Math.min(totalMonths, parseInt(item.currentMonth) || 1));
+  
+  let currentMonth = parseInt(item.currentMonth);
+  if (isNaN(currentMonth)) {
+    currentMonth = 1;
+  } else {
+    currentMonth = Math.max(0, Math.min(totalMonths, currentMonth));
+  }
+
   const monthlyPrincipal = Math.floor(amount / totalMonths);
   const rate = parseFloat(item.rate) || 0;
 
-  let monthlyFee = Number(item.monthlyFee) || 0;
-  const paidPrincipal = monthlyPrincipal * (currentMonth - 1);
-  let remainingBalance = amount - paidPrincipal;
-
-  if (item.repayStatus === 'partial' && item.repaidAmount) {
-    remainingBalance -= parseFloat(item.repaidAmount) || 0;
-    if (remainingBalance < 0) remainingBalance = 0;
-  }
-
-  // 이율이 0보다 큰 경우 수수료 자동 계산
-  if (rate > 0) {
-    if (item.date) {
-      const pDate = new Date(item.date);
-      let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
-      let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (currentMonth - 1), 14);
-      let prevBillingDate = currentMonth === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (currentMonth - 2), 14);
-      const diffTime = Math.abs(currentBillingDate - prevBillingDate);
-      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-      monthlyFee = Math.floor(remainingBalance * (rate / 100) * (diffDays / 365));
-    } else {
-      monthlyFee = Math.floor((remainingBalance * rate / 100) / 12);
-    }
-  }
-
+  let monthlyFee = 0;
+  let remAmount = 0;
   let endDate = '';
+
+  if (currentMonth > 0) {
+    const paidPrincipal = monthlyPrincipal * (currentMonth - 1);
+    let remainingBalance = amount - paidPrincipal;
+
+    if (item.repayStatus === 'partial' && item.repaidAmount) {
+      remainingBalance -= parseFloat(item.repaidAmount) || 0;
+      if (remainingBalance < 0) remainingBalance = 0;
+    }
+
+    // 이율이 0보다 큰 경우 수수료 자동 계산
+    if (rate > 0) {
+      if (item.date) {
+        const pDate = new Date(item.date);
+        let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
+        let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (currentMonth - 1), 14);
+        let prevBillingDate = currentMonth === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (currentMonth - 2), 14);
+        const diffTime = Math.abs(currentBillingDate - prevBillingDate);
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+        monthlyFee = Math.floor(remainingBalance * (rate / 100) * (diffDays / 365));
+      } else {
+        monthlyFee = Math.floor((remainingBalance * rate / 100) / 12);
+      }
+    } else {
+      monthlyFee = Number(item.monthlyFee) || 0;
+    }
+
+    remAmount = Math.max(0, ((totalMonths - currentMonth) * monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount) || 0 : 0));
+  } else {
+    // 0회차일 때는 수수료, 원금(이번달 청구액), 잔액 모두 0원
+    monthlyFee = 0;
+    remAmount = 0;
+  }
+
   if (item.date) {
     const p = item.date.split(/[-./ ]/);
     if (p.length >= 2) {
@@ -127,8 +146,6 @@ const calculateInstallment = (item) => {
       endDate = `${String(y).substring(2)}.${String(m).padStart(2, '0')}`;
     }
   }
-
-  const remAmount = Math.max(0, ((totalMonths - currentMonth) * monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount) || 0 : 0));
 
   return {
     ...item,
@@ -147,7 +164,14 @@ const calculateInstallment = (item) => {
 const calculateInstallmentWithoutFeeUpdate = (item) => {
   const amount = Number(item.amount) || 0;
   const totalMonths = Math.max(1, parseInt(item.totalMonths) || 1);
-  const currentMonth = Math.max(1, Math.min(totalMonths, parseInt(item.currentMonth) || 1));
+  
+  let currentMonth = parseInt(item.currentMonth);
+  if (isNaN(currentMonth)) {
+    currentMonth = 1;
+  } else {
+    currentMonth = Math.max(0, Math.min(totalMonths, currentMonth));
+  }
+
   const monthlyPrincipal = Math.floor(amount / totalMonths);
 
   let endDate = '';
@@ -161,7 +185,7 @@ const calculateInstallmentWithoutFeeUpdate = (item) => {
     }
   }
 
-  const remAmount = Math.max(0, ((totalMonths - currentMonth) * monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount) || 0 : 0));
+  const remAmount = currentMonth === 0 ? 0 : Math.max(0, ((totalMonths - currentMonth) * monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount) || 0 : 0));
 
   return {
     ...item,
@@ -203,13 +227,17 @@ export default function InstallmentPage() {
     const totalAmount = installments.reduce((a, r) => a + (Number(r.amount) || 0), 0);
     const thisMonthTotal = installments.reduce((a, r) => {
       const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
-      if (isExpired) return a;
+      if (isExpired || Number(r.currentMonth) === 0) return a;
       return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
     }, 0);
     const nextMonthTotal = installments.reduce((a, r) => {
       const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
       if (isExpired) return a;
-      const remaining = (Number(r.totalMonths) || 0) - (Number(r.currentMonth) || 0);
+      const currentMonthVal = Number(r.currentMonth) || 0;
+      if (currentMonthVal === 0) {
+        return a + (Number(r.monthlyPrincipal) || 0);
+      }
+      const remaining = (Number(r.totalMonths) || 0) - currentMonthVal;
       if (remaining > 1) return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
       return a;
     }, 0);
@@ -589,9 +617,9 @@ export default function InstallmentPage() {
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                       <NumberInput 
-                        min={1} 
+                        min={0} 
                         max={r.totalMonths || 1} 
-                        value={r.currentMonth || 1} 
+                        value={r.currentMonth === undefined ? 1 : r.currentMonth} 
                         onChange={(val) => handleFieldChange(r.id, 'currentMonth', val)} 
                         style={{ width: '40px', textAlign: 'center' }}
                       />
@@ -605,14 +633,14 @@ export default function InstallmentPage() {
                     </div>
                   </td>
                   <td className="amount-cell num" style={{ color: isExpired ? 'var(--text-muted)' : 'var(--text-primary)' }}>
-                    {formatKRW(isExpired ? 0 : r.monthlyPrincipal)}
+                    {formatKRW(isExpired || Number(r.currentMonth) === 0 ? 0 : r.monthlyPrincipal)}
                   </td>
                   <td className="amount-cell">
                     <NumberInput 
-                      value={isExpired ? 0 : (r.monthlyFee || 0)} 
+                      value={isExpired || Number(r.currentMonth) === 0 ? 0 : (r.monthlyFee || 0)} 
                       onChange={(val) => handleFieldChange(r.id, 'monthlyFee', val)} 
                       style={{ textAlign: 'right', color: isExpired ? 'var(--text-muted)' : 'var(--teal)', fontWeight: 'bold' }}
-                      disabled={isExpired}
+                      disabled={isExpired || Number(r.currentMonth) === 0}
                     />
                   </td>
                   <td 
@@ -624,7 +652,7 @@ export default function InstallmentPage() {
                       textDecoration: 'none',
                       display: 'table-cell'
                     }}
-                    title={isExpired ? '만료된 할부 내역입니다.' : `[남은 잔액 상세 계산 내역]\n• 총 결제 금액: ${formatKRW(r.amount)}원\n• 매월 납부 원금: ${formatKRW(r.monthlyPrincipal)}원 x ${r.totalMonths}개월\n• 납부 완료 회차: ${r.currentMonth - 1}회차 (${formatKRW(Math.max(0, r.currentMonth - 1) * r.monthlyPrincipal)}원)\n• 남은 납부 회차: ${r.totalMonths - r.currentMonth}회차 (${formatKRW(Math.max(0, r.totalMonths - r.currentMonth) * r.monthlyPrincipal)}원)\n${r.repayStatus === 'partial' ? `• 일부 상환 누적액: -${formatKRW(r.repaidAmount)}원\n` : ''}---------------------------------\n= 최종 남은 잔액: ${formatKRW(r.remAmount)}원`}
+                    title={isExpired ? '만료된 할부 내역입니다.' : `[남은 잔액 상세 계산 내역]\n• 총 결제 금액: ${formatKRW(r.amount)}원\n• 매월 납부 원금: ${formatKRW(r.monthlyPrincipal)}원 x ${r.totalMonths}개월\n• 납부 완료 회차: ${Number(r.currentMonth) === 0 ? 0 : r.currentMonth - 1}회차 (${formatKRW(Math.max(0, Number(r.currentMonth) - 1) * r.monthlyPrincipal)}원)\n• 남은 납부 회차: ${r.totalMonths - (Number(r.currentMonth) || 0)}회차 (${formatKRW(Math.max(0, r.totalMonths - (Number(r.currentMonth) || 0)) * r.monthlyPrincipal)}원)\n${r.repayStatus === 'partial' ? `• 일부 상환 누적액: -${formatKRW(r.repaidAmount)}원\n` : ''}---------------------------------\n= 최종 남은 잔액: ${formatKRW(r.remAmount)}원`}
                   >
                     {formatKRW(isExpired ? 0 : r.remAmount)}
                   </td>
