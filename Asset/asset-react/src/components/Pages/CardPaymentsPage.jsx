@@ -10,8 +10,6 @@ export default function CardPaymentsPage() {
   const sections = getCurrentSections();
   const cardPayments = sections.cardPayments || [];
 
-  const cardsList = ['국민', '신한', '롯데', '현대', '삼성', '우리', '농협', '하나'];
-
   // --- 날짜 오름차순 정렬을 위한 Day 파싱 헬퍼 ---
   const getDayValue = (payDate) => {
     if (!payDate) return 1;
@@ -599,7 +597,7 @@ export default function CardPaymentsPage() {
           <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 800 }}>
             <div className="modal-header">
               <div className="modal-title">
-                {detailPayment.item || '새 항목'} 상세 내역
+                상세내역
               </div>
               <button className="btn-close" onClick={() => setDetailPayment(null)}>✕</button>
             </div>
@@ -609,7 +607,7 @@ export default function CardPaymentsPage() {
                 <thead>
                   <tr>
                     <th style={{ backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>상세 항목명</th>
-                    <th style={{ width: 180, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>카드사</th>
+                    <th style={{ width: 180, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>내용</th>
                     <th style={{ width: 180, textAlign: 'right', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액 (원)</th>
                     <th style={{ width: 80, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>작업</th>
                   </tr>
@@ -633,10 +631,11 @@ export default function CardPaymentsPage() {
                           />
                         </td>
                         <td>
-                          <CustomDropdown
-                            value={d.card || '국민'}
-                            onChange={(val) => handleDetailFieldChange(idx, 'card', val)}
-                            options={cardsList.map(c => ({ value: c, label: c }))}
+                          <input
+                            type="text"
+                            value={d.card || ''}
+                            placeholder="내용 입력"
+                            onChange={(e) => handleDetailFieldChange(idx, 'card', e.target.value)}
                           />
                         </td>
                         <td className="amount-cell">
