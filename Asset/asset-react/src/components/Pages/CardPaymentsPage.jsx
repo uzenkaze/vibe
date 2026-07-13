@@ -10,43 +10,27 @@ export default function CardPaymentsPage() {
   const sections = getCurrentSections();
   const cardPayments = sections.cardPayments || [];
 
-  // --- Drag & Drop State ---
-  const [draggedIdx, setDraggedIdx] = useState(null);
-  const [dragOverIdx, setDragOverIdx] = useState(null);
-
-  // --- Drag & Drop Handlers ---
-  const handleDragStart = (e, index) => {
-    setDraggedIdx(index);
-    e.dataTransfer.effectAllowed = "move";
-  };
-
-  const handleDragOver = (e, index) => {
-    e.preventDefault();
-    if (draggedIdx === index) return;
-    setDragOverIdx(index);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIdx(null);
-    setDragOverIdx(null);
-  };
-
-  const handleDrop = (e, targetIndex) => {
-    e.preventDefault();
-    if (draggedIdx === null || draggedIdx === targetIndex) return;
-
-    const newPayments = [...cardPayments];
-    const draggedItem = newPayments[draggedIdx];
+  // --- 날짜 오름차순 정렬을 위한 Day 파싱 헬퍼 ---
+  const getDayValue = (payDate) => {
+    if (!payDate) return 1;
+    const str = String(payDate);
+    if (str === '매달 말일' || str === 'last') return 99;
     
-    // Remove the dragged item
-    newPayments.splice(draggedIdx, 1);
-    // Insert it at the target position
-    newPayments.splice(targetIndex, 0, draggedItem);
-
-    persistSections({ ...sections, cardPayments: newPayments });
-    setDraggedIdx(null);
-    setDragOverIdx(null);
+    const match = str.match(/매달\s*(\d+)일/);
+    if (match) return parseInt(match[1], 10);
+    
+    const parts = str.split('-');
+    if (parts.length === 3) return parseInt(parts[2], 10);
+    
+    const numMatch = str.match(/\d+/);
+    if (numMatch) return parseInt(numMatch[0], 10);
+    
+    return 1;
   };
+
+  const sortedCardPayments = useMemo(() => {
+    return [...cardPayments].sort((a, b) => getDayValue(a.payDate) - getDayValue(b.payDate));
+  }, [cardPayments]);
 
   // --- CRUD Handlers ---
   const displayPayDate = (payDate) => {
@@ -96,13 +80,13 @@ export default function CardPaymentsPage() {
       <div className="section-card-header">
         <div className="section-card-title">
           <span className="section-dot" style={{ background: '#FF8A00' }} />
-          카드 납부 내역 상세
+          금월 납부 내역
           <span style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
             fontWeight: 600, letterSpacing: '0.05em',
             textTransform: 'uppercase', marginLeft: 4,
           }}>
-            Card Payment History Detail Management
+            Card Payments for This Month
           </span>
         </div>
         <button className="btn btn-dark" onClick={handleAddPayment}>+ 납부 추가</button>
@@ -113,7 +97,6 @@ export default function CardPaymentsPage() {
           <table className="data-table" style={{ minWidth: 650 }}>
             <thead>
               <tr>
-                <th style={{ width: 50, textAlign: 'center' }}></th>
                 <th style={{ width: 180 }}>납부일</th>
                 <th>항목</th>
                 <th style={{ width: 220, textAlign: 'right' }}>금액</th>
@@ -121,42 +104,16 @@ export default function CardPaymentsPage() {
               </tr>
             </thead>
             <tbody>
-              {cardPayments.length === 0 && (
+              {sortedCardPayments.length === 0 && (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                  <td colSpan="4" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                     등록된 납부(예정) 내역이 없습니다.
                   </td>
                 </tr>
               )}
-              {cardPayments.map((p, index) => {
-                const isDragging = draggedIdx === index;
-                const isDragOver = dragOverIdx === index;
+              {sortedCardPayments.map((p) => {
                 return (
-                  <tr 
-                    key={p.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDragEnd={handleDragEnd}
-                    onDrop={(e) => handleDrop(e, index)}
-                    style={{ 
-                      opacity: isDragging ? 0.4 : 1,
-                      background: isDragOver ? 'rgba(91, 107, 248, 0.08)' : 'transparent',
-                      borderTop: isDragOver && draggedIdx > index ? '2px solid var(--accent-blue, #5B6BF8)' : 'none',
-                      borderBottom: isDragOver && draggedIdx < index ? '2px solid var(--accent-blue, #5B6BF8)' : 'none',
-                      transition: 'background-color 0.2s ease, border 0.1s ease',
-                    }}
-                  >
-                    <td style={{ textAlign: 'center', cursor: 'grab', verticalAlign: 'middle' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ opacity: 0.4, display: 'inline-block' }}>
-                        <circle cx="9" cy="5" r="1.5"/>
-                        <circle cx="9" cy="12" r="1.5"/>
-                        <circle cx="9" cy="19" r="1.5"/>
-                        <circle cx="15" cy="5" r="1.5"/>
-                        <circle cx="15" cy="12" r="1.5"/>
-                        <circle cx="15" cy="19" r="1.5"/>
-                      </svg>
-                    </td>
+                  <tr key={p.id}>
                     <td>
                       <CustomDropdown
                         value={displayPayDate(p.payDate)}
