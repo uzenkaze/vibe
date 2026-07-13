@@ -190,7 +190,7 @@ export function AppProvider({ children }) {
       try {
         const apiSaved = await saveData(year, yd);
         const ghConfig = getGithubConfig();
-        if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
+        if (ghConfig.token && ghConfig.repo) {
           const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
           return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
         }
@@ -233,7 +233,7 @@ export function AppProvider({ children }) {
     try {
       const apiSaved = await saveData(year, yd);
       const ghConfig = getGithubConfig();
-      if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
+      if (ghConfig.token && ghConfig.repo) {
         const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
         return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
       }
@@ -250,7 +250,7 @@ export function AppProvider({ children }) {
     try {
       const apiSaved = await saveData(targetYear, data);
       const ghConfig = getGithubConfig();
-      if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
+      if (ghConfig.token && ghConfig.repo) {
         const syncSuccess = await syncWithGitHub('upload', `assetData_${targetYear}`, JSON.stringify(data));
         return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
       }
