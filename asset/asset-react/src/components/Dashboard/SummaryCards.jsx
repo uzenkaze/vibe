@@ -16,9 +16,23 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
     setIsHovered(false);
   };
 
+  const { dark } = useApp();
   const isPositive = compareDiff > 0;
   // 지출의 경우 증가(Positive)하면 핑크(부정적), 수입/순자산의 경우 증가하면 그린(긍정적)으로 컬러매치
   const isGood = label === '총 지출' ? !isPositive : isPositive;
+  const isBlue = (label === '순자산 (Net Worth)' || label === '월 손익 (P&L)') && !isPositive;
+
+  const badgeBg = isBlue 
+    ? (dark ? 'rgba(59, 130, 246, 0.18)' : 'rgba(59, 130, 246, 0.1)') 
+    : (isGood ? 'var(--teal-dim)' : 'var(--coral-dim)');
+
+  const badgeColor = isBlue 
+    ? (dark ? '#60a5fa' : '#1d4ed8') 
+    : (isGood ? 'var(--teal)' : 'var(--coral)');
+
+  const badgeShadow = isBlue 
+    ? (dark ? '0 0 10px rgba(59, 130, 246, 0.2)' : '0 0 10px rgba(59, 130, 246, 0.12)') 
+    : (isGood ? '0 0 10px var(--teal-dim)' : '0 0 10px var(--coral-dim)');
 
   return (
     <div 
@@ -61,13 +75,9 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
               borderRadius: '99px',
               fontSize: '0.65rem',
               fontWeight: 800,
-              background: isGood 
-                ? 'var(--teal-dim)' 
-                : 'var(--coral-dim)',
-              color: isGood ? 'var(--teal)' : 'var(--coral)',
-              boxShadow: isGood 
-                ? '0 0 10px var(--teal-dim)' 
-                : '0 0 10px var(--coral-dim)',
+              background: badgeBg,
+              color: badgeColor,
+              boxShadow: badgeShadow,
             }}>
               <span>{isPositive ? '▲' : '▼'}</span>
               <span>{Math.abs(compareRate).toFixed(1)}%</span>
