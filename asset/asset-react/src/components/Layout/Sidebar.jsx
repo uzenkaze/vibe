@@ -46,7 +46,7 @@ const NAV_ITEMS = [
   },
   {
     id: 'cardPayments',
-    label: '납부(예정)내역',
+    label: '금월납부',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
