@@ -10,6 +10,8 @@ export default function CardPaymentsPage() {
   const sections = getCurrentSections();
   const cardPayments = sections.cardPayments || [];
 
+  const cardsList = ['국민', '신한', '롯데', '현대', '삼성', '우리', '농협', '하나'];
+
   // --- 날짜 오름차순 정렬을 위한 Day 파싱 헬퍼 ---
   const getDayValue = (payDate) => {
     if (!payDate) return 1;
@@ -120,7 +122,8 @@ export default function CardPaymentsPage() {
       id: Date.now(),
       payDate: `${now.getDate()}일`,
       item: '',
-      amount: 0
+      amount: 0,
+      details: []
     };
     persistSections({ ...sections, cardPayments: [newPayment, ...cardPayments] });
   };
@@ -173,11 +176,64 @@ export default function CardPaymentsPage() {
       payDate: p.payDate,
       item: p.item,
       amount: p.amount,
-      isPaid: false
+      isPaid: false,
+      details: p.details ? JSON.parse(JSON.stringify(p.details)) : []
     }));
 
     persistSections({ ...sections, cardPayments: copiedPayments });
   };
+
+  // --- 상세 내역 관리 모달 상태 및 핸들러 ---
+  const [detailPayment, setDetailPayment] = useState(null);
+
+  const handleOpenDetails = (p) => {
+    setDetailPayment(JSON.parse(JSON.stringify(p)));
+  };
+
+  const handleAddDetailRow = () => {
+    if (!detailPayment) return;
+    const newDetails = [...(detailPayment.details || [])];
+    newDetails.push({ content: '', card: '국민', amount: 0 });
+    setDetailPayment({ ...detailPayment, details: newDetails });
+  };
+
+  const handleDeleteDetailRow = (idx) => {
+    if (!detailPayment) return;
+    const newDetails = (detailPayment.details || []).filter((_, i) => i !== idx);
+    setDetailPayment({ ...detailPayment, details: newDetails });
+  };
+
+  const handleDetailFieldChange = (idx, field, value) => {
+    if (!detailPayment) return;
+    const newDetails = (detailPayment.details || []).map((d, i) => {
+      if (i === idx) {
+        return { ...d, [field]: value };
+      }
+      return d;
+    });
+    setDetailPayment({ ...detailPayment, details: newDetails });
+  };
+
+  const handleSaveDetails = () => {
+    const updatedCardPayments = cardPayments.map(p => {
+      if (p.id === detailPayment.id) {
+        const sumAmount = (detailPayment.details || []).reduce((s, d) => s + (Number(d.amount) || 0), 0);
+        return {
+          ...p,
+          details: detailPayment.details || [],
+          amount: sumAmount
+        };
+      }
+      return p;
+    });
+    persistSections({ ...sections, cardPayments: updatedCardPayments });
+    setDetailPayment(null);
+  };
+
+  const detailsSum = useMemo(() => {
+    if (!detailPayment) return 0;
+    return (detailPayment.details || []).reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+  }, [detailPayment]);
 
   const paymentsTotalAmount = useMemo(() => {
     return cardPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
@@ -392,7 +448,7 @@ export default function CardPaymentsPage() {
                   <th style={{ width: 180, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>납부일</th>
                   <th style={{ backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>항목</th>
                   <th style={{ width: 180, textAlign: 'right', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액 (원)</th>
-                  <th style={{ width: 100, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>작업</th>
+                  <th style={{ width: 140, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>작업</th>
                 </tr>
               </thead>
               <tbody>
@@ -405,6 +461,7 @@ export default function CardPaymentsPage() {
                 )}
                 {sortedCardPayments.map((p) => {
                   const isRowPaid = !!p.isPaid;
+                  const hasDetails = p.details && p.details.length > 0;
                   return (
                     <tr 
                       key={p.id}
@@ -443,22 +500,52 @@ export default function CardPaymentsPage() {
                         />
                       </td>
                       <td>
-                        <input 
-                          type="text" 
-                          value={p.item || ''} 
-                          placeholder="항목 입력"
-                          onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
-                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <input 
+                            type="text" 
+                            value={p.item || ''} 
+                            placeholder="항목 입력"
+                            onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
+                            style={{ flex: 1 }}
+                          />
+                          {hasDetails && (
+                            <span 
+                              style={{ 
+                                fontSize: '0.65rem', 
+                                padding: '2px 6px', 
+                                borderRadius: '4px', 
+                                background: 'rgba(255, 138, 0, 0.15)', 
+                                color: '#ff8a00',
+                                fontWeight: 700,
+                                flexShrink: 0
+                              }}
+                            >
+                              상세 {p.details.length}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="amount-cell">
                         <NumberInput 
                           value={p.amount || 0} 
                           onChange={(val) => handlePaymentFieldChange(p.id, 'amount', val)} 
-                          style={{ textAlign: 'right', fontWeight: 'bold' }}
+                          disabled={hasDetails}
+                          style={{ 
+                            textAlign: 'right', 
+                            fontWeight: 'bold',
+                            opacity: hasDetails ? 0.75 : 1 
+                          }}
                         />
                       </td>
                       <td>
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                          <button 
+                            className="btn btn-ghost btn-sm" 
+                            style={{ padding: '4px 8px', color: 'var(--orange)' }} 
+                            onClick={() => handleOpenDetails(p)}
+                          >
+                            상세
+                          </button>
                           <button 
                             className="btn btn-ghost btn-sm" 
                             style={{ padding: '4px 8px', color: 'var(--coral)' }} 
@@ -505,6 +592,96 @@ export default function CardPaymentsPage() {
           </div>
         </div>
       </div>
+
+      {/* 상세 항목 레이어 편집창 (Modal) */}
+      {detailPayment && (
+        <div className="modal-overlay" onClick={() => setDetailPayment(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 800 }}>
+            <div className="modal-header">
+              <div className="modal-title">
+                {detailPayment.item || '새 항목'} 상세 내역
+              </div>
+              <button className="btn-close" onClick={() => setDetailPayment(null)}>✕</button>
+            </div>
+
+            <div style={{ overflowX: 'auto', marginBottom: '1.5rem', maxHeight: '45vh' }}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th style={{ backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>상세 항목명</th>
+                    <th style={{ width: 180, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>카드사</th>
+                    <th style={{ width: 180, textAlign: 'right', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액 (원)</th>
+                    <th style={{ width: 80, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>작업</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(!detailPayment.details || detailPayment.details.length === 0) ? (
+                    <tr>
+                      <td colSpan="4" style={{ textAlign: 'center', padding: '2rem 0', opacity: 0.5 }}>
+                        등록된 상세 항목이 없습니다.
+                      </td>
+                    </tr>
+                  ) : (
+                    detailPayment.details.map((d, idx) => (
+                      <tr key={idx}>
+                        <td>
+                          <input
+                            type="text"
+                            value={d.content || ''}
+                            placeholder="예: 동양생명, 관리비 등"
+                            onChange={(e) => handleDetailFieldChange(idx, 'content', e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <CustomDropdown
+                            value={d.card || '국민'}
+                            onChange={(val) => handleDetailFieldChange(idx, 'card', val)}
+                            options={cardsList.map(c => ({ value: c, label: c }))}
+                          />
+                        </td>
+                        <td className="amount-cell">
+                          <NumberInput
+                            value={d.amount || 0}
+                            onChange={(val) => handleDetailFieldChange(idx, 'amount', val)}
+                            style={{ textAlign: 'right' }}
+                          />
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            style={{ color: 'var(--coral)' }}
+                            onClick={() => handleDeleteDetailRow(idx)}
+                          >
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <button className="btn btn-ghost" onClick={handleAddDetailRow}>
+                + 상세 항목 추가
+              </button>
+              <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                상세 합계: <span style={{ color: 'var(--orange)', fontFamily: 'Inter', fontWeight: 900 }}>{formatKRW(detailsSum)}</span> 원
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--card-border)', paddingTop: '1.5rem' }}>
+              <button className="btn btn-ghost" onClick={() => setDetailPayment(null)}>
+                취소
+              </button>
+              <button className="btn btn-dark" onClick={handleSaveDetails}>
+                상세내역 저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
