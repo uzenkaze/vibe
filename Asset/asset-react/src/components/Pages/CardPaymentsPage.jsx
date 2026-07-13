@@ -97,6 +97,7 @@ export default function CardPaymentsPage() {
           <table className="data-table" style={{ minWidth: 650 }}>
             <thead>
               <tr>
+                <th style={{ width: 90, textAlign: 'center' }}>입금여부</th>
                 <th style={{ width: 180 }}>납부일</th>
                 <th>항목</th>
                 <th style={{ width: 220, textAlign: 'right' }}>금액</th>
@@ -106,14 +107,37 @@ export default function CardPaymentsPage() {
             <tbody>
               {sortedCardPayments.length === 0 && (
                 <tr>
-                  <td colSpan="4" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                     등록된 납부(예정) 내역이 없습니다.
                   </td>
                 </tr>
               )}
               {sortedCardPayments.map((p) => {
+                const isRowPaid = p.isPaid || false;
                 return (
-                  <tr key={p.id}>
+                  <tr 
+                    key={p.id}
+                    style={{
+                      backgroundColor: isRowPaid 
+                        ? (dark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(59, 130, 246, 0.08)')
+                        : 'transparent',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                  >
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={isRowPaid} 
+                        onChange={(e) => handlePaymentFieldChange(p.id, 'isPaid', e.target.checked)}
+                        style={{ 
+                          width: '16px', 
+                          height: '16px', 
+                          cursor: 'pointer',
+                          accentColor: 'var(--accent-blue, #5B6BF8)',
+                          verticalAlign: 'middle',
+                        }}
+                      />
+                    </td>
                     <td>
                       <CustomDropdown
                         value={displayPayDate(p.payDate)}
