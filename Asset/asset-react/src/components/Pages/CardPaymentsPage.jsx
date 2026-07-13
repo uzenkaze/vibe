@@ -139,6 +139,44 @@ export default function CardPaymentsPage() {
     persistSections({ ...sections, cardPayments: newArr });
   };
 
+  const handleCopyPrevMonthData = () => {
+    let prevYearVal = parseInt(year);
+    let prevMonthVal = parseInt(month) - 1;
+    if (prevMonthVal === 0) {
+      prevMonthVal = 12;
+      prevYearVal -= 1;
+    }
+    const prevYearStr = String(prevYearVal);
+    const prevMonthStrPadded = String(prevMonthVal).padStart(2, '0');
+    const prevMonthStrUnpadded = String(prevMonthVal);
+
+    const prevYd = yearData[prevYearStr] || {};
+    const prevMonths = prevYd.months || {};
+    const prevMonthData = prevMonths[prevMonthStrUnpadded] || prevMonths[prevMonthStrPadded] || {};
+    const prevSections = prevMonthData.sections || {};
+    const prevPayments = prevSections.cardPayments || [];
+
+    if (prevPayments.length === 0) {
+      alert('복사할 전월 데이터가 없습니다.');
+      return;
+    }
+
+    if (cardPayments.length > 0 && !confirm('현재 작성된 데이터가 모두 지워지고 전월 데이터로 대체됩니다. 계속하시겠습니까?')) {
+      return;
+    }
+
+    // 복사 시 ID 재발행 및 입금여부(isPaid) 초기화
+    const copiedPayments = prevPayments.map((p, idx) => ({
+      id: Date.now() + idx,
+      payDate: p.payDate,
+      item: p.item,
+      amount: p.amount,
+      isPaid: false
+    }));
+
+    persistSections({ ...sections, cardPayments: copiedPayments });
+  };
+
   const paymentsTotalAmount = useMemo(() => {
     return cardPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   }, [cardPayments]);
@@ -337,7 +375,10 @@ export default function CardPaymentsPage() {
               Required Funds for This Month
             </span>
           </div>
-          <button className="btn btn-dark" onClick={handleAddPayment}>+ 항목추가</button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn btn-ghost" onClick={handleCopyPrevMonthData}>전월 데이터 복사</button>
+            <button className="btn btn-dark" onClick={handleAddPayment}>+ 항목추가</button>
+          </div>
         </div>
 
         <div style={{ animation: 'tabFadeIn 0.2s ease', marginTop: '1.5rem' }}>
