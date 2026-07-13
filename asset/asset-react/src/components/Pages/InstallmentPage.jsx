@@ -187,6 +187,44 @@ export default function InstallmentPage() {
   const installments = sections.installment || [];
   const cardPayments = sections.cardPayments || [];
 
+  // --- Drag & Drop State for Monthly Payments ---
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+
+  // --- Drag & Drop Handlers for Monthly Payments ---
+  const handleDragStart = (e, index) => {
+    setDraggedIdx(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedIdx === index) return;
+    setDragOverIdx(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
+
+  const handleDrop = (e, targetIndex) => {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === targetIndex) return;
+
+    const newPayments = [...cardPayments];
+    const draggedItem = newPayments[draggedIdx];
+    
+    // Remove the dragged item
+    newPayments.splice(draggedIdx, 1);
+    // Insert it at the target position
+    newPayments.splice(targetIndex, 0, draggedItem);
+
+    persistSections({ ...sections, cardPayments: newPayments });
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
+
   // --- 납부(예정)내역 CRUD ---
   const handleAddPayment = () => {
     const now = new Date();
@@ -219,9 +257,7 @@ export default function InstallmentPage() {
     return cardPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   }, [cardPayments]);
 
-  const sortedCardPayments = useMemo(() => {
-    return [...cardPayments].sort((a, b) => (a.payDate || '').localeCompare(b.payDate || ''));
-  }, [cardPayments]);
+  const sortedCardPayments = cardPayments;
 
   const activeDetailItem = useMemo(() => {
     return installments.find(i => i.id === activeDetailId) || null;
@@ -771,9 +807,10 @@ export default function InstallmentPage() {
       {activeTab === 'payments' && (
         <div style={{ animation: 'tabFadeIn 0.2s ease' }}>
           <div style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
-            <table className="data-table" style={{ minWidth: 600 }}>
+            <table className="data-table" style={{ minWidth: 650 }}>
               <thead>
                 <tr>
+                  <th style={{ width: 50, textAlign: 'center' }}></th>
                   <th style={{ width: 180 }}>납부일</th>
                   <th>항목</th>
                   <th style={{ width: 220, textAlign: 'right' }}>금액</th>
@@ -783,49 +820,77 @@ export default function InstallmentPage() {
               <tbody>
                 {sortedCardPayments.length === 0 && (
                   <tr>
-                    <td colSpan="4" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                    <td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                       등록된 납부(예정) 내역이 없습니다.
                     </td>
                   </tr>
                 )}
-                {sortedCardPayments.map(p => (
-                  <tr key={p.id}>
-                    <td>
-                      <input 
-                        type="date" 
-                        value={p.payDate || ''} 
-                        onChange={(e) => handlePaymentFieldChange(p.id, 'payDate', e.target.value)} 
-                        style={{ fontSize: '0.85rem' }}
-                      />
-                    </td>
-                    <td>
-                      <input 
-                        type="text" 
-                        value={p.item || ''} 
-                        placeholder="항목 입력"
-                        onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
-                      />
-                    </td>
-                    <td className="amount-cell">
-                      <NumberInput 
-                        value={p.amount || 0} 
-                        onChange={(val) => handlePaymentFieldChange(p.id, 'amount', val)} 
-                        style={{ textAlign: 'right', fontWeight: 'bold' }}
-                      />
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <button 
-                          className="btn btn-ghost btn-sm" 
-                          style={{ padding: '4px 8px', color: 'var(--coral)' }} 
-                          onClick={() => handleDeletePayment(p.id)}
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {sortedCardPayments.map((p, index) => {
+                  const isDragging = draggedIdx === index;
+                  const isDragOver = dragOverIdx === index;
+                  return (
+                    <tr 
+                      key={p.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnd={handleDragEnd}
+                      onDrop={(e) => handleDrop(e, index)}
+                      style={{ 
+                        opacity: isDragging ? 0.4 : 1,
+                        background: isDragOver ? 'rgba(91, 107, 248, 0.08)' : 'transparent',
+                        borderTop: isDragOver && draggedIdx > index ? '2px solid var(--accent-blue, #5B6BF8)' : 'none',
+                        borderBottom: isDragOver && draggedIdx < index ? '2px solid var(--accent-blue, #5B6BF8)' : 'none',
+                        transition: 'background-color 0.2s ease, border 0.1s ease',
+                      }}
+                    >
+                      <td style={{ textAlign: 'center', cursor: 'grab', verticalAlign: 'middle' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ opacity: 0.4, display: 'inline-block' }}>
+                          <circle cx="9" cy="5" r="1.5"/>
+                          <circle cx="9" cy="12" r="1.5"/>
+                          <circle cx="9" cy="19" r="1.5"/>
+                          <circle cx="15" cy="5" r="1.5"/>
+                          <circle cx="15" cy="12" r="1.5"/>
+                          <circle cx="15" cy="19" r="1.5"/>
+                        </svg>
+                      </td>
+                      <td>
+                        <input 
+                          type="date" 
+                          value={p.payDate || ''} 
+                          onChange={(e) => handlePaymentFieldChange(p.id, 'payDate', e.target.value)} 
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                      </td>
+                      <td>
+                        <input 
+                          type="text" 
+                          value={p.item || ''} 
+                          placeholder="항목 입력"
+                          onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
+                        />
+                      </td>
+                      <td className="amount-cell">
+                        <NumberInput 
+                          value={p.amount || 0} 
+                          onChange={(val) => handlePaymentFieldChange(p.id, 'amount', val)} 
+                          style={{ textAlign: 'right', fontWeight: 'bold' }}
+                        />
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                          <button 
+                            className="btn btn-ghost btn-sm" 
+                            style={{ padding: '4px 8px', color: 'var(--coral)' }} 
+                            onClick={() => handleDeletePayment(p.id)}
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
