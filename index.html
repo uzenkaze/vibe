@@ -278,7 +278,57 @@
         </div>
     </header>
 
-    <iframe id="contentFrame" src="home.html"></iframe>
+    <script>
+        // DOMContentLoaded 이전에 미리 최초 경로를 계산하여 iframe의 src를 바로 적용 (보였다 사라지는 현상 방지)
+        (function() {
+            const BASE_PATH = window.location.pathname.startsWith('/vibe/') ? '/vibe/' : '/';
+            const urlParams = new URLSearchParams(window.location.search);
+            let initialPath = urlParams.get('p');
+            if (!initialPath) {
+                initialPath = window.location.hash.replace('#/', '');
+            }
+            if (!initialPath || initialPath === '/' || initialPath === 'index.html') {
+                const subRoute = window.location.pathname.replace(BASE_PATH, '');
+                if (subRoute && subRoute !== 'index.html' && subRoute !== 'home.html') {
+                    initialPath = subRoute;
+                } else {
+                    initialPath = 'home.html';
+                }
+            }
+            
+            let resolvedUrl = initialPath;
+            if (resolvedUrl.startsWith('Asset/')) {
+                resolvedUrl = 'asset/' + resolvedUrl.substring(6);
+            }
+            const lowerUrl = resolvedUrl.toLowerCase();
+            if (lowerUrl === 'asset/asset.html' || lowerUrl.startsWith('asset/asset.html') || 
+                lowerUrl === 'asset/asset-react/dist/index.html' || lowerUrl.startsWith('asset/asset-react/dist/index.html')) {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'http://localhost:5173/';
+                } else {
+                    resolvedUrl = 'asset/asset-react/dist/index.html?t=' + Date.now();
+                }
+            }
+            if (initialPath.startsWith('livetv/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                resolvedUrl = initialPath.replace('livetv/', 'livetv-app/');
+            }
+            if (initialPath.startsWith('hobby/') || initialPath === 'hobby') {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    resolvedUrl = 'http://localhost:3000/';
+                } else {
+                    resolvedUrl = 'hobby/index.html';
+                }
+            }
+            
+            window.__initialResolvedUrl = resolvedUrl;
+        })();
+    </script>
+    <iframe id="contentFrame" src="about:blank"></iframe>
+    <script>
+        if (window.__initialResolvedUrl) {
+            document.getElementById('contentFrame').src = window.__initialResolvedUrl;
+        }
+    </script>
 
     <!-- Global Player UI -->
     <div id="globalPlayer" class="global-player">
