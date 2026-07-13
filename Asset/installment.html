@@ -11,7 +11,7 @@
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 window.location.replace('http://localhost:5173/');
             } else {
-                window.location.replace('asset-react/dist/index.html');
+                window.location.replace('asset-react/dist/index.html?t=' + Date.now());
             }
         }
     </script>
@@ -1038,15 +1038,23 @@
                 if (paymentsBtns) paymentsBtns.style.display = tab === 'payments' ? 'flex' : 'none';
             }
 
+            function displayPayDate(payDate) {
+                if (!payDate) return '매달 1일';
+                if (String(payDate).startsWith('매달')) return payDate;
+                const parts = String(payDate).split('-');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[2], 10);
+                    return `매달 ${day}일`;
+                }
+                return payDate;
+            }
+
             // ===== 납부(예정)내역 CRUD =====
             async function addPayment() {
                 const now = new Date();
-                const day = String(now.getDate()).padStart(2, '0');
-                const yEl = document.getElementById('yearSelect');
-                const mEl = document.getElementById('monthSelect');
                 const payment = {
                     id: Date.now(),
-                    payDate: `${yEl ? yEl.value : now.getFullYear()}-${mEl ? mEl.value : String(now.getMonth()+1).padStart(2,'0')}-${day}`,
+                    payDate: `매달 ${now.getDate()}일`,
                     item: '',
                     amount: 0
                 };
@@ -1090,13 +1098,22 @@
                     tr.innerHTML = `<td colspan="4" style="text-align:center; padding:2rem; opacity:0.4; font-size:0.85rem;">납부(예정) 내역이 없습니다. 납부 추가 버튼을 눌러 등록하세요.</td>`;
                     tbody.appendChild(tr);
                 } else {
-                    // Sort by payDate ascending
-                    const sorted = [...payments].sort((a, b) => (a.payDate || '').localeCompare(b.payDate || ''));
-                    sorted.forEach(p => {
+                    payments.forEach(p => {
                         total += parseFloat(p.amount) || 0;
                         const tr = document.createElement('tr');
+                        
+                        let selectHtml = `<select onchange="updatePayment(${p.id}, 'payDate', this.value)" style="width:100%; background:transparent; border:none; color:inherit; font-size:0.85rem; font-weight:bold; cursor:pointer;">`;
+                        for (let i = 1; i <= 31; i++) {
+                            const optVal = `매달 ${i}일`;
+                            const isSelected = displayPayDate(p.payDate) === optVal ? 'selected' : '';
+                            selectHtml += `<option value="${optVal}" ${isSelected} style="background:var(--card-bg); color:var(--text-primary);">${optVal}</option>`;
+                        }
+                        const isLastSelected = displayPayDate(p.payDate) === '매달 말일' ? 'selected' : '';
+                        selectHtml += `<option value="매달 말일" ${isLastSelected} style="background:var(--card-bg); color:var(--text-primary);">매달 말일</option>`;
+                        selectHtml += `</select>`;
+
                         tr.innerHTML = `
-                            <td><input type="text" value="${p.payDate || ''}" placeholder="YYYY-MM-DD" maxlength="10" onclick="openCalendar(this)" oninput="formatDateInput(this)" onchange="updatePayment(${p.id}, 'payDate', this.value)"></td>
+                            <td>${selectHtml}</td>
                             <td><input type="text" value="${p.item || ''}" placeholder="항목 입력" onchange="updatePayment(${p.id}, 'item', this.value)"></td>
                             <td><input type="text" class="amount font-bold" value="${formatNumber(p.amount)}" onblur="updatePayment(${p.id}, 'amount', this.value)" placeholder="0"></td>
                             <td class="text-center"><button onclick="deletePayment(${p.id})" class="btn-delete">&times;</button></td>

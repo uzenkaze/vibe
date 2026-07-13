@@ -468,7 +468,7 @@
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     resolvedUrl = 'http://localhost:5173/';
                 } else {
-                    resolvedUrl = 'asset/asset-react/dist/index.html';
+                    resolvedUrl = 'asset/asset-react/dist/index.html?t=' + Date.now();
                 }
             }
 

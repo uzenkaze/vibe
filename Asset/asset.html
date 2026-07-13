@@ -11,7 +11,7 @@
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 window.location.replace('http://localhost:5173/');
             } else {
-                window.location.replace('asset-react/dist/index.html');
+                window.location.replace('asset-react/dist/index.html?t=' + Date.now());
             }
         }
     </script>
