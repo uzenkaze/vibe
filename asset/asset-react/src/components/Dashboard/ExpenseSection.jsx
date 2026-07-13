@@ -62,13 +62,10 @@ function DataSection({ title, sectionKey, columns, accentColor = 'var(--coral)',
   const displayTotal = sectionKey === 'debt' ? remTotal : total;
 
   return (
-    <div className="data-section">
+    <div className={`data-section ${sectionKey}`}>
       <div className="data-section-header">
         <div className="data-section-title">
-          <span style={{
-            width: 6, height: 6, borderRadius: '50%',
-            background: accentColor, display: 'inline-block', flexShrink: 0
-          }} />
+          <span className="data-section-dot" />
           {title}
         </div>
         <button className="btn btn-teal btn-sm" onClick={() => addRow(sectionKey)}>

@@ -75,13 +75,10 @@ function DataSection({ title, sectionKey, columns, showSummaryModal, detailModal
   const [detailTarget, setDetailTarget] = useState(null);
 
   return (
-    <div className="data-section">
+    <div className={`data-section ${sectionKey}`}>
       <div className="data-section-header">
         <div className="data-section-title">
-          <span style={{
-            width: 6, height: 6, borderRadius: '50%',
-            background: 'var(--teal)', display: 'inline-block', flexShrink: 0
-          }} />
+          <span className="data-section-dot" />
           {title}
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
