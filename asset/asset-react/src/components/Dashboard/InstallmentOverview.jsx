@@ -270,13 +270,13 @@ export default function InstallmentOverview() {
       <div className="section-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="section-card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span className="section-dot" style={{ background: '#5B6BF8' }} />
-          카드 할부 현황
+          카드 내역 현황
           <span className="col-hide-mobile" style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
             fontWeight: 600, letterSpacing: '0.05em',
             textTransform: 'uppercase', marginLeft: 4,
           }}>
-            Card Installment Overview
+            Card History Overview
           </span>
         </div>
 

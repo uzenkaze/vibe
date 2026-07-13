@@ -177,6 +177,7 @@ const calculateInstallmentWithoutFeeUpdate = (item) => {
 export default function InstallmentPage() {
   const { getCurrentSections, persistSections, year, month } = useApp();
   const [activeDetailId, setActiveDetailId] = useState(null);
+  const [activeTab, setActiveTab] = useState('installment'); // 'installment' or 'payments'
 
   // 모달 상태값 관리
   const [modalRepayStatus, setModalRepayStatus] = useState('active');
@@ -184,6 +185,43 @@ export default function InstallmentPage() {
 
   const sections = getCurrentSections();
   const installments = sections.installment || [];
+  const cardPayments = sections.cardPayments || [];
+
+  // --- 납부(예정)내역 CRUD ---
+  const handleAddPayment = () => {
+    const now = new Date();
+    const newPayment = {
+      id: Date.now(),
+      payDate: `${year}-${month.toString().padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
+      item: '',
+      amount: 0
+    };
+    persistSections({ ...sections, cardPayments: [newPayment, ...cardPayments] });
+  };
+
+  const handleDeletePayment = (id) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    const newArr = cardPayments.filter(p => p.id !== id);
+    persistSections({ ...sections, cardPayments: newArr });
+  };
+
+  const handlePaymentFieldChange = (id, field, value) => {
+    const newArr = cardPayments.map(item => {
+      if (item.id === id) {
+        return { ...item, [field]: value };
+      }
+      return item;
+    });
+    persistSections({ ...sections, cardPayments: newArr });
+  };
+
+  const paymentsTotalAmount = useMemo(() => {
+    return cardPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+  }, [cardPayments]);
+
+  const sortedCardPayments = useMemo(() => {
+    return [...cardPayments].sort((a, b) => (a.payDate || '').localeCompare(b.payDate || ''));
+  }, [cardPayments]);
 
   const activeDetailItem = useMemo(() => {
     return installments.find(i => i.id === activeDetailId) || null;
@@ -485,177 +523,339 @@ export default function InstallmentPage() {
       <div className="section-card-header">
         <div className="section-card-title">
           <span className="section-dot" style={{ background: '#5B6BF8' }} />
-          카드 할부 상세
+          카드 내역 상세
           <span style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
             fontWeight: 600, letterSpacing: '0.05em',
             textTransform: 'uppercase', marginLeft: 4,
           }}>
-            Installment Detail Management
+            Card History Detail Management
           </span>
         </div>
-        <button className="btn btn-dark" onClick={handleAdd}>+ 할부 추가</button>
+        {activeTab === 'installment' ? (
+          <button className="btn btn-dark" onClick={handleAdd}>+ 할부 추가</button>
+        ) : (
+          <button className="btn btn-dark" onClick={handleAddPayment}>+ 납부 추가</button>
+        )}
       </div>
 
-      <div className="installment-grid" style={{ marginBottom: '2rem' }}>
-        {stats.map(s => (
-          <InstallmentStatCard key={s.label} {...s} />
-        ))}
+      {/* Tab Navigation */}
+      <div style={{
+        display: 'flex',
+        gap: '4px',
+        margin: '1.25rem 1.5rem',
+        background: 'var(--input-bg)',
+        borderRadius: '16px',
+        padding: '4px'
+      }}>
+        <button 
+          onClick={() => setActiveTab('installment')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            padding: '0.6rem 1rem',
+            borderRadius: '12px',
+            fontSize: '0.8rem',
+            fontWeight: '700',
+            border: 'none',
+            cursor: 'pointer',
+            background: activeTab === 'installment' ? 'var(--card)' : 'transparent',
+            color: activeTab === 'installment' ? 'var(--text-primary)' : 'var(--text-muted)',
+            boxShadow: activeTab === 'installment' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 0.25s ease'
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          할부내역
+        </button>
+        <button 
+          onClick={() => setActiveTab('payments')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            padding: '0.6rem 1rem',
+            borderRadius: '12px',
+            fontSize: '0.8rem',
+            fontWeight: '700',
+            border: 'none',
+            cursor: 'pointer',
+            background: activeTab === 'payments' ? 'var(--card)' : 'transparent',
+            color: activeTab === 'payments' ? 'var(--text-primary)' : 'var(--text-muted)',
+            boxShadow: activeTab === 'payments' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 0.25s ease'
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <rect x="1" y="4" width="22" height="16" rx="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+          납부(예정)내역
+        </button>
       </div>
 
-      <div style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
-        <table className="data-table" style={{ minWidth: 1000 }}>
-          <thead>
-            <tr>
-              <th style={{ width: 140 }}>사용일</th>
-              <th style={{ width: 110 }}>카드</th>
-              <th>사용처</th>
-              <th style={{ width: 130, textAlign: 'right' }}>총금액</th>
-              <th style={{ width: 90, textAlign: 'center' }}>이율(%)</th>
-              <th style={{ width: 110, textAlign: 'center' }}>회차</th>
-              <th style={{ width: 110, textAlign: 'right' }}>원금</th>
-              <th style={{ width: 110, textAlign: 'right' }}>수수료</th>
-              <th style={{ width: 120, textAlign: 'right' }}>잔액</th>
-              <th style={{ width: 80, textAlign: 'center' }}>종료</th>
-              <th style={{ width: 90, textAlign: 'center' }}>관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {installments.length === 0 && (
-              <tr>
-                <td colSpan="11" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-                  등록된 할부 내역이 없습니다.
-                </td>
-              </tr>
-            )}
-            {installments.map(r => {
-              const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
-              const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
-              
-              // 레거시 종료 월 표시 로직 스타일
-              let endDateStyle = {};
-              if (r.repayStatus === 'full') {
-                endDateStyle = { color: 'var(--text-muted)' };
-              } else {
-                if (r.endDate && r.endDate < currentTag) {
-                  endDateStyle = { color: 'var(--text-muted)', textDecoration: 'line-through' };
-                } else if (r.endDate === currentTag) {
-                  endDateStyle = { color: 'var(--teal)', fontWeight: 'bold' };
-                }
-              }
+      {activeTab === 'installment' && (
+        <>
+          <div className="installment-grid" style={{ marginBottom: '2rem' }}>
+            {stats.map(s => (
+              <InstallmentStatCard key={s.label} {...s} />
+            ))}
+          </div>
 
-              return (
-                <tr key={r.id} style={{ 
-                  backgroundColor: isExpired ? 'rgba(120, 120, 120, 0.05)' : 'transparent',
-                  opacity: isExpired ? 0.75 : 1 
-                }}>
-                  <td>
-                    <input 
-                      type="date" 
-                      value={r.date || ''} 
-                      onChange={(e) => handleFieldChange(r.id, 'date', e.target.value)} 
-                      style={{ fontSize: '0.85rem' }}
-                    />
-                  </td>
-                  <td>
-                    <CustomDropdown
-                      value={r.card || '국민'}
-                      onChange={(val) => handleFieldChange(r.id, 'card', val)}
-                      options={cardsList.map(c => ({ value: c, label: c }))}
-                    />
-                  </td>
-                  <td>
-                    <input 
-                      type="text" 
-                      value={r.content || ''} 
-                      placeholder="내용 입력"
-                      onChange={(e) => handleFieldChange(r.id, 'content', e.target.value)} 
-                    />
-                  </td>
-                  <td className="amount-cell">
-                    <NumberInput 
-                      value={r.amount || 0} 
-                      onChange={(val) => handleFieldChange(r.id, 'amount', val)} 
-                      style={{ textAlign: 'right', fontWeight: 'bold' }}
-                    />
-                  </td>
-                  <td>
-                    <NumberInput 
-                      value={r.rate || 0} 
-                      onChange={(val) => handleFieldChange(r.id, 'rate', val)} 
-                      style={{ textAlign: 'center' }}
-                    />
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                      <NumberInput 
-                        min={1} 
-                        max={r.totalMonths || 1} 
-                        value={r.currentMonth || 1} 
-                        onChange={(val) => handleFieldChange(r.id, 'currentMonth', val)} 
-                        style={{ width: '40px', textAlign: 'center' }}
-                      />
-                      <span style={{ opacity: 0.3 }}>/</span>
-                      <NumberInput 
-                        min={1} 
-                        value={r.totalMonths || 1} 
-                        onChange={(val) => handleFieldChange(r.id, 'totalMonths', val)} 
-                        style={{ width: '40px', textAlign: 'center' }}
-                      />
-                    </div>
-                  </td>
-                  <td className="amount-cell num" style={{ color: isExpired ? 'var(--text-muted)' : 'var(--text-primary)' }}>
-                    {formatKRW(isExpired ? 0 : r.monthlyPrincipal)}
-                  </td>
-                  <td className="amount-cell">
-                    <NumberInput 
-                      value={isExpired ? 0 : (r.monthlyFee || 0)} 
-                      onChange={(val) => handleFieldChange(r.id, 'monthlyFee', val)} 
-                      style={{ textAlign: 'right', color: isExpired ? 'var(--text-muted)' : 'var(--teal)', fontWeight: 'bold' }}
-                      disabled={isExpired}
-                    />
-                  </td>
-                  <td 
-                    className="amount-cell num" 
-                    style={{ 
-                      color: isExpired ? 'var(--text-muted)' : 'var(--coral)',
-                      cursor: isExpired ? 'default' : 'help',
-                      borderBottom: isExpired ? 'none' : '1px dashed rgba(255, 107, 107, 0.4)',
-                      textDecoration: 'none',
-                      display: 'table-cell'
-                    }}
-                    title={isExpired ? '만료된 할부 내역입니다.' : `[남은 잔액 상세 계산 내역]\n• 총 결제 금액: ${formatKRW(r.amount)}원\n• 매월 납부 원금: ${formatKRW(r.monthlyPrincipal)}원 x ${r.totalMonths}개월\n• 납부 완료 회차: ${r.currentMonth - 1}회차 (${formatKRW(Math.max(0, r.currentMonth - 1) * r.monthlyPrincipal)}원)\n• 남은 납부 회차: ${r.totalMonths - r.currentMonth}회차 (${formatKRW(Math.max(0, r.totalMonths - r.currentMonth) * r.monthlyPrincipal)}원)\n${r.repayStatus === 'partial' ? `• 일부 상환 누적액: -${formatKRW(r.repaidAmount)}원\n` : ''}---------------------------------\n= 최종 남은 잔액: ${formatKRW(r.remAmount)}원`}
-                  >
-                    {formatKRW(isExpired ? 0 : r.remAmount)}
-                  </td>
-                  <td style={{ textAlign: 'center', fontSize: '0.8rem', ...endDateStyle }}>
-                    {r.repayStatus === 'full' ? '완납' : (r.endDate || '—')}
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', alignItems: 'center' }}>
-                      <button 
-                        className="btn btn-ghost btn-sm" 
-                        style={{ padding: '4px 8px' }} 
-                        onClick={() => openDetailModal(r)}
-                        title="상세 스케줄 및 상환"
-                      >
-                        상세
-                      </button>
-                      <button 
-                        className="btn btn-ghost btn-sm" 
-                        style={{ padding: '4px 8px', color: 'var(--coral)' }} 
-                        onClick={() => handleDelete(r.id)}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </td>
+          <div style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
+            <table className="data-table" style={{ minWidth: 1000 }}>
+              <thead>
+                <tr>
+                  <th style={{ width: 140 }}>사용일</th>
+                  <th style={{ width: 110 }}>카드</th>
+                  <th>사용처</th>
+                  <th style={{ width: 130, textAlign: 'right' }}>총금액</th>
+                  <th style={{ width: 90, textAlign: 'center' }}>이율(%)</th>
+                  <th style={{ width: 110, textAlign: 'center' }}>회차</th>
+                  <th style={{ width: 110, textAlign: 'right' }}>원금</th>
+                  <th style={{ width: 110, textAlign: 'right' }}>수수료</th>
+                  <th style={{ width: 120, textAlign: 'right' }}>잔액</th>
+                  <th style={{ width: 80, textAlign: 'center' }}>종료</th>
+                  <th style={{ width: 90, textAlign: 'center' }}>관리</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {installments.length === 0 && (
+                  <tr>
+                    <td colSpan="11" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                      등록된 할부 내역이 없습니다.
+                    </td>
+                  </tr>
+                )}
+                {installments.map(r => {
+                  const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+                  const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+                  
+                  // 레거시 종료 월 표시 로직 스타일
+                  let endDateStyle = {};
+                  if (r.repayStatus === 'full') {
+                    endDateStyle = { color: 'var(--text-muted)' };
+                  } else {
+                    if (r.endDate && r.endDate < currentTag) {
+                      endDateStyle = { color: 'var(--text-muted)', textDecoration: 'line-through' };
+                    } else if (r.endDate === currentTag) {
+                      endDateStyle = { color: 'var(--teal)', fontWeight: 'bold' };
+                    }
+                  }
+
+                  return (
+                    <tr key={r.id} style={{ 
+                      backgroundColor: isExpired ? 'rgba(120, 120, 120, 0.05)' : 'transparent',
+                      opacity: isExpired ? 0.75 : 1 
+                    }}>
+                      <td>
+                        <input 
+                          type="date" 
+                          value={r.date || ''} 
+                          onChange={(e) => handleFieldChange(r.id, 'date', e.target.value)} 
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                      </td>
+                      <td>
+                        <CustomDropdown
+                          value={r.card || '국민'}
+                          onChange={(val) => handleFieldChange(r.id, 'card', val)}
+                          options={cardsList.map(c => ({ value: c, label: c }))}
+                        />
+                      </td>
+                      <td>
+                        <input 
+                          type="text" 
+                          value={r.content || ''} 
+                          placeholder="내용 입력"
+                          onChange={(e) => handleFieldChange(r.id, 'content', e.target.value)} 
+                        />
+                      </td>
+                      <td className="amount-cell">
+                        <NumberInput 
+                          value={r.amount || 0} 
+                          onChange={(val) => handleFieldChange(r.id, 'amount', val)} 
+                          style={{ textAlign: 'right', fontWeight: 'bold' }}
+                        />
+                      </td>
+                      <td>
+                        <NumberInput 
+                          value={r.rate || 0} 
+                          onChange={(val) => handleFieldChange(r.id, 'rate', val)} 
+                          style={{ textAlign: 'center' }}
+                        />
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          <NumberInput 
+                            min={1} 
+                            max={r.totalMonths || 1} 
+                            value={r.currentMonth || 1} 
+                            onChange={(val) => handleFieldChange(r.id, 'currentMonth', val)} 
+                            style={{ width: '40px', textAlign: 'center' }}
+                          />
+                          <span style={{ opacity: 0.3 }}>/</span>
+                          <NumberInput 
+                            min={1} 
+                            value={r.totalMonths || 1} 
+                            onChange={(val) => handleFieldChange(r.id, 'totalMonths', val)} 
+                            style={{ width: '40px', textAlign: 'center' }}
+                          />
+                        </div>
+                      </td>
+                      <td className="amount-cell num" style={{ color: isExpired ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                        {formatKRW(isExpired ? 0 : r.monthlyPrincipal)}
+                      </td>
+                      <td className="amount-cell">
+                        <NumberInput 
+                          value={isExpired ? 0 : (r.monthlyFee || 0)} 
+                          onChange={(val) => handleFieldChange(r.id, 'monthlyFee', val)} 
+                          style={{ textAlign: 'right', color: isExpired ? 'var(--text-muted)' : 'var(--teal)', fontWeight: 'bold' }}
+                          disabled={isExpired}
+                        />
+                      </td>
+                      <td 
+                        className="amount-cell num" 
+                        style={{ 
+                          color: isExpired ? 'var(--text-muted)' : 'var(--coral)',
+                          cursor: isExpired ? 'default' : 'help',
+                          borderBottom: isExpired ? 'none' : '1px dashed rgba(255, 107, 107, 0.4)',
+                          textDecoration: 'none',
+                          display: 'table-cell'
+                        }}
+                        title={isExpired ? '만료된 할부 내역입니다.' : `[남은 잔액 상세 계산 내역]\n• 총 결제 금액: ${formatKRW(r.amount)}원\n• 매월 납부 원금: ${formatKRW(r.monthlyPrincipal)}원 x ${r.totalMonths}개월\n• 납부 완료 회차: ${r.currentMonth - 1}회차 (${formatKRW(Math.max(0, r.currentMonth - 1) * r.monthlyPrincipal)}원)\n• 남은 납부 회차: ${r.totalMonths - r.currentMonth}회차 (${formatKRW(Math.max(0, r.totalMonths - r.currentMonth) * r.monthlyPrincipal)}원)\n${r.repayStatus === 'partial' ? `• 일부 상환 누적액: -${formatKRW(r.repaidAmount)}원\n` : ''}---------------------------------\n= 최종 남은 잔액: ${formatKRW(r.remAmount)}원`}
+                      >
+                        {formatKRW(isExpired ? 0 : r.remAmount)}
+                      </td>
+                      <td style={{ textAlign: 'center', fontSize: '0.8rem', ...endDateStyle }}>
+                        {r.repayStatus === 'full' ? '완납' : (r.endDate || '—')}
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', alignItems: 'center' }}>
+                          <button 
+                            className="btn btn-ghost btn-sm" 
+                            style={{ padding: '4px 8px' }} 
+                            onClick={() => openDetailModal(r)}
+                            title="상세 스케줄 및 상환"
+                          >
+                            상세
+                          </button>
+                          <button 
+                            className="btn btn-ghost btn-sm" 
+                            style={{ padding: '4px 8px', color: 'var(--coral)' }} 
+                            onClick={() => handleDelete(r.id)}
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'payments' && (
+        <div style={{ animation: 'tabFadeIn 0.2s ease' }}>
+          <div style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
+            <table className="data-table" style={{ minWidth: 600 }}>
+              <thead>
+                <tr>
+                  <th style={{ width: 180 }}>납부일</th>
+                  <th>항목</th>
+                  <th style={{ width: 220, textAlign: 'right' }}>금액</th>
+                  <th style={{ width: 90, textAlign: 'center' }}>관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedCardPayments.length === 0 && (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                      등록된 납부(예정) 내역이 없습니다.
+                    </td>
+                  </tr>
+                )}
+                {sortedCardPayments.map(p => (
+                  <tr key={p.id}>
+                    <td>
+                      <input 
+                        type="date" 
+                        value={p.payDate || ''} 
+                        onChange={(e) => handlePaymentFieldChange(p.id, 'payDate', e.target.value)} 
+                        style={{ fontSize: '0.85rem' }}
+                      />
+                    </td>
+                    <td>
+                      <input 
+                        type="text" 
+                        value={p.item || ''} 
+                        placeholder="항목 입력"
+                        onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
+                      />
+                    </td>
+                    <td className="amount-cell">
+                      <NumberInput 
+                        value={p.amount || 0} 
+                        onChange={(val) => handlePaymentFieldChange(p.id, 'amount', val)} 
+                        style={{ textAlign: 'right', fontWeight: 'bold' }}
+                      />
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <button 
+                          className="btn btn-ghost btn-sm" 
+                          style={{ padding: '4px 8px', color: 'var(--coral)' }} 
+                          onClick={() => handleDeletePayment(p.id)}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Payments Total Summary */}
+          <div style={{ 
+            margin: '0 1.5rem 1.5rem', 
+            paddingTop: '1.5rem', 
+            borderTop: '1px solid var(--card-border)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between' 
+          }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
+              이번 달 납부(예정) 합계
+            </span>
+            <span style={{ 
+              fontSize: '1.8rem', 
+              fontWeight: 900, 
+              color: 'var(--text-primary)',
+              fontFamily: 'Inter, sans-serif',
+              letterSpacing: '-0.03em' 
+            }}>
+              {formatKRW(paymentsTotalAmount)}
+              <span style={{ fontSize: '0.9rem', fontWeight: 'bold', marginLeft: '4px', color: 'var(--text-muted)' }}>
+                원
+              </span>
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* 상세 조기상환 관리 모달 */}
       {activeDetailItem && (

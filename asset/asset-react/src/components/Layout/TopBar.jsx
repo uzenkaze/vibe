@@ -6,7 +6,7 @@ const PAGE_TITLES = {
   dashboard: '대시보드',
   assets: '자산 · 수입',
   expenses: '부채 · 지출',
-  installment: '할부 관리',
+  installment: '카드 내역',
   pension: '연금 정보',
 };
 
