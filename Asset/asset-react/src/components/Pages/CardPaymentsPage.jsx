@@ -28,9 +28,43 @@ export default function CardPaymentsPage() {
     return 1;
   };
 
-  const sortedCardPayments = useMemo(() => {
-    return [...cardPayments].sort((a, b) => getDayValue(a.payDate) - getDayValue(b.payDate));
-  }, [cardPayments]);
+  // --- 드래그 앤 드롭 상태 및 핸들러 ---
+  const [draggedIdx, setDraggedIdx] = useState(null);
+
+  const handleDragStart = (e, idx) => {
+    setDraggedIdx(idx);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', idx);
+  };
+
+  const handleDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e, targetIdx) => {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === targetIdx) return;
+
+    const reorderedPayments = [...cardPayments];
+    const [removed] = reorderedPayments.splice(draggedIdx, 1);
+    reorderedPayments.splice(targetIdx, 0, removed);
+
+    persistSections({ ...sections, cardPayments: reorderedPayments });
+    setDraggedIdx(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIdx(null);
+  };
+
+  // --- 날짜순 정렬 헬퍼 ---
+  const handleSortByDate = () => {
+    if (!confirm('납부일을 기준으로 정렬하시겠습니까? 현재 임의 정렬 순서가 덮어씌워집니다.')) return;
+    const sorted = [...cardPayments].sort((a, b) => getDayValue(a.payDate) - getDayValue(b.payDate));
+    persistSections({ ...sections, cardPayments: sorted });
+  };
+
 
   // --- 항목별 라인 설정 ---
   const lineConfigs = {
@@ -657,7 +691,6 @@ export default function CardPaymentsPage() {
         </div>
       </div>
 
-      {/* 금월 필요 자금 목록 카드 */}
       <div className="section-card" style={{ marginBottom: '1.5rem', minHeight: '60vh' }}>
         <div className="section-card-header">
           <div className="section-card-title">
@@ -672,6 +705,7 @@ export default function CardPaymentsPage() {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn btn-ghost" onClick={handleSortByDate}>날짜순 정렬</button>
             <button className="btn btn-ghost" onClick={handleCopyPrevMonthData}>전월 데이터 복사</button>
             <button className="btn btn-dark" onClick={handleAddPayment}>+ 항목추가</button>
           </div>
@@ -682,6 +716,7 @@ export default function CardPaymentsPage() {
             <table className="data-table" style={{ minWidth: 650 }}>
               <thead>
                 <tr>
+                  <th style={{ width: 40, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}></th>
                   <th style={{ width: 90, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>입금여부</th>
                   <th style={{ width: 180, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>납부일</th>
                   <th style={{ backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>항목</th>
@@ -690,26 +725,45 @@ export default function CardPaymentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {sortedCardPayments.length === 0 && (
+                {cardPayments.length === 0 && (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: 'center', padding: '3rem 0', opacity: 0.4, fontSize: '0.85rem' }}>
+                    <td colSpan="6" style={{ textAlign: 'center', padding: '3rem 0', opacity: 0.4, fontSize: '0.85rem' }}>
                       등록된 납부 내역이 없습니다.
                     </td>
                   </tr>
                 )}
-                {sortedCardPayments.map((p) => {
+                {cardPayments.map((p, idx) => {
                   const isRowPaid = !!p.isPaid;
                   const hasDetails = p.details && p.details.length > 0;
+                  const isDragging = draggedIdx === idx;
                   return (
                     <tr 
                       key={p.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, idx)}
+                      onDragOver={(e) => handleDragOver(e, idx)}
+                      onDrop={(e) => handleDrop(e, idx)}
+                      onDragEnd={handleDragEnd}
                       style={{ 
                         backgroundColor: isRowPaid 
                           ? (dark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(59, 130, 246, 0.08)') 
                           : 'transparent',
-                        transition: 'background-color 0.25s ease'
+                        opacity: isDragging ? 0.35 : 1,
+                        cursor: 'grab',
+                        transition: 'background-color 0.25s ease, opacity 0.15s ease'
                       }}
                     >
+                      <td style={{ 
+                        textAlign: 'center', 
+                        verticalAlign: 'middle', 
+                        cursor: 'grab', 
+                        color: 'var(--text-muted)',
+                        fontSize: '0.95rem',
+                        userSelect: 'none',
+                        padding: '0 8px'
+                      }}>
+                        ⠿
+                      </td>
                       <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                         <input 
                           type="checkbox" 
