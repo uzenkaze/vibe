@@ -6,10 +6,7 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
-    const supportsHover = window.matchMedia('(hover: hover)').matches;
-    if (supportsHover && window.innerWidth > 768) {
-      setIsHovered(true);
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {

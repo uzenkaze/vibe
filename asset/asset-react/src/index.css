@@ -726,7 +726,6 @@ html.dark .topbar-btn.github-sync-btn.connected:hover {
   position: relative;
   cursor: default;
   box-shadow: var(--shadow-xs);
-  overflow: hidden;
 }
 
 .summary-card-outer:hover {
