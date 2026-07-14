@@ -208,11 +208,11 @@ export function AppProvider({ children }) {
             if (syncSuccess) {
               return { success: true, target: 'github' };
             } else {
-              return { success: true, target: 'local_only_sync_fail' };
+              return { success: true, target: 'local_only_sync_fail', error: '동기화 응답 실패' };
             }
           } catch (syncErr) {
             console.error('[AppContext] GitHub Sync failed:', syncErr);
-            return { success: true, target: 'local_only_sync_fail' };
+            return { success: true, target: 'local_only_sync_fail', error: syncErr.message || String(syncErr) };
           }
         }
 

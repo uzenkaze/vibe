@@ -72,6 +72,9 @@ function Dashboard() {
       if (res && res.success) {
         if (res.target === 'github') {
           showToast('상세 내역이 로컬 및 GitHub에 저장되었습니다.', 'success');
+        } else if (res.target === 'local_only_sync_fail') {
+          const errMsg = res.error ? ` 사유: ${res.error}` : '';
+          showToast(`상세 내역 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
         } else {
           showToast('상세 내역이 저장되었습니다.', 'success');
         }
@@ -94,7 +97,8 @@ function Dashboard() {
       if (res.target === 'github') {
         showToast('✅ 로컬 및 GitHub 서버에 성공적으로 동기화 저장되었습니다.', 'success');
       } else if (res.target === 'local_only_sync_fail') {
-        showToast('⚠️ 로컬 저장소에 저장되었습니다. (GitHub 서버 동기화 실패)', 'warning');
+        const errMsg = res.error ? ` 사유: ${res.error}` : '';
+        showToast(`⚠️ 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
       } else if (res.target === 'server') {
         showToast('✅ 로컬 및 서버 백엔드에 안전하게 저장되었습니다.', 'success');
       } else {
