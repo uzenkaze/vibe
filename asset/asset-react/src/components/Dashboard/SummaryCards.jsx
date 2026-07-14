@@ -95,11 +95,11 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
           top: 'calc(100% + 10px)',
           left: '50%',
           transform: 'translateX(-50%)',
-          background: 'var(--card)',
-          border: '1px solid var(--card-border)',
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
           borderRadius: '16px',
           padding: '0.875rem',
-          boxShadow: '0 12px 30px rgba(0,0,0,0.08)',
+          boxShadow: 'var(--shadow-md)',
           zIndex: 1000,
           minWidth: '240px',
           color: 'var(--text-primary)',
@@ -268,7 +268,7 @@ export default function SummaryCards() {
         <div style={{ fontSize: '0.8rem' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th style={{ textAlign: 'left', padding: '4px' }}>분류</th>
                 <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
               </tr>
@@ -282,7 +282,7 @@ export default function SummaryCards() {
               )) : (
                 <tr><td colSpan="2" style={{ textAlign: 'center', padding: '4px', opacity: 0.5 }}>내역 없음</td></tr>
               )}
-              <tr style={{ borderTop: '1px solid var(--card-border)', fontWeight: 'bold' }}>
+              <tr style={{ borderTop: '1px solid var(--border)', fontWeight: 'bold' }}>
                 <td style={{ padding: '4px' }}>총합</td>
                 <td style={{ textAlign: 'right', padding: '4px', color: 'var(--teal)' }}>{formatKRW(totalIncome)}</td>
               </tr>
@@ -309,7 +309,7 @@ export default function SummaryCards() {
         <div style={{ fontSize: '0.8rem' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th style={{ textAlign: 'left', padding: '4px' }}>분류</th>
                 <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
               </tr>
@@ -318,7 +318,7 @@ export default function SummaryCards() {
               <tr><td style={{ padding: '4px' }}>고정 지출</td><td style={{ textAlign: 'right', padding: '4px' }}>{formatKRW(totalFExp)}</td></tr>
               <tr><td style={{ padding: '4px' }}>변동 지출</td><td style={{ textAlign: 'right', padding: '4px' }}>{formatKRW(totalVExp)}</td></tr>
               <tr><td style={{ padding: '4px' }}>할부 납부</td><td style={{ textAlign: 'right', padding: '4px' }}>{formatKRW(totalInstallThisMonth)}</td></tr>
-              <tr style={{ borderTop: '1px solid var(--card-border)', fontWeight: 'bold' }}>
+              <tr style={{ borderTop: '1px solid var(--border)', fontWeight: 'bold' }}>
                 <td style={{ padding: '4px' }}>총합</td>
                 <td style={{ textAlign: 'right', padding: '4px', color: 'var(--coral)' }}>{formatKRW(totalExpense)}</td>
               </tr>
@@ -345,7 +345,7 @@ export default function SummaryCards() {
         <div style={{ fontSize: '0.8rem' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th style={{ textAlign: 'left', padding: '4px' }}>항목</th>
                 <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
               </tr>
@@ -353,7 +353,7 @@ export default function SummaryCards() {
             <tbody>
               <tr><td style={{ padding: '4px' }}>총 수입</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--teal)' }}>{formatKRW(totalIncome)}</td></tr>
               <tr><td style={{ padding: '4px' }}>총 지출</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--coral)' }}>{formatKRW(totalExpense)}</td></tr>
-              <tr style={{ borderTop: '1px solid var(--card-border)', fontWeight: 'bold' }}>
+              <tr style={{ borderTop: '1px solid var(--border)', fontWeight: 'bold' }}>
                 <td style={{ padding: '4px' }}>월 손익</td>
                 <td style={{ textAlign: 'right', padding: '4px' }}>{formatKRW(monthPnl)}</td>
               </tr>
@@ -379,7 +379,7 @@ export default function SummaryCards() {
         <div style={{ fontSize: '0.8rem' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th style={{ textAlign: 'left', padding: '4px' }}>항목</th>
                 <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
               </tr>
@@ -390,10 +390,10 @@ export default function SummaryCards() {
               <tr><td style={{ padding: '4px', color: 'var(--text-muted)' }}>&nbsp; 비현금성 자산</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--text-muted)' }}>{formatKRW(sumNC)}</td></tr>
               <tr><td style={{ padding: '4px', color: 'var(--text-muted)' }}>&nbsp; 부동산</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--text-muted)' }}>{formatKRW(sumRE)}</td></tr>
               <tr><td style={{ padding: '4px', color: 'var(--text-muted)' }}>&nbsp; 연금·보험</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--text-muted)' }}>{formatKRW(sumR)}</td></tr>
-              <tr style={{ borderTop: '1px solid var(--card-border)' }}><td style={{ padding: '4px' }}>총 부채</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--coral)' }}>{formatKRW(totalDebt)}</td></tr>
+              <tr style={{ borderTop: '1px solid var(--border)' }}><td style={{ padding: '4px' }}>총 부채</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--coral)' }}>{formatKRW(totalDebt)}</td></tr>
               <tr><td style={{ padding: '4px', color: 'var(--text-muted)' }}>&nbsp; 일반 부채</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--text-muted)' }}>{formatKRW(sumD)}</td></tr>
               <tr><td style={{ padding: '4px', color: 'var(--text-muted)' }}>&nbsp; 할부 잔액</td><td style={{ textAlign: 'right', padding: '4px', color: 'var(--text-muted)' }}>{formatKRW(sumI)}</td></tr>
-              <tr style={{ borderTop: '1px solid var(--card-border)', fontWeight: 'bold' }}>
+              <tr style={{ borderTop: '1px solid var(--border)', fontWeight: 'bold' }}>
                 <td style={{ padding: '4px' }}>순자산</td>
                 <td style={{ textAlign: 'right', padding: '4px' }}>{formatKRW(netWorth)}</td>
               </tr>

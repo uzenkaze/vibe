@@ -32,6 +32,10 @@
   --surface-raised:   #ffffff;
   --surface-overlay:  rgba(255, 255, 255, 0.95);
 
+  /* 레거시 컴포넌트 호환 변수 백업 */
+  --card:             var(--surface);
+  --card-border:      var(--border);
+
   --border:           #e2e6ea;
   --border-strong:    #cbd2d9;
   --border-focus:     var(--orange);
@@ -89,6 +93,10 @@ html.dark {
   --surface:          #1c1f2e;
   --surface-raised:   #232638;
   --surface-overlay:  rgba(22, 25, 38, 0.97);
+
+  /* 레거시 컴포넌트 호환 변수 백업 */
+  --card:             var(--surface);
+  --card-border:      var(--border);
 
   --border:         rgba(255, 255, 255, 0.08);
   --border-strong:  rgba(255, 255, 255, 0.14);
