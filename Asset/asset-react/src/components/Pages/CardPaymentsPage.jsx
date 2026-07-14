@@ -215,11 +215,9 @@ export default function CardPaymentsPage() {
   const handleSaveDetails = () => {
     const updatedCardPayments = cardPayments.map(p => {
       if (p.id === detailPayment.id) {
-        const sumAmount = (detailPayment.details || []).reduce((s, d) => s + (Number(d.amount) || 0), 0);
         return {
           ...p,
-          details: detailPayment.details || [],
-          amount: sumAmount
+          details: detailPayment.details || []
         };
       }
       return p;
@@ -527,11 +525,9 @@ export default function CardPaymentsPage() {
                         <NumberInput 
                           value={p.amount || 0} 
                           onChange={(val) => handlePaymentFieldChange(p.id, 'amount', val)} 
-                          disabled={hasDetails}
                           style={{ 
                             textAlign: 'right', 
-                            fontWeight: 'bold',
-                            opacity: hasDetails ? 0.75 : 1 
+                            fontWeight: 'bold'
                           }}
                         />
                       </td>
