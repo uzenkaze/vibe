@@ -297,7 +297,7 @@
             }
             
             let resolvedUrl = initialPath;
-            if (resolvedUrl.startsWith('Asset/')) {
+            if (resolvedUrl.toLowerCase().startsWith('asset/')) {
                 resolvedUrl = 'asset/' + resolvedUrl.substring(6);
             }
             const lowerUrl = resolvedUrl.toLowerCase();
@@ -507,7 +507,7 @@
 
             // 대소문자 경로 보정 (Asset -> asset)
             let resolvedUrl = url;
-            if (resolvedUrl.startsWith('Asset/')) {
+            if (resolvedUrl.toLowerCase().startsWith('asset/')) {
                 resolvedUrl = 'asset/' + resolvedUrl.substring(6);
             }
 

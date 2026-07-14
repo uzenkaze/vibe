@@ -293,6 +293,20 @@ export default function CardPaymentsPage() {
     return cardPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   }, [cardPayments]);
 
+  // 수입 내역 합계 계산
+  const totalIncome = useMemo(() => {
+    return (sections.income || []).reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+  }, [sections.income]);
+
+  // 부족금액 = 수입내역합계 - 현금납부합계
+  const difference = totalIncome - paymentsTotalAmount;
+  const isShortage = difference < 0;
+  const absDifference = Math.abs(difference);
+
+  // 퍼센트율 계산 (수입 대비 지출 비율)
+  const percent = totalIncome > 0 ? (paymentsTotalAmount / totalIncome) * 100 : (paymentsTotalAmount > 0 ? 100 : 0);
+  const clampedPercent = Math.min(percent, 100);
+
   return (
     <>
       {/* 12개월 필요 자금 변동 추이 차트 */}
@@ -536,6 +550,110 @@ export default function CardPaymentsPage() {
               />
             ))}
           </svg>
+        </div>
+      </div>
+
+      {/* 수입 대비 현금 지출 비교 영역 (도식화) */}
+      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+        <div className="section-card-header" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+          <div className="section-card-title">
+            <span className="section-dot" style={{ background: isShortage ? 'var(--coral)' : 'var(--teal)' }} />
+            수입 대비 현금 지출 분석 ({month}월)
+            <span style={{
+              fontSize: '0.65rem', color: 'var(--text-muted)',
+              fontWeight: 600, letterSpacing: '0.05em',
+              textTransform: 'uppercase', marginLeft: 4,
+            }}>
+              Income vs Cash Expense Analysis
+            </span>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+          {/* 수입 카드 */}
+          <div style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: '12px',
+            padding: '1rem 1.25rem',
+            borderLeft: '4px solid var(--teal)'
+          }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>수입 내역 합계</div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+              {formatKRW(totalIncome)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
+            </div>
+          </div>
+
+          {/* 지출 카드 */}
+          <div style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: '12px',
+            padding: '1rem 1.25rem',
+            borderLeft: '4px solid #ff8a00'
+          }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>현금 납부 합계</div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+              {formatKRW(paymentsTotalAmount)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
+            </div>
+          </div>
+
+          {/* 결과 카드 (부족 또는 남음) */}
+          <div style={{
+            background: isShortage ? 'var(--coral-dim)' : 'var(--teal-dim)',
+            border: `1px solid ${isShortage ? 'var(--coral)' : 'var(--teal)'}`,
+            borderRadius: '12px',
+            padding: '1rem 1.25rem',
+            borderLeft: `4px solid ${isShortage ? 'var(--coral)' : 'var(--teal)'}`
+          }}>
+            <div style={{ fontSize: '0.75rem', color: isShortage ? 'var(--coral)' : 'var(--teal)', fontWeight: 700, marginBottom: '0.25rem' }}>
+              {isShortage ? '⚠️ 부족 금액' : '✓ 남은 여유 자금'}
+            </div>
+            <div style={{ 
+              fontSize: '1.35rem', 
+              fontWeight: 900, 
+              color: isShortage ? 'var(--coral)' : 'var(--teal)', 
+              fontFamily: 'Inter, sans-serif' 
+            }}>
+              {formatKRW(absDifference)} <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>원</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 비주얼 프로그레스 바 영역 */}
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: 700 }}>
+            <span style={{ color: 'var(--text-secondary)' }}>수입 대비 지출 비율</span>
+            <span style={{ color: isShortage ? 'var(--coral)' : 'var(--teal)' }}>
+              {percent.toFixed(1)}% {isShortage ? '(초과)' : ''}
+            </span>
+          </div>
+          
+          {/* 프로그레스 트랙 */}
+          <div style={{ 
+            height: '10px', 
+            background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', 
+            borderRadius: '99px', 
+            overflow: 'hidden',
+            position: 'relative'
+          }}>
+            {/* 프로그레스 필 */}
+            <div style={{
+              width: `${clampedPercent}%`,
+              height: '100%',
+              background: isShortage 
+                ? 'linear-gradient(90deg, #ff8a00 0%, var(--coral) 100%)' 
+                : 'linear-gradient(90deg, #5D6BF8 0%, var(--teal) 100%)',
+              borderRadius: '99px',
+              transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            }} />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+            <span>0%</span>
+            {isShortage && <span style={{ color: 'var(--coral)', fontWeight: 700 }}>수입 한도 초과!</span>}
+            <span>100%</span>
+          </div>
         </div>
       </div>
 

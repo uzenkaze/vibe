@@ -5,7 +5,7 @@
     <script>
         // 직접 브라우저 탭에 로드된 경우 (iframe이 아닌 경우) 포털 래퍼로 이동시켜 프레임 복구
         if (window.self === window.top) {
-            window.location.replace('../index.html?p=Asset/asset.html');
+            window.location.replace('../index.html?p=asset/asset.html');
         } else {
             // iframe 내부에서 로드되었을 경우 즉시 신규 리액트 앱 버전으로 리다이렉트
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
