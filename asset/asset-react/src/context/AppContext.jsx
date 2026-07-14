@@ -191,8 +191,13 @@ export function AppProvider({ children }) {
         const apiSaved = await saveData(year, yd);
         const ghConfig = getGithubConfig();
         if (ghConfig.token && ghConfig.repo) {
-          const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
-          return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
+          try {
+            const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
+            return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
+          } catch (syncErr) {
+            console.error('[AppContext] GitHub Sync failed during manual save, fallback to local warning', syncErr);
+            return { success: true, target: 'local_only_sync_fail' };
+          }
         }
         return { success: true, target: apiSaved ? 'server' : 'local' };
       } catch (e) {
