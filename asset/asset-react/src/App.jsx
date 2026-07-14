@@ -46,42 +46,38 @@ function Dashboard() {
     const targetItem = items.find(i => i.id === itemId);
     if (!targetItem) return;
 
-    // 1) 메모리 상태 업데이트
+    // 1) 상세 내역 금액 합산 계산
     const newAmount = details.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
-    updateRow(sectionKey, itemId, 'details', details);
-    updateRow(sectionKey, itemId, 'amount', newAmount);
-    if (sectionKey === 'debt') {
-      updateRow(sectionKey, itemId, 'remAmount', newAmount);
-    }
 
-    // 2) 즉시 로컬 + 서버 저장
+    // 2) 최신 데이터가 반영된 단일 sections 객체 생성
+    const patchedSections = { ...sections };
+    patchedSections[sectionKey] = (sections[sectionKey] || []).map(i =>
+      i.id === itemId
+        ? { ...i, details, amount: newAmount, ...(sectionKey === 'debt' ? { remAmount: newAmount } : {}) }
+        : i
+    );
+
+    // 3) 즉시 로컬 브라우저 + 서버 백엔드 + GitHub 저장소 동기화 실행
     setIsSavingDetail(true);
     try {
-      // updateRow는 동기이므로 최신 sections를 다시 읽어와 저장
-      const latestSections = getCurrentSections();
-      // 방금 업데이트한 항목을 직접 패치해서 저장
-      const patchedSections = { ...latestSections };
-      const patchedItems = (patchedSections[sectionKey] || []).map(i =>
-        i.id === itemId
-          ? { ...i, details, amount: newAmount, ...(sectionKey === 'debt' ? { remAmount: newAmount } : {}) }
-          : i
-      );
-      patchedSections[sectionKey] = patchedItems;
-
+      showToast('상세 내역을 서버에 저장 중...', 'info');
       const res = await persistSections(patchedSections, true);
       if (res && res.success) {
         if (res.target === 'github') {
-          showToast('상세 내역이 로컬 및 GitHub에 저장되었습니다.', 'success');
+          showToast('✅ 상세 내역이 로컬 및 GitHub 서버에 성공적으로 저장되었습니다.', 'success');
         } else if (res.target === 'local_only_sync_fail') {
           const errMsg = res.error ? ` 사유: ${res.error}` : '';
-          showToast(`상세 내역 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
+          showToast(`⚠️ 상세 내역 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
+        } else if (res.target === 'server') {
+          showToast('✅ 상세 내역이 로컬 및 서버 백엔드에 저장되었습니다.', 'success');
         } else {
-          showToast('상세 내역이 저장되었습니다.', 'success');
+          showToast('✅ 상세 내역이 저장되었습니다.', 'success');
         }
       } else {
         showToast('저장 중 오류가 발생했습니다.', 'danger');
       }
     } catch (e) {
+      console.error(e);
       showToast('저장 중 오류가 발생했습니다.', 'danger');
     } finally {
       setIsSavingDetail(false);
