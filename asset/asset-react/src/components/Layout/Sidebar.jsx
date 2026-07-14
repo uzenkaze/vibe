@@ -75,12 +75,24 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
     ? session.userName.slice(0, 2).toUpperCase()
     : 'AS';
 
+  const handleLogoClick = () => {
+    setNavSection('dashboard');
+    onMenuClick && onMenuClick();
+  };
+
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-      {/* Logo */}
-      <div className="sidebar-logo">
+      {/* Logo — Click to go Home */}
+      <div
+        className="sidebar-logo"
+        onClick={handleLogoClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={e => e.key === 'Enter' && handleLogoClick()}
+        title="자산관리 홈으로 이동"
+      >
         <div className="sidebar-logo-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2L20 12L12 22L4 12Z" />
             <path d="M12 2V22" strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.6" />
           </svg>
@@ -90,6 +102,9 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
           <div className="sidebar-logo-sub">Wealth Manager</div>
         </div>
       </div>
+
+      {/* Section Label */}
+      <div className="sidebar-section-label">메뉴</div>
 
       {/* Navigation */}
       <nav className="sidebar-nav">
@@ -111,7 +126,6 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onSaveSync && onSaveSync(); onMenuClick && onMenuClick(); }}
-          style={{ color: 'rgba(255,255,255,0.6)' }}
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -126,7 +140,6 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onGithubModal && onGithubModal(); onMenuClick && onMenuClick(); }}
-          style={{ color: 'rgba(255,255,255,0.6)' }}
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -139,7 +152,6 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onDataModal && onDataModal(); onMenuClick && onMenuClick(); }}
-          style={{ color: 'rgba(255,255,255,0.6)' }}
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -154,7 +166,6 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onManual && onManual(); onMenuClick && onMenuClick(); }}
-          style={{ color: 'rgba(255,255,255,0.6)' }}
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -167,23 +178,15 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         </button>
 
         {/* Theme toggle */}
-        <button
-          className="nav-item"
-          onClick={toggleTheme}
-          style={{ color: 'rgba(255,255,255,0.4)' }}
-        >
+        <button className="nav-item" onClick={toggleTheme}>
           <span className="nav-icon">
             {dark ? (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                <line x1="1" y1="12" x2="3" y2="12" />
-                <line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
               </svg>
             ) : (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -194,7 +197,8 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
           {dark ? '라이트 모드' : '다크 모드'}
         </button>
 
-        {/* User */}
+        {/* Divider + User */}
+        <div className="sidebar-divider" />
         <div className="sidebar-user">
           <div className="user-avatar">{initials}</div>
           <div>
@@ -204,11 +208,7 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         </div>
 
         {/* Logout */}
-        <button
-          className="nav-item"
-          onClick={logout}
-          style={{ color: 'rgba(255,107,107,0.7)' }}
-        >
+        <button className="nav-item" onClick={logout} style={{ color: 'var(--coral)', opacity: 0.75 }}>
           <span className="nav-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
