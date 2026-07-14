@@ -32,7 +32,23 @@ export default function CardPaymentsPage() {
     return [...cardPayments].sort((a, b) => getDayValue(a.payDate) - getDayValue(b.payDate));
   }, [cardPayments]);
 
-  // --- 12개월 변동 추이 데이터 집계 ---
+  // --- 항목별 라인 설정 ---
+  const lineConfigs = {
+    total: { label: '전체 납부액', color: '#ff8a00', gradId: 'totalGrad', areaGradId: 'totalAreaGrad', dimColor: 'rgba(255, 138, 0, 0.12)' },
+    card: { label: '카드사용금액', color: '#3b82f6', gradId: 'cardGrad', areaGradId: 'cardAreaGrad', dimColor: 'rgba(59, 130, 246, 0.12)' },
+    jisan: { label: '지산 납부액', color: '#10b981', gradId: 'jisanGrad', areaGradId: 'jisanAreaGrad', dimColor: 'rgba(16, 185, 129, 0.12)' },
+    kabank: { label: '카뱅이자', color: '#8b5cf6', gradId: 'kabankGrad', areaGradId: 'kabankAreaGrad', dimColor: 'rgba(139, 92, 246, 0.12)' }
+  };
+
+  // --- 라인 활성화 토글 상태 ---
+  const [activeLines, setActiveLines] = useState({
+    total: true,
+    card: true,
+    jisan: true,
+    kabank: true
+  });
+
+  // --- 12개월 변동 추이 데이터 집계 (카테고리별 분할) ---
   const chartData = useMemo(() => {
     const yd = yearData[year] || {};
     const monthsData = yd.months || {};
@@ -43,10 +59,32 @@ export default function CardPaymentsPage() {
       const mData = monthsData[mKeyPadded] || monthsData[mKeyUnpadded] || {};
       const mSections = mData.sections || {};
       const payments = mSections.cardPayments || [];
-      const total = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      
+      let total = 0;
+      let card = 0;
+      let jisan = 0;
+      let kabank = 0;
+
+      payments.forEach(p => {
+        const amt = Number(p.amount) || 0;
+        const name = String(p.item || '').toLowerCase();
+        
+        total += amt;
+        if (name.includes('카드')) {
+          card += amt;
+        } else if (name.includes('지산')) {
+          jisan += amt;
+        } else if (name.includes('카뱅') || name.includes('카카오')) {
+          kabank += amt;
+        }
+      });
+
       return {
         month: `${mNum}월`,
-        total: total
+        total,
+        card,
+        jisan,
+        kabank
       };
     });
   }, [yearData, year]);
@@ -55,7 +93,7 @@ export default function CardPaymentsPage() {
 
   // --- SVG Chart Dimensions ---
   const width = 800;
-  const height = 240;
+  const height = 250;
   const paddingLeft = 75;
   const paddingRight = 40;
   const paddingTop = 45;
@@ -64,25 +102,36 @@ export default function CardPaymentsPage() {
   const plotWidth = width - paddingLeft - paddingRight;
   const plotHeight = height - paddingTop - paddingBottom;
 
-  const totals = chartData.map(d => d.total);
-  const maxVal = Math.max(...totals, 1000000); // 최소 100만원 기준
+  // --- 활성화된 라인 중의 최댓값 탐색 (자동 스케일용) ---
+  const maxVal = useMemo(() => {
+    let vals = [1000000]; // 최소 기준 100만 원
+    chartData.forEach(d => {
+      if (activeLines.total) vals.push(d.total);
+      if (activeLines.card) vals.push(d.card);
+      if (activeLines.jisan) vals.push(d.jisan);
+      if (activeLines.kabank) vals.push(d.kabank);
+    });
+    return Math.max(...vals);
+  }, [chartData, activeLines]);
 
-  const points = chartData.map((d, i) => {
-    const x = paddingLeft + (i * (plotWidth / 11));
-    const y = paddingTop + plotHeight - (d.total / maxVal * plotHeight);
-    return { x, y, ...d, index: i };
-  });
-
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-  const areaPath = `${linePath} L ${points[11].x} ${paddingTop + plotHeight} L ${points[0].x} ${paddingTop + plotHeight} Z`;
+  // --- 라인별 경로 생성 헬퍼 ---
+  const getLinePaths = (key) => {
+    const pts = chartData.map((d, i) => {
+      const x = paddingLeft + (i * (plotWidth / 11));
+      const val = d[key] || 0;
+      const y = paddingTop + plotHeight - (val / maxVal * plotHeight);
+      return { x, y };
+    });
+    const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+    const areaPath = `${linePath} L ${pts[11].x} ${paddingTop + plotHeight} L ${pts[0].x} ${paddingTop + plotHeight} Z`;
+    return { linePath, areaPath, pts };
+  };
 
   const columnWidth = plotWidth / 11;
-  const hoverZones = points.map((p, i) => {
-    const xStart = i === 0 ? paddingLeft : p.x - (columnWidth / 2);
-    const xEnd = i === 11 ? (paddingLeft + plotWidth) : p.x + (columnWidth / 2);
-    const x = xStart;
-    const w = xEnd - xStart;
-    return { x, w, index: i, point: p };
+  const hoverZones = Array.from({ length: 12 }, (_, i) => {
+    const x = paddingLeft + (i * columnWidth) - (columnWidth / 2);
+    const w = columnWidth;
+    return { x, w, index: i, point: chartData[i] };
   });
 
   const gridLines = [0, 0.5, 1].map(ratio => {
@@ -248,7 +297,7 @@ export default function CardPaymentsPage() {
     <>
       {/* 12개월 필요 자금 변동 추이 차트 */}
       <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
-        <div className="section-card-header" style={{ marginBottom: '1.5rem' }}>
+        <div className="section-card-header" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
           <div className="section-card-title">
             <span className="section-dot" style={{ background: '#FF8A00' }} />
             현금 납부 변동 추이 ({year}년)
@@ -261,6 +310,37 @@ export default function CardPaymentsPage() {
             </span>
           </div>
         </div>
+
+        {/* --- 필터 칩스 버튼 그룹 추가 --- */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          {Object.entries(lineConfigs).map(([key, cfg]) => {
+            const isActive = activeLines[key];
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveLines(prev => ({ ...prev, [key]: !prev[key] }))}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '5px 12px',
+                  borderRadius: '99px',
+                  border: `1px solid ${isActive ? cfg.color : 'var(--border)'}`,
+                  background: isActive ? cfg.dimColor : 'var(--surface)',
+                  color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isActive ? `0 2px 8px ${cfg.dimColor}` : 'none'
+                }}
+              >
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: cfg.color }} />
+                {cfg.label}
+              </button>
+            );
+          })}
+        </div>
         
         <div style={{ position: 'relative', width: '100%', overflow: 'visible' }}>
           <svg 
@@ -270,14 +350,19 @@ export default function CardPaymentsPage() {
             style={{ overflow: 'visible' }}
           >
             <defs>
-              <linearGradient id="chartLineGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#ff8a00" />
-                <stop offset="100%" stopColor="#f97316" />
-              </linearGradient>
-              <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(255, 138, 0, 0.22)" />
-                <stop offset="100%" stopColor="rgba(255, 138, 0, 0.0)" />
-              </linearGradient>
+              {/* 각 라인별 그라디언트 정의 */}
+              {Object.entries(lineConfigs).map(([key, cfg]) => (
+                <g key={key}>
+                  <linearGradient id={cfg.gradId} x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor={cfg.color} />
+                    <stop offset="100%" stopColor={cfg.color} stopOpacity={0.8} />
+                  </linearGradient>
+                  <linearGradient id={cfg.areaGradId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={cfg.color} stopOpacity={0.16} />
+                    <stop offset="100%" stopColor={cfg.color} stopOpacity={0.0} />
+                  </linearGradient>
+                </g>
+              ))}
             </defs>
 
             {/* Grid Lines */}
@@ -288,7 +373,7 @@ export default function CardPaymentsPage() {
                   y1={line.y}
                   x2={width - paddingRight}
                   y2={line.y}
-                  stroke="var(--card-border)"
+                  stroke="var(--border)"
                   strokeWidth="1"
                   strokeDasharray={idx === 0 ? "none" : "4 4"}
                 />
@@ -306,102 +391,132 @@ export default function CardPaymentsPage() {
               </g>
             ))}
 
-            {/* Area Path */}
-            <path d={areaPath} fill="url(#chartAreaGrad)" />
+            {/* 활성화된 영역 채우기 (Area) 및 라인 그리기 */}
+            {Object.entries(lineConfigs).map(([key, cfg]) => {
+              if (!activeLines[key]) return null;
+              const { linePath, areaPath } = getLinePaths(key);
+              return (
+                <g key={key}>
+                  {/* Area Path */}
+                  <path d={areaPath} fill={`url(#${cfg.areaGradId})`} />
 
-            {/* Line Path */}
-            <path 
-              d={linePath} 
-              fill="none" 
-              stroke="url(#chartLineGrad)" 
-              strokeWidth="3.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-            />
+                  {/* Line Path */}
+                  <path 
+                    d={linePath} 
+                    fill="none" 
+                    stroke={`url(#${cfg.gradId})`} 
+                    strokeWidth="3" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                  />
+                </g>
+              );
+            })}
 
             {/* Vertical Guide line on hover */}
             {hoveredPoint && (
               <line
-                x1={hoveredPoint.x}
+                x1={paddingLeft + (chartData.indexOf(hoveredPoint) * columnWidth)}
                 y1={paddingTop}
-                x2={hoveredPoint.x}
+                x2={paddingLeft + (chartData.indexOf(hoveredPoint) * columnWidth)}
                 y2={paddingTop + plotHeight}
-                stroke="#ff8a00"
-                strokeWidth="1.5"
+                stroke="var(--text-muted)"
+                strokeWidth="1"
                 strokeDasharray="4 4"
-                opacity="0.6"
+                opacity="0.4"
               />
             )}
 
-            {/* Data Circles */}
-            {points.map((p, i) => (
-              <g key={i}>
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r="4"
-                  fill="var(--card)"
-                  stroke="#ff8a00"
-                  strokeWidth="2.5"
-                />
-                {hoveredPoint && hoveredPoint.index === i && (
-                  <circle
-                    cx={p.x}
-                    cy={p.y}
-                    r="8"
-                    fill="rgba(255, 138, 0, 0.3)"
-                    style={{ transition: 'all 0.1s ease' }}
-                  />
-                )}
-              </g>
-            ))}
+            {/* Data Circles (활성화된 라인들에 점 찍기) */}
+            {chartData.map((d, i) => {
+              const x = paddingLeft + (i * columnWidth);
+              return (
+                <g key={i}>
+                  {Object.entries(lineConfigs).map(([key, cfg]) => {
+                    if (!activeLines[key]) return null;
+                    const val = d[key] || 0;
+                    const y = paddingTop + plotHeight - (val / maxVal * plotHeight);
+                    return (
+                      <g key={key}>
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r="3"
+                          fill="var(--surface)"
+                          stroke={cfg.color}
+                          strokeWidth="2"
+                        />
+                        {hoveredPoint && hoveredPoint.month === d.month && (
+                          <circle
+                            cx={x}
+                            cy={y}
+                            r="6"
+                            fill={cfg.color}
+                            fillOpacity="0.25"
+                            style={{ transition: 'all 0.1s ease' }}
+                          />
+                        )}
+                      </g>
+                    );
+                  })}
+                </g>
+              );
+            })}
 
             {/* X Axis Labels */}
-            {points.map((p, i) => (
-              <text
-                key={i}
-                x={p.x}
-                y={height - paddingBottom + 22}
-                textAnchor="middle"
-                fill={hoveredPoint && hoveredPoint.index === i ? "var(--text-primary)" : "var(--text-muted)"}
-                fontSize="11"
-                fontWeight={hoveredPoint && hoveredPoint.index === i ? "700" : "600"}
-              >
-                {p.month}
-              </text>
-            ))}
+            {chartData.map((d, i) => {
+              const x = paddingLeft + (i * columnWidth);
+              return (
+                <text
+                  key={i}
+                  x={x}
+                  y={height - paddingBottom + 22}
+                  textAnchor="middle"
+                  fill={hoveredPoint && hoveredPoint.month === d.month ? "var(--text-primary)" : "var(--text-muted)"}
+                  fontSize="11"
+                  fontWeight={hoveredPoint && hoveredPoint.month === d.month ? "700" : "600"}
+                >
+                  {d.month}
+                </text>
+              );
+            })}
 
             {/* Tooltip via foreignObject to scale perfectly */}
             {hoveredPoint && (
               <foreignObject
-                x={hoveredPoint.x - 100}
-                y={hoveredPoint.y - 80}
-                width="200"
-                height="70"
+                x={paddingLeft + (chartData.indexOf(hoveredPoint) * columnWidth) + 120 > width 
+                  ? paddingLeft + (chartData.indexOf(hoveredPoint) * columnWidth) - 180 
+                  : paddingLeft + (chartData.indexOf(hoveredPoint) * columnWidth) + 10
+                }
+                y={paddingTop + 10}
+                width="170"
+                height="150"
                 style={{ overflow: 'visible', pointerEvents: 'none' }}
               >
                 <div style={{
-                  background: dark ? 'rgba(30, 34, 54, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid rgba(255, 138, 0, 0.3)',
-                  borderRadius: '8px',
-                  padding: '6px 12px',
+                  background: dark ? 'rgba(28, 31, 46, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '10px',
+                  padding: '8px 12px',
                   boxShadow: 'var(--shadow-md)',
-                  textAlign: 'center',
                   backdropFilter: 'blur(10px)',
-                  display: 'inline-flex',
+                  display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: 'auto',
-                  minWidth: '130px',
-                  margin: '0 auto'
+                  gap: '4px',
+                  width: '160px'
                 }}>
-                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    {hoveredPoint.month} 필요 자금
+                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border)', paddingBottom: '3px', marginBottom: '3px' }}>
+                    {hoveredPoint.month} 납부 상세
                   </span>
-                  <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)', marginTop: '2px' }}>
-                    {formatKRW(hoveredPoint.total)}원
-                  </span>
+                  {Object.entries(lineConfigs).map(([key, cfg]) => {
+                    if (!activeLines[key]) return null;
+                    return (
+                      <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px' }}>
+                        <span style={{ color: cfg.color, fontWeight: 700 }}>● {cfg.label.replace(' 납부액', '')}</span>
+                        <span style={{ fontWeight: 800, color: 'var(--text-primary)' }}>{formatKRW(hoveredPoint[key])}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </foreignObject>
             )}
