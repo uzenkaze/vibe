@@ -67,12 +67,11 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
       // 헬퍼: 캐시 없이 최신 SHA 가져오기
       const getLatestSha = async () => {
         try {
-          const checkRes = await fetch(getUrl, {
-            headers: {
-              ...headers,
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache'
-            }
+          const timestamp = Date.now();
+          const getUrlWithCacheBuster = `${getUrl}&t=${timestamp}`;
+          
+          const checkRes = await fetch(getUrlWithCacheBuster, {
+            headers
           });
           if (checkRes.ok) {
             const checkJson = await checkRes.json();
