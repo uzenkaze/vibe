@@ -168,15 +168,24 @@ export default function CardPaymentsPage() {
       return;
     }
 
-    // 복사 시 ID 재발행 및 입금여부(isPaid) 초기화
-    const copiedPayments = prevPayments.map((p, idx) => ({
-      id: Date.now() + idx,
-      payDate: p.payDate,
-      item: p.item,
-      amount: p.amount,
-      isPaid: false,
-      details: p.details ? JSON.parse(JSON.stringify(p.details)) : []
-    }));
+    // 복사 시 ID 재발행 및 입금여부(isPaid) 초기화, 상세 내역 명시적 복사
+    const copiedPayments = prevPayments.map((p, idx) => {
+      const copiedDetails = Array.isArray(p.details)
+        ? p.details.map(d => ({
+            content: d.content || '',
+            card: d.card || '',
+            amount: Number(d.amount) || 0
+          }))
+        : [];
+      return {
+        id: Date.now() + idx,
+        payDate: p.payDate,
+        item: p.item,
+        amount: p.amount,
+        isPaid: false,
+        details: copiedDetails
+      };
+    });
 
     persistSections({ ...sections, cardPayments: copiedPayments });
   };
