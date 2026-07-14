@@ -27,7 +27,9 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
   if (!config.token || !config.repo) return null;
 
   const filePath = `asset/data/${yearKey}.json`;
-  const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${config.branch}`;
+  const getUrl = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${config.branch}`;
+  const putUrl = `https://api.github.com/repos/${config.repo}/contents/${filePath}`;
+  
   const headers = {
     'Authorization': `token ${config.token}`,
     'Accept': 'application/vnd.github.v3+json',
@@ -36,7 +38,7 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
 
   try {
     if (action === 'download') {
-      const res = await fetch(url, { headers });
+      const res = await fetch(getUrl, { headers });
       if (res.status === 404) {
         console.log("GitHub data not found.");
         return null;
@@ -52,7 +54,7 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
       // 헬퍼: 캐시 없이 최신 SHA 가져오기
       const getLatestSha = async () => {
         try {
-          const checkRes = await fetch(url, {
+          const checkRes = await fetch(getUrl, {
             headers: {
               ...headers,
               'Cache-Control': 'no-cache',
@@ -63,10 +65,16 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
             const checkJson = await checkRes.json();
             return checkJson.sha;
           }
+          if (checkRes.status === 404) {
+            // 파일이 존재하지 않는 경우 (처음 저장할 때)
+            return null;
+          }
+          const checkErr = await checkRes.json().catch(() => ({}));
+          throw new Error(`SHA 조회 실패 (HTTP ${checkRes.status}): ${checkErr.message || '알 수 없는 오류'}`);
         } catch (e) {
-          console.warn("Failed to fetch SHA", e);
+          console.error("SHA Fetch Exception:", e);
+          throw e;
         }
-        return null;
       };
 
       let retries = 3;
@@ -74,7 +82,14 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
       let lastError = null;
 
       while (retries > 0 && !success) {
-        const sha = await getLatestSha();
+        let sha = null;
+        try {
+          sha = await getLatestSha();
+        } catch (shaErr) {
+          // SHA 조회 자체가 실패한 경우 더이상 진행하지 않고 실패 처리
+          throw shaErr;
+        }
+
         const body = {
           message: `Update asset data: ${yearKey}`,
           content: b64EncodeUnicode(dataStr),
@@ -83,7 +98,7 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
         if (sha) body.sha = sha;
 
         try {
-          const putRes = await fetch(url, {
+          const putRes = await fetch(putUrl, {
             method: 'PUT',
             headers,
             body: JSON.stringify(body)
