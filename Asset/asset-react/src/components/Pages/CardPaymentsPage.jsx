@@ -191,7 +191,7 @@ export default function CardPaymentsPage() {
   const handleAddDetailRow = () => {
     if (!detailPayment) return;
     const newDetails = [...(detailPayment.details || [])];
-    newDetails.push({ content: '', card: '국민', amount: 0 });
+    newDetails.push({ content: '', card: '', amount: 0 });
     setDetailPayment({ ...detailPayment, details: newDetails });
   };
 
