@@ -505,30 +505,12 @@ export default function CardPaymentsPage() {
                         />
                       </td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <input 
-                            type="text" 
-                            value={p.item || ''} 
-                            placeholder="항목 입력"
-                            onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
-                            style={{ flex: 1 }}
-                          />
-                          {hasDetails && (
-                            <span 
-                              style={{ 
-                                fontSize: '0.65rem', 
-                                padding: '2px 6px', 
-                                borderRadius: '4px', 
-                                background: 'rgba(255, 138, 0, 0.15)', 
-                                color: '#ff8a00',
-                                fontWeight: 700,
-                                flexShrink: 0
-                              }}
-                            >
-                              상세 {p.details.length}
-                            </span>
-                          )}
-                        </div>
+                        <input 
+                          type="text" 
+                          value={p.item || ''} 
+                          placeholder="항목 입력"
+                          onChange={(e) => handlePaymentFieldChange(p.id, 'item', e.target.value)} 
+                        />
                       </td>
                       <td className="amount-cell">
                         <NumberInput 
@@ -543,8 +525,14 @@ export default function CardPaymentsPage() {
                       <td>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
                           <button 
-                            className="btn btn-ghost btn-sm" 
-                            style={{ padding: '4px 8px', color: 'var(--orange)' }} 
+                            className="btn btn-sm" 
+                            style={{ 
+                              padding: '4px 8px', 
+                              backgroundColor: hasDetails ? 'var(--orange)' : 'transparent',
+                              color: hasDetails ? '#ffffff' : 'var(--orange)',
+                              border: `1px solid ${hasDetails ? 'var(--orange)' : 'var(--card-border)'}`,
+                              transition: 'all 0.2s ease'
+                            }} 
                             onClick={() => handleOpenDetails(p)}
                           >
                             상세
