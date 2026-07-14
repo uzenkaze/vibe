@@ -2,7 +2,7 @@
  * 로컬 스토리지 기반 데이터 저장/불러오기
  */
 
-import { encryptData, decryptData } from './crypto';
+import { decryptData } from './crypto';
 
 const DATA_KEY_PREFIX = 'assetData_';
 
@@ -11,28 +11,30 @@ export function getDataKey(year) {
 }
 
 // 특정 연도 데이터 저장
-export async function saveData(year, data) {
+export async function saveData(year, plainData) {
   try {
     const password = sessionStorage.getItem('temp_master_pw');
-    
-    // 0. 최종 수정 시간 기록 (스마트 동기화용 타임스탬프)
-    const updatedAt = Date.now();
-    const updatedData = { ...data, updatedAt };
 
-    let dataToSave = updatedData;
+    // 최종 수정 시간 기록
+    const updatedAt = plainData.updatedAt || Date.now();
+    const dataWithTs = { ...plainData, updatedAt };
+
+    // 1. 로컬 스토리지 백업 — 암호화 적용
+    let dataToSave = dataWithTs;
     if (password) {
-      dataToSave = await encryptData(updatedData, password);
-      // 복호화 없이도 비교할 수 있도록 암호화 래퍼 객체 최상위에도 updatedAt 주입
-      dataToSave.updatedAt = updatedAt;
-    } else {
-      dataToSave.updatedAt = updatedAt;
+      try {
+        const { encryptData } = await import('./crypto');
+        dataToSave = await encryptData(dataWithTs, password);
+        dataToSave.updatedAt = updatedAt;
+      } catch (encErr) {
+        console.warn('[Storage] Encryption failed, storing plain to localStorage', encErr);
+        dataToSave = dataWithTs;
+      }
     }
-
-    // 1. 항상 로컬 스토리지에 백업 저장
     localStorage.setItem(getDataKey(year), JSON.stringify(dataToSave));
     localStorage.setItem(`${getDataKey(year)}_updatedAt`, String(updatedAt));
 
-    // 2. 서버 API를 호출하여 서버 파일에 저장 시도
+    // 2. 서버 API — 반드시 평문(plainData) 전달 (암호화 제외)
     const apiUrls = [
       '/api/save-asset',
       'http://localhost:5500/api/save-asset',
@@ -44,10 +46,8 @@ export async function saveData(year, data) {
       try {
         const response = await fetch(url, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ year, data: dataToSave }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ year, data: dataWithTs }),
         });
         if (response.ok) {
           console.log(`[Storage] Successfully saved data to server via API: ${url}`);
@@ -55,12 +55,12 @@ export async function saveData(year, data) {
           break;
         }
       } catch (err) {
-        // Silent fallback
+        // Silent fallback — 서버가 꺼져 있거나 GitHub Pages 환경에서는 정상
       }
     }
 
     if (!apiSaved) {
-      console.warn('[Storage] Server save API failed. Data is saved in localStorage only.');
+      console.warn('[Storage] Server API not reachable. Data saved to localStorage only.');
     }
     return apiSaved;
   } catch (e) {
@@ -68,6 +68,7 @@ export async function saveData(year, data) {
     return false;
   }
 }
+
 
 // 특정 연도 데이터 불러오기
 export async function loadData(year) {

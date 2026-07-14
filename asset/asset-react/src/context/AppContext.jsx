@@ -157,14 +157,18 @@ export function AppProvider({ children }) {
     if (!yd.months) yd.months = {};
     if (!yd.months[month]) yd.months[month] = {};
     yd.months[month].sections = sections;
-    
+
     // 1. 화면 즉시 반영 (React State)
     setYearData(prev => ({ ...prev, [year]: yd }));
 
-    // 2. 로컬 스토리지 즉시 동기화 백업 (유실 방지)
+    // 2. 로컬 스토리지 즉시 백업 (유실 방지)
     const password = sessionStorage.getItem('temp_master_pw');
     const updatedAt = Date.now();
     yd.updatedAt = updatedAt;
+
+    // 항상 원본(복호화 가능) 데이터를 plainYd로 보관
+    const plainYd = JSON.parse(JSON.stringify(yd));
+
     let dataToSave = yd;
     try {
       if (password) {
@@ -186,35 +190,53 @@ export function AppProvider({ children }) {
     }
 
     if (isManual) {
-      // 수동 저장(저장 버튼) 클릭 시: 즉시 동기화 실행
+      // 수동 저장(저장 버튼) 클릭 시: 즉시 서버/GitHub 동기화
       try {
-        const apiSaved = await saveData(year, yd);
+        // 3-1. 로컬 서버 API 저장 시도 (plainYd 원본 전달)
+        const apiSaved = await saveData(year, plainYd);
+
+        // 3-2. GitHub PAT 설정이 있으면 GitHub에도 동기화
         const ghConfig = getGithubConfig();
         if (ghConfig.token && ghConfig.repo) {
           try {
-            const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
-            return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
+            // 반드시 평문(plain) 데이터를 GitHub에 업로드
+            const syncSuccess = await syncWithGitHub(
+              'upload',
+              `assetData_${year}`,
+              JSON.stringify(plainYd)
+            );
+            if (syncSuccess) {
+              return { success: true, target: 'github' };
+            } else {
+              return { success: true, target: 'local_only_sync_fail' };
+            }
           } catch (syncErr) {
-            console.error('[AppContext] GitHub Sync failed during manual save, fallback to local warning', syncErr);
+            console.error('[AppContext] GitHub Sync failed:', syncErr);
             return { success: true, target: 'local_only_sync_fail' };
           }
         }
+
+        // 3-3. GitHub 미설정 → 서버 API 저장 결과 반환
         return { success: true, target: apiSaved ? 'server' : 'local' };
       } catch (e) {
         console.error('Failed to save sections manually', e);
         return { success: false, error: e };
       }
     } else {
-      // 자동 저장(수정/타이핑 등) 발생 시: 2초 디바운싱 후 백그라운드 동기화
+      // 자동 저장(수정/타이핑 등): 2초 디바운싱 후 백그라운드 동기화
       saveTimeoutRef.current = setTimeout(async () => {
         try {
           console.log('[AppContext] Auto saving via debounce...');
-          const apiSaved = await saveData(year, yd);
+          await saveData(year, plainYd);
           const ghConfig = getGithubConfig();
           if (ghConfig.autoSync && ghConfig.token && ghConfig.repo) {
-            const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
+            const syncSuccess = await syncWithGitHub(
+              'upload',
+              `assetData_${year}`,
+              JSON.stringify(plainYd)
+            );
             if (syncSuccess) {
-              showToast('☁️ 로컬 및 GitHub 서버 동기화 완료', 'success');
+              showToast('☁️ 자동 저장 및 GitHub 동기화 완료', 'success');
             }
           }
         } catch (e) {
@@ -226,20 +248,29 @@ export function AppProvider({ children }) {
     }
   }, [year, month, yearData, showToast]);
 
+
   const persistPension = useCallback(async (pensionData) => {
     const yd = JSON.parse(JSON.stringify(yearData[year] || { year, months: {} }));
     yd.year = year;
     if (!yd.months) yd.months = {};
     if (!yd.months[month]) yd.months[month] = {};
     yd.months[month].pension = pensionData;
-    
+    yd.updatedAt = Date.now();
+
+    // 원본 데이터 보관
+    const plainYd = JSON.parse(JSON.stringify(yd));
+
     setYearData(prev => ({ ...prev, [year]: yd }));
 
     try {
-      const apiSaved = await saveData(year, yd);
+      const apiSaved = await saveData(year, plainYd);
       const ghConfig = getGithubConfig();
       if (ghConfig.token && ghConfig.repo) {
-        const syncSuccess = await syncWithGitHub('upload', `assetData_${year}`, JSON.stringify(yd));
+        const syncSuccess = await syncWithGitHub(
+          'upload',
+          `assetData_${year}`,
+          JSON.stringify(plainYd)
+        );
         return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
       }
       return { success: true, target: apiSaved ? 'server' : 'local' };
@@ -250,13 +281,18 @@ export function AppProvider({ children }) {
   }, [year, month, yearData]);
 
   const persistYearData = useCallback(async (targetYear, data) => {
-    setYearData(prev => ({ ...prev, [targetYear]: data }));
+    const plainData = JSON.parse(JSON.stringify({ ...data, updatedAt: Date.now() }));
+    setYearData(prev => ({ ...prev, [targetYear]: plainData }));
 
     try {
-      const apiSaved = await saveData(targetYear, data);
+      const apiSaved = await saveData(targetYear, plainData);
       const ghConfig = getGithubConfig();
       if (ghConfig.token && ghConfig.repo) {
-        const syncSuccess = await syncWithGitHub('upload', `assetData_${targetYear}`, JSON.stringify(data));
+        const syncSuccess = await syncWithGitHub(
+          'upload',
+          `assetData_${targetYear}`,
+          JSON.stringify(plainData)
+        );
         return { success: true, target: syncSuccess ? 'github' : 'local_only_sync_fail' };
       }
       return { success: true, target: apiSaved ? 'server' : 'local' };
