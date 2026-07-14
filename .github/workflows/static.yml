@@ -44,7 +44,7 @@ jobs:
           # Copy root files
           cp index.html deploy_out/
           # Copy static folders
-          cp -r Asset deploy_out/
+          cp -r asset deploy_out/
           cp -r task deploy_out/
           cp -r hobby deploy_out/ 2>/dev/null || true
           # Copy built learn project
