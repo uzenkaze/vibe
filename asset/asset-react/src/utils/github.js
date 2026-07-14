@@ -5,14 +5,27 @@
 export function getGithubConfig() {
   try {
     const raw = localStorage.getItem('assetGitHubConfig');
-    return raw ? JSON.parse(raw) : { token: '', repo: '', branch: 'main', autoSync: false };
+    if (!raw) return { token: '', repo: '', branch: 'main', autoSync: false };
+    const parsed = JSON.parse(raw);
+    return {
+      token: (parsed.token || '').trim(),
+      repo: (parsed.repo || '').trim(),
+      branch: (parsed.branch || 'main').trim(),
+      autoSync: !!parsed.autoSync
+    };
   } catch {
     return { token: '', repo: '', branch: 'main', autoSync: false };
   }
 }
 
 export function saveGithubConfig(config) {
-  localStorage.setItem('assetGitHubConfig', JSON.stringify(config));
+  const trimmed = {
+    token: (config.token || '').trim(),
+    repo: (config.repo || '').trim(),
+    branch: (config.branch || 'main').trim(),
+    autoSync: !!config.autoSync
+  };
+  localStorage.setItem('assetGitHubConfig', JSON.stringify(trimmed));
 }
 
 // Unicode-safe base64 encoding standard helper
@@ -31,7 +44,7 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
   const putUrl = `https://api.github.com/repos/${config.repo}/contents/${filePath}`;
   
   const headers = {
-    'Authorization': `token ${config.token}`,
+    'Authorization': `Bearer ${config.token}`,
     'Accept': 'application/vnd.github.v3+json',
     'Content-Type': 'application/json'
   };
@@ -150,7 +163,7 @@ export async function testGithubConnection() {
 
   const url = `https://api.github.com/repos/${config.repo}`;
   const headers = {
-    'Authorization': `token ${config.token}`,
+    'Authorization': `Bearer ${config.token}`,
     'Accept': 'application/vnd.github.v3+json'
   };
 
