@@ -1,5 +1,37 @@
 [
   {
+    "id": 1784527645709,
+    "createdAt": "2026-07-20T06:07:25.709Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
+      "repairDate": "",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784527609120,
+        "name": "EGR쿨러호스 2ea",
+        "category": "냉각계",
+        "partsCost": "",
+        "laborCost": "",
+        "note": ""
+      },
+      {
+        "id": 1784527619255,
+        "name": "냉각수 교체",
+        "category": "오일류",
+        "partsCost": "",
+        "laborCost": "",
+        "note": ""
+      }
+    ],
+    "attachedImages": []
+  },
+  {
     "id": 1783407828040,
     "createdAt": "2026-07-07T07:03:48.040Z",
     "vehicleInfo": {
