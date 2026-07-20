@@ -939,6 +939,7 @@
                             <th style="width: 120px;">회차</th>
                             <th style="width: 140px;">원금</th>
                             <th style="width: 140px;">수수료</th>
+                            <th style="width: 140px;">원금+수수료</th>
                             <th style="width: 140px;">잔액</th>
                             <th style="width: 100px;">종료</th>
                             <th style="width: 80px;">상세</th>
@@ -1894,6 +1895,7 @@
                         </td>
                         <td><div class="amount font-bold">${formatNumber(item.monthlyPrincipal)}</div></td>
                         <td><input type="text" class="amount font-bold text-accent-blue" value="${formatNumber(item.monthlyFee)}" onblur="updateValue(${item.id}, 'monthlyFee', this.value)"></td>
+                        <td><div class="amount font-bold text-accent-blue">${formatNumber((parseFloat(item.monthlyPrincipal) || 0) + (parseFloat(item.monthlyFee) || 0))}</div></td>
                         <td><div class="amount font-bold text-accent-red">${formatNumber(item.remAmount)}</div></td>
                         <td><div class="text-center font-bold ${endDateClass}">${item.endDate}</div></td>
                         <td class="text-center">

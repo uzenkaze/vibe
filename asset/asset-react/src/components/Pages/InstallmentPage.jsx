@@ -328,8 +328,44 @@ export default function InstallmentPage() {
         </svg>
       ),
       tooltipContent: (
-        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '240px' }}>
-          이번 달(선택 연월)에 청구되어 납부해야 하는 <strong>할부 원금 및 수수료의 총합계</strong> 금액입니다.
+        <div style={{ fontSize: '0.8rem', minWidth: '280px' }}>
+          <div style={{ marginBottom: '8px', borderBottom: '1px dashed var(--card-border)', paddingBottom: '6px', fontWeight: 600, color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+            이번 달(선택 연월)에 청구되어 납부해야 하는 <strong>할부 항목별 계산 내역</strong>입니다.
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
+                <th style={{ textAlign: 'left', padding: '4px' }}>내용 (카드)</th>
+                <th style={{ textAlign: 'right', padding: '4px' }}>원금+수수료</th>
+              </tr>
+            </thead>
+            <tbody>
+              {installments.filter(r => {
+                const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+                const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+                return !isExpired && Number(r.currentMonth) > 0;
+              }).length > 0 ? installments.filter(r => {
+                const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+                const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+                return !isExpired && Number(r.currentMonth) > 0;
+              }).map(i => (
+                <tr key={i.id}>
+                  <td style={{ padding: '4px', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {i.content || '—'} <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>({i.card})</span>
+                  </td>
+                  <td style={{ textAlign: 'right', padding: '4px', color: 'var(--teal)', fontWeight: 600 }}>
+                    {formatKRW((Number(i.monthlyPrincipal) || 0) + (Number(i.monthlyFee) || 0))}원
+                  </td>
+                </tr>
+              )) : (
+                <tr><td colSpan="2" style={{ textAlign: 'center', padding: '4px', opacity: 0.5 }}>이번 달 청구 내역 없음</td></tr>
+              )}
+              <tr style={{ borderTop: '1px solid var(--card-border)', fontWeight: 'bold' }}>
+                <td style={{ padding: '4px' }}>이번 달 합계</td>
+                <td style={{ textAlign: 'right', padding: '4px', color: 'var(--teal)' }}>{formatKRW(thisMonthTotal)}원</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )
     },
@@ -347,8 +383,52 @@ export default function InstallmentPage() {
         </svg>
       ),
       tooltipContent: (
-        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', maxWidth: '240px' }}>
-          다음 달에 청구 예정인 <strong>할부 원금 및 수수료의 총합계</strong> 금액입니다 (잔여 회차가 2회 이상 남은 항목 기준).
+        <div style={{ fontSize: '0.8rem', minWidth: '280px' }}>
+          <div style={{ marginBottom: '8px', borderBottom: '1px dashed var(--card-border)', paddingBottom: '6px', fontWeight: 600, color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+            다음 달에 연속 청구 예정인 <strong>할부 항목별 예상 내역</strong>입니다.
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
+                <th style={{ textAlign: 'left', padding: '4px' }}>내용 (카드)</th>
+                <th style={{ textAlign: 'right', padding: '4px' }}>예상 납부액</th>
+              </tr>
+            </thead>
+            <tbody>
+              {installments.filter(r => {
+                const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+                const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+                if (isExpired) return false;
+                const currentMonthVal = Number(r.currentMonth) || 0;
+                if (currentMonthVal === 0) return true;
+                const remaining = (Number(r.totalMonths) || 0) - currentMonthVal;
+                return remaining > 1;
+              }).length > 0 ? installments.filter(r => {
+                const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+                const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+                if (isExpired) return false;
+                const currentMonthVal = Number(r.currentMonth) || 0;
+                if (currentMonthVal === 0) return true;
+                const remaining = (Number(r.totalMonths) || 0) - currentMonthVal;
+                return remaining > 1;
+              }).map(i => (
+                <tr key={i.id}>
+                  <td style={{ padding: '4px', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {i.content || '—'} <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>({i.card})</span>
+                  </td>
+                  <td style={{ textAlign: 'right', padding: '4px', color: '#5B6BF8', fontWeight: 600 }}>
+                    {formatKRW((Number(i.monthlyPrincipal) || 0) + (Number(i.monthlyFee) || 0))}원
+                  </td>
+                </tr>
+              )) : (
+                <tr><td colSpan="2" style={{ textAlign: 'center', padding: '4px', opacity: 0.5 }}>다음 달 청구 예정 항목 없음</td></tr>
+              )}
+              <tr style={{ borderTop: '1px solid var(--card-border)', fontWeight: 'bold' }}>
+                <td style={{ padding: '4px' }}>다음 달 합계</td>
+                <td style={{ textAlign: 'right', padding: '4px', color: '#5B6BF8' }}>{formatKRW(nextMonthTotal)}원</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )
     },
@@ -595,6 +675,7 @@ export default function InstallmentPage() {
               <th style={{ width: 110, textAlign: 'center' }}>회차</th>
               <th style={{ width: 110, textAlign: 'right' }}>원금</th>
               <th style={{ width: 110, textAlign: 'right' }}>수수료</th>
+              <th style={{ width: 120, textAlign: 'right' }}>원금+수수료</th>
               <th style={{ width: 120, textAlign: 'right' }}>잔액</th>
               <th style={{ width: 80, textAlign: 'center' }}>종료</th>
               <th style={{ width: 90, textAlign: 'center' }}>관리</th>
@@ -603,7 +684,7 @@ export default function InstallmentPage() {
           <tbody>
             {installments.length === 0 && (
               <tr>
-                <td colSpan="11" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                <td colSpan="12" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                   등록된 할부 내역이 없습니다.
                 </td>
               </tr>
@@ -694,6 +775,9 @@ export default function InstallmentPage() {
                       style={{ textAlign: 'right', color: isExpired ? 'var(--text-muted)' : 'var(--teal)', fontWeight: 'bold' }}
                       disabled={isExpired || Number(r.currentMonth) === 0}
                     />
+                  </td>
+                  <td className="amount-cell num" style={{ color: isExpired ? 'var(--text-muted)' : 'var(--teal)', fontWeight: 'bold' }}>
+                    {formatKRW(isExpired || Number(r.currentMonth) === 0 ? 0 : (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0))}
                   </td>
                   <td 
                     className="amount-cell num" 

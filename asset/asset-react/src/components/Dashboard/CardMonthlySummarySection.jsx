@@ -136,11 +136,11 @@ export default function CardMonthlySummarySection() {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ width: '160px' }}>카드명</th>
-              <th style={{ width: '100px', textAlign: 'center' }}>결제일</th>
-              <th style={{ textAlign: 'right', width: '180px' }}>이번 달 결제금액 (원)</th>
-              <th style={{ textAlign: 'right', width: '180px' }}>다음 달 청구예정액 (원)</th>
-              <th>메모 / 비고</th>
+              <th style={{ width: '150px' }}>카드</th>
+              <th style={{ width: '110px', textAlign: 'center' }}>결제일</th>
+              <th style={{ textAlign: 'right', width: '160px' }}>이달 결제액</th>
+              <th style={{ textAlign: 'right', width: '160px' }}>다음달 결제액</th>
+              <th>비고</th>
               <th style={{ width: '80px', textAlign: 'center' }}>작업</th>
             </tr>
           </thead>
@@ -183,13 +183,26 @@ export default function CardMonthlySummarySection() {
                     </select>
                   </td>
                   <td>
-                    <input
-                      type="text"
-                      value={item.payDate || ''}
-                      placeholder="예: 14일"
+                    <select
+                      value={item.payDate || '14일'}
                       onChange={(e) => handleCardSummaryChange(item.id, 'payDate', e.target.value)}
-                      style={{ textAlign: 'center' }}
-                    />
+                      style={{
+                        fontWeight: 600,
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        border: '1px solid var(--card-border)',
+                        background: 'var(--card)',
+                        color: 'var(--text-primary)',
+                        width: '100%',
+                        textAlign: 'center',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {Array.from({ length: 31 }, (_, i) => `${i + 1}일`).map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                      <option value="말일">말일</option>
+                    </select>
                   </td>
                   <td className="amount-cell">
                     <NumberInput
