@@ -592,13 +592,13 @@ export default function CardPaymentsPage() {
         <div className="section-card-header" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
           <div className="section-card-title">
             <span className="section-dot" style={{ background: isShortage ? 'var(--coral)' : 'var(--teal)' }} />
-            수입 대비 현금 지출 분석 ({month}월)
+            수입 대비 현금 지출
             <span style={{
               fontSize: '0.65rem', color: 'var(--text-muted)',
               fontWeight: 600, letterSpacing: '0.05em',
               textTransform: 'uppercase', marginLeft: 4,
             }}>
-              Income vs Cash Expense Analysis
+              Income vs Cash Expense
             </span>
           </div>
         </div>
@@ -606,13 +606,13 @@ export default function CardPaymentsPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           {/* 수입 카드 */}
           <div style={{
-            background: 'var(--surface)',
+            background: 'var(--bg)',
             border: '1px solid var(--border)',
             borderRadius: '12px',
             padding: '1rem 1.25rem',
             borderLeft: '4px solid var(--teal)'
           }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>수입 내역 합계</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>수입</div>
             <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
               {formatKRW(totalIncome)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
             </div>
@@ -620,13 +620,13 @@ export default function CardPaymentsPage() {
 
           {/* 지출 카드 */}
           <div style={{
-            background: 'var(--surface)',
+            background: 'var(--bg)',
             border: '1px solid var(--border)',
             borderRadius: '12px',
             padding: '1rem 1.25rem',
             borderLeft: '4px solid #ff8a00'
           }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>현금 납부 합계</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>지출</div>
             <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
               {formatKRW(paymentsTotalAmount)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
             </div>
@@ -655,7 +655,7 @@ export default function CardPaymentsPage() {
         </div>
 
         {/* 비주얼 프로그레스 바 영역 */}
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem' }}>
+        <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: 700 }}>
             <span style={{ color: 'var(--text-secondary)' }}>수입 대비 지출 비율</span>
             <span style={{ color: isShortage ? 'var(--coral)' : 'var(--teal)' }}>
