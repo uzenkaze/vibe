@@ -35,7 +35,7 @@
   },
   {
     "id": 1784531555668,
-    "createdAt": "2026-07-20T07:13:25.071Z",
+    "createdAt": "2026-07-20T23:35:18.285Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
@@ -50,7 +50,7 @@
         "id": 1784531555668,
         "name": "엔진오일",
         "category": "오일류",
-        "partsCost": "",
+        "partsCost": "43810",
         "laborCost": "",
         "repairDate": "2025-09-30",
         "note": ""
