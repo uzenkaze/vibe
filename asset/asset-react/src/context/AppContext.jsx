@@ -34,8 +34,15 @@ export function AppProvider({ children }) {
   const [toasts, setToasts] = useState([]);
   const [activeToastTimeout, setActiveToastTimeout] = useState(null);
 
-  // Active nav section
-  const [navSection, setNavSection] = useState('dashboard');
+  // Active nav section ('installment' 기본 세팅 및 URL 파라미터 지원)
+  const [navSection, setNavSection] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const nav = params.get('nav') || params.get('tab');
+    if (nav && ['dashboard', 'assets', 'expenses', 'installment', 'cardPayments', 'pension'].includes(nav)) {
+      return nav;
+    }
+    return 'installment';
+  });
 
   // GitHub connection status
   const [isGithubConnected, setIsGithubConnected] = useState(false);

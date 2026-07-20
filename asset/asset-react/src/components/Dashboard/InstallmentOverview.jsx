@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
+import CardMonthlySummarySection from './CardMonthlySummarySection';
+
 function InstallmentStatCard({ label, value, color, accent, bgGradient, icon, tooltipContent }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -275,13 +277,13 @@ export default function InstallmentOverview() {
       <div className="section-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="section-card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span className="section-dot" style={{ background: '#5B6BF8' }} />
-          카드 내역 현황
+          카드 현황
           <span className="col-hide-mobile" style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
             fontWeight: 600, letterSpacing: '0.05em',
             textTransform: 'uppercase', marginLeft: 4,
           }}>
-            Card History Overview
+            Card Overview
           </span>
         </div>
 
@@ -360,6 +362,9 @@ export default function InstallmentOverview() {
           선택한 연월에 청구 중인 할부 내역이 없습니다.
         </div>
       )}
+
+      {/* 대시보드 카드 현황 하단에 월별 카드 사용합계 및 다음달 납부예정 관리 연동 */}
+      <CardMonthlySummarySection />
     </div>
   );
 }
