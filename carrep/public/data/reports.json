@@ -26,7 +26,7 @@
   },
   {
     "id": 1784527645709,
-    "createdAt": "2026-07-20T06:07:25.709Z",
+    "createdAt": "2026-07-20T06:58:38.768Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
@@ -41,15 +41,16 @@
         "id": 1784527609120,
         "name": "EGR쿨러호스 2ea",
         "category": "냉각계",
-        "partsCost": "",
-        "laborCost": "",
-        "note": ""
+        "partsCost": "30000",
+        "laborCost": "120000",
+        "note": "",
+        "repairDate": "2025-11-13"
       },
       {
         "id": 1784527619255,
         "name": "냉각수 교체",
         "category": "오일류",
-        "partsCost": "",
+        "partsCost": "25000",
         "laborCost": "",
         "note": ""
       }
