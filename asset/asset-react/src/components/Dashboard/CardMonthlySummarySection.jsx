@@ -37,7 +37,7 @@ export default function CardMonthlySummarySection() {
   };
 
   const handleDeleteCardSummary = (id) => {
-    if (!confirm('카드 사용합계 항목을 삭제하시겠습니까?')) return;
+    if (!confirm('해당 카드 결제금액 관리 항목을 삭제하시겠습니까?')) return;
     const updated = cardMonthlySummaries.filter(item => item.id !== id);
     persistSections({
       ...sections,
@@ -56,17 +56,40 @@ export default function CardMonthlySummarySection() {
   }, [cardMonthlySummaries]);
 
   return (
-    <div className="section-card" style={{ marginTop: '1.5rem' }}>
-      <div className="section-card-header" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div className="section-card-title">
-          <span className="section-dot" style={{ background: 'var(--orange)' }} />
-          월별 카드 사용합계 및 다음달 납부예정 관리
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500, marginLeft: '8px' }}>
-            ({year}년 {month}월)
+    <div style={{
+      marginTop: '2rem',
+      paddingTop: '1.5rem',
+      borderTop: '2px dashed var(--card-border)'
+    }}>
+      {/* 헤더 타이틀 및 추가 버튼 */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.25rem',
+        padding: '0 0.5rem',
+        flexWrap: 'wrap',
+        gap: '0.75rem'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+          <span style={{
+            display: 'inline-block',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: 'var(--orange)'
+          }} />
+          월별 · 카드별 결제금액 관리
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500, marginLeft: '4px' }}>
+            ({year}년 {month}월 기준)
           </span>
         </div>
-        <button className="btn btn-outline btn-sm" onClick={handleAddCardSummary}>
-          + 카드 사용합계 항목 추가
+        <button 
+          className="btn btn-dark btn-sm" 
+          onClick={handleAddCardSummary}
+          style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+        >
+          + 카드 결제금액 추가
         </button>
       </div>
 
@@ -74,28 +97,26 @@ export default function CardMonthlySummarySection() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '1.25rem',
-        padding: '1.25rem 1.5rem',
-        background: 'var(--bg)',
-        borderBottom: '1px solid var(--card-border)'
+        gap: '1rem',
+        marginBottom: '1.25rem'
       }}>
         <div style={{
-          background: 'var(--card)',
+          background: 'var(--bg)',
           border: '1px solid var(--card-border)',
           borderRadius: '12px',
           padding: '1rem 1.25rem',
           borderLeft: '4px solid var(--teal)'
         }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>
-            이번 달 카드 총 사용합계
+            이번 달 총 카드 결제금액
           </div>
-          <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
-            {formatKRW(totalCurrentMonthUsage)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
+          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+            {formatKRW(totalCurrentMonthUsage)} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
           </div>
         </div>
 
         <div style={{
-          background: 'var(--card)',
+          background: 'var(--bg)',
           border: '1px solid var(--card-border)',
           borderRadius: '12px',
           padding: '1rem 1.25rem',
@@ -104,20 +125,21 @@ export default function CardMonthlySummarySection() {
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>
             다음 달 예상 총 납부금액
           </div>
-          <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--orange)', fontFamily: 'Inter, sans-serif' }}>
-            {formatKRW(totalNextMonthPayment)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
+          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--orange)', fontFamily: 'Inter, sans-serif' }}>
+            {formatKRW(totalNextMonthPayment)} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
           </div>
         </div>
       </div>
 
-      <div style={{ overflowX: 'auto', padding: '0' }}>
+      {/* 인라인 입력/수정/삭제 테이블 */}
+      <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--card-border)' }}>
         <table className="data-table">
           <thead>
             <tr>
               <th style={{ width: '160px' }}>카드명</th>
-              <th style={{ width: '100px' }}>결제일</th>
-              <th style={{ textAlign: 'right' }}>이번 달 사용 합계 (원)</th>
-              <th style={{ textAlign: 'right' }}>다음 달 납부 예정액 (원)</th>
+              <th style={{ width: '100px', textAlign: 'center' }}>결제일</th>
+              <th style={{ textAlign: 'right', width: '180px' }}>이번 달 결제금액 (원)</th>
+              <th style={{ textAlign: 'right', width: '180px' }}>다음 달 청구예정액 (원)</th>
               <th>메모 / 비고</th>
               <th style={{ width: '80px', textAlign: 'center' }}>작업</th>
             </tr>
@@ -126,7 +148,7 @@ export default function CardMonthlySummarySection() {
             {cardMonthlySummaries.length === 0 ? (
               <tr>
                 <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)' }}>
-                  등록된 카드별 사용합계 내역이 없습니다. [+ 카드 사용합계 항목 추가] 버튼을 눌러 관리할 카드를 등록해보세요.
+                  등록된 카드별 결제금액 내역이 없습니다. [+ 카드 결제금액 추가] 버튼을 클릭해 카드를 입력해보세요.
                 </td>
               </tr>
             ) : (
@@ -175,7 +197,7 @@ export default function CardMonthlySummarySection() {
                   <td style={{ textAlign: 'center' }}>
                     <button
                       className="btn btn-ghost btn-sm"
-                      style={{ color: 'var(--coral)' }}
+                      style={{ color: 'var(--coral)', padding: '4px 8px' }}
                       onClick={() => handleDeleteCardSummary(item.id)}
                     >
                       삭제
