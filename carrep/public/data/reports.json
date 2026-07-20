@@ -1,7 +1,7 @@
 [
   {
     "id": 1784533159065,
-    "createdAt": "2026-07-20T07:39:19.065Z",
+    "createdAt": "2026-07-20T07:46:32.794Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
@@ -16,7 +16,7 @@
         "id": 1784533137727,
         "name": "브레이크오일",
         "category": "오일류",
-        "partsCost": "",
+        "partsCost": "38000",
         "laborCost": "",
         "repairDate": "2026-07-07",
         "note": ""
