@@ -2,15 +2,7 @@
 <html lang="ko">
 
 <head>
-    <script>
-        // 직접 접속 및 새로고침 시에도 메인 포털로 튕기지 않고 즉시 리액트 자산 관리 앱으로 연결
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            window.location.replace('http://localhost:5173/');
-        } else {
-            const search = window.location.search || '';
-            window.location.replace('asset-react/dist/index.html' + search);
-        }
-    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wealth Management</title>

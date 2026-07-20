@@ -2,19 +2,7 @@
 <html lang="ko">
 
 <head>
-    <script>
-        // 직접 브라우저 탭에 로드된 경우 (iframe이 아닌 경우) 포털 래퍼로 이동시켜 프레임 복구
-        if (window.self === window.top) {
-            window.location.replace('../index.html?p=asset/asset.html');
-        } else {
-            // iframe 내부에서 로드되었을 경우 즉시 신규 리액트 앱 버전으로 리다이렉트
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                window.location.replace('http://localhost:5173/');
-            } else {
-                window.location.replace('asset-react/dist/index.html?t=' + Date.now());
-            }
-        }
-    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>카드 할부 관리 - Wealth Management</title>
@@ -986,6 +974,46 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 월별 · 카드별 결제금액 관리 섹션 (카드할부상세 하단 위치) -->
+                <div class="mt-8 pt-8 border-t-2 border-dashed border-glass-border">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold font-[Pretendard] flex items-center gap-2 text-dyo-dark dark:text-gray-200">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            월별 · 카드별 결제금액 관리
+                        </h3>
+                        <button onclick="addCardMonthlySummary()" class="btn-hans btn-hans-primary py-1.5 px-3 text-xs h-auto min-h-0">+ 카드 결제금액 추가</button>
+                    </div>
+
+                    <!-- 요약 카드 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="summary-card blue">
+                            <p class="summary-label text-accent-blue">이번 달 총 카드 결제금액</p>
+                            <p class="summary-value text-accent-blue" id="summaryCardCurrentMonthTotal">0<span>원</span></p>
+                        </div>
+                        <div class="summary-card purple">
+                            <p class="summary-label text-accent-purple">다음 달 청구(납부) 예상액</p>
+                            <p class="summary-value text-accent-purple" id="summaryCardNextMonthExpected">0<span>원</span></p>
+                        </div>
+                    </div>
+
+                    <!-- 테이블 -->
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 160px;">카드명</th>
+                                    <th style="width: 100px; text-align: center;">결제일</th>
+                                    <th style="width: 180px; text-align: right;">이번 달 결제금액 (원)</th>
+                                    <th style="width: 180px; text-align: right;">다음 달 청구예정액 (원)</th>
+                                    <th>메모 / 비고</th>
+                                    <th style="width: 60px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cardMonthlySummaryBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Tab Panel: 납부(예정)내역 -->
@@ -1128,6 +1156,84 @@
 
                 const totalEl = document.getElementById('paymentsTotalAmount');
                 if (totalEl) totalEl.innerHTML = formatNumber(total) + '<span class="text-sm font-bold ml-1" style="opacity:0.6;">원</span>';
+            }
+
+            // ===== 월별 · 카드별 결제금액 관리 CRUD =====
+            async function addCardMonthlySummary() {
+                const item = {
+                    id: Date.now(),
+                    cardName: '현대카드',
+                    payDate: '14일',
+                    currentMonthTotal: 0,
+                    nextMonthExpected: 0,
+                    note: ''
+                };
+                if (!state.sections.cardMonthlySummaries) state.sections.cardMonthlySummaries = [];
+                state.sections.cardMonthlySummaries.unshift(item);
+                await saveData();
+                renderCardMonthlySummaries();
+            }
+
+            function deleteCardMonthlySummary(id) {
+                if (confirm('해당 카드 결제금액 관리 항목을 삭제하시겠습니까?')) {
+                    state.sections.cardMonthlySummaries = (state.sections.cardMonthlySummaries || []).filter(item => item.id !== id);
+                    saveData();
+                    renderCardMonthlySummaries();
+                }
+            }
+
+            async function updateCardMonthlySummary(id, field, value) {
+                const list = state.sections.cardMonthlySummaries || [];
+                const item = list.find(i => i.id === id);
+                if (!item) return;
+
+                if (field === 'currentMonthTotal' || field === 'nextMonthExpected') {
+                    item[field] = parseFloat(String(value).replace(/,/g, '')) || 0;
+                } else {
+                    item[field] = value;
+                }
+                await saveData();
+                if (field === 'currentMonthTotal' || field === 'nextMonthExpected') {
+                    renderCardMonthlySummaries();
+                }
+            }
+
+            function renderCardMonthlySummaries() {
+                const tbody = document.getElementById('cardMonthlySummaryBody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                const list = state.sections.cardMonthlySummaries || [];
+                let currentTotal = 0;
+                let nextTotal = 0;
+
+                if (list.length === 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="6" style="text-align:center; padding:2rem; opacity:0.4; font-size:0.85rem;">등록된 카드별 결제금액 내역이 없습니다. [+ 카드 결제금액 추가] 버튼을 누르세요.</td>`;
+                    tbody.appendChild(tr);
+                } else {
+                    list.forEach(item => {
+                        currentTotal += parseFloat(item.currentMonthTotal) || 0;
+                        nextTotal += parseFloat(item.nextMonthExpected) || 0;
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><input type="text" value="${item.cardName || ''}" placeholder="예: 현대카드" onchange="updateCardMonthlySummary(${item.id}, 'cardName', this.value)" style="font-weight:bold;"></td>
+                            <td class="text-center"><input type="text" value="${item.payDate || ''}" placeholder="예: 14일" class="text-center" onchange="updateCardMonthlySummary(${item.id}, 'payDate', this.value)"></td>
+                            <td><input type="text" class="amount font-bold text-right" value="${formatNumber(item.currentMonthTotal || 0)}" onblur="updateCardMonthlySummary(${item.id}, 'currentMonthTotal', this.value)" placeholder="0"></td>
+                            <td><input type="text" class="amount font-bold text-right text-purple-600 dark:text-purple-400" value="${formatNumber(item.nextMonthExpected || 0)}" onblur="updateCardMonthlySummary(${item.id}, 'nextMonthExpected', this.value)" placeholder="0"></td>
+                            <td><input type="text" value="${item.note || ''}" placeholder="메모 입력" onchange="updateCardMonthlySummary(${item.id}, 'note', this.value)"></td>
+                            <td class="text-center"><button onclick="deleteCardMonthlySummary(${item.id})" class="btn-delete">&times;</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                const currentEl = document.getElementById('summaryCardCurrentMonthTotal');
+                if (currentEl) currentEl.innerHTML = formatNumber(currentTotal) + '<span>원</span>';
+
+                const nextEl = document.getElementById('summaryCardNextMonthExpected');
+                if (nextEl) nextEl.innerHTML = formatNumber(nextTotal) + '<span>원</span>';
             }
         </script>
 
@@ -1794,6 +1900,7 @@
                 }
                 updateCalculations();
                 renderPayments();
+                renderCardMonthlySummaries();
             }
 
             function updateCalculations() {
