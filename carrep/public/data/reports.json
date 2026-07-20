@@ -1,5 +1,30 @@
 [
   {
+    "id": 1784531555668,
+    "createdAt": "2026-07-20T07:12:35.668Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
+      "repairDate": "2026-09-30",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784531555668,
+        "name": "엔진오일",
+        "category": "오일류",
+        "partsCost": "",
+        "laborCost": "",
+        "repairDate": "2026-09-30",
+        "note": ""
+      }
+    ],
+    "attachedImages": []
+  },
+  {
     "id": 1784528252618,
     "createdAt": "2026-07-20T06:54:58.084Z",
     "vehicleInfo": {
