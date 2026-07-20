@@ -3,6 +3,14 @@
 
 <head>
 
+    <script>
+        // 최신 자산관리 앱(AssetOS)으로 캐시 방지 타임스탬프와 함께 즉시 연결
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            window.location.replace('http://localhost:5173/');
+        } else {
+            window.location.replace('asset-react/dist/index.html?v=' + Date.now());
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wealth Management</title>
