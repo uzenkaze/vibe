@@ -1,7 +1,7 @@
 [
   {
     "id": 1784533159065,
-    "createdAt": "2026-07-20T07:46:32.794Z",
+    "createdAt": "2026-07-20T07:46:50.060Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
@@ -25,7 +25,7 @@
         "id": 1784533156074,
         "name": "브레이크 디스크(전후)",
         "category": "제동계",
-        "partsCost": "",
+        "partsCost": "160000",
         "laborCost": "",
         "repairDate": "2026-07-07",
         "note": ""
