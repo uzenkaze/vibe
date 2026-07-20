@@ -1,5 +1,29 @@
 [
   {
+    "id": 1784528252618,
+    "createdAt": "2026-07-20T06:17:32.618Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
+      "repairDate": "",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784528246196,
+        "name": "데후오일",
+        "category": "오일류",
+        "partsCost": "",
+        "laborCost": "",
+        "note": ""
+      }
+    ],
+    "attachedImages": []
+  },
+  {
     "id": 1784527645709,
     "createdAt": "2026-07-20T06:07:25.709Z",
     "vehicleInfo": {
