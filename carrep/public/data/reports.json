@@ -1,5 +1,39 @@
 [
   {
+    "id": 1784533159065,
+    "createdAt": "2026-07-20T07:39:19.065Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
+      "repairDate": "2026-07-07",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784533137727,
+        "name": "브레이크오일",
+        "category": "오일류",
+        "partsCost": "",
+        "laborCost": "",
+        "repairDate": "2026-07-07",
+        "note": ""
+      },
+      {
+        "id": 1784533156074,
+        "name": "브레이크 디스크(전후)",
+        "category": "제동계",
+        "partsCost": "",
+        "laborCost": "",
+        "repairDate": "2026-07-07",
+        "note": ""
+      }
+    ],
+    "attachedImages": []
+  },
+  {
     "id": 1784531555668,
     "createdAt": "2026-07-20T07:13:25.071Z",
     "vehicleInfo": {
