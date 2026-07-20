@@ -1162,7 +1162,7 @@
             async function addCardMonthlySummary() {
                 const item = {
                     id: Date.now(),
-                    cardName: '현대카드',
+                    cardName: '신한카드',
                     payDate: '14일',
                     currentMonthTotal: 0,
                     nextMonthExpected: 0,
@@ -1216,9 +1216,17 @@
                         currentTotal += parseFloat(item.currentMonthTotal) || 0;
                         nextTotal += parseFloat(item.nextMonthExpected) || 0;
 
+                        const cards = ['신한카드', 'KB국민카드', '롯데카드', 'NH농협카드', '현대카드', '삼성카드', '우리카드', '하나카드', 'BC카드', '카카오뱅크', '기타'];
+                        let cardSelectHtml = `<select onchange="updateCardMonthlySummary(${item.id}, 'cardName', this.value)" style="width:100%; background:transparent; border:none; color:inherit; font-size:0.85rem; font-weight:bold; cursor:pointer;">`;
+                        cards.forEach(c => {
+                            const isSelected = (item.cardName || '신한카드') === c ? 'selected' : '';
+                            cardSelectHtml += `<option value="${c}" ${isSelected} style="background:var(--card-bg); color:var(--text-primary);">${c}</option>`;
+                        });
+                        cardSelectHtml += `</select>`;
+
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td><input type="text" value="${item.cardName || ''}" placeholder="예: 현대카드" onchange="updateCardMonthlySummary(${item.id}, 'cardName', this.value)" style="font-weight:bold;"></td>
+                            <td>${cardSelectHtml}</td>
                             <td class="text-center"><input type="text" value="${item.payDate || ''}" placeholder="예: 14일" class="text-center" onchange="updateCardMonthlySummary(${item.id}, 'payDate', this.value)"></td>
                             <td><input type="text" class="amount font-bold text-right" value="${formatNumber(item.currentMonthTotal || 0)}" onblur="updateCardMonthlySummary(${item.id}, 'currentMonthTotal', this.value)" placeholder="0"></td>
                             <td><input type="text" class="amount font-bold text-right text-purple-600 dark:text-purple-400" value="${formatNumber(item.nextMonthExpected || 0)}" onblur="updateCardMonthlySummary(${item.id}, 'nextMonthExpected', this.value)" placeholder="0"></td>

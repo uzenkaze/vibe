@@ -11,7 +11,7 @@ export default function CardMonthlySummarySection() {
   const handleAddCardSummary = () => {
     const newItem = {
       id: Date.now(),
-      cardName: '현대카드',
+      cardName: '신한카드',
       payDate: '14일',
       currentMonthTotal: 0,
       nextMonthExpected: 0,
@@ -155,13 +155,32 @@ export default function CardMonthlySummarySection() {
               cardMonthlySummaries.map((item) => (
                 <tr key={item.id}>
                   <td>
-                    <input
-                      type="text"
-                      value={item.cardName || ''}
-                      placeholder="예: 현대카드 M"
+                    <select
+                      value={item.cardName || '신한카드'}
                       onChange={(e) => handleCardSummaryChange(item.id, 'cardName', e.target.value)}
-                      style={{ fontWeight: 600 }}
-                    />
+                      style={{
+                        fontWeight: 700,
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        border: '1px solid var(--card-border)',
+                        background: 'var(--card)',
+                        color: 'var(--text-primary)',
+                        width: '100%',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="신한카드">신한카드</option>
+                      <option value="KB국민카드">KB국민카드</option>
+                      <option value="롯데카드">롯데카드</option>
+                      <option value="NH농협카드">NH농협카드</option>
+                      <option value="현대카드">현대카드</option>
+                      <option value="삼성카드">삼성카드</option>
+                      <option value="우리카드">우리카드</option>
+                      <option value="하나카드">하나카드</option>
+                      <option value="BC카드">BC카드</option>
+                      <option value="카카오뱅크">카카오뱅크</option>
+                      <option value="기타">기타</option>
+                    </select>
                   </td>
                   <td>
                     <input
