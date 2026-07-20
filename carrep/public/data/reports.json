@@ -1,13 +1,13 @@
 [
   {
     "id": 1784531555668,
-    "createdAt": "2026-07-20T07:12:35.668Z",
+    "createdAt": "2026-07-20T07:13:25.071Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
       "year": 2009,
       "mileage": 177000,
-      "repairDate": "2026-09-30",
+      "repairDate": "2025-09-30",
       "shopName": "",
       "color": "티타늄실버"
     },
@@ -18,7 +18,7 @@
         "category": "오일류",
         "partsCost": "",
         "laborCost": "",
-        "repairDate": "2026-09-30",
+        "repairDate": "2025-09-30",
         "note": ""
       }
     ],
