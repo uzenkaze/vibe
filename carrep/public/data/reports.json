@@ -1,7 +1,7 @@
 [
   {
     "id": 1784528252618,
-    "createdAt": "2026-07-20T06:53:39.615Z",
+    "createdAt": "2026-07-20T06:54:58.084Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
@@ -16,9 +16,10 @@
         "id": 1784528246196,
         "name": "데후오일",
         "category": "오일류",
-        "partsCost": "",
-        "laborCost": "",
-        "note": ""
+        "partsCost": "25000",
+        "laborCost": "25000",
+        "note": "2L ~ 3L",
+        "repairDate": "2022-10-31"
       }
     ],
     "attachedImages": []
