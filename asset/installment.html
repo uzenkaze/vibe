@@ -980,7 +980,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold font-[Pretendard] flex items-center gap-2 text-dyo-dark dark:text-gray-200">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                            월별 · 카드별 결제금액 관리
+                            결제금액
                         </h3>
                         <button onclick="addCardMonthlySummary()" class="btn-hans btn-hans-primary py-1.5 px-3 text-xs h-auto min-h-0">+ 카드 결제금액 추가</button>
                     </div>
@@ -988,11 +988,11 @@
                     <!-- 요약 카드 -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="summary-card blue">
-                            <p class="summary-label text-accent-blue">이번 달 총 카드 결제금액</p>
+                            <p class="summary-label text-accent-blue">이달 결제금액</p>
                             <p class="summary-value text-accent-blue" id="summaryCardCurrentMonthTotal">0<span>원</span></p>
                         </div>
                         <div class="summary-card purple">
-                            <p class="summary-label text-accent-purple">다음 달 청구(납부) 예상액</p>
+                            <p class="summary-label text-accent-purple">다음달 결제금액</p>
                             <p class="summary-value text-accent-purple" id="summaryCardNextMonthExpected">0<span>원</span></p>
                         </div>
                     </div>

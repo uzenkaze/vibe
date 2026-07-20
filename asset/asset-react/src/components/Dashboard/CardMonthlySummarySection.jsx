@@ -79,7 +79,7 @@ export default function CardMonthlySummarySection() {
             borderRadius: '50%',
             background: 'var(--orange)'
           }} />
-          월별 · 카드별 결제금액 관리
+          결제금액
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500, marginLeft: '4px' }}>
             ({year}년 {month}월 기준)
           </span>
@@ -93,7 +93,7 @@ export default function CardMonthlySummarySection() {
         </button>
       </div>
 
-      {/* 요약 현황 카드 (이번달 총 사용합계 & 다음달 납부예정액) */}
+      {/* 요약 현황 카드 (이달 결제금액 & 다음달 결제금액) */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -108,7 +108,7 @@ export default function CardMonthlySummarySection() {
           borderLeft: '4px solid var(--teal)'
         }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>
-            이번 달 총 카드 결제금액
+            이달 결제금액
           </div>
           <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
             {formatKRW(totalCurrentMonthUsage)} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
@@ -123,7 +123,7 @@ export default function CardMonthlySummarySection() {
           borderLeft: '4px solid var(--orange)'
         }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>
-            다음 달 예상 총 납부금액
+            다음달 결제금액
           </div>
           <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--orange)', fontFamily: 'Inter, sans-serif' }}>
             {formatKRW(totalNextMonthPayment)} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
