@@ -59,13 +59,13 @@
   },
   {
     "id": 1783407828040,
-    "createdAt": "2026-07-20T07:10:33.477Z",
+    "createdAt": "2026-07-20T07:11:52.894Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
       "year": 2009,
       "mileage": 177000,
-      "repairDate": "",
+      "repairDate": "2026-07-18",
       "shopName": ""
     },
     "repairItems": [
@@ -74,8 +74,9 @@
         "name": "엔진오일",
         "category": "오일류",
         "partsCost": "70000",
-        "laborCost": "20000",
-        "note": ""
+        "laborCost": "25000",
+        "note": "엔진오일, 오일필터 포함",
+        "repairDate": "2026-07-18"
       }
     ],
     "attachedImages": []
