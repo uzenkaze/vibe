@@ -105,10 +105,10 @@ export default function App() {
 
   // Connection status: 'local' | 'cloud' | 'remote' | 'offline'
   const [dbStatus, setDbStatus] = useState('offline')
-  const [toast, setToast] = useState({ show: false, message: '', type: 'warning' })
+  const [toast, setToast] = useState({ show: false, message: '', type: 'warning', icon: null })
 
-  const showToast = (message, type = 'warning', duration = 5000) => {
-    setToast({ show: true, message, type })
+  const showToast = (message, type = 'warning', duration = 5000, icon = null) => {
+    setToast({ show: true, message, type, icon })
     setTimeout(() => {
       setToast(prev => ({ ...prev, show: false }))
     }, duration)
@@ -494,7 +494,7 @@ export default function App() {
         })
         if (res.ok) {
           setMyCar(myCarData)
-          showToast('🚗 내 차량 정보가 성공적으로 등록 및 적용되었습니다!', 'success', 4000)
+          showToast('내차 정보가 서버에 정상적으로 저장되었습니다.', 'success', 4000, 'local-server')
           return
         }
       } catch (err) {
@@ -512,11 +512,11 @@ export default function App() {
           'chore(data): update MyCar profile'
         )
         setMyCar(myCarData)
-        showToast('🚗 내 차량 정보가 GitHub 저장소에 정상 등록되었습니다!', 'success', 4000)
+        showToast('내차 정보가 서버에 정상적으로 저장되었습니다.', 'success', 4000, 'git')
         return
       } catch (err) {
         console.error('Save My Car via GitHub API failed', err)
-        showToast(`⚠️ 내 차량 정보 저장 실패: ${err.message}`, 'warning', 5000)
+        showToast(`내차 정보 저장 실패: ${err.message}`, 'warning', 5000)
         return
       }
     }
@@ -524,7 +524,7 @@ export default function App() {
     // 임시 로컬 환경일 경우 임시 브라우저 세션에 저장
     setMyCar(myCarData)
     localStorage.setItem('carrep_temp_mycar', JSON.stringify(myCarData))
-    showToast('🚗 내 차량 정보가 임시 등록 및 자동 적용되었습니다!', 'success', 4000)
+    showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'local-server')
   }
 
   const handleSaveInsurance = (data) => {
@@ -675,8 +675,18 @@ export default function App() {
           }}
           title={toast.type === 'warning' ? "클릭하여 내 차량 정보 등록하기" : ""}
         >
-          <span className="toastIcon">
-            {toast.type === 'warning' ? '⚠️' : toast.type === 'success' ? '✨' : 'ℹ️'}
+          <span className="toastIcon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            {toast.icon === 'git' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: 'middle' }}>
+                <path d="M21.5 10.5l-8-8c-.6-.6-1.5-.6-2.1 0l-1.9 1.9 2.5 2.5c.6-.2 1.3 0 1.8.5.5.5.7 1.2.5 1.8l2.4 2.4c.6-.2 1.3 0 1.8.5.7.7.7 1.8 0 2.5s-1.8.7-2.5 0c-.5-.5-.7-1.2-.5-1.8l-2.2-2.2v5.7c.2.1.4.3.5.5.7.7.7 1.8 0 2.5s-1.8.7-2.5 0c-.7-.7-.7-1.8 0-2.5.2-.2.4-.4.7-.5v-5.7c-.3-.1-.5-.3-.7-.5-.5-.5-.7-1.2-.5-1.8l-2.4-2.4c-.6.2-1.3 0-1.8-.5-.7-.7-.7-1.8 0-2.5.7-.7 1.8-.7 2.5 0 .5.5.7 1.2.5 1.8l2.2 2.2V6.3l-2.5-2.5L2.5 10.5c-.6.6-.6 1.5 0 2.1l8 8c.6.6 1.5.6 2.1 0l8.9-8.9c.6-.6.6-1.6 0-2.2z"/>
+              </svg>
+            ) : toast.icon === 'local-server' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
+              </svg>
+            ) : (
+              toast.type === 'warning' ? '⚠️' : toast.type === 'success' ? '✨' : 'ℹ️'
+            )}
           </span>
           <span className="toastMessage">{toast.message}</span>
           <button
