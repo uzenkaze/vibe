@@ -5,11 +5,11 @@ import Dashboard from './pages/Dashboard'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
 import RepairListPage from './pages/RepairListPage'
+import FuelPage from './pages/FuelPage'
 import GitHubModal from './components/GitHubModal'
 import MyCarModal from './components/MyCarModal'
 import InsuranceModal from './components/InsuranceModal'
 import InspectionModal from './components/InspectionModal'
-import FuelModal from './components/FuelModal'
 import BottomNav from './components/BottomNav'
 import { getGithubJson, saveGithubJson, validateGithubToken } from './utils/githubDb'
 
@@ -628,6 +628,14 @@ export default function App() {
         />
       )}
 
+      {step === 5 && (
+        <FuelPage
+          fuelHistory={fuelHistory}
+          onSaveFuel={handleSaveFuel}
+          onDeleteFuel={handleDeleteFuel}
+        />
+      )}
+
       {/* GitHub Token Config Layer Modal */}
       <GitHubModal
         isOpen={isModalOpen}
@@ -660,22 +668,13 @@ export default function App() {
         current={inspection}
       />
 
-      {/* Fuel Management Modal */}
-      <FuelModal
-        isOpen={isFuelModalOpen}
-        onClose={() => setIsFuelModalOpen(false)}
-        fuelHistory={fuelHistory}
-        onSaveFuel={handleSaveFuel}
-        onDeleteFuel={handleDeleteFuel}
-      />
-
       {/* Bottom Floating Navigation Bar */}
       <BottomNav
         activeStep={step}
         onGoHome={() => setStep(1)}
         onGoRepair={() => setStep(2)}
         onGoRepairList={handleGoToRepairListStep}
-        onOpenFuel={() => setIsFuelModalOpen(true)}
+        onGoFuel={() => setStep(5)}
         reportCount={reports.length}
       />
 
