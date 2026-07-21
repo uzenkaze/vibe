@@ -1,14 +1,130 @@
 [
   {
-    "id": 1783407828040,
-    "createdAt": "2026-07-07T07:03:48.040Z",
+    "id": 1784533159065,
+    "createdAt": "2026-07-20T07:46:50.060Z",
     "vehicleInfo": {
       "maker": "기아",
       "model": "모하비",
       "year": 2009,
       "mileage": 177000,
-      "driveType": "2WD",
+      "repairDate": "2026-07-07",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784533137727,
+        "name": "브레이크오일",
+        "category": "오일류",
+        "partsCost": "38000",
+        "laborCost": "",
+        "repairDate": "2026-07-07",
+        "note": ""
+      },
+      {
+        "id": 1784533156074,
+        "name": "브레이크 디스크(전후)",
+        "category": "제동계",
+        "partsCost": "160000",
+        "laborCost": "",
+        "repairDate": "2026-07-07",
+        "note": ""
+      }
+    ],
+    "attachedImages": []
+  },
+  {
+    "id": 1784531555668,
+    "createdAt": "2026-07-21T00:20:57.116Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
+      "repairDate": "2025-09-30",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784531555668,
+        "name": "엔진오일",
+        "category": "오일류",
+        "partsCost": "43810",
+        "laborCost": "20000",
+        "repairDate": "2025-09-30",
+        "note": ""
+      }
+    ],
+    "attachedImages": []
+  },
+  {
+    "id": 1784528252618,
+    "createdAt": "2026-07-20T06:54:58.084Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
       "repairDate": "",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784528246196,
+        "name": "데후오일",
+        "category": "오일류",
+        "partsCost": "25000",
+        "laborCost": "25000",
+        "note": "2L ~ 3L",
+        "repairDate": "2022-10-31"
+      }
+    ],
+    "attachedImages": []
+  },
+  {
+    "id": 1784527645709,
+    "createdAt": "2026-07-20T06:58:38.768Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
+      "repairDate": "",
+      "shopName": "",
+      "color": "티타늄실버"
+    },
+    "repairItems": [
+      {
+        "id": 1784527609120,
+        "name": "EGR쿨러호스 2ea",
+        "category": "냉각계",
+        "partsCost": "30000",
+        "laborCost": "120000",
+        "note": "",
+        "repairDate": "2025-11-13"
+      },
+      {
+        "id": 1784527619255,
+        "name": "냉각수 교체",
+        "category": "오일류",
+        "partsCost": "25000",
+        "laborCost": "",
+        "note": ""
+      }
+    ],
+    "attachedImages": []
+  },
+  {
+    "id": 1783407828040,
+    "createdAt": "2026-07-20T07:11:52.894Z",
+    "vehicleInfo": {
+      "maker": "기아",
+      "model": "모하비",
+      "year": 2009,
+      "mileage": 177000,
+      "repairDate": "2026-07-18",
       "shopName": ""
     },
     "repairItems": [
@@ -17,8 +133,9 @@
         "name": "엔진오일",
         "category": "오일류",
         "partsCost": "70000",
-        "laborCost": "20000",
-        "note": ""
+        "laborCost": "25000",
+        "note": "엔진오일, 오일필터 포함",
+        "repairDate": "2026-07-18"
       }
     ],
     "attachedImages": []
