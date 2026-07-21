@@ -128,8 +128,11 @@ foreach ($folder in $staticFolders) {
             if (Test-Path "asset/*.html") { Copy-Item -Path "asset/*.html" -Destination "$deployDir/asset/" -Force }
             if (Test-Path "asset/*.js") { Copy-Item -Path "asset/*.js" -Destination "$deployDir/asset/" -Force }
             if (Test-Path "asset/asset-react/dist") {
-                New-Item -ItemType Directory -Path "$deployDir/asset/asset-react" -Force | Out-Null
-                Copy-Item -Path "asset/asset-react/dist" -Destination "$deployDir/asset/asset-react/" -Recurse -Force
+                # asset/ 폴더 바로 아래에 리액트 빌드 산출물(index.html, assets 등) 복사하여 /asset/ 경로로 직접 진입 가능
+                Copy-Item -Path "asset/asset-react/dist/*" -Destination "$deployDir/asset/" -Recurse -Force
+                # 레거시 URL 호환을 위해 asset/asset-react/dist 경로도 유지
+                New-Item -ItemType Directory -Path "$deployDir/asset/asset-react/dist" -Force | Out-Null
+                Copy-Item -Path "asset/asset-react/dist/*" -Destination "$deployDir/asset/asset-react/dist/" -Recurse -Force
             }
         } else {
             Copy-Item -Path $folder -Destination $deployDir -Recurse

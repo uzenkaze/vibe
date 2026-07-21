@@ -297,16 +297,11 @@
             }
             
             let resolvedUrl = initialPath;
-            if (resolvedUrl.toLowerCase().startsWith('asset/')) {
-                resolvedUrl = 'asset/' + resolvedUrl.substring(6);
-            }
-            const lowerUrl = resolvedUrl.toLowerCase();
-            if (lowerUrl === 'asset/asset.html' || lowerUrl.startsWith('asset/asset.html') || 
-                lowerUrl === 'asset/asset-react/dist/index.html' || lowerUrl.startsWith('asset/asset-react/dist/index.html')) {
+            if (initialPath.startsWith('asset/') || initialPath === 'asset') {
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     resolvedUrl = 'http://localhost:5173/';
                 } else {
-                    resolvedUrl = 'asset/asset-react/dist/index.html?t=' + Date.now();
+                    resolvedUrl = 'asset/index.html?t=' + Date.now();
                 }
             }
             if (initialPath.startsWith('livetv/') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
@@ -504,20 +499,14 @@
             const frame = document.getElementById('contentFrame');
             if (!frame) return;
 
-            // 대소문자 경로 보정 (Asset -> asset)
             let resolvedUrl = url;
-            if (resolvedUrl.toLowerCase().startsWith('asset/')) {
-                resolvedUrl = 'asset/' + resolvedUrl.substring(6);
-            }
 
-            // 신규 리액트 기반 자산관리 프로젝트(asset-react) 매핑
-            const lowerUrl = resolvedUrl.toLowerCase();
-            if (lowerUrl === 'asset/asset.html' || lowerUrl.startsWith('asset/asset.html') || 
-                lowerUrl === 'asset/asset-react/dist/index.html' || lowerUrl.startsWith('asset/asset-react/dist/index.html')) {
+            // 자산관리 프로젝트(asset) 매핑
+            if (url.startsWith('asset/') || url === 'asset') {
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     resolvedUrl = 'http://localhost:5173/';
                 } else {
-                    resolvedUrl = 'asset/asset-react/dist/index.html?t=' + Date.now();
+                    resolvedUrl = 'asset/index.html?t=' + Date.now();
                 }
             }
 
@@ -573,7 +562,12 @@
             
             // Update URL using History API instead of hash
             if (updateHash) {
-                const cleanPath = url.replace('home.html', '').replace('./', '');
+                let cleanPath = url.replace('home.html', '').replace('./', '');
+                if (cleanPath === 'asset' || cleanPath.startsWith('asset/')) cleanPath = 'asset/';
+                if (cleanPath === 'carrep' || cleanPath.startsWith('carrep/')) cleanPath = 'carrep/';
+                if (cleanPath === 'learn' || cleanPath.startsWith('learn/')) cleanPath = 'learn/';
+                if (cleanPath === 'livetv' || cleanPath.startsWith('livetv/')) cleanPath = 'livetv/';
+                if (cleanPath === 'mPlay' || cleanPath.startsWith('mPlay/')) cleanPath = 'mPlay/';
                 const targetUrl = BASE_PATH + cleanPath;
                 history.pushState(null, '', targetUrl);
             }
