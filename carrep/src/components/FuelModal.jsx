@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from './FuelModal.module.css'
 import FormattedNumberInput from './FormattedNumberInput'
 
@@ -16,14 +16,35 @@ export default function FuelModal({ isOpen, onClose, fuelHistory = [], onSaveFue
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [editingId, setEditingId] = useState(null)
 
-  // 단가와 금액 입력 시 자동 주유량 계산
+  // 마지막으로 수동 입력한 필드 추적 ('amount' | 'unitPrice' | 'volume')
+  const lastChanged = useRef(null)
+
+  // 자동계산: 세 필드 중 두 개 입력 → 나머지 하나 자동계산
   useEffect(() => {
-    const amt = Number(amount) || 0
-    const price = Number(unitPrice) || 0
-    if (amt > 0 && price > 0) {
-      setVolume((amt / price).toFixed(2))
+    const amt = parseFloat(String(amount).replace(/,/g, '')) || 0
+    const price = parseFloat(String(unitPrice).replace(/,/g, '')) || 0
+    const vol = parseFloat(String(volume).replace(/,/g, '')) || 0
+
+    // 마지막으로 변경된 필드를 제외하고, 나머지 두 값으로 계산
+    if (lastChanged.current === 'volume') {
+      // 주유량 입력 → 단가 + 주유량으로 금액 계산
+      if (price > 0 && vol > 0) {
+        setAmount(Math.round(price * vol).toString())
+      }
+    } else if (lastChanged.current === 'amount') {
+      // 금액 입력 → 금액 + 단가로 주유량 계산
+      if (amt > 0 && price > 0) {
+        setVolume((amt / price).toFixed(2))
+      }
+    } else if (lastChanged.current === 'unitPrice') {
+      // 단가 입력 → 금액 + 단가로 주유량 계산 (금액 우선)
+      if (amt > 0 && price > 0) {
+        setVolume((amt / price).toFixed(2))
+      } else if (vol > 0 && price > 0) {
+        setAmount(Math.round(price * vol).toString())
+      }
     }
-  }, [amount, unitPrice])
+  }, [amount, unitPrice, volume])
 
   if (!isOpen) return null
 
@@ -144,13 +165,22 @@ export default function FuelModal({ isOpen, onClose, fuelHistory = [], onSaveFue
                 </div>
               </div>
 
+              {/* ─── 자동 계산 안내 배너 ─── */}
+              <div className={styles.autoCalcBanner}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'5px'}}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                주유 금액 · 단가 · 주유량 중 <strong>두 가지</strong>를 입력하면 나머지를 자동 계산합니다.
+              </div>
+
               <div className={styles.field}>
-                <label className={styles.label}>주유 금액 (원)</label>
+                <label className={styles.label}>
+                  주유 금액 (원)
+                  {lastChanged.current !== 'amount' && amount && <span className={styles.autoTag}>자동계산</span>}
+                </label>
                 <FormattedNumberInput
-                  className={styles.input}
+                  className={`${styles.input} ${lastChanged.current !== 'amount' && amount ? styles.autoCalcField : ''}`}
                   placeholder="예: 70,000"
                   value={amount}
-                  onChange={val => setAmount(val)}
+                  onChange={val => { lastChanged.current = 'amount'; setAmount(val) }}
                 />
               </div>
 
@@ -160,20 +190,23 @@ export default function FuelModal({ isOpen, onClose, fuelHistory = [], onSaveFue
                   className={styles.input}
                   placeholder="예: 1,650"
                   value={unitPrice}
-                  onChange={val => setUnitPrice(val)}
+                  onChange={val => { lastChanged.current = 'unitPrice'; setUnitPrice(val) }}
                 />
               </div>
 
               <div className={styles.field}>
-                <label className={styles.label}>주유량 (L, 자동계산)</label>
+                <label className={styles.label}>
+                  주유량 (L)
+                  {lastChanged.current !== 'volume' && volume && <span className={styles.autoTag}>자동계산</span>}
+                </label>
                 <input
                   type="number"
                   step="0.01"
-                  className={`${styles.input} ${styles.inputRight}`}
+                  className={`${styles.input} ${styles.inputRight} ${lastChanged.current !== 'volume' && volume ? styles.autoCalcField : ''}`}
                   style={{ textAlign: 'right', fontWeight: 800 }}
                   placeholder="0.00"
                   value={volume}
-                  onChange={e => setVolume(e.target.value)}
+                  onChange={e => { lastChanged.current = 'volume'; setVolume(e.target.value) }}
                 />
               </div>
 
