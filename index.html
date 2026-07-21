@@ -319,15 +319,14 @@
                     resolvedUrl = 'hobby/index.html';
                 }
             }
+            if (initialPath.startsWith('carrep/') || initialPath === 'carrep') {
+                resolvedUrl = 'carrep/index.html';
+            }
             
             window.__initialResolvedUrl = resolvedUrl;
+            // iframe src를 스크립트 실행 시점에 바로 세팅 (about:blank 경유 없이 즉시 로드)
+            document.write('<iframe id="contentFrame" src="' + resolvedUrl + '" style="width:100%;height:100%;border:none;z-index:10;"></iframe>');
         })();
-    </script>
-    <iframe id="contentFrame" src="about:blank"></iframe>
-    <script>
-        if (window.__initialResolvedUrl) {
-            document.getElementById('contentFrame').src = window.__initialResolvedUrl;
-        }
     </script>
 
     <!-- Global Player UI -->
@@ -550,9 +549,9 @@
                     resolvedUrl = 'learn/index.html';
                 }
             }
-            // carrep 경로 요청 시 carrep/dist/index.html로 라우팅
+            // carrep 경로 요청 시 carrep/index.html로 라우팅
             if (url.startsWith('carrep/') || url === 'carrep') {
-                resolvedUrl = 'carrep/dist/index.html';
+                resolvedUrl = 'carrep/index.html';
             }
 
             try {
