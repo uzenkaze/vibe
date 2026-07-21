@@ -89,12 +89,74 @@ export default function RepairListPage({
     if (updatedList.length === 0) setIsHistoryModalOpen(false)
   }
 
-  // ── 정비목록 정렬 ──
+  // ── 정비목록 연도 필터 및 그룹핑 ──
+  const [yearFilter, setYearFilter] = useState('all') // 'all' | '2026' | '2025' ...
+
+  const getReportYear = (r) => {
+    const dates = (r.repairItems || []).map(i => i.repairDate).filter(Boolean)
+    const dateStr = dates[0] || r.createdAt
+    if (!dateStr) return '기타'
+    const y = new Date(dateStr).getFullYear()
+    return isNaN(y) ? '기타' : String(y)
+  }
+
   const sorted = [...reports].sort((a, b) => {
     const da = (a.repairItems || []).map(i => i.repairDate).filter(Boolean).sort().reverse()[0] || a.createdAt
     const db = (b.repairItems || []).map(i => i.repairDate).filter(Boolean).sort().reverse()[0] || b.createdAt
     return new Date(db) - new Date(da)
   })
+
+  // 사용 가능한 모든 연도 목록 (내림차순 정렬)
+  const availableYears = Array.from(
+    new Set(sorted.map(r => getReportYear(r)))
+  ).sort((a, b) => (b === '기타' ? -1 : a === '기타' ? 1 : Number(b) - Number(a)))
+
+  // 연도별 그룹 생성
+  const groupedReports = sorted.reduce((acc, report) => {
+    const year = getReportYear(report)
+    if (!acc[year]) acc[year] = []
+    acc[year].push(report)
+    return acc
+  }, {})
+
+  const renderRepairCard = (r) => {
+    const total = (r.repairItems || []).reduce((s, i) => s + (Number(i.partsCost)||0) + (Number(i.laborCost)||0), 0)
+    const grandTotal = total + Math.round(total * 0.1)
+    const names = (r.repairItems || []).map(i => i.name).filter(Boolean)
+    const title = names.length > 0 ? names.join(', ') : '정비 항목'
+    const dates = (r.repairItems || []).map(i => i.repairDate).filter(Boolean)
+    const date = dates[0] || new Date(r.createdAt).toLocaleDateString('ko-KR')
+    const itemCount = (r.repairItems || []).length
+
+    return (
+      <div key={r.id} className={styles.repairCard} onClick={() => onSelectReport(r)}>
+        <div className={styles.repairCardLeft}>
+          <div className={styles.repairDateTag}>{date}</div>
+          <div className={styles.repairTitle}>{title}</div>
+          <div className={styles.repairMeta}>
+            <span className={styles.repairItemCount}>항목 {itemCount}개</span>
+            <span className={styles.repairDot}>·</span>
+            <span className={styles.repairPrice}>{grandTotal.toLocaleString()}원</span>
+          </div>
+        </div>
+        <div className={styles.repairCardRight} onClick={e => e.stopPropagation()}>
+          <button className={styles.btnView} onClick={() => onSelectReport(r)}>
+            보기 →
+          </button>
+          <button
+            className={styles.btnDelete}
+            onClick={() => onDeleteReport(r.id)}
+            title="삭제"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.page}>
@@ -157,46 +219,47 @@ export default function RepairListPage({
                 </button>
               </div>
             ) : (
-              <div className={styles.repairList}>
-                {sorted.map(r => {
-                  const total = (r.repairItems || []).reduce((s, i) => s + (Number(i.partsCost)||0) + (Number(i.laborCost)||0), 0)
-                  const grandTotal = total + Math.round(total * 0.1)
-                  const names = (r.repairItems || []).map(i => i.name).filter(Boolean)
-                  const title = names.length > 0 ? names.join(', ') : '정비 항목'
-                  const dates = (r.repairItems || []).map(i => i.repairDate).filter(Boolean)
-                  const date = dates[0] || new Date(r.createdAt).toLocaleDateString('ko-KR')
-                  const itemCount = (r.repairItems || []).length
+              <>
+                {/* 연도별 필터 칩 영역 */}
+                <div className={styles.yearFilterBar}>
+                  <button
+                    className={`${styles.yearChip} ${yearFilter === 'all' ? styles.yearChipActive : ''}`}
+                    onClick={() => setYearFilter('all')}
+                  >
+                    전체 ({sorted.length})
+                  </button>
+                  {availableYears.map(yr => (
+                    <button
+                      key={yr}
+                      className={`${styles.yearChip} ${yearFilter === yr ? styles.yearChipActive : ''}`}
+                      onClick={() => setYearFilter(yr)}
+                    >
+                      {yr === '기타' ? yr : `${yr}년`} ({groupedReports[yr]?.length || 0})
+                    </button>
+                  ))}
+                </div>
 
-                  return (
-                    <div key={r.id} className={styles.repairCard} onClick={() => onSelectReport(r)}>
-                      <div className={styles.repairCardLeft}>
-                        <div className={styles.repairDateTag}>{date}</div>
-                        <div className={styles.repairTitle}>{title}</div>
-                        <div className={styles.repairMeta}>
-                          <span className={styles.repairItemCount}>항목 {itemCount}개</span>
-                          <span className={styles.repairDot}>·</span>
-                          <span className={styles.repairPrice}>{grandTotal.toLocaleString()}원</span>
+                {/* 정비 내역 목록 (전체일 때는 연도별로 묶어서 표시) */}
+                <div className={styles.repairListContainer}>
+                  {yearFilter === 'all' ? (
+                    availableYears.map(yr => (
+                      <div key={yr} className={styles.yearGroupSection}>
+                        <div className={styles.yearGroupTitleRow}>
+                          <span className={styles.yearGroupBadge}>{yr === '기타' ? yr : `${yr}년`}</span>
+                          <span className={styles.yearGroupCount}>{groupedReports[yr].length}건의 정비</span>
+                        </div>
+                        <div className={styles.repairList}>
+                          {groupedReports[yr].map(r => renderRepairCard(r))}
                         </div>
                       </div>
-                      <div className={styles.repairCardRight} onClick={e => e.stopPropagation()}>
-                        <button className={styles.btnView} onClick={() => onSelectReport(r)}>
-                          보기 →
-                        </button>
-                        <button
-                          className={styles.btnDelete}
-                          onClick={() => onDeleteReport(r.id)}
-                          title="삭제"
-                        >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-                            <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-                          </svg>
-                        </button>
-                      </div>
+                    ))
+                  ) : (
+                    <div className={styles.repairList}>
+                      {(groupedReports[yearFilter] || []).map(r => renderRepairCard(r))}
                     </div>
-                  )
-                })}
-              </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         )}
