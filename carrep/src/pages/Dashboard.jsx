@@ -10,14 +10,80 @@ function BrandLogo({ maker }) {
   const isHyundai = maker && (maker.includes('현대') || maker.includes('HYUNDAI'))
 
   if (isKia) {
+    // 2021 New KIA Logo - 이탤릭 필체 스타일, 연속 획 디자인
     return (
-      <svg width="92" height="26" viewBox="0 0 100 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.kiaLogoSvg} title="기아 (KIA)">
+      <svg
+        width="100"
+        height="34"
+        viewBox="0 0 340 110"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={styles.kiaLogoSvg}
+        title="기아 (KIA)"
+      >
+        {/*
+          새 KIA 로고 (2021 리브랜딩):
+          - 이탤릭 기울기: 약 15도 우측 상향 경사
+          - 굵고 연속적인 획 느낌
+          - K: 수직획 + 상단 대각선 + 하단 대각선 (중간 꺾임)
+          - I: 단순 사선 획
+          - A: 역V 형태 + 가로 획, 이탤릭 기울기 적용
+        */}
+        {/* K - 왼쪽 세로획 */}
         <path
-          d="M 8 26 V 6 L 34 26 V 6 L 60 6 V 26 L 86 6 V 26"
+          d="M 18 92 L 30 18"
           stroke="currentColor"
-          strokeWidth="7.5"
+          strokeWidth="14"
           strokeLinecap="round"
-          strokeLinejoin="miter"
+        />
+        {/* K - 오른쪽 위 대각선 */}
+        <path
+          d="M 30 18 L 70 50"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* K - 오른쪽 아래 대각선 */}
+        <path
+          d="M 28 52 L 72 92"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
+        />
+        {/* I - 사선 단획 */}
+        <line
+          x1="100"
+          y1="20"
+          x2="90"
+          y2="92"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
+        />
+        {/* A - 왼쪽 대각선 */}
+        <path
+          d="M 118 92 L 148 18"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
+        />
+        {/* A - 오른쪽 대각선 */}
+        <path
+          d="M 148 18 L 178 92"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
+        />
+        {/* A - 가로 중간 획 */}
+        <line
+          x1="128"
+          y1="62"
+          x2="163"
+          y2="62"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
         />
       </svg>
     )
