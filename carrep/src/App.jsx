@@ -77,6 +77,19 @@ export default function App() {
   // Fuel modal state
   const [isFuelModalOpen, setIsFuelModalOpen] = useState(false)
 
+  // RepairListPage active tab state ('list' | 'consumables')
+  const [repairListTab, setRepairListTab] = useState('list')
+
+  const handleGoToConsumablesTab = () => {
+    setRepairListTab('consumables')
+    setStep(4)
+  }
+
+  const handleGoToRepairListStep = () => {
+    setRepairListTab('list')
+    setStep(4)
+  }
+
   const [fuelHistory, setFuelHistory] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('carrep_fuel_history') || '[]')
@@ -568,6 +581,7 @@ export default function App() {
           onOpenInsuranceModal={() => setIsInsuranceModalOpen(true)}
           onOpenInspectionModal={() => setIsInspectionModalOpen(true)}
           onNext={handleGoToRepairStep}
+          onGoConsumables={handleGoToConsumablesTab}
           onSelectReport={handleSelectReport}
           onEditReport={handleEditReport}
           onDeleteReport={handleDeleteReport}
@@ -580,6 +594,7 @@ export default function App() {
           reports={reports}
           myCar={myCar}
           vehicleInfo={vehicleInfo}
+          initialTab={repairListTab}
           onSelectReport={handleSelectReportFromList}
           onDeleteReport={handleDeleteReport}
           onGoRepair={() => setStep(2)}
@@ -659,7 +674,7 @@ export default function App() {
         activeStep={step}
         onGoHome={() => setStep(1)}
         onGoRepair={() => setStep(2)}
-        onGoRepairList={() => setStep(4)}
+        onGoRepairList={handleGoToRepairListStep}
         onOpenFuel={() => setIsFuelModalOpen(true)}
         reportCount={reports.length}
       />

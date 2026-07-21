@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './RepairListPage.module.css'
 import { getMaintenanceStatus } from '../utils/carMaintenance'
 import MaintenanceRegisterModal from '../components/MaintenanceRegisterModal'
@@ -8,6 +8,7 @@ export default function RepairListPage({
   reports = [],
   myCar,
   vehicleInfo,
+  initialTab = 'list',
   onSelectReport,
   onDeleteReport,
   onGoRepair,
@@ -15,7 +16,13 @@ export default function RepairListPage({
   repairItems,
   setRepairItems,
 }) {
-  const [activeTab, setActiveTab] = useState('list') // 'list' | 'consumables'
+  const [activeTab, setActiveTab] = useState(initialTab) // 'list' | 'consumables'
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
 
   // ── 소모품 정비 이력 상태 ──
   const [historyMap, setHistoryMap] = useState(() => {

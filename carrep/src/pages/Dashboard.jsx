@@ -123,6 +123,7 @@ export default function Dashboard({
   onOpenInsuranceModal,
   onOpenInspectionModal,
   onNext,
+  onGoConsumables,
   onSelectReport,
   onEditReport,
   onDeleteReport,
@@ -484,7 +485,7 @@ export default function Dashboard({
               </svg>
               주요 정비 소모품
             </span>
-            <button className={styles.detailBtn} onClick={() => { if (onNext) onNext() }}>
+            <button className={styles.detailBtn} onClick={() => { if (onGoConsumables) onGoConsumables(); else if (onNext) onNext(); }}>
               전체보기 &gt;
             </button>
           </div>
