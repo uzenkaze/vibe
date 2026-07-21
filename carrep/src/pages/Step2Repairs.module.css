@@ -348,21 +348,22 @@
 .btnPrimary:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .btnAdd {
-  background: var(--bg-btn-primary);
-  color: var(--text-btn-primary);
-  border: none;
-  padding: 6px 14px !important;
-  font-size: 0.78rem !important;
+  background: #32353b;
+  color: #ffffff;
+  border: 1px solid #4b5563;
+  padding: 5px 12px !important;
+  font-size: 0.74rem !important;
   font-weight: 700 !important;
-  border-radius: 10px !important;
-  height: 32px;
+  border-radius: 9px !important;
+  height: 28px;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   line-height: 1;
 }
 .btnAdd:hover:not(:disabled) {
-  background: var(--bg-btn-primary-hover);
+  background: #3e4249;
+  border-color: #6b7280;
   transform: translateY(-1px);
 }
 .btnAdd:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -505,17 +506,28 @@
 
 [data-theme="light"] .dropText { color: #0f172a; }
 
-[data-theme="light"] .btnPrimary,
-[data-theme="light"] .btnAdd {
+[data-theme="light"] .btnPrimary {
   background: #2563eb;
   color: #ffffff;
   box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
 }
 
-[data-theme="light"] .btnPrimary:hover:not(:disabled),
-[data-theme="light"] .btnAdd:hover:not(:disabled) {
+[data-theme="light"] .btnPrimary:hover:not(:disabled) {
   background: #1d4ed8;
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+}
+
+[data-theme="light"] .btnAdd {
+  background: #ffffff;
+  color: #2563eb;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+[data-theme="light"] .btnAdd:hover:not(:disabled) {
+  background: #eff6ff;
+  border-color: #1d4ed8;
+  color: #1d4ed8;
 }
 
 [data-theme="light"] .btnGhost {
@@ -700,19 +712,30 @@
 }
 
 [data-theme="light"] .btnPrimary,
-[data-theme="light"] .btnSaveAction,
-[data-theme="light"] .btnAdd {
+[data-theme="light"] .btnSaveAction {
   background: #0f172a !important;
   color: #ffffff !important;
   border-color: #0f172a !important;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2) !important;
 }
 
+[data-theme="light"] .btnAdd {
+  background: #ffffff !important;
+  color: #2563eb !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12) !important;
+}
+
 [data-theme="light"] .btnPrimary:hover:not(:disabled),
-[data-theme="light"] .btnSaveAction:hover:not(:disabled),
-[data-theme="light"] .btnAdd:hover:not(:disabled) {
+[data-theme="light"] .btnSaveAction:hover:not(:disabled) {
   background: #1e293b !important;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.3) !important;
+}
+
+[data-theme="light"] .btnAdd:hover:not(:disabled) {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
 }
 
 [data-theme="light"] .actionBadgeIcon {
@@ -864,20 +887,26 @@
 }
 
 [data-theme="light"] .btnAdd {
-  background: #0f172a !important;
-  border: 1px solid #0f172a !important;
-  color: #ffffff !important;
-  border-radius: 12px !important;
-  padding: 8px 16px !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+  background: #ffffff !important;
+  border: 1px solid #2563eb !important;
+  color: #2563eb !important;
+  border-radius: 9px !important;
+  padding: 5px 12px !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12) !important;
 }
 
 [data-theme="light"] .btnPrimary:hover:not(:disabled),
-[data-theme="light"] .btnAdd:hover:not(:disabled),
 [data-theme="light"] .btnFullWidth:hover:not(:disabled) {
   background: #1e293b !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35) !important;
+}
+
+[data-theme="light"] .btnAdd:hover:not(:disabled) {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+  transform: translateY(-1px) !important;
 }
 
 [data-theme="light"] .btnGhost {
