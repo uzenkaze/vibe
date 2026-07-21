@@ -10,81 +10,19 @@ function BrandLogo({ maker }) {
   const isHyundai = maker && (maker.includes('현대') || maker.includes('HYUNDAI'))
 
   if (isKia) {
-    // 2021 New KIA Logo - 이탤릭 필체 스타일, 연속 획 디자인
+    // 공식 KIA 2021 리브랜딩 로고 (Simple Icons / kia.com 동일 path)
     return (
       <svg
-        width="100"
-        height="34"
-        viewBox="0 0 340 110"
-        fill="none"
+        role="img"
+        viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
+        width="108"
+        height="38"
+        fill="currentColor"
         className={styles.kiaLogoSvg}
         title="기아 (KIA)"
       >
-        {/*
-          새 KIA 로고 (2021 리브랜딩):
-          - 이탤릭 기울기: 약 15도 우측 상향 경사
-          - 굵고 연속적인 획 느낌
-          - K: 수직획 + 상단 대각선 + 하단 대각선 (중간 꺾임)
-          - I: 단순 사선 획
-          - A: 역V 형태 + 가로 획, 이탤릭 기울기 적용
-        */}
-        {/* K - 왼쪽 세로획 */}
-        <path
-          d="M 18 92 L 30 18"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-        />
-        {/* K - 오른쪽 위 대각선 */}
-        <path
-          d="M 30 18 L 70 50"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* K - 오른쪽 아래 대각선 */}
-        <path
-          d="M 28 52 L 72 92"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-        />
-        {/* I - 사선 단획 */}
-        <line
-          x1="100"
-          y1="20"
-          x2="90"
-          y2="92"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-        />
-        {/* A - 왼쪽 대각선 */}
-        <path
-          d="M 118 92 L 148 18"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-        />
-        {/* A - 오른쪽 대각선 */}
-        <path
-          d="M 148 18 L 178 92"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-        />
-        {/* A - 가로 중간 획 */}
-        <line
-          x1="128"
-          y1="62"
-          x2="163"
-          y2="62"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-        />
+        <path d="M13.923 14.175c0 .046.015.072.041.072a.123.123 0 0 0 .058-.024l7.48-4.854a.72.72 0 0 1 .432-.13h1.644c.252 0 .422.168.422.42v3.139c0 .38-.084.6-.42.801l-1.994 1.2a.137.137 0 0 1-.067.024c-.024 0-.048-.019-.048-.088v-3.663c0-.043-.012-.071-.041-.071a.113.113 0 0 0-.058.024l-5.466 3.551a.733.733 0 0 1-.42.127h-3.624c-.254 0-.422-.168-.422-.422V9.757c0-.033-.015-.064-.044-.064a.118.118 0 0 0-.057.024L7.732 11.88c-.036.024-.046.041-.046.058 0 .014.008.029.032.055l2.577 2.575c.034.034.058.06.058.089 0 .024-.039.043-.084.043H7.94c-.183 0-.324-.026-.423-.125l-1.562-1.56a.067.067 0 0 0-.048-.024.103.103 0 0 0-.048.015l-2.61 1.57a.72.72 0 0 1-.423.122H.425C.168 14.7 0 14.53 0 14.279v-3.08c0-.38.084-.6.422-.8L2.43 9.192a.103.103 0 0 1 .052-.016c.032 0 .048.03.048.1V13.4c0 .043.01.063.041.063a.144.144 0 0 0 .06-.024L9.407 9.36a.733.733 0 0 1 .446-.124h3.648c.252 0 .422.168.422.42l-.002 4.518z" />
       </svg>
     )
   }
