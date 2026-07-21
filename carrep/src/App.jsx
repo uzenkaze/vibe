@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react'
 import './index.css'
 import AppLayout from './components/AppLayout'
-import Step1Vehicle from './pages/Step1Vehicle'
+import Dashboard from './pages/Dashboard'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
 import GitHubModal from './components/GitHubModal'
 import MyCarModal from './components/MyCarModal'
+import InsuranceModal from './components/InsuranceModal'
+import InspectionModal from './components/InspectionModal'
+import FuelModal from './components/FuelModal'
+import RepairListModal from './components/RepairListModal'
+import BottomNav from './components/BottomNav'
 import { getGithubJson, saveGithubJson, validateGithubToken } from './utils/githubDb'
 
 const API_BASE = 'http://localhost:5500'
@@ -14,108 +19,274 @@ const MYCAR_PATH = 'carrep/public/data/mycar.json'
 
 export default function App() {
   const [step, setStep] = useState(1)
-  const [vehicleInfo, setVehicleInfo] = useState({
-    maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: ''
+  const [vehicleInfo, setVehicleInfo] = useState(() => {
+    try {
+      const cached = localStorage.getItem('carrep_cached_mycar') || localStorage.getItem('carrep_temp_mycar')
+      if (cached) {
+        const car = JSON.parse(cached)
+        return {
+          maker: car.maker || '',
+          model: car.model || '',
+          year: car.year || '',
+          mileage: car.mileage || '',
+          repairDate: '',
+          shopName: '',
+          color: car.color || '',
+          driveType: car.driveType || '2WD',
+          fuelType: car.fuelType || '경유',
+          regDate: car.regDate || '2008.11.20',
+          fuelEconomy: car.fuelEconomy || '9.4 km/L',
+          tireSize: car.tireSize || '265/60R18',
+          engineDisp: car.engineDisp || '2,959 cc'
+        }
+      }
+    } catch (e) {}
+    return { maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '', driveType: '2WD', fuelType: '경유', regDate: '2008.11.20', fuelEconomy: '9.4 km/L', tireSize: '265/60R18', engineDisp: '2,959 cc' }
   })
   const [repairItems, setRepairItems] = useState([])
   const [attachedImages, setAttachedImages] = useState([])
-  const [reports, setReports] = useState([])
+  const [reports, setReports] = useState(() => {
+    try {
+      const cached = localStorage.getItem('carrep_cached_reports')
+      return cached ? JSON.parse(cached) : []
+    } catch (e) { return [] }
+  })
   const [savedReportId, setSavedReportId] = useState(null)
-  const [myCar, setMyCar] = useState(null)
+  const [myCar, setMyCar] = useState(() => {
+    try {
+      const cached = localStorage.getItem('carrep_cached_mycar') || localStorage.getItem('carrep_temp_mycar')
+      return cached ? JSON.parse(cached) : null
+    } catch (e) { return null }
+  })
   
   // GitHub integration & modal states
   const [githubToken, setGithubToken] = useState(localStorage.getItem('carrep_github_token') || '')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMyCarModalOpen, setIsMyCarModalOpen] = useState(false)
-  
+  const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false)
+  const [isInspectionModalOpen, setIsInspectionModalOpen] = useState(false)
+
+  // Insurance & Inspection state
+  const [insurance, setInsurance] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('carrep_insurance') || 'null') } catch { return null }
+  })
+  const [inspection, setInspection] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('carrep_inspection') || 'null') } catch { return null }
+  })
+
+  // Fuel & Repair List modal states
+  const [isFuelModalOpen, setIsFuelModalOpen] = useState(false)
+  const [isRepairListModalOpen, setIsRepairListModalOpen] = useState(false)
+
+  const [fuelHistory, setFuelHistory] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('carrep_fuel_history') || '[]')
+    } catch (e) { return [] }
+  })
+
+  const handleSaveFuel = (newItem) => {
+    const exists = fuelHistory.some(f => f.id === newItem.id)
+    let updated
+    if (exists) {
+      updated = fuelHistory.map(f => f.id === newItem.id ? newItem : f)
+    } else {
+      updated = [newItem, ...fuelHistory]
+    }
+    setFuelHistory(updated)
+    localStorage.setItem('carrep_fuel_history', JSON.stringify(updated))
+    showToast('주유 정보가 저장되었습니다.', 'success')
+  }
+
+  const handleDeleteFuel = (fuelId) => {
+    const updated = fuelHistory.filter(f => f.id !== fuelId)
+    setFuelHistory(updated)
+    localStorage.setItem('carrep_fuel_history', JSON.stringify(updated))
+    showToast('주유 기록이 삭제되었습니다.', 'info')
+  }
+
   // Connection status: 'local' | 'cloud' | 'remote' | 'offline'
   const [dbStatus, setDbStatus] = useState('offline')
+  const [toast, setToast] = useState({ show: false, message: '', type: 'warning' })
 
-  // Hybrid Data Loading Chain
+  const showToast = (message, type = 'warning', duration = 5000) => {
+    setToast({ show: true, message, type })
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }))
+    }, duration)
+  }
+
+  // Hybrid Fast Parallel Data Loading Chain
   const loadData = async (tokenVal = githubToken) => {
-    // 1. Try loading from Live Local API Server (localhost:5500)
-    try {
-      const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
-      if (reportsRes.ok) {
-        const reportsData = await reportsRes.json()
-        setReports(reportsData)
-        
-        const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
-        if (myCarRes.ok) {
-          const myCarData = await myCarRes.json()
-          setMyCar(myCarData)
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+
+    // 1. Try loading from Live Local API Server ONLY if on localhost (Avoid 5s timeout on web)
+    if (isLocalhost) {
+      try {
+        const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
+        if (reportsRes.ok) {
+          const reportsData = await reportsRes.json()
+          setReports(reportsData)
+          localStorage.setItem('carrep_cached_reports', JSON.stringify(reportsData))
+          
+          let loadedMyCar = null
+          const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
+          if (myCarRes.ok) {
+            loadedMyCar = await myCarRes.json()
+            setMyCar(loadedMyCar)
+            if (loadedMyCar) localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
+          }
+          setDbStatus('local')
+          console.log('[CarRep] Loaded data from local backend server JSON.')
+          return loadedMyCar
         }
-        setDbStatus('local')
-        console.log('[CarRep] Loaded data from local backend server JSON.')
-        return
+      } catch (e) {
+        console.warn('[CarRep] Local API server not reachable.')
       }
-    } catch (e) {
-      console.warn('[CarRep] Local API server not reachable, trying direct GitHub API / Pages...')
     }
 
-    // 2. Try loading from direct GitHub Contents API (if token is available)
+    // 2. Direct GitHub Contents API Mode (Parallel fetch with Promise.all for speed)
     if (tokenVal) {
-      const isValid = await validateGithubToken(tokenVal)
-      if (isValid) {
-        try {
-          const reportsRes = await getGithubJson(REPORTS_PATH, tokenVal)
-          // Even if file doesn't exist yet (reportsRes is null), the connection itself is valid
-          setReports(reportsRes ? (reportsRes.content || []) : [])
-          
-          const myCarRes = await getGithubJson(MYCAR_PATH, tokenVal)
-          setMyCar(myCarRes ? (myCarRes.content || null) : null)
-          
-          setDbStatus('cloud')
-          console.log('[CarRep] GitHub Cloud DB connection established (Direct API Mode).')
-          return
-        } catch (e) {
-          console.warn('[CarRep] GitHub API read error, falling back to static Pages...', e)
+      try {
+        const [reportsRes, myCarRes] = await Promise.all([
+          getGithubJson(REPORTS_PATH, tokenVal).catch(() => null),
+          getGithubJson(MYCAR_PATH, tokenVal).catch(() => null)
+        ])
+
+        const reportsContent = reportsRes ? (reportsRes.content || []) : []
+        const loadedMyCar = myCarRes ? (myCarRes.content || null) : null
+
+        setReports(reportsContent)
+        localStorage.setItem('carrep_cached_reports', JSON.stringify(reportsContent))
+
+        if (loadedMyCar) {
+          setMyCar(loadedMyCar)
+          localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
         }
-      } else {
-        console.warn('[CarRep] GitHub token is invalid or expired.')
+
+        setDbStatus('cloud')
+        console.log('[CarRep] GitHub Cloud DB connection established (Parallel API Mode).')
+        return loadedMyCar
+      } catch (e) {
+        console.warn('[CarRep] GitHub API read error, falling back to static Pages...', e)
       }
     }
 
-    // 3. Try loading from GitHub Pages deployed Static JSON files (anonymous public)
+    // 3. GitHub Pages Deployed Static JSON Mode (Parallel fetch)
     try {
       const basePath = window.location.pathname.includes('/vibe') ? '/vibe/carrep' : '/carrep'
-      const reportsRes = await fetch(`${basePath}/data/reports.json?t=${Date.now()}`)
-      if (reportsRes.ok) {
-        const reportsData = await reportsRes.json()
-        setReports(reportsData)
+      const [reportsRes, myCarRes] = await Promise.all([
+        fetch(`${basePath}/data/reports.json?t=${Date.now()}`).catch(() => null),
+        fetch(`${basePath}/data/mycar.json?t=${Date.now()}`).catch(() => null)
+      ])
 
-        const myCarRes = await fetch(`${basePath}/data/mycar.json?t=${Date.now()}`)
-        if (myCarRes.ok) {
-          const myCarData = await myCarRes.json()
-          setMyCar(myCarData)
+      let reportsData = []
+      let loadedMyCar = null
+
+      if (reportsRes && reportsRes.ok) {
+        reportsData = await reportsRes.json()
+
+        // Merge user modified cached reports from localStorage if available
+        const cachedStr = localStorage.getItem('carrep_cached_reports')
+        if (cachedStr) {
+          try {
+            const cachedReports = JSON.parse(cachedStr)
+            if (Array.isArray(cachedReports) && cachedReports.length > 0) {
+              const reportMap = new Map()
+              reportsData.forEach(r => reportMap.set(String(r.id), r))
+              cachedReports.forEach(r => reportMap.set(String(r.id), r))
+              reportsData = Array.from(reportMap.values())
+            }
+          } catch (e) {}
         }
+
+        setReports(reportsData)
+        localStorage.setItem('carrep_cached_reports', JSON.stringify(reportsData))
+      }
+
+      if (myCarRes && myCarRes.ok) {
+        loadedMyCar = await myCarRes.json()
+        setMyCar(loadedMyCar)
+        if (loadedMyCar) localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
+      }
+
+      if (reportsRes?.ok || myCarRes?.ok) {
         setDbStatus('remote')
-        console.log('[CarRep] Loaded data from GitHub Pages static JSON (Read-only).')
-        return
+        return loadedMyCar
       }
     } catch (e) {
-      console.warn('[CarRep] GitHub Pages static JSON database not reachable.')
+      console.warn('[CarRep] Static JSON database fetch error.')
     }
 
     setDbStatus('offline')
-    setReports([])
-    setMyCar(null)
+    const tempMyCar = localStorage.getItem('carrep_temp_mycar') || localStorage.getItem('carrep_cached_mycar')
+    const loadedTempMyCar = tempMyCar ? JSON.parse(tempMyCar) : null
+    setMyCar(loadedTempMyCar)
+    return loadedTempMyCar
   }
 
   useEffect(() => {
-    loadData()
+    loadData().then(carData => {
+      if (githubToken && (!carData || !carData.maker)) {
+        showToast('🚗 GitHub에 연결되었으나 등록된 내 차량 정보가 없습니다. 차량을 먼저 등록하세요.', 'warning', 6000)
+      }
+    })
   }, [githubToken])
+
+  // GitHub 연결 또는 데이터 로드 완료 시 등록된 내 차량 정보가 있으면 자동으로 차량 정보에 반영
+  useEffect(() => {
+    if (myCar) {
+      setVehicleInfo(prev => ({
+        ...prev,
+        maker: myCar.maker || '',
+        model: myCar.model || '',
+        year: myCar.year || '',
+        mileage: myCar.mileage || '',
+        color: myCar.color || ''
+      }))
+    }
+  }, [myCar])
 
   const goNext = () => setStep(s => Math.min(s + 1, 3))
   const goPrev = () => setStep(s => Math.max(s - 1, 1))
   const goToStep = (n) => setStep(n)
 
   const handleReset = () => {
-    setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '' })
+    setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '' })
     setRepairItems([])
     setAttachedImages([])
     setSavedReportId(null)
     setStep(1)
+  }
+
+  const handleLogoClick = () => {
+    setStep(1)
+    setRepairItems([])
+    setAttachedImages([])
+    setSavedReportId(null)
+
+    // Registered vehicle info fast retrieval
+    const cachedMyCarStr = localStorage.getItem('carrep_cached_mycar') || localStorage.getItem('carrep_temp_mycar')
+    let activeCar = myCar
+    if (!activeCar && cachedMyCarStr) {
+      try {
+        activeCar = JSON.parse(cachedMyCarStr)
+        setMyCar(activeCar)
+      } catch (e) {}
+    }
+
+    if (activeCar && activeCar.maker) {
+      setVehicleInfo({
+        maker: activeCar.maker || '',
+        model: activeCar.model || '',
+        year: activeCar.year || '',
+        mileage: activeCar.mileage || '',
+        repairDate: '',
+        shopName: '',
+        color: activeCar.color || ''
+      })
+    } else {
+      setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '' })
+    }
   }
 
   const handleSelectReport = (report) => {
@@ -131,7 +302,8 @@ export default function App() {
     setRepairItems(report.repairItems)
     setAttachedImages(report.attachedImages || [])
     setSavedReportId(report.id)
-    setStep(1)
+    setStep(2)
+    showToast('✏️ 선택한 정비 내역을 수정 모드로 불러왔습니다.', 'info', 3000)
   }
 
   // Handle Token registration and save to localStorage (with validation check)
@@ -145,32 +317,37 @@ export default function App() {
       localStorage.setItem('carrep_github_token', token)
       setGithubToken(token)
       setIsModalOpen(false)
-      alert('GitHub 토큰 인증에 성공했습니다! 데이터 연결이 활성화됩니다.')
-      loadData(token)
+      const carData = await loadData(token)
+      if (!carData || !carData.maker) {
+        showToast('🚗 GitHub에 연결되었으나 등록된 내 차량 정보가 없습니다. 차량을 먼저 등록하세요.', 'warning', 6000)
+      } else {
+        showToast('✨ GitHub 연결 및 내 차량 정보 조회가 완료되었습니다!', 'success', 4000)
+      }
     } else {
       localStorage.removeItem('carrep_github_token')
       setGithubToken('')
       setIsModalOpen(false)
-      alert('GitHub 설정 정보가 삭제되었습니다. 읽기 전용 모드로 전환됩니다.')
+      showToast('GitHub 연결이 해제되었습니다.', 'info', 3000)
       loadData('')
     }
   }
 
   const handleDeleteReport = async (id, e) => {
-    e.stopPropagation()
+    if (e) e.stopPropagation()
 
     if (!window.confirm('이 보고서를 영구 삭제하시겠습니까?')) return
+
+    const targetIdStr = String(id)
+    const updatedReports = reports.filter(r => String(r.id) !== targetIdStr)
+
+    setReports(updatedReports)
+    localStorage.setItem('carrep_cached_reports', JSON.stringify(updatedReports))
+    if (String(savedReportId) === targetIdStr) handleReset()
 
     // Scenario A: Local backend server is active
     if (dbStatus === 'local') {
       try {
-        const res = await fetch(`${API_BASE}/api/carrep/reports/${id}`, { method: 'DELETE' })
-        if (res.ok) {
-          setReports(prev => prev.filter(r => r.id !== id))
-          if (savedReportId === id) handleReset()
-          alert('보고서가 로컬 서버를 통해 정상 삭제되었습니다.')
-          return
-        }
+        await fetch(`${API_BASE}/api/carrep/reports/${id}`, { method: 'DELETE' })
       } catch (err) {
         console.error('Delete via server failed', err)
       }
@@ -179,35 +356,54 @@ export default function App() {
     // Scenario B: Client-side direct GitHub Cloud DB commit
     if (githubToken) {
       try {
-        const updatedReports = reports.filter(r => r.id !== id)
         await saveGithubJson(
           REPORTS_PATH,
           updatedReports,
           githubToken,
           `chore(data): delete repair report ${id}`
         )
-        setReports(updatedReports)
-        if (savedReportId === id) handleReset()
-        alert('보고서가 GitHub 저장소에서 직접 정상 삭제되었습니다!')
-        return
       } catch (err) {
         console.error('Delete via GitHub API failed', err)
-        alert(`⚠️ GitHub 저장소 삭제 실패: ${err.message}\n토큰 권한 및 파일 상태를 확인해 주세요.`)
-        return
       }
     }
 
-    alert('⚠️ 읽기 전용 상태입니다. 삭제 권한이 없습니다. 우측 상단의 [GitHub 설정] 버튼을 클릭해 Personal Access Token을 입력하여 등록해 주세요.')
+    showToast('🗑️ 정비 내역 보고서가 정상 삭제되었습니다.', 'info', 3000)
   }
 
-  const handleSaveReport = async () => {
+  const handleSaveReport = async (itemsToSave) => {
+    const activeRepairItems = itemsToSave && Array.isArray(itemsToSave) ? itemsToSave : repairItems
+    if (itemsToSave && Array.isArray(itemsToSave)) {
+      setRepairItems(itemsToSave)
+    }
+
+    const primaryItemDate = (activeRepairItems || []).find(it => it.repairDate)?.repairDate || vehicleInfo.repairDate
+    const syncedVehicleInfo = primaryItemDate ? { ...vehicleInfo, repairDate: primaryItemDate } : vehicleInfo
+    if (primaryItemDate && primaryItemDate !== vehicleInfo.repairDate) {
+      setVehicleInfo(syncedVehicleInfo)
+    }
+
     const newReport = {
       id: savedReportId || Date.now(),
       createdAt: new Date().toISOString(),
-      vehicleInfo,
-      repairItems,
+      vehicleInfo: syncedVehicleInfo,
+      repairItems: activeRepairItems,
       attachedImages
     }
+
+    const targetIdStr = String(newReport.id)
+    const exists = reports.some(r => String(r.id) === targetIdStr)
+
+    let updatedReports = []
+    if (exists) {
+      updatedReports = reports.map(r => String(r.id) === targetIdStr ? newReport : r)
+    } else {
+      updatedReports = [newReport, ...reports]
+    }
+
+    // Always update React state and LocalStorage cache immediately!
+    setReports(updatedReports)
+    localStorage.setItem('carrep_cached_reports', JSON.stringify(updatedReports))
+    setSavedReportId(newReport.id)
 
     // Scenario A: Local backend server is active
     if (dbStatus === 'local') {
@@ -218,9 +414,7 @@ export default function App() {
           body: JSON.stringify(newReport)
         })
         if (res.ok) {
-          await loadData()
-          setSavedReportId(newReport.id)
-          alert('보고서가 로컬 서버를 통해 저장 및 동기화되었습니다!')
+          showToast('✨ 정비내역 보고서가 성공적으로 저장되었습니다!', 'success', 4000)
           setStep(3)
           return
         }
@@ -232,33 +426,26 @@ export default function App() {
     // Scenario B: Client-side direct GitHub Cloud DB commit
     if (githubToken) {
       try {
-        let updatedReports = []
-        if (savedReportId) {
-          updatedReports = reports.map(r => r.id === savedReportId ? newReport : r)
-        } else {
-          updatedReports = [newReport, ...reports]
-        }
-
         await saveGithubJson(
           REPORTS_PATH,
           updatedReports,
           githubToken,
           savedReportId ? `chore(data): update repair report ${newReport.id}` : `chore(data): create repair report ${newReport.id}`
         )
-
-        setReports(updatedReports)
-        setSavedReportId(newReport.id)
-        alert('보고서가 GitHub 저장소에 직접 정상 저장(커밋)되었습니다!')
+        showToast('✨ 정비내역 보고서가 GitHub 및 저장소에 성공적으로 저장되었습니다!', 'success', 4000)
         setStep(3)
         return
       } catch (err) {
         console.error('Save via GitHub API failed', err)
-        alert(`⚠️ GitHub 저장소 저장 실패: ${err.message}\n토큰 유효성 및 권한(repo)을 확인하세요.`)
+        showToast(`⚠️ GitHub 저장소 저장 오류: ${err.message} (로컬 캐시에 저장됨)`, 'warning', 5000)
+        setStep(3)
         return
       }
     }
 
-    alert('⚠️ 읽기 전용 상태입니다. 저장 권한이 없습니다. 우측 상단의 [GitHub 설정] 버튼을 클릭해 Personal Access Token을 입력하여 등록해 주세요.')
+    // Scenario C: Web / Offline Mode (LocalStorage saved successfully!)
+    showToast('✨ 정비내역 보고서가 성공적으로 저장되었습니다!', 'success', 4000)
+    setStep(3)
   }
 
   const handleSaveMyCar = async (carInfo) => {
@@ -266,8 +453,29 @@ export default function App() {
       maker: carInfo.maker,
       model: carInfo.model,
       year: carInfo.year,
-      mileage: carInfo.mileage
+      mileage: carInfo.mileage,
+      color: carInfo.color || '',
+      nickname: carInfo.nickname || '',
+      plate: carInfo.plate || '',
+      grade: carInfo.grade || '',
+      driveType: carInfo.driveType || '2WD',
+      fuelType: carInfo.fuelType || '경유',
+      regDate: carInfo.regDate || '',
+      fuelEconomy: carInfo.fuelEconomy || '',
+      tireSize: carInfo.tireSize || '',
+      engineDisp: carInfo.engineDisp || ''
     }
+
+    // 차량 정보를 메인 대시보드(히어로 배너 포함)에 즉시 자동 적용 및 캐시 저장
+    localStorage.setItem('carrep_cached_mycar', JSON.stringify(myCarData))
+    setVehicleInfo(prev => ({
+      ...prev,
+      maker: myCarData.maker,
+      model: myCarData.model,
+      year: myCarData.year,
+      mileage: myCarData.mileage,
+      color: myCarData.color
+    }))
 
     // Scenario A: Local backend server is active
     if (dbStatus === 'local') {
@@ -279,7 +487,7 @@ export default function App() {
         })
         if (res.ok) {
           setMyCar(myCarData)
-          alert('내 차량 정보가 로컬 서버를 통해 저장 및 동기화되었습니다!')
+          showToast('🚗 내 차량 정보가 성공적으로 등록 및 적용되었습니다!', 'success', 4000)
           return
         }
       } catch (err) {
@@ -297,37 +505,67 @@ export default function App() {
           'chore(data): update MyCar profile'
         )
         setMyCar(myCarData)
-        alert('내 차량 정보가 GitHub 저장소에 직접 등록(커밋)되었습니다!')
+        showToast('🚗 내 차량 정보가 GitHub 저장소에 정상 등록되었습니다!', 'success', 4000)
         return
       } catch (err) {
         console.error('Save My Car via GitHub API failed', err)
-        alert(`⚠️ GitHub 저장소 저장 실패: ${err.message}`)
+        showToast(`⚠️ 내 차량 정보 저장 실패: ${err.message}`, 'warning', 5000)
         return
       }
     }
 
-    alert('⚠️ 읽기 전용 상태입니다. 내 차량 등록 권한이 없습니다. 우측 상단의 [GitHub 설정] 버튼을 클릭해 Personal Access Token을 입력하여 등록해 주세요.')
+    // 임시 로컬 환경일 경우 임시 브라우저 세션에 저장
+    setMyCar(myCarData)
+    localStorage.setItem('carrep_temp_mycar', JSON.stringify(myCarData))
+    showToast('🚗 내 차량 정보가 임시 등록 및 자동 적용되었습니다!', 'success', 4000)
+  }
+
+  const handleSaveInsurance = (data) => {
+    setInsurance(data)
+    localStorage.setItem('carrep_insurance', JSON.stringify(data))
+    showToast('🛡️ 보험 정보가 저장되었습니다!', 'success', 3000)
+  }
+
+  const handleSaveInspection = (data) => {
+    setInspection(data)
+    localStorage.setItem('carrep_inspection', JSON.stringify(data))
+    showToast('🔍 자동차 검사 기간이 저장되었습니다!', 'success', 3000)
+  }
+
+  const [presetItemName, setPresetItemName] = useState('')
+
+  const handleGoToRepairStep = (itemName = '') => {
+    setPresetItemName(typeof itemName === 'string' ? itemName : '')
+    setStep(2)
   }
 
   return (
     <AppLayout
       step={step}
       goToStep={goToStep}
+      dbStatus={dbStatus}
+      githubToken={githubToken}
       onOpenSetting={() => setIsModalOpen(true)}
       onOpenMyCar={() => setIsMyCarModalOpen(true)}
+      onLogoClick={handleLogoClick}
     >
       {step === 1 && (
-        <Step1Vehicle
-          vehicleInfo={vehicleInfo}
-          setVehicleInfo={setVehicleInfo}
-          reports={reports}
+        <Dashboard
           myCar={myCar}
+          vehicleInfo={vehicleInfo}
           dbStatus={dbStatus}
-          onSaveMyCar={handleSaveMyCar}
+          reports={reports}
+          insurance={insurance}
+          inspection={inspection}
+          onOpenMyCarModal={() => setIsMyCarModalOpen(true)}
+          onOpenInsuranceModal={() => setIsInsuranceModalOpen(true)}
+          onOpenInspectionModal={() => setIsInspectionModalOpen(true)}
+          onNext={handleGoToRepairStep}
           onSelectReport={handleSelectReport}
           onEditReport={handleEditReport}
           onDeleteReport={handleDeleteReport}
-          onNext={goNext}
+          repairItems={repairItems}
+          setRepairItems={setRepairItems}
         />
       )}
       {step === 2 && (
@@ -338,6 +576,9 @@ export default function App() {
           setAttachedImages={setAttachedImages}
           onNext={goNext}
           onPrev={goPrev}
+          onSave={handleSaveReport}
+          isSaved={!!savedReportId}
+          presetItemName={presetItemName}
         />
       )}
       {step === 3 && (
@@ -367,6 +608,78 @@ export default function App() {
         onSave={handleSaveMyCar}
         currentMyCar={myCar}
       />
+
+      {/* Insurance Modal */}
+      <InsuranceModal
+        isOpen={isInsuranceModalOpen}
+        onClose={() => setIsInsuranceModalOpen(false)}
+        onSave={handleSaveInsurance}
+        current={insurance}
+      />
+
+      {/* Inspection Modal */}
+      <InspectionModal
+        isOpen={isInspectionModalOpen}
+        onClose={() => setIsInspectionModalOpen(false)}
+        onSave={handleSaveInspection}
+        current={inspection}
+      />
+
+      {/* Fuel Management Modal */}
+      <FuelModal
+        isOpen={isFuelModalOpen}
+        onClose={() => setIsFuelModalOpen(false)}
+        fuelHistory={fuelHistory}
+        onSaveFuel={handleSaveFuel}
+        onDeleteFuel={handleDeleteFuel}
+      />
+
+      {/* Repair History List Modal */}
+      <RepairListModal
+        isOpen={isRepairListModalOpen}
+        onClose={() => setIsRepairListModalOpen(false)}
+        reports={reports}
+        onSelectReport={handleSelectReport}
+        onDeleteReport={handleDeleteReport}
+      />
+
+      {/* Bottom Floating Navigation Bar */}
+      <BottomNav
+        activeStep={step}
+        onGoHome={() => setStep(1)}
+        onGoRepair={() => setStep(2)}
+        onOpenRepairList={() => setIsRepairListModalOpen(true)}
+        onOpenFuel={() => setIsFuelModalOpen(true)}
+        reportCount={reports.length}
+      />
+
+      {/* Toast Notification Popup Banner */}
+      {toast.show && (
+        <div
+          className={`toastContainer toast${toast.type === 'warning' ? 'Warning' : toast.type === 'success' ? 'Success' : 'Info'}`}
+          onClick={() => {
+            if (toast.type === 'warning' && toast.message.includes('내 차량 정보가 없습니다')) {
+              setIsMyCarModalOpen(true)
+            }
+          }}
+          title={toast.type === 'warning' ? "클릭하여 내 차량 정보 등록하기" : ""}
+        >
+          <span className="toastIcon">
+            {toast.type === 'warning' ? '⚠️' : toast.type === 'success' ? '✨' : 'ℹ️'}
+          </span>
+          <span className="toastMessage">{toast.message}</span>
+          <button
+            className="toastClose"
+            onClick={(e) => {
+              e.stopPropagation()
+              setToast(prev => ({ ...prev, show: false }))
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </AppLayout>
   )
 }
+

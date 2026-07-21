@@ -1,24 +1,150 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap');
+
 :root {
-  --bg-primary: #0b0c10;
-  --bg-secondary: #1f2833;
-  --bg-card: #121824;
-  --accent-blue: #45f3ff;
-  --accent-red: #ff3b30;
-  --accent-orange: #fa8231;
-  --accent-green: #bef264;
-  --text-main: #f5f6fa;
-  --text-muted: #a0a8b3;
-  --border: #2f3640;
-  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  /* Default Dark Mode (Nocra AI & Tesla Mobile App UI) */
+  --bg-primary: #0e0f12;
+  --bg-secondary: #17181c;
+  --bg-card: #181d24;
+  --bg-input: #222831;
+  --bg-input-hover: #2b323d;
+  
+  --text-main: #f8fafc;
+  --text-sub: #94a3b8;
+  --text-muted: #64748b;
+  
+  --accent-blue: #3b82f6;
+  --accent-mint: #00e699;
+  --accent-green: #10b981;
+  --accent-orange: #f97316;
+  --accent-red: #ef4444;
+  
+  --border: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(0, 230, 153, 0.4);
+  
+  --bg-btn-primary: #00e699;
+  --text-btn-primary: #0e0f12;
+  --bg-btn-secondary: #222831;
+  --text-btn-secondary: #f8fafc;
+  
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --radius-card: 24px;
+  --radius-btn: 9999px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ─────────────────────────────────────────────────────────────
+   Light Mode Theme: Cars Sell Center Mobile Apps Style
+   (https://dribbble.com/shots/22541851-Cars-Sell-Center-Mobile-Apps)
+   - Airy Cool Canvas (#f8fafc)
+   - Pure White Elevated Surface (#ffffff)
+   - Deluxe Electric Blue Accent (#2563eb / #1d4ed8)
+   - Deep Navy Typography (#0f172a)
+   - 20px+ Soft Capsule Rounded Elements
+   ───────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-input: #f8fafc;
+  --bg-input-hover: #f1f5f9;
+  
+  --text-main: #0f172a;
+  --text-sub: #334155;
+  --text-muted: #64748b;
+  
+  --accent-blue: #2563eb;
+  --accent-mint: #059669;
+  --accent-green: #10b981;
+  --accent-orange: #ea580c;
+  --accent-red: #dc2626;
+  
+  --border: #e2e8f0;
+  --border-active: #2563eb;
+  
+  --bg-btn-primary: #2563eb;
+  --text-btn-primary: #ffffff;
+  --bg-btn-secondary: #f1f5f9;
+  --text-btn-secondary: #0f172a;
+  
+  --shadow: 0 12px 36px rgba(15, 23, 42, 0.07);
+  --shadow-sm: 0 4px 16px rgba(15, 23, 42, 0.04);
+  --radius-card: 24px;
+  --radius-btn: 9999px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
 
 body {
-  font-family: 'Noto Sans KR', 'Inter', sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-main);
-  min-height: 100vh;
+  font-family: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif;
+  line-height: 1.5;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  overflow-x: hidden;
 }
 
-#root { min-height: 100vh; }
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+/* Common Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast Banner */
+.toastContainer {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.25s ease-out;
+  cursor: pointer;
+  max-width: 90%;
+}
+
+.toastWarning {
+  background: #f59e0b;
+  color: #000000;
+}
+
+.toastSuccess {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.toastInfo {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.toastIcon { font-size: 1.1rem; }
+.toastMessage { flex: 1; }
+.toastClose {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.9rem;
+}

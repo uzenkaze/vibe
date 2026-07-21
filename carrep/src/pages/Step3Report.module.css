@@ -1,365 +1,551 @@
-.wrapper { display: flex; flex-direction: column; gap: 20px; }
+/* ===== Step3Report.module.css (Cars Sell Center & Nocra AI Report System) ===== */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  padding: 0 0 40px 0;
+  font-family: 'Inter', 'Outfit', 'Pretendard', sans-serif;
+  line-height: 1.6;
+}
 
 /* Actions Bar */
 .actionsBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.actionRight { display: flex; gap: 10px; }
-
-/* Report Card */
-.report {
-  background: var(--bg-card);
+  padding: 16px 24px;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
 }
 
-/* Report Header */
-.reportHeader {
+.actionLeft, .actionRight {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 24px 32px;
-  background: linear-gradient(135deg, #0d1521, #1a2235);
-  border-bottom: 1px solid var(--border);
-  gap: 16px;
-}
-.reportBrand {
-  font-size: 1.3rem;
-  font-weight: 900;
-  color: var(--accent-orange);
-  white-space: nowrap;
-}
-.reportMeta { text-align: center; flex: 1; }
-.reportTitle {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text-main);
-}
-.reportSubtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
-.reportDate { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; }
-
-/* Sections */
-.section { padding: 28px 32px; border-bottom: 1px solid var(--border); }
-
-.sectionTitle {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-blue);
-  margin-bottom: 18px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-/* Vehicle Info */
-.vehicleGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
 }
-.vehicleItem {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.vehicleKey { font-size: 0.73rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-.vehicleVal { font-size: 1rem; font-weight: 700; color: var(--text-main); }
 
-/* Diagram + Cost Row */
-.diagramRow {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
 }
-.diagramBox {
-  padding: 28px 24px;
-  border-right: 1px solid var(--border);
+
+.btnGhost {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-main);
 }
-.diagramWrap {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 10px 0;
+
+.btnGhost:hover {
+  background: var(--bg-input-hover);
 }
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  margin-top: 16px;
+
+.btnSave {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
-.legendItem {
+
+.btnSave:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.4);
+}
+
+.btnPrint {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+
+.btnPrint:hover {
+  background: var(--bg-input-hover);
+}
+
+.actionBadgeIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  justify-content: center;
+  font-size: 0.85rem;
 }
-.legendDot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-/* Cost Box */
-.costBox {
-  padding: 28px 28px;
+.actionBtnText {
+  font-weight: 800;
+}
+
+/* Floating Edit Button */
+.floatingRightAction {
+  position: fixed;
+  right: 20px;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: 96px;
+  bottom: max(96px, calc(80px + env(safe-area-inset-bottom)));
+  z-index: 999;
+}
+
+.floatingCircularBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+  transition: all 0.25s ease;
+}
+
+.floatingCircularBtn:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: #1d4ed8;
+}
+
+.floatingBtnIcon { font-size: 1.2rem; }
+.floatingBtnLabel { font-size: 0.72rem; font-weight: 800; }
+
+/* Main Report Container */
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Hero Header Card */
+.reportHeader {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 28px 32px;
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .reportHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+  }
+}
+
+.headerTitle h1 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.headerSubtitle {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.vehicleBadge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--accent-blue);
+  font-size: 0.82rem;
+  font-weight: 800;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+/* Main Dashboard Grid */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Visualizer Panel */
+.visualizerPanel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.controlsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewModes {
+  display: flex;
+  background: var(--bg-input);
+  padding: 4px;
+  border-radius: 14px;
+  gap: 4px;
+}
+
+.viewBtn {
+  background: transparent;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 10px;
+  color: var(--text-sub);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewBtnActive {
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+.diagramWrap {
+  width: 100%;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cost Summary Panel */
+.costPanel {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.costCards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.summaryCard {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 28px;
+  padding: 28px;
+  color: #ffffff;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
-.costCard {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid;
-  border-radius: 12px;
-  padding: 14px;
+
+[data-theme="light"] .summaryCard {
+  background: linear-gradient(135deg, #1e40af 0%, #1e293b 100%) !important;
+}
+
+.summaryCard .label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summaryCard .value {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #00e699;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+[data-theme="light"] .summaryCard .value {
+  color: #60a5fa !important;
+}
+
+.summaryCard .meta {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+}
+
+.ratioSection {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ratioBar {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  display: flex;
+  overflow: hidden;
+}
+
+.ratioParts { background: var(--accent-blue); height: 100%; }
+.ratioLabor { background: var(--accent-green); height: 100%; }
+
+.ratioLegend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+/* Vehicle Specifications Grid */
+.specsSection {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.specsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .specsGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.specItem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.specItemLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.specItemValue {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+/* Maintenance List Table & Accordions */
+.tableSection {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.itemTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.itemTable th {
+  padding: 14px 16px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+
+.itemTable td {
+  padding: 16px;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.sysTag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--accent-blue);
+}
+
+.sysSteering { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.sysSuspension { background: rgba(249, 115, 22, 0.12); color: #f97316; }
+.sysTrans { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.sysEngine { background: rgba(234, 179, 8, 0.12); color: #eab308; }
+.sysOil { background: rgba(168, 85, 247, 0.12); color: #a855f7; }
+.sysBrake { background: rgba(236, 72, 153, 0.12); color: #ec4899; }
+.sysCooling { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+.sysElectric { background: rgba(14, 165, 233, 0.12); color: #0ea5e9; }
+
+/* Accordion Docs */
+.techDocWrap {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.accordionItem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.accordionHeader {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--text-main);
+  font-size: 0.92rem;
+}
+
+.accordionContent {
+  padding: 0 20px 20px 20px;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.techSectionTitle {
+  font-weight: 800;
+  color: var(--text-main);
+  font-size: 0.82rem;
+  margin-top: 8px;
+}
+
+.techList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 0;
+}
+
+.techList li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.techList li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--accent-blue);
+}
+
+/* Light Mode Card Surface Overrides */
+[data-theme="light"] .reportHeader,
+[data-theme="light"] .visualizerPanel,
+[data-theme="light"] .specsSection,
+[data-theme="light"] .tableSection,
+[data-theme="light"] .ratioSection,
+[data-theme="light"] .actionsBar {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05) !important;
+}
+
+[data-theme="light"] .specItem,
+[data-theme="light"] .accordionItem {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Report Footer System (Enhanced Visibility & 2-Line Mobile Support) */
+.reportFooter {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
   text-align: center;
-}
-.costIcon { font-size: 1.3rem; margin-bottom: 4px; }
-.costLabel { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-.costValue { font-size: 1.15rem; font-weight: 800; }
-.costUnit { font-size: 0.7rem; color: var(--text-muted); }
-
-.grandTotalBox {
-  background: linear-gradient(135deg, rgba(69,243,255,0.08), rgba(250,130,49,0.08));
-  border: 1px solid rgba(69,243,255,0.3);
-  border-radius: 14px;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.gtLabel { font-size: 1rem; font-weight: 700; color: var(--text-main); }
-.gtValue {
-  font-size: 2rem;
-  font-weight: 900;
-  background: linear-gradient(90deg, #45f3ff, #fa8231);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.gtUnit { font-size: 0.85rem; color: var(--text-muted); }
-
-/* Category Breakdown */
-.catBreakdown { display: flex; flex-direction: column; gap: 8px; }
-.catBreakTitle { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-.catRow {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  font-size: 0.82rem;
-}
-.catDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.catName { width: 110px; color: var(--text-muted); flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.catBar { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
-.catBarFill { height: 100%; border-radius: 3px; transition: width 0.8s ease; opacity: 0.8; }
-.catPct { width: 30px; text-align: right; color: var(--text-muted); font-size: 0.75rem; flex-shrink: 0; }
-.catAmt { width: 90px; text-align: right; color: var(--text-main); font-weight: 600; flex-shrink: 0; font-size: 0.8rem; }
-
-/* Category sections in detail table */
-.catSection { margin-bottom: 20px; }
-.catSection:last-child { margin-bottom: 0; }
-.catHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-left: 3px solid;
-  background: rgba(255,255,255,0.02);
-  border-radius: 0 6px 6px 0;
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-.catHeaderDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.catHeaderCount {
-  font-size: 0.75rem;
-  background: rgba(255,255,255,0.1);
-  padding: 2px 8px;
-  border-radius: 20px;
-  color: var(--text-muted);
-  margin-left: auto;
-}
-
-/* Items Table */
-.tableWrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-.table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-.table th {
-  background: rgba(255,255,255,0.03);
-  padding: 10px 14px;
-  text-align: left;
-  font-weight: 700;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid var(--border);
-}
-.table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-.table tr:last-child td { border-bottom: none; }
-.table tr:hover td { background: rgba(255,255,255,0.02); }
-.num { text-align: right; font-family: 'Outfit', monospace; }
-.subCol { color: var(--accent-blue); font-weight: 700; }
-.noteCol { color: var(--text-muted); font-size: 0.8rem; }
-
-/* Gallery */
-.galleryGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
-}
-.galleryItem {
-  border-radius: 10px;
+  padding: 24px 20px;
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  overflow: hidden;
-  background: rgba(0,0,0,0.3);
-}
-.galleryImg { width: 100%; height: 140px; object-fit: cover; display: block; }
-.galleryName { padding: 8px 10px; font-size: 0.75rem; color: var(--text-muted); }
-
-/* Report Footer */
-.reportFooter {
-  padding: 20px 32px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  background: rgba(0,0,0,0.2);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-top: 16px;
 }
 
-/* Buttons */
-.btn {
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 0.9rem;
+.footerLine1 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.footerLine2 {
+  font-size: 0.85rem;
   font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-.btnGhost {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
   color: var(--text-muted);
-}
-.btnGhost:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
-.btnPrint {
-  background: linear-gradient(135deg, rgba(250,130,49,0.15), rgba(247,183,49,0.15));
-  border: 1px solid rgba(250,130,49,0.4);
-  color: var(--accent-orange);
-}
-.btnPrint:hover { background: rgba(250,130,49,0.25); transform: translateY(-1px); }
-
-.btnHome {
-  background: rgba(190,242,100,0.1);
-  border: 1px solid rgba(190,242,100,0.3);
-  color: var(--accent-green);
-  margin-left: 8px;
-}
-.btnHome:hover {
-  background: rgba(190,242,100,0.2);
-  transform: translateY(-1px);
-}
-
-.btnSave {
-  background: linear-gradient(135deg, #45f3ff, #1fcedb);
-  color: #000;
-  margin-right: 8px;
-}
-.btnSave:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(69,243,255,0.25);
-}
-
-/* Actions layout */
-.actionLeft { display: flex; align-items: center; }
-.actionRight { display: flex; align-items: center; }
-
-/* 3D/Real tab toggle */
-.sectionHeaderRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.sectionHeaderRow .sectionTitle {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.tabToggle {
-  display: flex;
-  background: rgba(0,0,0,0.25);
-  border: 1px solid var(--border);
-  padding: 3px;
-  border-radius: 8px;
-}
-
-.tabBtn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-
-.tabBtnActive {
-  background: var(--bg-secondary);
-  color: var(--accent-blue);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-
-/* Print Styles */
-@media print {
-  #reportActions { display: none !important; }
-  #diagramTabs { display: none !important; }
-  .report {
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-  }
-  .wrapper { gap: 0; }
-}
-
-@media (max-width: 900px) {
-  .diagramRow { grid-template-columns: 1fr; }
-  .diagramBox { border-right: none; border-bottom: 1px solid var(--border); }
-  .costCards { grid-template-columns: 1fr 1fr; }
+  line-height: 1.4;
 }
 
 @media (max-width: 600px) {
-  .reportHeader { flex-direction: column; text-align: center; }
-  .section { padding: 20px 16px; }
-  .costBox { padding: 20px 16px; }
-  .diagramBox { padding: 20px 16px; }
-  .costCards { grid-template-columns: 1fr; }
-  .grandTotalBox { flex-direction: column; text-align: center; }
-  .gtValue { font-size: 1.5rem; }
-  .catName { width: 80px; }
-  .catAmt { width: 70px; }
+  .reportFooter {
+    padding: 20px 16px;
+  }
+  .footerLine1 {
+    font-size: 0.9rem;
+    word-break: keep-all;
+  }
+  .footerLine2 {
+    font-size: 0.82rem;
+  }
 }

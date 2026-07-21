@@ -1,0 +1,1116 @@
+/* ===== Dashboard.module.css (Nocra AI UI Design System) ===== */
+
+/* ── 전체 레이아웃 ── */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 48px;
+}
+
+/* PC: 상단 2컬럼 영역 */
+.topGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* PC: 하단 3컬럼 영역 (스펙/보험/검사) */
+.midGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* ── Nocra AI 스타일 공통 카드 ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.25s, border-color 0.25s;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* ── 카드 1: 내 차량 프로필 ── */
+.heroProfileCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 230px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="light"] .heroProfileCard {
+  background: #ffffff !important;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.profileCardTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.carNicknameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carNickname {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: var(--text-main);
+  letter-spacing: -0.025em;
+}
+
+.editIconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.15rem;
+  opacity: 0.6;
+  transition: all 0.2s;
+  padding: 2px 4px;
+}
+
+.editIconBtn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.brandLogoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.profileCardMidRow {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+/* 한국 표준 번호판 플레이트 */
+.realPlateBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #111827;
+  border: 1.5px solid #374151;
+  border-radius: 10px;
+  padding: 4px 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  user-select: none;
+}
+
+.plateScrew {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid #9ca3af;
+  background: #f3f4f6;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.plateText {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  color: #111827;
+}
+
+.profileCardBottomRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.profileBottomLeft {
+  display: flex;
+  align-items: center;
+  padding-bottom: 4px;
+}
+
+/* Nocra AI 카메라 버튼 (사진 없을 때만) */
+.addPhotoBtnInline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.addPhotoBtnInline:hover {
+  background: var(--bg-btn-secondary-hover);
+  color: var(--text-main);
+  transform: translateY(-1px);
+}
+
+.camIcon {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.addPhotoLabel {
+  letter-spacing: -0.01em;
+}
+
+.changePhotoBtnInline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+  font-family: inherit;
+}
+
+.changePhotoBtnInline:hover {
+  opacity: 1;
+  color: var(--accent-red);
+}
+
+.profileCarImageWrap {
+  width: 220px;
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.profileCarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom right;
+  filter: drop-shadow(0px 6px 14px rgba(0,0,0,0.3));
+}
+
+/* ── GitHub Icon Badge on Car Card ── */
+.githubIconTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-btn-secondary);
+  color: var(--text-muted);
+  margin-left: 4px;
+  transition: all 0.25s ease;
+}
+
+.gitOnline {
+  color: var(--accent-green);
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.1);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.25);
+}
+
+.gitOffline {
+  color: var(--text-muted);
+  border-color: var(--border);
+  opacity: 0.7;
+}
+
+.gitStatusDot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+.gitOnline .gitStatusDot {
+  background: var(--accent-green);
+  box-shadow: 0 0 4px var(--accent-green);
+}
+
+/* ── 카드 헤더 공통 ── */
+.cardTitleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.cardTitle { font-size: 1.05rem; font-weight: 800; color: var(--text-main); line-height: 1.3; letter-spacing: -0.02em; }
+.carSubtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+.detailBtn {
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+  font-family: inherit;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.detailBtn:hover { background: var(--bg-btn-secondary-hover); color: var(--text-main); transform: translateY(-1px); }
+.mileageText { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; font-weight: 500; }
+
+/* ── 카드 2: 내 차 상태 점검 통계 세그먼트 (모바일 1행 한줄 및 시각적 배경/테두리 부각 오버홀) ── */
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .statGrid {
+    gap: 5px !important;
+  }
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 4px;
+  border-radius: 16px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  min-width: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.statItem:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* 🔴 교체대상 (Danger): 강렬하게 시각적 부각! */
+.statDanger {
+  border: 2px solid #ef4444 !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(185, 28, 28, 0.35) 100%) !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* 🟠 점검권장 (Warning): 선명한 앰버/오렌지 틴트 */
+.statWarning {
+  border: 1.5px solid #f97316 !important;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(194, 65, 12, 0.3) 100%) !important;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.2) !important;
+}
+
+/* 🟢 상태양호 (Good): 상쾌한 에메랄드 그린 틴트 */
+.statGood {
+  border: 1.5px solid #10b981 !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(4, 120, 87, 0.3) 100%) !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* 🔷 전체품목 (Total): 세련된 미드나깃 블루 틴트 */
+.statTotal {
+  border: 1.5px solid #3b82f6 !important;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18) 0%, rgba(30, 58, 138, 0.28) 100%) !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2) !important;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.statDanger .statLabel { color: #fca5a5 !important; }
+.statWarning .statLabel { color: #fdba74 !important; }
+.statGood .statLabel { color: #6ee7b7 !important; }
+.statTotal .statLabel { color: #93c5fd !important; }
+
+.statNum {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.statDanger .statNum { color: #ffffff !important; text-shadow: 0 0 8px rgba(239, 68, 68, 0.8); }
+.statWarning .statNum { color: #ffedd5 !important; }
+.statGood .statNum { color: #ecfdf5 !important; }
+.statTotal .statNum { color: #eff6ff !important; }
+
+@media (max-width: 480px) {
+  .statItem {
+    padding: 10px 2px !important;
+    border-radius: 12px !important;
+  }
+  .statLabel {
+    font-size: 0.65rem !important;
+  }
+  .statNum {
+    font-size: 1.2rem !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Light Theme Custom Overrides for statGrid Items
+   ───────────────────────────────────────────────────────────── */
+[data-theme="light"] .statDanger {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
+  border: 2px solid #ef4444 !important;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.2) !important;
+}
+
+[data-theme="light"] .statDanger .statLabel { color: #dc2626 !important; }
+[data-theme="light"] .statDanger .statNum { color: #991b1b !important; text-shadow: none !important; }
+
+[data-theme="light"] .statWarning {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%) !important;
+  border: 1.5px solid #f97316 !important;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.15) !important;
+}
+
+[data-theme="light"] .statWarning .statLabel { color: #ea580c !important; }
+[data-theme="light"] .statWarning .statNum { color: #9a3412 !important; }
+
+[data-theme="light"] .statGood {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+  border: 1.5px solid #10b981 !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15) !important;
+}
+
+[data-theme="light"] .statGood .statLabel { color: #059669 !important; }
+[data-theme="light"] .statGood .statNum { color: #065f46 !important; }
+
+[data-theme="light"] .statTotal {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  border: 1.5px solid #0284c7 !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15) !important;
+}
+
+[data-theme="light"] .statTotal .statLabel { color: #0284c7 !important; }
+[data-theme="light"] .statTotal .statNum { color: #075985 !important; }
+
+/* ── 카드 3: 차량 스펙 ── */
+.specGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.specCard {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 14px;
+  transition: all 0.2s ease;
+}
+.specCard:hover { border-color: #4b5563; background: var(--bg-input-hover); }
+.specCardIcon { font-size: 1.3rem; flex-shrink: 0; }
+.specCardMeta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.specCardLabel { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
+.specCardVal { font-size: 0.88rem; color: var(--text-main); font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── 카드 4: 보험 & 카드 5: 검사 ── */
+.ddayText { font-size: 1.1rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.02em; }
+.insuranceRow { display: flex; align-items: flex-start; gap: 12px; }
+.insuranceIcon, .inspIcon { font-size: 2rem; }
+.insuranceName { font-size: 0.95rem; font-weight: 800; color: var(--text-main); }
+.insuranceDate { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+.expiredTag { color: var(--accent-red); font-size: 0.78rem; font-weight: 700; }
+.registerPromptBtn {
+  width: 100%; padding: 16px;
+  background: var(--bg-btn-secondary); border: 1.5px dashed var(--border);
+  color: var(--text-sub); border-radius: 16px; cursor: pointer;
+  font-size: 0.9rem; font-weight: 700; font-family: inherit;
+  transition: all 0.2s ease;
+}
+.registerPromptBtn:hover {
+  border-color: var(--accent-blue); color: var(--text-main);
+  background: var(--bg-btn-secondary-hover);
+}
+.inspProgressBar {
+  width: 100%; height: 6px; background: var(--bg-input); border-radius: 3px; overflow: hidden; margin: 8px 0 4px;
+}
+.inspProgressFill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+.inspRemLabel { font-size: 0.76rem; color: var(--accent-blue); font-weight: 700; }
+
+/* ── Nocra AI Primary Action Button (정비 내역 입력하기) ── */
+.newRepairBtn {
+  width: 100%; padding: 18px;
+  background: var(--bg-btn-primary);
+  border: none; border-radius: 20px;
+  color: var(--text-btn-primary); font-size: 1.05rem; font-weight: 900;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.25s ease; letter-spacing: -0.02em;
+  box-shadow: 0 4px 20px rgba(237, 237, 240, 0.15);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.newRepairBtn:hover {
+  background: var(--bg-btn-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255, 255, 255, 0.22);
+}
+
+/* ── 소모품 잔여 수명 진단 ── */
+.consumablesEmpty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.8;
+  padding: 24px 0;
+  font-weight: 500;
+}
+
+.consumablesList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.consumableItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: all 0.2s ease;
+}
+.consumableItem:hover { border-color: #4b5563; background: var(--bg-input-hover); }
+
+.itemDanger { border-color: rgba(248,113,113,0.4) !important; background: rgba(248,113,113,0.06) !important; }
+.itemWarning { border-color: rgba(251,146,60,0.4) !important; background: rgba(251,146,60,0.06) !important; }
+.itemGood { border-color: rgba(74,222,128,0.25) !important; background: rgba(74,222,128,0.04) !important; }
+
+.consumableTitleRow { display: flex; align-items: center; }
+.consumableName { font-size: 0.88rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.01em; }
+
+.consumableSubBadgeRow {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+
+.statusBadge {
+  font-size: 0.68rem; font-weight: 800;
+  padding: 3px 8px; border-radius: 6px;
+  flex-shrink: 0;
+}
+.badgeDanger { background: rgba(248,113,113,0.2); color: var(--accent-red); }
+.badgeWarning { background: rgba(251,146,60,0.2); color: var(--accent-orange); }
+.badgeGood { background: rgba(74,222,128,0.2); color: var(--accent-green); }
+
+.diagBtnReg, .diagBtnHistory {
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 0.65rem; font-weight: 700;
+  padding: 3px 8px; border-radius: 6px;
+  cursor: pointer; font-family: inherit; transition: all 0.2s ease;
+}
+.diagBtnReg:hover { background: var(--bg-btn-secondary-hover); color: var(--text-main); }
+.diagBtnHistory:hover { background: var(--bg-btn-secondary-hover); color: var(--text-main); }
+
+.healthText { font-size: 0.78rem; font-weight: 800; color: var(--text-muted); margin-left: auto; flex-shrink: 0; }
+
+.progressBarBg {
+  width: 100%; height: 5px;
+  background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.progressBarFill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+
+.consumableFooterBlock { display: flex; flex-direction: column; gap: 3px; }
+.consumableReason { font-size: 0.72rem; color: var(--text-muted); line-height: 1.45; font-weight: 500; }
+.consumableTip { font-size: 0.65rem; color: var(--text-muted); opacity: 0.75; line-height: 1.4; }
+
+/* ── 정비 내역 목록 (PC: 2컬럼 그리드) ── */
+.repairList { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.repairItem {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px 18px; cursor: pointer;
+  transition: all 0.2s ease; display: flex; flex-direction: column; gap: 10px;
+}
+.repairItem:hover { border-color: #4b5563; background: var(--bg-input-hover); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.repairItemTop {}
+.repairTitle {
+  font-size: 0.9rem; font-weight: 700; color: var(--text-main);
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+  word-break: break-all; line-height: 1.5;
+}
+.repairItemBottom {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; flex-wrap: wrap;
+}
+.repairDate { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; font-weight: 500; }
+.repairActions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.repairPrice { font-size: 0.9rem; font-weight: 800; color: var(--accent-blue); white-space: nowrap; }
+.editBtn, .deleteBtn {
+  background: var(--bg-btn-secondary); border: 1px solid var(--border);
+  color: var(--text-sub); font-size: 0.72rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 8px; cursor: pointer;
+  transition: all 0.2s ease; font-family: inherit;
+}
+.editBtn:hover { background: var(--bg-btn-secondary-hover); color: var(--text-main); }
+.deleteBtn:hover { background: rgba(248,113,113,0.15); color: var(--accent-red); border-color: rgba(248,113,113,0.3); }
+
+/* ── 모바일 (≤ 768px) ── */
+@media (max-width: 768px) {
+  .topGrid { grid-template-columns: 1fr; gap: 16px; }
+  .midGrid { grid-template-columns: 1fr; gap: 16px; }
+  .statGrid { grid-template-columns: repeat(2, 1fr); }
+  .specGrid { grid-template-columns: 1fr 1fr; }
+  .repairList { grid-template-columns: 1fr; }
+  .consumablesList { grid-template-columns: 1fr; }
+  .card { padding: 18px; border-radius: 20px; }
+  .carNickname { font-size: 1.5rem; }
+  .profileCarImageWrap { width: 170px; height: 95px; }
+  .realPlateBox { padding: 3px 10px; }
+  .plateText { font-size: 1.1rem; }
+  .newRepairBtn { padding: 16px; font-size: 0.98rem; }
+}
+
+/* ── 태블릿 (769px ~ 1024px) ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .midGrid { grid-template-columns: 1fr 1fr; }
+  .repairList { grid-template-columns: 1fr; }
+  .consumablesList { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Showroom Cars Sell Center Dashboard Light Mode Enhancements ── */
+[data-theme="light"] .card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .heroProfileCard {
+  background: #ffffff !important;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .statItem {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .statItem:hover {
+  background: #f1f5f9;
+}
+
+[data-theme="light"] .specCard,
+[data-theme="light"] .consumableItem,
+[data-theme="light"] .repairItem {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .specCard:hover,
+[data-theme="light"] .consumableItem:hover,
+[data-theme="light"] .repairItem:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .newRepairBtn {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.3);
+}
+
+[data-theme="light"] .newRepairBtn:hover {
+  background: #1d4ed8;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+}
+
+[data-theme="light"] .registerPromptBtn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+[data-theme="light"] .registerPromptBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .detailBtn {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #2563eb;
+}
+
+[data-theme="light"] .detailBtn:hover {
+  background: #e2e8f0;
+  color: #1d4ed8;
+}
+
+[data-theme="light"] .editBtn,
+[data-theme="light"] .deleteBtn,
+[data-theme="light"] .diagBtnReg,
+[data-theme="light"] .diagBtnHistory {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+[data-theme="light"] .editBtn:hover,
+[data-theme="light"] .diagBtnReg:hover,
+[data-theme="light"] .diagBtnHistory:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+[data-theme="light"] .deleteBtn:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* ===== 첨부 이미지 (Tesla Model S Mobile Card Aesthetic) 모바일 다크 전용 디자인 ===== */
+@media (max-width: 768px) {
+  :root:not([data-theme="light"]) .dashboard {
+    background-color: #181d24;
+    padding: 8px 12px 40px;
+  }
+
+  :root:not([data-theme="light"]) .card {
+    background: #222831;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 28px;
+    padding: 20px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+
+  :root:not([data-theme="light"]) .heroProfileCard {
+    background: radial-gradient(ellipse at 50% 65%, rgba(255, 255, 255, 0.08) 0%, #222831 65%) !important;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* Overview 위젯 카드를 첨부 이미지속 Top Speed / Capacity / Charging 순백색 카드로 이식 */
+  :root:not([data-theme="light"]) .statItem {
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 22px !important;
+    padding: 16px 12px !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  :root:not([data-theme="light"]) .statNum {
+    color: #0f172a !important;
+    font-size: 1.6rem !important;
+    font-weight: 900 !important;
+  }
+
+  :root:not([data-theme="light"]) .statLabel {
+    color: #64748b !important;
+    font-weight: 700 !important;
+    font-size: 0.76rem !important;
+  }
+
+  :root:not([data-theme="light"]) .specCard {
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 12px 14px !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  :root:not([data-theme="light"]) .specCardLabel {
+    color: #64748b !important;
+    font-weight: 700 !important;
+  }
+
+  :root:not([data-theme="light"]) .specCardVal {
+    color: #0f172a !important;
+    font-weight: 900 !important;
+  }
+
+  /* 첨부 이미지 하단 Book Now >>> 캡슐 액션 바 스타일 이식 */
+  :root:not([data-theme="light"]) .newRepairBtn {
+    background: #191e26 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 32px !important;
+    padding: 10px 18px 10px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .actionBadgeIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #00e699;
+    color: #0f172a;
+    font-size: 1.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 16px rgba(0, 230, 153, 0.45);
+    flex-shrink: 0;
+  }
+
+  .actionBtnText {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+  }
+
+  .actionArrowGroup {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    color: #00e699;
+    font-size: 1.4rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .arrow1 { opacity: 0.4; }
+  .arrow2 { opacity: 0.75; }
+  .arrow3 { opacity: 1; }
+
+  :root:not([data-theme="light"]) .consumableItem {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  :root:not([data-theme="light"]) .repairItem {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* ── Car Rent AI Assistant Dashboard Light Mode Specific Enhancements ── */
+[data-theme="light"] .card {
+  background: #ffffff;
+  border-color: #eef0f5;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .heroProfileCard {
+  background: #ffffff !important;
+  border-color: #eef0f5;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .statItem {
+  background: #f8fafc !important;
+  border: 1px solid #eef0f5 !important;
+  box-shadow: none !important;
+}
+
+[data-theme="light"] .statNum {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .statLabel {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .specCard {
+  background: #f8fafc !important;
+  border: 1px solid #eef0f5 !important;
+  box-shadow: none !important;
+}
+
+[data-theme="light"] .specCardLabel { color: #64748b !important; }
+[data-theme="light"] .specCardVal { color: #0f172a !important; }
+
+[data-theme="light"] .newRepairBtn {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.3) !important;
+}
+
+[data-theme="light"] .newRepairBtn:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+  box-shadow: 0 16px 36px rgba(37, 99, 235, 0.4) !important;
+}
+
+[data-theme="light"] .actionBadgeIcon {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+[data-theme="light"] .actionBtnText {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .actionArrowGroup {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 기아 공식 신형 엠블럼 로고 스타일 */
+.kiaLogoSvg {
+  color: #ffffff;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+  transition: all 0.25s ease;
+}
+
+[data-theme="light"] .kiaLogoSvg {
+  color: #0f172a;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
+}
+
+/* ===== Car Rent AI Assistant Dashboard Light Mode Specific Enhancements ===== */
+[data-theme="light"] .card {
+  background: #ffffff !important;
+  border: 1px solid #eef0f5 !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .heroProfileCard {
+  background: #ffffff !important;
+  border: 1px solid #eef0f5 !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .statItem {
+  background: #f8fafc !important;
+  border: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .statItem:hover {
+  background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .specCard,
+[data-theme="light"] .consumableItem,
+[data-theme="light"] .repairItem {
+  background: #f8fafc !important;
+  border: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .specCard:hover,
+[data-theme="light"] .consumableItem:hover,
+[data-theme="light"] .repairItem:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Car Rent AI Assistant Primary Button Style */
+[data-theme="light"] .newRepairBtn,
+[data-theme="light"] .btnPrimary,
+[data-theme="light"] .btnSaveAction,
+[data-theme="light"] .btnSave {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18) !important;
+}
+
+[data-theme="light"] .newRepairBtn:hover,
+[data-theme="light"] .btnPrimary:hover,
+[data-theme="light"] .btnSaveAction:hover,
+[data-theme="light"] .btnSave:hover {
+  background: #1e293b !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25) !important;
+}
+
+[data-theme="light"] .actionBadgeIcon {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35) !important;
+}
+
+[data-theme="light"] .actionBtnText {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .actionArrowGroup {
+  color: #10b981 !important;
+}
+
+[data-theme="light"] .registerPromptBtn,
+[data-theme="light"] .btnGhost,
+[data-theme="light"] .detailBtn {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .registerPromptBtn:hover,
+[data-theme="light"] .btnGhost:hover,
+[data-theme="light"] .detailBtn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* ── Car Rent AI Assistant Dashboard Light Mode Overhaul ── */
+[data-theme="light"] .card {
+  background: #ffffff !important;
+  border: 1px solid #e9ecef !important;
+  border-radius: 28px !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .heroProfileCard {
+  background: #ffffff !important;
+  border: 1px solid #e9ecef !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .statItem {
+  background: #f8fafc !important;
+  border: 1px solid #e9ecef !important;
+  border-radius: 22px !important;
+}
+
+[data-theme="light"] .statItem:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .statNum {
+  color: #0f172a !important;
+  font-weight: 900 !important;
+}
+
+[data-theme="light"] .statLabel {
+  color: #64748b !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .specCard,
+[data-theme="light"] .consumableItem,
+[data-theme="light"] .repairItem {
+  background: #f8fafc !important;
+  border: 1px solid #e9ecef !important;
+  border-radius: 20px !important;
+}
+
+[data-theme="light"] .specCard:hover,
+[data-theme="light"] .consumableItem:hover,
+[data-theme="light"] .repairItem:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .newRepairBtn {
+  background: #0f172a !important;
+  border: 1px solid #0f172a !important;
+  border-radius: 32px !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25) !important;
+}
+
+[data-theme="light"] .newRepairBtn:hover {
+  background: #1e293b !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35) !important;
+}
+
+[data-theme="light"] .actionBadgeIcon {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4) !important;
+}
+
+[data-theme="light"] .actionArrowGroup {
+  color: #10b981 !important;
+}
+
+[data-theme="light"] .registerPromptBtn {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  border-radius: 18px !important;
+}
+
+[data-theme="light"] .registerPromptBtn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .detailBtn {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #2563eb !important;
+  border-radius: 14px !important;
+}
+
+[data-theme="light"] .detailBtn:hover {
+  background: #e2e8f0 !important;
+  color: #1d4ed8 !important;
+}
+
+[data-theme="light"] .editBtn,
+[data-theme="light"] .deleteBtn,
+[data-theme="light"] .diagBtnReg,
+[data-theme="light"] .diagBtnHistory {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  border-radius: 12px !important;
+}
+
+[data-theme="light"] .editBtn:hover,
+[data-theme="light"] .diagBtnReg:hover,
+[data-theme="light"] .diagBtnHistory:hover {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .deleteBtn:hover {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+}
+
+/* 기아 공식 엠블럼 - 라이트/다크모드 배경 맞춤 자동 컬러 반전 */
+.kiaLogoSvg {
+  color: #ffffff !important;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45)) !important;
+  transition: color 0.25s ease, filter 0.25s ease !important;
+}
+
+[data-theme="light"] .kiaLogoSvg {
+  color: #05141f !important;
+  filter: drop-shadow(0 1px 2px rgba(5, 20, 31, 0.15)) !important;
+}

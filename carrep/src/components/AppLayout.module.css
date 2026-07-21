@@ -1,11 +1,11 @@
-.shell {
+﻿.shell {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background: var(--bg-primary);
+  transition: background 0.3s;
 }
 
-/* Header */
 .header {
   position: sticky;
   top: 0;
@@ -13,156 +13,198 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
-  background: rgba(11,12,16,0.92);
-  backdrop-filter: blur(16px);
+  padding: 12px 32px;
+  background: var(--bg-card);
   border-bottom: 1px solid var(--border);
-  gap: 20px;
+  box-shadow: var(--shadow-sm);
+  gap: 16px;
+  transition: background 0.3s, border-color 0.3s;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-}
-
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
 .logoIcon { font-size: 1.5rem; }
-
-.logoText {
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  color: var(--text-main);
-}
-
+.logoText { font-size: 1.45rem; font-weight: 900; letter-spacing: -0.03em; color: var(--text-main); }
 .logoAccent { color: var(--accent-orange); }
 
-/* Stepper */
-.stepper {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-
-.stepWrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.stepper { display: flex; align-items: center; gap: 0; }
+.stepWrapper { display: flex; align-items: center; gap: 6px; }
 
 .stepBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  background: transparent;
-  color: var(--text-muted);
-  font-weight: 700;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.25s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid var(--border); background: transparent;
+  color: var(--text-muted); font-weight: 700; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.25s;
+  display: flex; align-items: center; justify-content: center;
 }
-
-.stepBtn.active {
-  border-color: var(--accent-blue);
-  color: var(--accent-blue);
-  box-shadow: 0 0 12px rgba(69,243,255,0.3);
-}
-
-.stepBtn.done {
-  border-color: var(--accent-green);
-  background: var(--accent-green);
-  color: #000;
-  cursor: pointer;
-}
-
+.stepBtn.active { border-color: var(--accent-blue); color: var(--accent-blue); box-shadow: 0 0 10px rgba(59,130,246,0.3); }
+.stepBtn.done { border-color: var(--accent-green); background: var(--accent-green); color: #fff; cursor: pointer; }
 .stepBtn:disabled { opacity: 0.4; cursor: default; }
 
-.stepLabel {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.activeLabel { color: var(--accent-blue); font-weight: 600; }
-
-.stepLine {
-  width: 40px;
-  height: 2px;
-  background: var(--border);
-  margin: 0 6px;
-  border-radius: 2px;
-  transition: background 0.3s;
-}
-
+.stepLabel { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+.activeLabel { color: var(--accent-blue); font-weight: 700; }
+.stepLine { width: 40px; height: 2px; background: var(--border); margin: 0 6px; border-radius: 2px; transition: background 0.3s; }
 .lineDone { background: var(--accent-green); }
 
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.headerRight { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
-.badge {
-  font-size: 0.75rem;
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--accent-orange);
-  color: var(--accent-orange);
-  background: rgba(250,130,49,0.08);
-  white-space: nowrap;
+.themeBtn {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--bg-secondary);
+  font-size: 1.05rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; flex-shrink: 0;
 }
+.themeBtn:hover { background: var(--border); transform: scale(1.1); }
 
 .settingBtn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  color: var(--text-sub); font-size: 0.8rem; font-weight: 700;
+  padding: 7px 14px; border-radius: 20px; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+  display: flex; align-items: center; gap: 5px; font-family: inherit;
 }
+.settingBtn:hover { background: var(--border); color: var(--text-main); transform: translateY(-1px); }
 
-.settingBtn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--text-main);
-  border-color: var(--accent-orange);
-  transform: translateY(-1px);
-}
-
-
-/* Main */
+/* ── Main Content Area ── */
 .main {
   flex: 1;
-  padding: 40px 32px;
-  max-width: 1100px;
+  padding: 28px 32px 60px;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
 }
 
 /* Footer */
 .footer {
-  text-align: center;
-  padding: 20px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  text-align: center; padding: 18px;
+  font-size: 0.75rem; color: var(--text-muted);
   border-top: 1px solid var(--border);
 }
 
+/* ── Mobile (≤768px) ── */
 @media (max-width: 768px) {
-  .header { padding: 12px 16px; }
-  .main { padding: 24px 16px; }
+  .header { padding: 10px 14px; gap: 8px; }
+  .main { padding: 14px 12px 80px; max-width: 100vw; overflow-x: hidden; }
   .stepLabel { display: none; }
-  .stepLine { width: 24px; }
-  .badge { display: none; }
+  .stepLine { width: 14px; margin: 0 2px; }
+  .btnLabel { display: none; }
+  .settingBtn { padding: 6px 10px; font-size: 0.75rem; }
+}
+
+/* ── GitHub Icon Button ── */
+.githubIconBtn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-sub);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.githubIconBtn:hover {
+  transform: scale(1.08);
+}
+
+.githubConnected {
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+}
+
+.githubDisconnected {
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.statusDot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+  border: 1.5px solid var(--bg-card);
+  transition: background 0.3s;
+}
+
+.githubConnected .statusDot {
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+/* ── Showroom Cars Sell Center Dashboard Light Mode Enhancements ── */
+[data-theme="light"] .header {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .settingBtn {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="light"] .settingBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .themeBtn {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .themeBtn:hover {
+  background: #e2e8f0;
+}
+
+[data-theme="light"] .githubIconBtn {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+[data-theme="light"] .githubConnected {
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.4);
+  background: rgba(22, 163, 74, 0.08);
+}
+
+/* ── Car Rent AI Assistant Dashboard Light Mode Overhaul ── */
+[data-theme="light"] .header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e9ecef !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.03) !important;
+}
+
+[data-theme="light"] .settingBtn,
+[data-theme="light"] .themeBtn,
+[data-theme="light"] .githubIconBtn {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  border-radius: 14px !important;
+}
+
+[data-theme="light"] .settingBtn:hover,
+[data-theme="light"] .themeBtn:hover,
+[data-theme="light"] .githubIconBtn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* 하단 플로팅 네비게이션 바 공간 확보 */
+.container {
+  padding-bottom: 84px !important;
 }

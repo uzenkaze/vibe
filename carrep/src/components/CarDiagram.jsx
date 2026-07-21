@@ -18,7 +18,7 @@ const PART_MAP = {
 
 const MOHAVE_3D_ANNOTATIONS = {
   overview: {
-    title: '2008 모하비 하부/구동계 수리 부위 요약',
+    title: '모하비 2WD 하부/구동계 수리 부위 요약',
     subtitle: 'Mohave Chassis & Powertrain Repairs Overview',
     image: '/mohave_chassis_layout_1783045700836.png',
     labels: [
@@ -115,6 +115,56 @@ const MOHAVE_3D_ANNOTATIONS = {
         targets: [{ x: 250, y: 320 }]
       }
     ]
+  },
+  rear_suspension: {
+    title: '후륜 에어 서스펜션 (에어쇼바) 상세 수리 내역',
+    subtitle: 'Rear Air Suspension (Air Shocks) Replacement Detail',
+    image: '/mohave_rear_suspension_1783466979850.png',
+    labels: [
+      {
+        title: '후륜 에어 서스펜션 벨로우즈 (에어백) 교체',
+        desc: '에어스프링 벨로우즈-리어 (에어백 좌/우) 교체\n차고 조절 최적화 및 승차감 복원\n부품 및 공임 포함\n합계: 420,000원',
+        color: '#ff3b30',
+        targets: [{ x: 500, y: 450 }]
+      },
+      {
+        title: '에어 컴프레셔 및 공기 라인 점검',
+        desc: '에어 공급 컴프레셔 구동 상태 및 유압 라인 누기 점검\n시스템 진단 및 기밀 테스트 완료',
+        color: '#3498db',
+        targets: [{ x: 280, y: 300 }]
+      },
+      {
+        title: '후륜 쇼크업소버 (쇼바 좌/우) 교체',
+        desc: '진동 댐퍼 감쇠력 유지 부품 교체\n부품: 160,000원 | 공임: 70,000원\n합계: 230,000원',
+        color: '#fa8231',
+        targets: [{ x: 650, y: 400 }]
+      }
+    ]
+  },
+  engine_oil: {
+    title: '엔진룸 및 오일류/케미컬 정비 상세 내역',
+    subtitle: 'Engine Room & Fluids Service Detail',
+    image: '/mohave_engine_layout_1783410118006.png',
+    labels: [
+      {
+        title: '엔진 오일 및 필터 세트 교환',
+        desc: '엔진 윤활 시스템 관리 및 노화 방지\n오일 필터 및 에어클리너 세트 동시 교환\n부품 및 공임 포함\n합계: 120,000원',
+        color: '#fd9644',
+        targets: [{ x: 500, y: 400 }]
+      },
+      {
+        title: '파워스티어링 오일 주입',
+        desc: '조향 유압 작동유 레벨 보충 및 세척\n부품: 17,050원 | 공임: 0원\n합계: 17,050원',
+        color: '#ff3b30',
+        targets: [{ x: 320, y: 350 }]
+      },
+      {
+        title: '냉각수 및 부동액 레벨 조정',
+        desc: '엔진 과열 예방 및 부식 방지\n냉각계 리저버 탱크 보충 점검 완료',
+        color: '#26de81',
+        targets: [{ x: 220, y: 280 }]
+      }
+    ]
   }
 }
 
@@ -123,11 +173,42 @@ export default function CarDiagram({ repairItems, vehicleInfo }) {
   const [hoveredCat, setHoveredCat] = useState(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   
-  // Mohave detailed 3D view states
-  const [mohaveTab, setMohaveTab] = useState('overview') // 'overview' | 'suspension' | 'transmission'
+  // Mohave detailed 3D view states - auto-activate based on actual repaired categories
+  const hasRearSusp = repairItems.some(it => 
+    (it.category === '현가계' || it.category === '조향계') && 
+    (it.name.includes('후륜') || it.name.includes('뒷') || it.name.includes('에어') || it.name.includes('쇼바'))
+  )
+  const hasSteeringOrSusp = repairItems.some(it => 
+    (it.category === '조향계' || it.category === '현가계' || it.category === '제동계') && 
+    !(it.name.includes('후륜') || it.name.includes('뒷') || it.name.includes('에어') || it.name.includes('쇼바'))
+  )
+  const hasTransmission = repairItems.some(it => it.category === '구동계')
+  const hasEngineOrFluids = repairItems.some(it => it.category === '오일류' || it.category === '엔진' || it.category === '냉각계')
+
+  // Calculate unique repaired categories
+  const repairedCategories = [...new Set(repairItems.map(it => it.category))]
+  const isSingleCategory = repairedCategories.length <= 1
+
+  // Pick first available repaired category as default tab
+  const getDefaultTab = () => {
+    if (hasRearSusp) return 'rear_suspension'
+    if (hasEngineOrFluids) return 'engine_oil'
+    if (hasTransmission) return 'transmission'
+    if (hasSteeringOrSusp) return 'suspension'
+    return 'overview'
+  }
+
+  const [mohaveTab, setMohaveTab] = useState(getDefaultTab())
   const [selectedMohaveLabel, setSelectedMohaveLabel] = useState(null)
 
-  const IMAGE_BASE = window.location.pathname.includes('/vibe') ? '/vibe' : ''
+  const getImagePath = (path) => {
+    if (!path) return ''
+    const base = import.meta.env.BASE_URL || '/'
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path
+    const cleanBase = base.endsWith('/') ? base : `${base}/`
+    return `${cleanBase}${cleanPath}`
+  }
+
   const isMohave = vehicleInfo?.model?.includes('모하비') || vehicleInfo?.model?.toLowerCase()?.includes('mohave')
 
   const repairedCats = [...new Set(repairItems.map(it => it.category))]
@@ -152,45 +233,68 @@ export default function CarDiagram({ repairItems, vehicleInfo }) {
 
     return (
       <div className={styles.mohaveWrapper}>
-        <div className={styles.mohaveControls}>
-          <button
-            type="button"
-            className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'overview' ? styles.mohaveActiveBtn : ''}`}
-            onClick={() => {
-              setMohaveTab('overview')
-              setSelectedMohaveLabel(null)
-            }}
-          >
-            🔍 섀시/구동계 요약도
-          </button>
-          <button
-            type="button"
-            className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'suspension' ? styles.mohaveActiveBtn : ''}`}
-            onClick={() => {
-              setMohaveTab('suspension')
-              setSelectedMohaveLabel(null)
-            }}
-          >
-            🔧 전륜 서스펜션 도면
-          </button>
-          <button
-            type="button"
-            className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'transmission' ? styles.mohaveActiveBtn : ''}`}
-            onClick={() => {
-              setMohaveTab('transmission')
-              setSelectedMohaveLabel(null)
-            }}
-          >
-            ⚙️ 자동변속기 설계도
-          </button>
-        </div>
+        {!isSingleCategory && (
+          <div className={styles.mohaveControls}>
+            <button
+              type="button"
+              className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'overview' ? styles.mohaveActiveBtn : ''}`}
+              onClick={() => {
+                setMohaveTab('overview')
+                setSelectedMohaveLabel(null)
+              }}
+            >
+              🔍 섀시/구동계 요약도
+            </button>
+            <button
+              type="button"
+              className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'suspension' ? styles.mohaveActiveBtn : ''}`}
+              onClick={() => {
+                setMohaveTab('suspension')
+                setSelectedMohaveLabel(null)
+              }}
+            >
+              🔧 전륜 서스펜션 도면
+            </button>
+            <button
+              type="button"
+              className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'rear_suspension' ? styles.mohaveActiveBtn : ''}`}
+              onClick={() => {
+                setMohaveTab('rear_suspension')
+                setSelectedMohaveLabel(null)
+              }}
+            >
+              🌀 후륜 에어쇼바 도면
+            </button>
+            <button
+              type="button"
+              className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'transmission' ? styles.mohaveActiveBtn : ''}`}
+              onClick={() => {
+                setMohaveTab('transmission')
+                setSelectedMohaveLabel(null)
+              }}
+            >
+              ⚙️ 자동변속기 설계도
+            </button>
+            <button
+              type="button"
+              className={`${styles.mohaveCtrlBtn} ${mohaveTab === 'engine_oil' ? styles.mohaveActiveBtn : ''}`}
+              onClick={() => {
+                setMohaveTab('engine_oil')
+                setSelectedMohaveLabel(null)
+              }}
+            >
+              🛢️ 엔진 및 오일류 도면
+            </button>
+          </div>
+        )}
 
         <div className={styles.mohaveContainer} ref={containerRef}>
           <img
-            src={`${IMAGE_BASE}${currentView.image}`}
+            src={getImagePath(currentView.image)}
             alt={currentView.title}
             className={styles.mohaveBgImage}
           />
+
           <div className={styles.mohaveScanOverlay} />
 
           <div className={styles.mohaveInfoOverlay}>

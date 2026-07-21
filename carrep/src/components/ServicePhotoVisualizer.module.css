@@ -1,0 +1,560 @@
+.visualizerWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  background: rgba(18, 20, 29, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.visualizerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.headerIcon {
+  font-size: 1.2rem;
+}
+
+.headerBadge {
+  background: rgba(250, 130, 49, 0.1);
+  color: var(--accent-orange);
+  border: 1px solid rgba(250, 130, 49, 0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.visualizerContent {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .visualizerContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left main image viewer */
+.mainImageArea {
+  width: 100%;
+}
+
+.viewerCard {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mainImageContainer {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mainImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.imageScanOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.imageIndexBadge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(11, 12, 16, 0.8);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  z-index: 5;
+}
+
+.viewerFooter {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vehicleChip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.photoTip {
+  font-size: 0.7rem;
+  color: #a0a8b3;
+}
+
+/* Custom Interactive Hotspot Pin */
+.customHotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.centerDot {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--accent-orange);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  z-index: 3;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.pulseRing {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-orange);
+  opacity: 0.8;
+  animation: pulse 1.8s infinite ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pulseRingSecondary {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-orange);
+  opacity: 0.4;
+  animation: pulse 1.8s infinite ease-out;
+  animation-delay: 0.6s;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.hotspotActive .centerDot {
+  background-color: #ff3b30;
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.8);
+}
+
+.hotspotActive .pulseRing,
+.hotspotActive .pulseRingSecondary {
+  border-color: #ff3b30;
+}
+
+/* Tooltip overlay */
+.pinTooltip {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(11, 12, 16, 0.95);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+  width: 180px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  z-index: 15;
+}
+
+.tooltipVisible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltipName {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltipSub {
+  font-size: 0.6rem;
+  color: var(--accent-orange);
+  margin-top: 2px;
+}
+
+/* Right side content layout */
+.infoArea {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.sectionTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+.thumbnailCard, .detailCard {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.thumbnailsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.thumbBtn {
+  position: relative;
+  background: transparent;
+  border: 2px solid transparent;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 4 / 3;
+  transition: all 0.2s ease;
+  width: 100%;
+  display: block;
+}
+
+.thumbBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(250, 130, 49, 0.15);
+}
+
+.thumbActive {
+  border-color: var(--accent-orange);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(250, 130, 49, 0.3);
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumbOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 6px;
+}
+
+.thumbIndex {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.thumbTag {
+  font-size: 0.55rem;
+  font-weight: 700;
+  background: var(--accent-orange);
+  color: #000;
+  padding: 1px 4px;
+  border-radius: 3px;
+  transform: scale(0.9);
+}
+
+/* Detail Card & Information */
+.matchedInfoBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.matchedHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.categoryBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.categoryBadge[data-category="현가계"] {
+  background: rgba(250, 130, 49, 0.12);
+  color: #fa8231;
+  border: 1px solid rgba(250, 130, 49, 0.25);
+}
+
+.categoryBadge[data-category="엔진"] {
+  background: rgba(253, 150, 68, 0.12);
+  color: #fd9644;
+  border: 1px solid rgba(253, 150, 68, 0.25);
+}
+
+.categoryBadge[data-category="구동계"] {
+  background: rgba(69, 243, 255, 0.12);
+  color: #45f3ff;
+  border: 1px solid rgba(69, 243, 255, 0.25);
+}
+
+.categoryBadge[data-category="제동계"] {
+  background: rgba(247, 183, 49, 0.12);
+  color: #f7b731;
+  border: 1px solid rgba(247, 183, 49, 0.25);
+}
+
+.categoryBadge[data-category="조향계"] {
+  background: rgba(255, 59, 48, 0.12);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.25);
+}
+
+.repairedTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.specTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.specRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  padding-bottom: 6px;
+}
+
+.specRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.specLabel {
+  color: var(--text-muted);
+}
+
+.specValue {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.specValueHighlight {
+  color: var(--accent-orange);
+  font-weight: 800;
+}
+
+.descBox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.descLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.descText {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #ccd2db;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-orange);
+  margin: 0;
+}
+
+.emptyInfo {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 30px 10px;
+  font-size: 0.75rem;
+}
+
+/* Floating overlay card when hotspot clicked */
+.floatingOverlayCard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(11, 12, 16, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--accent-orange);
+  border-radius: 14px;
+  padding: 16px;
+  width: 90%;
+  max-width: 320px;
+  z-index: 100;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(250, 130, 49, 0.1);
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.overlayHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.overlayIcon {
+  font-size: 0.85rem;
+}
+
+.closeOverlayBtn {
+  position: absolute;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px;
+}
+
+.closeOverlayBtn:hover {
+  color: #ff3b30;
+}
+
+.overlayTitle {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.overlayMeta {
+  font-size: 0.65rem;
+  color: var(--accent-orange);
+  font-weight: 700;
+}
+
+.overlayDivider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 10px 0;
+}
+
+.overlayDesc {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.overlayLine {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #ccd2db;
+  margin: 0 0 4px 0;
+}
+
+.overlayLine:last-child {
+  margin-bottom: 0;
+}

@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import styles from './Step2Repairs.module.css'
+import FormattedNumberInput from '../components/FormattedNumberInput'
 
 const CATEGORIES = ['엔진', '오일류', '조향계', '현가계', '구동계', '제동계', '냉각계', '전기계', '외장', '내장', '진단점검', '기타']
 
@@ -54,25 +55,189 @@ const CATEGORY_DETAILS = {
   }
 }
 
-const EMPTY_ITEM = { id: '', name: '', category: '기타', partsCost: '', laborCost: '', note: '' }
+const EMPTY_ITEM = {
+  id: '',
+  name: '',
+  category: '기타',
+  partsCost: '',
+  laborCost: '',
+  repairDate: new Date().toISOString().split('T')[0],
+  note: ''
+}
 
 function newItem() {
   return { ...EMPTY_ITEM, id: Date.now() + Math.random() }
 }
 
+// ────────────────────────────────────────────────────
+// 자동 카테고리 추론 키워드 맵
+// 가장 앞에 위치한 카테고리가 우선순위를 가집니다.
+// ────────────────────────────────────────────────────
+const KEYWORD_CATEGORY_MAP = [
+  { category: '엔진',    keywords: ['타이밍', '점화플러그', '에어필터', '에어 필터', '연료필터', '연료 필터', '가스켓', '엔진마운트', '엔진 마운트', '미미', '흡기', '배기', '밸브', '인젝터', '스로틀', '터보', '엔진오버홀', '매니폴드', '캠샤프트', '피스톤', '크랭크'] },
+  { category: '오일류',  keywords: ['엔진오일', '엔진 오일', '미션오일', '미션 오일', '변속기오일', '변속기 오일', '브레이크오일', '브레이크 오일', '브레이크액', '파워오일', '파워스티어링오일', '디퍼런셜', '오일교체', '오일 교체', '부동액', '냉각수', '워셔액', 'atf', 'cvt오일', 'cvt 오일', '기어오일'] },
+  { category: '조향계',  keywords: ['파워스티어링', '파워 스티어링', '스티어링', '타이로드', '타이 로드', '오무기어', '조향기어', '조향 기어', '볼조인트', '볼 조인트'] },
+  { category: '현가계',  keywords: ['쇼바', '쇼크업소버', '쇼크 업소버', '스트럿', '서스펜션', '스프링', '로어암', '로어 암', '어퍼암', '어퍼 암', '활대링크', '활대 링크', '스태빌라이저', '부싱', '하체', '얼라인먼트', '휠얼라인', '휠 얼라인', '에어쇼바', '에어 쇼바'] },
+  { category: '구동계',  keywords: ['변속기', '미션', '등속조인트', '등속 조인트', '드라이브샤프트', '드라이브 샤프트', '클러치', '토크컨버터', '트랜스퍼', '디퍼렌셜', '프로펠러샤프트', '프로펠러 샤프트', 'cvt', 'dct', 'dcv'] },
+  { category: '제동계',  keywords: ['브레이크패드', '브레이크 패드', '디스크로터', '디스크 로터', '브레이크디스크', '브레이크 디스크', '캘리퍼', '드럼', '라이닝', 'abs', '핸드브레이크', '주차브레이크'] },
+  { category: '냉각계',  keywords: ['라디에이터', '워터펌프', '워터 펌프', '냉각팬', '냉각 팬', '서모스탯', '호스', '라디에이터캡', '냉각장치'] },
+  { category: '전기계',  keywords: ['배터리', '배터리 교체', '발전기', '제네레이터', '시동모터', '시동 모터', '스타터', '전구', '헤드램프', '헤드라이트', '테일램프', '퓨즈', '경음기', '혼', '와이어링', '전장', '전기', 'obd', 'ecu', 'abs센서', 'abs 센서', '에어컨컴프레서', '에어컨 컴프레서', '에어백'] },
+  { category: '외장',    keywords: ['범퍼', '도색', '판금', '사이드미러', '사이드 미러', '도어', '본넷', '유리', '유리창', '썬팅', '와이퍼', '블레이드', '외장', '차체', '펜더', '트렁크'] },
+  { category: '내장',    keywords: ['에어컨필터', '에어컨 필터', '캐빈필터', '캐빈 필터', '실내', '인테리어', '시트', '매트', '블랙박스', '내비게이션', '룸미러', '내장'] },
+  { category: '진단점검', keywords: ['진단', '스캔', 'gds', 'kds', '점검', '얼라인먼트 조정', '종합검사', '검사'] },
+]
+
+function detectCategory(name) {
+  if (!name || name.trim().length === 0) return null
+  const lower = name.toLowerCase().replace(/\s/g, '')
+  for (const entry of KEYWORD_CATEGORY_MAP) {
+    for (const kw of entry.keywords) {
+      if (lower.includes(kw.toLowerCase().replace(/\s/g, ''))) {
+        return entry.category
+      }
+    }
+  }
+  return null
+}
+
+// ── Dynamic OCR Engine Loader ──────────────────────
+function loadTesseract() {
+  return new Promise((resolve, reject) => {
+    if (window.Tesseract) return resolve(window.Tesseract)
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'
+    script.onload = () => resolve(window.Tesseract)
+    script.onerror = (err) => reject(err)
+    document.head.appendChild(script)
+  })
+}
+
+// ── 텍스트/파일명 정비 항목 및 금액 자동 추론/추출 파서 ──
+function parseTextToRepairItems(text, fileName = '') {
+  const items = []
+  const lines = text ? text.split(/\r?\n/) : []
+
+  for (const line of lines) {
+    const cleanLine = line.trim()
+    if (!cleanLine || cleanLine.length < 2) continue
+
+    const category = detectCategory(cleanLine)
+    if (category) {
+      // 금액 숫자 매칭 (예: 50,000 또는 50000)
+      const numberMatches = cleanLine.match(/(\d{1,3}(?:,\d{3})+|\d{4,7})\s*원?/g) || []
+      const numbers = numberMatches.map(m => parseInt(m.replace(/[^0-9]/g, ''), 10))
+
+      let partsCost = ''
+      let laborCost = ''
+      if (numbers.length >= 2) {
+        partsCost = String(numbers[0])
+        laborCost = String(numbers[1])
+      } else if (numbers.length === 1) {
+        if (cleanLine.includes('공임')) {
+          laborCost = String(numbers[0])
+        } else {
+          partsCost = String(numbers[0])
+        }
+      }
+
+      let itemName = cleanLine.replace(/[\d,]+원?/g, '').replace(/^[-*•\d.\s]+/, '').trim()
+      if (!itemName) itemName = cleanLine
+
+      items.push({
+        id: Date.now() + Math.random(),
+        name: itemName,
+        category,
+        partsCost,
+        laborCost,
+        note: `[자동 추출] ${fileName ? fileName : '첨부 문서'}`
+      })
+    }
+  }
+
+  // 파일명에서 키워드 추출 시도
+  if (items.length === 0 && fileName) {
+    const fnCategory = detectCategory(fileName)
+    const fnName = fileName.replace(/\.[^/.]+$/, '').trim()
+    if (fnCategory || fnName) {
+      items.push({
+        id: Date.now() + Math.random(),
+        name: fnCategory ? `${fnCategory} 정비 (${fnName})` : `[첨부 파일] ${fnName}`,
+        category: fnCategory || '기타',
+        partsCost: '',
+        laborCost: '',
+        note: `[파일 첨부 자동 등록] ${fileName}`
+      })
+    }
+  }
+
+  // 폴백 기본 등록 보장
+  if (items.length === 0) {
+    const fallbackName = fileName ? `[첨부] ${fileName.replace(/\.[^/.]+$/, '')}` : '[첨부 파일] 정비내역'
+    items.push({
+      id: Date.now() + Math.random(),
+      name: fallbackName,
+      category: '기타',
+      partsCost: '',
+      laborCost: '',
+      note: '첨부된 파일/이미지 정비내역'
+    })
+  }
+
+  return items
+}
+
 export default function Step2Repairs({
-  repairItems, setRepairItems,
-  attachedImages, setAttachedImages,
-  onNext, onPrev
+  repairItems,
+  setRepairItems,
+  attachedImages,
+  setAttachedImages,
+  onNext,
+  onPrev,
+  onSave,
+  isSaved,
+  presetItemName
 }) {
+  const [tab, setTab] = useState('manual')
   const [form, setForm] = useState(newItem())
   const [editingId, setEditingId] = useState(null)
-  const [tab, setTab] = useState('manual') // 'manual' | 'upload'
+  const [autoDetected, setAutoDetected] = useState(false)
+  const [ocrLoading, setOcrLoading] = useState(false)
+  const [ocrProgress, setOcrProgress] = useState(0)
+  const [ocrStatusText, setOcrStatusText] = useState('')
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisStatus, setAnalysisStatus] = useState('')
+  const [extractNotice, setExtractNotice] = useState('')
+
+  // presetItemName이 전달될 경우 폼에 소모품명 및 카테고리 자동 설정
+  useEffect(() => {
+    if (presetItemName) {
+      const detected = detectCategory(presetItemName)
+      setForm(prev => ({
+        ...prev,
+        name: presetItemName,
+        category: detected || prev.category || '기타'
+      }))
+      if (detected) setAutoDetected(true)
+    }
+  }, [presetItemName])
+
   const fileRef = useRef()
   const imgRef = useRef()
 
   const setF = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
+  // 정비 항목명 입력 시 카테고리 자동 추론
+  const handleNameChange = (e) => {
+    const name = e.target.value
+    const detected = detectCategory(name)
+    if (detected) {
+      setForm(prev => ({ ...prev, name, category: detected }))
+      setAutoDetected(true)
+    } else {
+      setForm(prev => ({ ...prev, name }))
+      setAutoDetected(false)
+    }
+  }
 
   const addItem = () => {
     if (!form.name) return
@@ -85,6 +250,27 @@ export default function Step2Repairs({
     setForm(newItem())
   }
 
+  const handleSaveClick = () => {
+    let finalItems = [...repairItems]
+
+    // If there is an active item being edited or typed (with name)
+    if (editingId && form.name) {
+      finalItems = finalItems.map(it => it.id === editingId ? { ...form } : it)
+      setRepairItems(finalItems)
+      setEditingId(null)
+      setForm(newItem())
+    } else if (!editingId && form.name) {
+      const newEntry = { ...form, id: Date.now() }
+      finalItems = [...finalItems, newEntry]
+      setRepairItems(finalItems)
+      setForm(newItem())
+    }
+
+    if (onSave) {
+      onSave(finalItems)
+    }
+  }
+
   const editItem = (item) => {
     setForm({ ...item })
     setEditingId(item.id)
@@ -93,19 +279,77 @@ export default function Step2Repairs({
 
   const deleteItem = (id) => setRepairItems(prev => prev.filter(it => it.id !== id))
 
+  const processFiles = async (files) => {
+    if (!files || files.length === 0) return
+
+    setIsAnalyzing(true)
+    setExtractNotice('')
+    let newExtractedCount = 0
+
+    for (const file of files) {
+      const isImage = file.type.startsWith('image/')
+      const isText = file.type.startsWith('text/') || file.name.match(/\.(txt|csv|json|log|md)$/i)
+
+      if (isImage) {
+        setAnalysisStatus(`🔍 [${file.name}] 이미지 OCR 분석 및 정비내역 추출 중...`)
+
+        const reader = new FileReader()
+        const dataUrl = await new Promise(res => {
+          reader.onload = ev => res(ev.target.result)
+          reader.readAsDataURL(file)
+        })
+
+        setAttachedImages(prev => [
+          ...prev,
+          { id: Date.now() + Math.random(), name: file.name, dataUrl }
+        ])
+
+        try {
+          const Tesseract = await loadTesseract()
+          const result = await Tesseract.recognize(dataUrl, 'kor+eng')
+          const ocrText = result?.data?.text || ''
+          const extracted = parseTextToRepairItems(ocrText, file.name)
+          if (extracted.length > 0) {
+            setRepairItems(prev => [...prev, ...extracted])
+            newExtractedCount += extracted.length
+          }
+        } catch (err) {
+          console.warn('OCR processing error, fallback applied', err)
+          const fallback = parseTextToRepairItems('', file.name)
+          setRepairItems(prev => [...prev, ...fallback])
+          newExtractedCount += fallback.length
+        }
+      } else if (isText) {
+        setAnalysisStatus(`📄 [${file.name}] 문서 정비내역 파싱 중...`)
+        const text = await new Promise(res => {
+          const reader = new FileReader()
+          reader.onload = ev => res(ev.target.result)
+          reader.readAsText(file)
+        })
+
+        const extracted = parseTextToRepairItems(text, file.name)
+        if (extracted.length > 0) {
+          setRepairItems(prev => [...prev, ...extracted])
+          newExtractedCount += extracted.length
+        }
+      } else {
+        const fallback = parseTextToRepairItems('', file.name)
+        setRepairItems(prev => [...prev, ...fallback])
+        newExtractedCount += fallback.length
+      }
+    }
+
+    setIsAnalyzing(false)
+    setAnalysisStatus('')
+    if (newExtractedCount > 0) {
+      setExtractNotice(`✨ ${newExtractedCount}개의 정비 항목이 파일/이미지에서 자동 추출되어 등록되었습니다!`)
+      setTimeout(() => setExtractNotice(''), 5000)
+    }
+  }
+
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files)
-    files.forEach(file => {
-      const reader = new FileReader()
-      reader.onload = (ev) => {
-        setAttachedImages(prev => [...prev, {
-          id: Date.now() + Math.random(),
-          name: file.name,
-          dataUrl: ev.target.result
-        }])
-      }
-      reader.readAsDataURL(file)
-    })
+    processFiles(files)
     e.target.value = ''
   }
 
@@ -129,9 +373,47 @@ export default function Step2Repairs({
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>정비 내역 입력</h1>
-        <p className={styles.subtitle}>수리한 항목과 금액을 직접 입력하거나, 정비 영수증 이미지를 첨부하세요.</p>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px', gap: '16px', flexWrap: 'wrap' }}>
+        <div className={styles.header} style={{ flex: 1, minWidth: '240px', marginBottom: 0 }}>
+          <h1 className={styles.title}>정비 내역 입력</h1>
+          <p className={styles.subtitle}>수리한 항목과 금액을 직접 입력하거나, 정비 영수증/이미지를 첨부하면 정비 항목이 자동 추출 및 등록됩니다.</p>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className={`${styles.btn} ${styles.btnGhost}`} onClick={onPrev}>
+            ← 이전
+          </button>
+          {onSave && (
+            <button
+              type="button"
+              className={styles.btn}
+              onClick={handleSaveClick}
+              disabled={repairItems.length === 0 && attachedImages.length === 0 && !form.name}
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#fff',
+                border: 'none',
+                fontWeight: 700,
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)'
+              }}
+            >
+              💾 저장
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Floating Sticky Circular Action Button on the Right Area */}
+      <div className={styles.floatingRightAction}>
+        <button
+          type="button"
+          className={styles.floatingCircularBtn}
+          onClick={onNext}
+          disabled={repairItems.length === 0 && attachedImages.length === 0 && !form.name}
+          title="정비내역 보기 (보고서 생성)"
+        >
+          <span className={styles.floatingBtnIcon}>📋</span>
+          <span className={styles.floatingBtnLabel}>내역보기</span>
+        </button>
       </div>
 
       {/* Tabs */}
@@ -140,7 +422,7 @@ export default function Step2Repairs({
           ✏️ 항목 직접 입력
         </button>
         <button className={`${styles.tabBtn} ${tab === 'upload' ? styles.tabActive : ''}`} onClick={() => setTab('upload')}>
-          📎 파일/이미지 첨부
+          📎 파일/이미지 첨부 (자동 추출)
         </button>
       </div>
 
@@ -148,43 +430,94 @@ export default function Step2Repairs({
       {tab === 'manual' && (
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span>{editingId ? '✏️ 항목 수정' : '+ 새 항목 추가'}</span>
+            <span>{editingId ? '✏️ 항목 수정' : '➕ 항목추가'}</span>
           </div>
           <div className={styles.formGrid}>
-            <div className={`${styles.field} ${styles.fieldWide}`}>
-              <label className={styles.label}>정비 항목명 <span className={styles.req}>*</span></label>
+            <div className={styles.field}>
+              <label className={styles.label}>📅 정비 일자 <span className={styles.req}>*</span></label>
               <input
                 className={styles.input}
-                placeholder="예: 파워스티어링 기어 교체, 로어암 교체..."
-                value={form.name}
-                onChange={e => setF('name', e.target.value)}
+                type="date"
+                value={form.repairDate || new Date().toISOString().split('T')[0]}
+                onChange={e => setF('repairDate', e.target.value)}
               />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>부위 구분</label>
-              <select className={styles.select} value={form.category} onChange={e => setF('category', e.target.value)}>
+              <label className={styles.label}>정비 항목명 <span className={styles.req}>*</span></label>
+              <input
+                className={styles.input}
+                placeholder="예: 에어쇼바 교체, 브레이크 패드, 엔진오일..."
+                value={form.name}
+                onChange={handleNameChange}
+              />
+            </div>
+            <div className={styles.field}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <label className={styles.label} style={{ margin: 0 }}>부위 구분</label>
+                {autoDetected && (
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: '800',
+                    background: 'rgba(69,243,255,0.12)',
+                    color: 'var(--accent-blue)',
+                    border: '1px solid rgba(69,243,255,0.3)',
+                    borderRadius: '6px',
+                    padding: '2px 8px',
+                    letterSpacing: '0.02em',
+                    animation: 'fadeIn 0.2s ease'
+                  }}>
+                    ✨ 자동 선택됨
+                  </span>
+                )}
+              </div>
+              <select
+                className={styles.select}
+                value={form.category}
+                onChange={e => { setF('category', e.target.value); setAutoDetected(false) }}
+              >
                 {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_DETAILS[c].label}</option>)}
               </select>
             </div>
             <div className={styles.field}>
               <label className={styles.label}>부품비 (원)</label>
-              <input
+              <FormattedNumberInput
                 className={styles.input}
-                type="number"
                 placeholder="0"
                 value={form.partsCost}
-                onChange={e => setF('partsCost', e.target.value)}
+                onChange={val => setF('partsCost', val)}
               />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>공임비 (원)</label>
-              <input
+              <FormattedNumberInput
                 className={styles.input}
-                type="number"
                 placeholder="0"
                 value={form.laborCost}
-                onChange={e => setF('laborCost', e.target.value)}
+                onChange={val => setF('laborCost', val)}
               />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label} style={{ color: 'var(--accent-blue)', fontWeight: '700' }}>
+                💵 항목 소계 (자동 합산)
+              </label>
+              <div style={{
+                background: 'rgba(69,243,255,0.08)',
+                border: '1px solid rgba(69,243,255,0.25)',
+                borderRadius: '8px',
+                padding: '10px 14px',
+                fontSize: '1.05rem',
+                fontWeight: '800',
+                color: '#45f3ff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                minHeight: '42px'
+              }}>
+                <span>{((Number(form.partsCost) || 0) + (Number(form.laborCost) || 0)).toLocaleString()} 원</span>
+                <span style={{ fontSize: '0.75rem', opacity: 0.8, color: '#a0a8b3', fontWeight: 'normal' }}>
+                  (부품비 + 공임비)
+                </span>
+              </div>
             </div>
             {/* Real-time category selection helper */}
             <div className={`${styles.field} ${styles.fieldWide} ${styles.guideBox}`}>
@@ -198,9 +531,10 @@ export default function Step2Repairs({
             </div>
             <div className={`${styles.field} ${styles.fieldWide}`}>
               <label className={styles.label}>비고</label>
-              <input
-                className={styles.input}
+              <textarea
+                className={`${styles.input} ${styles.textareaNote}`}
                 placeholder="추가 설명 (선택)"
+                rows={3}
                 value={form.note}
                 onChange={e => setF('note', e.target.value)}
               />
@@ -217,7 +551,8 @@ export default function Step2Repairs({
               onClick={addItem}
               disabled={!form.name}
             >
-              {editingId ? '✓ 수정 완료' : '+ 항목 추가'}
+              <span className={styles.actionBadgeIcon}>{editingId ? '✓' : '✨'}</span>
+              <span className={styles.actionBtnText}>{editingId ? '수정 완료' : '항목추가'}</span>
             </button>
           </div>
         </div>
@@ -226,26 +561,35 @@ export default function Step2Repairs({
       {/* Image Upload Tab */}
       {tab === 'upload' && (
         <div className={styles.card}>
-          <div className={styles.cardHeader}><span>📎 정비 영수증 / 이미지 첨부</span></div>
+          <div className={styles.cardHeader}><span>📎 정비 영수증 / 이미지 / 문서 첨부</span></div>
           <div
             className={styles.dropzone}
             onClick={() => imgRef.current.click()}
             onDragOver={e => e.preventDefault()}
             onDrop={e => {
               e.preventDefault()
-              const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))
-              files.forEach(file => {
-                const reader = new FileReader()
-                reader.onload = ev => setAttachedImages(prev => [...prev, { id: Date.now() + Math.random(), name: file.name, dataUrl: ev.target.result }])
-                reader.readAsDataURL(file)
-              })
+              const files = Array.from(e.dataTransfer.files)
+              processFiles(files)
             }}
           >
             <span className={styles.dropIcon}>🖼️</span>
-            <p className={styles.dropText}>클릭하거나 이미지를 드래그하여 업로드</p>
-            <p className={styles.dropSub}>JPG, PNG, WEBP 파일 지원</p>
-            <input ref={imgRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleImageUpload} />
+            <p className={styles.dropText}>클릭하거나 파일/이미지를 드래그하여 업로드</p>
+            <p className={styles.dropSub}>JPG, PNG, WEBP, TXT, CSV 등 지원 (첨부 시 정비항목 자동 추출)</p>
+            <input ref={imgRef} type="file" accept="image/*,.txt,.csv,.json,.log" multiple style={{ display: 'none' }} onChange={handleImageUpload} />
           </div>
+
+          {isAnalyzing && (
+            <div className={styles.analyzingBanner}>
+              <div className={styles.spinner} />
+              <span>{analysisStatus}</span>
+            </div>
+          )}
+
+          {extractNotice && (
+            <div className={styles.noticeBanner}>
+              {extractNotice}
+            </div>
+          )}
 
           {attachedImages.length > 0 && (
             <div className={styles.imageGrid}>
@@ -271,6 +615,7 @@ export default function Step2Repairs({
             <table className={styles.table}>
               <thead>
                 <tr>
+                  <th>정비일자</th>
                   <th>구분</th>
                   <th>항목명</th>
                   <th className={styles.numCol}>부품비</th>
@@ -282,6 +627,9 @@ export default function Step2Repairs({
               <tbody>
                 {repairItems.map(item => (
                   <tr key={item.id}>
+                    <td style={{ fontSize: '0.82rem', color: 'var(--accent-blue)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      📅 {item.repairDate || new Date().toISOString().split('T')[0]}
+                    </td>
                     <td>
                       <span className={styles.catBadge} style={{ borderColor: catColor(item.category), color: catColor(item.category) }}>
                         {item.category}
@@ -334,18 +682,22 @@ export default function Step2Repairs({
         </div>
       )}
 
-      <div className={styles.actions}>
-        <button className={`${styles.btn} ${styles.btnGhost}`} onClick={onPrev}>
-          ← 이전
-        </button>
+      <div className={styles.actionsSingle}>
         <button
-          className={`${styles.btn} ${styles.btnPrimary}`}
+          className={`${styles.btn} ${styles.btnPrimary} ${styles.btnFullWidth}`}
           onClick={onNext}
-          disabled={repairItems.length === 0}
+          disabled={repairItems.length === 0 && attachedImages.length === 0 && !form.name}
         >
-          정비내역 보기 →
+          <span className={styles.actionBadgeIcon}>📋</span>
+          <span className={styles.actionBtnText}>상세 내역보기</span>
+          <span className={styles.actionArrowGroup}>
+            <span className={styles.arrow1}>›</span>
+            <span className={styles.arrow2}>›</span>
+            <span className={styles.arrow3}>›</span>
+          </span>
         </button>
       </div>
     </div>
   )
 }
+

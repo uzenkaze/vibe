@@ -1,4 +1,465 @@
-.container { display: flex; flex-direction: column; gap: 28px; }
+.container { display: flex; flex-direction: column; gap: 24px; }
+
+/* Floating Sticky Circular Button on the Right Area */
+.floatingRightAction {
+  position: fixed;
+  right: 20px;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: 30px;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 9999;
+}
+
+@media (max-width: 600px) {
+  .floatingRightAction {
+    right: 14px;
+    bottom: 20px;
+  }
+}
+
+.floatingCircularBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(58, 123, 213, 0.55), 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+@media (max-width: 480px) {
+  .floatingCircularBtn {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+.floatingCircularBtn:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 12px 32px rgba(58, 123, 213, 0.75), 0 4px 14px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #00e5ff 0%, #4a8cf0 100%);
+}
+
+.floatingCircularBtn:active:not(:disabled) {
+  transform: translateY(-1px) scale(0.96);
+}
+
+.floatingCircularBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+  box-shadow: none;
+}
+
+.floatingBtnIcon {
+  font-size: 19px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.floatingBtnLabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO BANNER — 차량 프로필 최상단 히어로 배너 (확장 실사 뷰어)
+ ═══════════════════════════════════════════════════════ */
+@keyframes carDrivingMotion {
+  0% {
+    transform: scale(1.04) translate(0px, 0px);
+  }
+  25% {
+    transform: scale(1.07) translate(-8px, -2px);
+  }
+  50% {
+    transform: scale(1.05) translate(-15px, 1px);
+  }
+  75% {
+    transform: scale(1.08) translate(-7px, -1px);
+  }
+  100% {
+    transform: scale(1.04) translate(0px, 0px);
+  }
+}
+
+.heroBanner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 65% 35%;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(69,243,255,0.04);
+  min-height: 310px;
+}
+
+@media (max-width: 1024px) {
+  .heroBanner {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}
+
+.heroImageWrap {
+  position: relative;
+  overflow: hidden;
+  background: rgba(0,0,0,0.6);
+  min-height: 280px;
+}
+
+.heroCarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* 차량 이미지 하단 스펙 오버레이 바 (등록일, 공인연비, 타이어 규격, 배기량) */
+.imageSpecsBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(11, 12, 16, 0.82);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 600px) {
+  .imageSpecsBar {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 8px 10px;
+    gap: 6px;
+  }
+}
+
+.specItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 10px;
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.specIcon {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.specMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.specLabel {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.specVal {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--accent-blue);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drivingModeBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(11, 12, 16, 0.75);
+  border: 1px solid rgba(69, 243, 255, 0.4);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.5px;
+}
+
+.heroEmptyPlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-right: 1px dashed rgba(255,255,255,0.08);
+}
+
+.heroEmptyIcon {
+  font-size: 2.8rem;
+  opacity: 0.3;
+}
+
+.heroEmptyText {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0 16px;
+  line-height: 1.5;
+  opacity: 0.6;
+}
+
+.heroGradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0) 70%, var(--bg-card));
+  pointer-events: none;
+}
+
+.heroInfo {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  width: 100%;
+}
+
+.heroTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.heroRightTop {
+  flex-shrink: 0;
+}
+
+.heroCarName {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text-main);
+  line-height: 1.2;
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+.heroMaker {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.heroModel {
+  background: linear-gradient(90deg, #fff 40%, var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+}
+
+.heroPlaceholderText {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.2);
+  font-weight: 700;
+}
+
+.heroSubLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.heroTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .heroTopRow {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .heroCarName {
+    font-size: 1.3rem;
+  }
+  .heroTag {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+  }
+}
+
+.heroStatRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.heroStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+  min-width: 0;
+  width: 100%;
+}
+
+.heroStat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.heroStat:last-child { cursor: default; }
+.heroStat:last-child:hover { transform: none; box-shadow: none; }
+
+.heroStatNum {
+  font-size: clamp(1.05rem, 3.5vw, 1.5rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.heroStatLabel {
+  font-size: clamp(0.55rem, 2vw, 0.68rem);
+  font-weight: 700;
+  margin-top: 4px;
+  white-space: nowrap;
+  letter-spacing: -0.3px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .heroStatRow {
+    gap: 4px;
+  }
+  .heroStat {
+    padding: 6px 2px;
+    border-radius: 8px;
+  }
+  .heroStatNum {
+    font-size: 1.05rem;
+  }
+  .heroStatLabel {
+    font-size: 0.56rem;
+    letter-spacing: -0.5px;
+  }
+}
+
+.heroStatDanger {
+  background: rgba(255, 59, 48, 0.08);
+  border-color: rgba(255, 59, 48, 0.25);
+  color: #ff3b30;
+}
+
+.heroStatWarning {
+  background: rgba(250, 130, 49, 0.08);
+  border-color: rgba(250, 130, 49, 0.25);
+  color: #fa8231;
+}
+
+.heroStatGood {
+  background: rgba(38, 222, 129, 0.08);
+  border-color: rgba(38, 222, 129, 0.25);
+  color: #26de81;
+}
+
+.heroStatTotal {
+  background: rgba(255,255,255,0.03);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.heroActions {
+  display: flex;
+  gap: 10px;
+}
+
+.heroLoadBtn {
+  background: rgba(69, 243, 255, 0.08);
+  border: 1px solid rgba(69, 243, 255, 0.25);
+  color: var(--accent-blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.heroLoadBtn:hover {
+  background: rgba(69, 243, 255, 0.16);
+}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE: hero image above, info below
+═══════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .heroBanner {
+    grid-template-columns: 1fr;
+    grid-template-rows: 180px auto;
+  }
+
+  .heroGradient {
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, var(--bg-card));
+  }
+
+  .heroCarImage {
+    object-position: center 30%;
+  }
+
+  .heroCarName {
+    font-size: 1.3rem;
+  }
+
+  .heroInfo {
+    padding: 16px 18px;
+  }
+}
+
 
 .header { }
 .title {
@@ -404,9 +865,15 @@
 }
 
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .mainLayout {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .formGrid {
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -473,3 +940,530 @@
   .cardHeaderRow { flex-direction: column; align-items: flex-start; gap: 12px; }
   .loadMyCarBtn { width: 100%; text-align: center; }
 }
+
+/* 실시간 소모품 진단 및 차량 이미지 패널 스타일 */
+.diagnosticsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.diagnosticsCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.diagnosticsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.carProfile {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  position: relative;
+}
+
+.carImageContainer {
+  width: 90px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+.carImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s ease;
+}
+
+.emptyCarPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.02);
+  gap: 4px;
+}
+
+.emptyCarIcon {
+  font-size: 1.45rem;
+  opacity: 0.6;
+}
+
+.emptyCarText {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+
+/* AI generating simulator overlay */
+.generatingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(11, 12, 16, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.62rem;
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(69, 243, 255, 0.2);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s infinite linear;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.carMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.carName {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.carSpecs {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.statusSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.summaryBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.summaryBox:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.summaryBox:active {
+  transform: translateY(0);
+}
+
+
+.summaryDanger {
+  background: rgba(255, 59, 48, 0.06);
+  border-color: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+}
+
+.summaryWarning {
+  background: rgba(250, 130, 49, 0.06);
+  border-color: rgba(250, 130, 49, 0.2);
+  color: #fa8231;
+}
+
+.summaryGood {
+  background: rgba(38, 222, 129, 0.06);
+  border-color: rgba(38, 222, 129, 0.2);
+  color: #26de81;
+}
+
+.summaryCount {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.summaryLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-top: 2px;
+  opacity: 0.8;
+}
+
+.consumablesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consumableSectionTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.diagnosticsEmptyState {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding: 30px 10px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.consumablesList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.consumableItem {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.consumableItem:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.consumableItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+.consumableTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.consumableName {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.consumableSubBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.badgeDanger {
+  background: rgba(255, 59, 48, 0.15);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.25);
+}
+
+.badgeWarning {
+  background: rgba(250, 130, 49, 0.15);
+  color: #fa8231;
+  border: 1px solid rgba(250, 130, 49, 0.25);
+}
+
+.badgeGood {
+  background: rgba(38, 222, 129, 0.15);
+  color: #26de81;
+  border: 1px solid rgba(38, 222, 129, 0.25);
+}
+
+.diagBtnReg {
+  background: rgba(69, 243, 255, 0.06);
+  border: 1px solid rgba(69, 243, 255, 0.2);
+  color: var(--accent-blue);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.diagBtnReg:hover {
+  background: rgba(69, 243, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.diagBtnHistory {
+  background: rgba(38, 222, 129, 0.06);
+  border: 1px solid rgba(38, 222, 129, 0.2);
+  color: var(--accent-green);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.diagBtnHistory:hover {
+  background: rgba(38, 222, 129, 0.15);
+  transform: translateY(-1px);
+}
+
+.itemDanger {
+  border-left: 3px solid #ff3b30;
+}
+
+.itemWarning {
+  border-left: 3px solid #fa8231;
+}
+
+.itemGood {
+  border-left: 3px solid #26de81;
+}
+
+.healthText {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--accent-blue);
+  margin-left: auto;
+}
+
+.progressBarBg {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 2px 0;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease-out;
+}
+
+.consumableFooterBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.consumableReason {
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.consumableTip {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  opacity: 0.85;
+}
+
+/* 하단 정비 보고서 목록 풀 너비 스타일 */
+.reportsSectionFull {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.reportGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .reportsSectionFull {
+    padding: 16px 14px;
+  }
+  .reportGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reportCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.reportCard:hover {
+  border-color: var(--accent-blue);
+  background: rgba(69, 243, 255, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.reportCardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.reportCardTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.reportCardDate {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.reportCardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.reportCardPriceBadge {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.priceLabel {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.reportCardPrice {
+  font-size: 1.08rem;
+  font-weight: 900;
+  color: var(--accent-orange);
+  font-family: 'Outfit', sans-serif;
+}
+
+.reportCardActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editReportBtn {
+  background: rgba(69, 243, 255, 0.08);
+  border: 1px solid rgba(69, 243, 255, 0.25);
+  color: var(--accent-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.editReportBtn:hover {
+  background: rgba(69, 243, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.deleteReportBtn {
+  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(255, 59, 48, 0.25);
+  color: var(--accent-red);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.deleteReportBtn:hover {
+  background: rgba(255, 59, 48, 0.2);
+  transform: translateY(-1px);
+}
+

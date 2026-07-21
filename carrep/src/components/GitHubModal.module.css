@@ -1,28 +1,26 @@
-.overlay {
+﻿.overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1100;
-  animation: fadeIn 0.25s ease-out;
+  animation: fadeIn 0.2s ease-out;
+  padding: 16px;
 }
 
 .modal {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  width: 90%;
+  border-radius: 24px;
+  width: 100%;
   max-width: 500px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
 
@@ -30,28 +28,35 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 24px;
+  padding: 20px 24px;
   border-bottom: 1px solid var(--border);
 }
 
 .title {
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-main);
+  letter-spacing: -0.02em;
 }
 
 .closeBtn {
-  background: none;
-  border: none;
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
   color: var(--text-muted);
-  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.95rem;
   cursor: pointer;
-  padding: 4px;
-  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
 .closeBtn:hover {
-  color: var(--accent-red);
+  background: var(--border);
+  color: var(--text-main);
 }
 
 .body {
@@ -62,17 +67,18 @@
 }
 
 .desc {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
+  font-weight: 500;
 }
 
 .infoBox {
-  background: rgba(250, 130, 49, 0.04);
-  border: 1px solid rgba(250, 130, 49, 0.15);
-  border-radius: 10px;
-  padding: 14px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -81,14 +87,16 @@
 .infoBox strong {
   font-size: 0.85rem;
   color: var(--accent-orange);
+  font-weight: 800;
 }
 
 .list {
   font-size: 0.78rem;
-  color: var(--text-muted);
+  color: var(--text-sub);
   line-height: 1.5;
   margin: 0;
   padding-left: 18px;
+  font-weight: 500;
 }
 
 .link {
@@ -110,15 +118,13 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .label {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 600;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .inputRow {
@@ -129,19 +135,21 @@
 
 .input {
   flex: 1;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 12px 42px 12px 14px;
-  color: #fff;
-  font-size: 0.88rem;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
   font-family: inherit;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--accent-blue);
+  border-color: #4b5563;
+  background: var(--bg-input-hover);
 }
 
 .toggleBtn {
@@ -162,41 +170,41 @@
 .footer {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding: 16px 24px;
-  background: rgba(0, 0, 0, 0.15);
+  gap: 10px;
+  padding: 18px 24px;
+  background: var(--bg-secondary);
   border-top: 1px solid var(--border);
 }
 
 .btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 0.85rem;
+  padding: 12px 22px;
+  border-radius: 16px;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   border: none;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   font-family: inherit;
 }
 
 .btnPrimary {
-  background: linear-gradient(135deg, #fa8231, #f7b731);
-  color: #000;
+  background: var(--bg-btn-primary);
+  color: var(--text-btn-primary);
 }
 
 .btnPrimary:hover {
+  background: var(--bg-btn-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(250, 130, 49, 0.2);
 }
 
 .btnGhost {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-btn-secondary);
   border: 1px solid var(--border);
-  color: var(--text-muted);
+  color: var(--text-sub);
 }
 
 .btnGhost:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-btn-secondary-hover);
   color: var(--text-main);
 }
 
@@ -208,4 +216,168 @@
 @keyframes slideUp {
   from { transform: translateY(12px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Showroom Cars Sell Center Dashboard Light Mode Enhancements ── */
+[data-theme="light"] .modal {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="light"] .header {
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1d4ed8;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ===== Car Rent AI Assistant Dashboard Light Mode Specific Enhancements ===== */
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border: 1px solid #eef0f5 !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12) !important;
+}
+
+[data-theme="light"] .header {
+  border-bottom: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc !important;
+  border: 1px solid #eef0f5 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #0f172a !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18) !important;
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1e293b !important;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* ── Car Rent AI Assistant Dashboard Light Mode Overhaul ── */
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border: 1px solid #e9ecef !important;
+  border-radius: 28px !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1) !important;
+}
+
+[data-theme="light"] .header {
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08) !important;
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #e9ecef !important;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-radius: 24px !important;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.2) !important;
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1e293b !important;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
 }

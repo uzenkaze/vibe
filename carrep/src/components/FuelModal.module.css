@@ -1,0 +1,345 @@
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1150;
+  animation: fadeIn 0.2s ease-out;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 88vh;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerIcon {
+  font-size: 1.4rem;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.closeBtn {
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.closeBtn:hover {
+  background: var(--border);
+  color: var(--text-main);
+}
+
+.body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--bg-input);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .formGrid { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.input, .select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.input:focus, .select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.inputRight {
+  text-align: right;
+  font-weight: 900;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fuelTypeChip {
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chipActive {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btnSave {
+  padding: 12px 24px;
+  border-radius: 20px;
+  background: var(--bg-btn-primary);
+  color: var(--text-btn-primary);
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnSave:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btnCancel {
+  padding: 12px 18px;
+  border-radius: 20px;
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.historyTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  background: var(--bg-input);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historyCard {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.cardMain {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stationBadge {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.fuelTypeTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.cardDate {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.cardMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.82rem;
+}
+
+.metric {
+  display: flex;
+  gap: 4px;
+}
+
+.mLabel { color: var(--text-muted); }
+.mVal { font-weight: 800; color: var(--text-main); }
+
+.cardBtns {
+  display: flex;
+  gap: 6px;
+}
+
+.btnEdit, .btnDelete {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+}
+
+.btnEdit:hover { color: var(--accent-blue); }
+.btnDelete:hover { color: var(--accent-red); }
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.btnClose {
+  padding: 10px 24px;
+  border-radius: 16px;
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Light Theme overrides: Cars Sell Center Mobile Apps Style */
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1) !important;
+}
+
+[data-theme="light"] .btnSave {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .chipActive {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}

@@ -1,0 +1,106 @@
+.bottomNavContainer {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 92%;
+  max-width: 480px;
+  pointer-events: none;
+}
+
+.bottomNav {
+  pointer-events: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 36px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px);
+  transition: all 0.25s ease;
+}
+
+.navItem {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.navItem:hover {
+  color: var(--text-main);
+  background: var(--bg-input-hover);
+}
+
+.iconWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+}
+
+/* Active Nav Item */
+.active {
+  color: #00e699 !important;
+  background: rgba(0, 230, 153, 0.08);
+}
+
+.active .icon {
+  transform: scale(1.15);
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] .bottomNav {
+  background: #ffffff !important;
+  border-color: #e9ecef !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12) !important;
+}
+
+[data-theme="light"] .active {
+  color: #2563eb !important;
+  background: rgba(37, 99, 235, 0.1) !important;
+}
+
+[data-theme="light"] .navItem {
+  color: #64748b;
+}
+
+[data-theme="light"] .navItem:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}

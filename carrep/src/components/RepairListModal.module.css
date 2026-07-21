@@ -1,0 +1,198 @@
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1150;
+  animation: fadeIn 0.2s ease-out;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerIcon { font-size: 1.4rem; }
+.title { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0; }
+
+.closeBtn {
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  background: var(--bg-input);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  background: var(--bg-input-hover);
+  border-color: var(--accent-blue);
+  transform: translateY(-1px);
+}
+
+.cardMain {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.itemTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.itemDate {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.cardMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemCount {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+
+.totalPrice {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--accent-blue);
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btnView {
+  padding: 8px 16px;
+  border-radius: 14px;
+  background: var(--bg-btn-primary);
+  color: var(--text-btn-primary);
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btnDelete {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.btnDelete:hover { color: var(--accent-red); }
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.btnClose {
+  padding: 10px 24px;
+  border-radius: 16px;
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .btnView {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+}
