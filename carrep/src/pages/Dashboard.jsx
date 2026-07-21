@@ -262,10 +262,17 @@ export default function Dashboard({
   const warningItems = maintenanceItems.filter(i => i.status === 'warning')
   const goodItems = maintenanceItems.filter(i => i.status === 'good')
 
-  // ── 보험/검사 ──
+  // ── 보험/검사 계산 ──
   const insEndDday = insurance?.endDate ? getDdayLabel(insurance.endDate) : null
+  const insRem = insurance?.startDate && insurance?.endDate
+    ? getInspRemaining(insurance.startDate, insurance.endDate)
+    : insurance?.endDate
+    ? getInspRemaining(new Date(new Date(insurance.endDate).setFullYear(new Date(insurance.endDate).getFullYear() - 1)).toISOString(), insurance.endDate)
+    : null
+
   const inspRem = inspection?.startDate && inspection?.endDate
     ? getInspRemaining(inspection.startDate, inspection.endDate) : null
+
 
   // ── 정비 내역 정렬 ──
   const sortedReports = [...(reports || [])].sort((a, b) => {
@@ -521,20 +528,29 @@ export default function Dashboard({
           </div>
           {insurance?.endDate ? (
             <>
-              {insEndDday && (
-                <div className={styles.ddayText} style={{ color: insEndDday.color }}>
-                  {insEndDday.text}
-                </div>
-              )}
               <div className={styles.insuranceRow}>
                 <div className={styles.insuranceIcon}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div className={styles.insuranceName}>
                     {[insurance.insurer, insurance.product].filter(Boolean).join(' ')}
                     {new Date(insurance.endDate) < new Date() && <span className={styles.expiredTag}> (만료됨)</span>}
                   </div>
-                  {insurance.startDate && (
-                    <div className={styles.insuranceDate}>{fmtDate(insurance.startDate)} 부터</div>
+                  <div className={styles.insuranceDate}>
+                    {insurance.startDate ? `${fmtDate(insurance.startDate)} ~ ` : ''}{fmtDate(insurance.endDate)}
+                  </div>
+                  {insRem && (
+                    <>
+                      <div className={styles.inspProgressBar}>
+                        <div className={styles.inspProgressFill} style={{
+                          width: `${insRem.pct}%`,
+                          background: insRem.rem <= 30 ? 'var(--accent-red)' : insRem.rem <= 90 ? 'var(--accent-orange)' : 'var(--accent-green)'
+                        }} />
+                      </div>
+                      <div className={styles.inspRemLabel}
+                        style={{ color: insRem.expired ? 'var(--accent-red)' : insRem.rem <= 30 ? 'var(--accent-orange)' : 'var(--accent-blue)' }}>
+                        {insRem.label}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
