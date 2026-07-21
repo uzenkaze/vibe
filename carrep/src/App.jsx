@@ -4,12 +4,12 @@ import AppLayout from './components/AppLayout'
 import Dashboard from './pages/Dashboard'
 import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
+import RepairListPage from './pages/RepairListPage'
 import GitHubModal from './components/GitHubModal'
 import MyCarModal from './components/MyCarModal'
 import InsuranceModal from './components/InsuranceModal'
 import InspectionModal from './components/InspectionModal'
 import FuelModal from './components/FuelModal'
-import RepairListModal from './components/RepairListModal'
 import BottomNav from './components/BottomNav'
 import { getGithubJson, saveGithubJson, validateGithubToken } from './utils/githubDb'
 
@@ -74,9 +74,8 @@ export default function App() {
     try { return JSON.parse(localStorage.getItem('carrep_inspection') || 'null') } catch { return null }
   })
 
-  // Fuel & Repair List modal states
+  // Fuel modal state
   const [isFuelModalOpen, setIsFuelModalOpen] = useState(false)
-  const [isRepairListModalOpen, setIsRepairListModalOpen] = useState(false)
 
   const [fuelHistory, setFuelHistory] = useState(() => {
     try {
@@ -290,6 +289,14 @@ export default function App() {
   }
 
   const handleSelectReport = (report) => {
+    setVehicleInfo(report.vehicleInfo)
+    setRepairItems(report.repairItems)
+    setAttachedImages(report.attachedImages || [])
+    setSavedReportId(report.id)
+    setStep(3)
+  }
+
+  const handleSelectReportFromList = (report) => {
     setVehicleInfo(report.vehicleInfo)
     setRepairItems(report.repairItems)
     setAttachedImages(report.attachedImages || [])
@@ -568,6 +575,19 @@ export default function App() {
           setRepairItems={setRepairItems}
         />
       )}
+      {step === 4 && (
+        <RepairListPage
+          reports={reports}
+          myCar={myCar}
+          vehicleInfo={vehicleInfo}
+          onSelectReport={handleSelectReportFromList}
+          onDeleteReport={handleDeleteReport}
+          onGoRepair={() => setStep(2)}
+          onNext={handleGoToRepairStep}
+          repairItems={repairItems}
+          setRepairItems={setRepairItems}
+        />
+      )}
       {step === 2 && (
         <Step2Repairs
           repairItems={repairItems}
@@ -634,21 +654,12 @@ export default function App() {
         onDeleteFuel={handleDeleteFuel}
       />
 
-      {/* Repair History List Modal */}
-      <RepairListModal
-        isOpen={isRepairListModalOpen}
-        onClose={() => setIsRepairListModalOpen(false)}
-        reports={reports}
-        onSelectReport={handleSelectReport}
-        onDeleteReport={handleDeleteReport}
-      />
-
       {/* Bottom Floating Navigation Bar */}
       <BottomNav
         activeStep={step}
         onGoHome={() => setStep(1)}
         onGoRepair={() => setStep(2)}
-        onOpenRepairList={() => setIsRepairListModalOpen(true)}
+        onGoRepairList={() => setStep(4)}
         onOpenFuel={() => setIsFuelModalOpen(true)}
         reportCount={reports.length}
       />

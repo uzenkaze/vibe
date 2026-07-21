@@ -1,6 +1,6 @@
 import styles from './BottomNav.module.css'
 
-export default function BottomNav({ activeStep, onGoHome, onGoRepair, onOpenRepairList, onOpenFuel, reportCount = 0 }) {
+export default function BottomNav({ activeStep, onGoHome, onGoRepair, onGoRepairList, onOpenFuel, reportCount = 0 }) {
   return (
     <div className={styles.bottomNavContainer}>
       <div className={styles.bottomNav}>
@@ -24,11 +24,11 @@ export default function BottomNav({ activeStep, onGoHome, onGoRepair, onOpenRepa
           <span className={styles.label}>정비내역</span>
         </button>
 
-        {/* 정비목록 */}
+        {/* 정비목록 - 페이지로 이동 */}
         <button
           type="button"
-          className={`${styles.navItem} ${activeStep === 3 ? styles.active : ''}`}
-          onClick={onOpenRepairList}
+          className={`${styles.navItem} ${activeStep === 4 ? styles.active : ''}`}
+          onClick={onGoRepairList}
         >
           <span className={styles.iconWrap}>
             <span className={styles.icon}>📋</span>
