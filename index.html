@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Management</title>
+    <title>VIBE Main</title>
     <link rel="icon" type="image/png" href="asset/favicon.png">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <style>
@@ -606,8 +606,17 @@
             if (url && (url.includes('livetv/') || url.includes('livetv-app/'))) {
                 document.title = 'PlayTime';
                 faviconLink.href = APP_BASE + 'livetv-favicon.png';
-            } else {
+            } else if (url && (url.includes('asset/') || url.includes('asset-react/'))) {
                 document.title = 'Asset Management';
+                faviconLink.href = APP_BASE + 'asset/favicon.png';
+            } else if (url && url.includes('carrep/')) {
+                document.title = 'CarRep';
+            } else if (url && url.includes('learn/')) {
+                document.title = 'LearnVault';
+            } else if (url && (url.includes('mPlay/') || url.includes('hobby/'))) {
+                document.title = 'mPlay Audio';
+            } else {
+                document.title = 'VIBE Main';
                 faviconLink.href = APP_BASE + 'asset/favicon.png';
             }
 
