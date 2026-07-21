@@ -235,7 +235,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // Initial background sync
   useEffect(() => {
-    if (ghConfig.token && ghConfig.autoSync) {
+    if (ghConfig.repo) {
       setDataSource('syncing');
       downloadFromGitHub<AppData>(ghConfig).then(result => {
         if (result && result.categories && result.articles) {
@@ -256,12 +256,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           saveData(merged);
           setDataSource('github');
         } else {
-          // 불러오기 실패 시에도 GitHub 설정 모드이므로 'github' 상태 유지 후 로컬 캐시 적용
-          setDataSource('github');
-          showToast('GitHub 데이터를 읽어오지 못했습니다. 로컬 캐시를 임시 사용합니다.');
+          setDataSource('local');
         }
       }).catch(() => {
-        setDataSource('github');
+        setDataSource('local');
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

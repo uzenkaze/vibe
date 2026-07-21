@@ -48,9 +48,13 @@ export default function SettingsPage() {
   const [autoSync, setAutoSync] = useState(ghConfig.autoSync);
   const [showToken, setShowToken] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsSaving(true);
     updateGhConfig({ token: token.trim(), repo: repo.trim(), branch: branch.trim(), autoSync });
+    await syncDown();
+    setIsSaving(false);
   };
 
   const handleSyncDown = async () => {
@@ -204,10 +208,12 @@ export default function SettingsPage() {
 
         <button
           onClick={handleSave}
-          className="w-full py-3 rounded-2xl text-sm font-bold text-white transition-all shadow-lg"
+          disabled={isSaving || isSyncing}
+          className="w-full py-3 rounded-2xl text-sm font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
           style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 8px 24px rgba(99,102,241,0.35)' }}
         >
-          설정 저장
+          {isSaving || isSyncing ? <RefreshCw size={16} className="animate-spin" /> : null}
+          {isSaving || isSyncing ? '설정 저장 및 동기화 중...' : '설정 저장'}
         </button>
       </SettingCard>
 
@@ -221,7 +227,7 @@ export default function SettingsPage() {
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={handleSyncDown}
-            disabled={isSyncing || !token}
+            disabled={isSyncing}
             className="flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
               background: 'rgba(6,182,212,0.1)',
