@@ -402,19 +402,6 @@ export default function Step2Repairs({
         </div>
       </div>
 
-      {/* Floating Sticky Circular Action Button on the Right Area */}
-      <div className={styles.floatingRightAction}>
-        <button
-          type="button"
-          className={styles.floatingCircularBtn}
-          onClick={onNext}
-          disabled={repairItems.length === 0 && attachedImages.length === 0 && !form.name}
-          title="정비내역 보기 (보고서 생성)"
-        >
-          <span className={styles.floatingBtnIcon}>📋</span>
-          <span className={styles.floatingBtnLabel}>내역보기</span>
-        </button>
-      </div>
 
       {/* Tabs */}
       <div className={styles.tabs}>
@@ -640,8 +627,8 @@ export default function Step2Repairs({
                         {item.category}
                       </span>
                     </td>
-                    <td>
-                      <div>{item.name}</div>
+                    <td className={styles.nameCol}>
+                      <div className={styles.itemNameText}>{item.name}</div>
                       {item.note && <div className={styles.noteText}>{item.note}</div>}
                     </td>
                     <td className={styles.numCol}>{Number(item.partsCost || 0).toLocaleString()}</td>
@@ -687,21 +674,7 @@ export default function Step2Repairs({
         </div>
       )}
 
-      <div className={styles.actionsSingle}>
-        <button
-          className={`${styles.btn} ${styles.btnPrimary} ${styles.btnFullWidth}`}
-          onClick={onNext}
-          disabled={repairItems.length === 0 && attachedImages.length === 0 && !form.name}
-        >
-          <span className={styles.actionBadgeIcon}>📋</span>
-          <span className={styles.actionBtnText}>상세 내역보기</span>
-          <span className={styles.actionArrowGroup}>
-            <span className={styles.arrow1}>›</span>
-            <span className={styles.arrow2}>›</span>
-            <span className={styles.arrow3}>›</span>
-          </span>
-        </button>
-      </div>
+
     </div>
   )
 }
