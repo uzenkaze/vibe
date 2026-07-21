@@ -16,13 +16,14 @@
   align-items: stretch;
 }
 
-/* PC: 하단 3컬럼 영역 (스펙/보험/검사) */
+/* PC: 중단 2x2 컬럼 영역 (차량스펙/정비/자동차보험/검사) */
 .midGrid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
   align-items: stretch;
 }
+
 
 /* ── Nocra AI 스타일 공통 카드 ── */
 .card {
@@ -448,10 +449,59 @@
 /* ── 카드 4: 보험 & 카드 5: 검사 ── */
 .ddayText { font-size: 1.1rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.02em; }
 .insuranceRow { display: flex; align-items: flex-start; gap: 12px; }
-.insuranceIcon, .inspIcon { font-size: 2rem; }
+.insuranceIcon, .inspIcon { font-size: 2rem; display: flex; align-items: center; justify-content: center; }
 .insuranceName { font-size: 0.95rem; font-weight: 800; color: var(--text-main); }
 .insuranceDate { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
 .expiredTag { color: var(--accent-red); font-size: 0.78rem; font-weight: 700; }
+
+/* 메인 정비 요약 리스트 스타일 */
+.repairSummaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.repairSummaryItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.82rem;
+}
+
+.repairSummaryName {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.repairSummaryMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.repairSummaryBadge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.badgeDanger { background: rgba(239,68,68,0.15); color: #ef4444; }
+.badgeWarning { background: rgba(249,115,22,0.15); color: #f97316; }
+.badgeGood { background: rgba(34,197,94,0.15); color: #22c55e; }
+
+.repairSummaryHealth {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--text-sub);
+  min-width: 36px;
+  text-align: right;
+}
+
 .registerPromptBtn {
   width: 100%; padding: 16px;
   background: var(--bg-btn-secondary); border: 1.5px dashed var(--border);

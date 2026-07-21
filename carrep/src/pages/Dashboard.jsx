@@ -407,7 +407,7 @@ export default function Dashboard({
         </div>
       </div>
 
-      {/* ── 중단 3컬럼: 차량 스펙 + 보험 + 검사 ── */}
+      {/* ── 중단 2x2 컬럼: 차량 스펙 + 소모품 정비 + 자동차 보험 + 검사/보증 ── */}
       <div className={styles.midGrid}>
 
         {/* 카드 3: 차량 스펙 */}
@@ -468,8 +468,46 @@ export default function Dashboard({
           </div>
         </div>
 
+        {/* 카드 4: 정비 소모품 수명 요약 (Top 3) */}
+        <div className={styles.card}>
+          <div className={styles.cardTitleRow}>
+            <span className={styles.cardTitle}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'6px'}}>
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              주요 정비 소모품
+            </span>
+            <button className={styles.detailBtn} onClick={() => { if (onNext) onNext() }}>
+              전체보기 &gt;
+            </button>
+          </div>
 
-        {/* 카드 4: 자동차 보험 */}
+          {!(carYear || carMileage) ? (
+            <button className={styles.registerPromptBtn} onClick={onOpenMyCarModal}>
+              + 차량 주행거리 등록하기
+            </button>
+          ) : (
+            <div className={styles.repairSummaryList}>
+              {maintenanceItems.slice(0, 3).map((item, idx) => {
+                const isDanger = item.status === 'danger'
+                const isWarning = item.status === 'warning'
+                const statusText = isDanger ? '교체' : isWarning ? '점검' : '양호'
+                const badgeStyle = isDanger ? styles.badgeDanger : isWarning ? styles.badgeWarning : styles.badgeGood
+                return (
+                  <div key={idx} className={styles.repairSummaryItem}>
+                    <span className={styles.repairSummaryName}>{item.name}</span>
+                    <div className={styles.repairSummaryMeta}>
+                      <span className={`${styles.repairSummaryBadge} ${badgeStyle}`}>{statusText}</span>
+                      <span className={styles.repairSummaryHealth}>{item.health}%</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* 카드 5: 자동차 보험 (의무/책임보험) */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <span className={styles.cardTitle}>
@@ -508,24 +546,32 @@ export default function Dashboard({
           )}
         </div>
 
-        {/* 카드 5: 자동차 검사 기간 */}
+        {/* 카드 6: 정기검사/운행 보험 보증 */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <span className={styles.cardTitle}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'6px'}}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              자동차 검사
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'6px'}}>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              운행 보증 보험 (정기검사)
             </span>
             <button className={styles.detailBtn} onClick={onOpenInspectionModal}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
               상세보기 &gt;
             </button>
           </div>
           {inspection?.startDate ? (
             <>
               <div className={styles.insuranceRow}>
-                <div className={styles.inspIcon}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                <div className={styles.inspIcon}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                  </svg>
+                </div>
                 <div style={{ flex: 1 }}>
-                  <div className={styles.insuranceName}>자동차 정기 검사</div>
+                  <div className={styles.insuranceName}>자동차 정기 검사 보증</div>
                   <div className={styles.insuranceDate}>
                     {fmtDate(inspection.startDate)} ~ {fmtDate(inspection.endDate)}
                   </div>
@@ -548,11 +594,12 @@ export default function Dashboard({
             </>
           ) : (
             <button className={styles.registerPromptBtn} onClick={onOpenInspectionModal}>
-              + 검사 기간 등록하기
+              + 검사 보증 기간 등록하기
             </button>
           )}
         </div>
       </div>
+
 
       {/* ── 소모품 모달들 ── */}
       {isDiagModalOpen && selectedDiagItem && (
