@@ -501,11 +501,33 @@ export default function Dashboard({
                 const isWarning = item.status === 'warning'
                 const statusText = isDanger ? '교체' : isWarning ? '점검' : '양호'
                 const badgeStyle = isDanger ? styles.badgeDanger : isWarning ? styles.badgeWarning : styles.badgeGood
+                
+                // 5단계 Segment 수치 인디케이터
+                const totalBars = 5
+                const activeBars = Math.max(0, Math.min(totalBars, Math.round((item.health / 100) * totalBars)))
+                const barColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#22c55e'
+
                 return (
                   <div key={idx} className={styles.repairSummaryItem}>
-                    <span className={styles.repairSummaryName}>{item.name}</span>
-                    <div className={styles.repairSummaryMeta}>
+                    <div className={styles.repairSummaryLeft}>
+                      <span className={styles.repairSummaryName}>{item.name}</span>
                       <span className={`${styles.repairSummaryBadge} ${badgeStyle}`}>{statusText}</span>
+                    </div>
+
+                    <div className={styles.repairSummaryRight}>
+                      {/* 첨부 이미지 스타일의 Segment Bar 인디케이터 */}
+                      <div className={styles.segmentBarGroup}>
+                        {Array.from({ length: totalBars }).map((_, bIdx) => (
+                          <span
+                            key={bIdx}
+                            className={styles.segmentBarItem}
+                            style={{
+                              backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
+                              opacity: bIdx < activeBars ? 1 : 0.25
+                            }}
+                          />
+                        ))}
+                      </div>
                       <span className={styles.repairSummaryHealth}>{item.health}%</span>
                     </div>
                   </div>

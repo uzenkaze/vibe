@@ -207,12 +207,14 @@
 }
 
 .profileCarImageWrap {
-  width: 220px;
-  height: 120px;
+  width: 100%;
+  max-width: 320px;
+  height: 155px;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
   flex-shrink: 0;
+  margin-top: 4px;
 }
 
 .profileCarImage {
@@ -220,7 +222,12 @@
   height: 100%;
   object-fit: contain;
   object-position: bottom right;
-  filter: drop-shadow(0px 6px 14px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.45));
+  transition: transform 0.3s ease;
+}
+
+.heroProfileCard:hover .profileCarImage {
+  transform: scale(1.03);
 }
 
 /* ── GitHub Icon Badge on Car Card ── */
@@ -465,23 +472,50 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 0.82rem;
+  gap: 12px;
+}
+
+.repairSummaryLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.repairSummaryRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.segmentBarGroup {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.segmentBarItem {
+  width: 6px;
+  height: 16px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
 }
 
 .repairSummaryName {
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.repairSummaryMeta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .repairSummaryBadge {
   font-size: 0.7rem;
