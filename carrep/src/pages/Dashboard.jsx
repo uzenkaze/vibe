@@ -317,10 +317,13 @@ export default function Dashboard({
               ) : (
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                   <button
+                    type="button"
+                    className={styles.changePhotoBtnInline}
                     onClick={() => fileInputRef.current?.click()}
                     title="새로운 차량 사진 선택 및 변경"
                   >
-                    <span>📷 사진 변경</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    사진 변경
                   </button>
                   <button
                     type="button"
@@ -329,7 +332,8 @@ export default function Dashboard({
                     title="등록된 사용자 사진 삭제 및 초기화"
                     style={{ opacity: 0.7 }}
                   >
-                    <span>🗑️ 삭제</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                    삭제
                   </button>
                 </div>
               )}
