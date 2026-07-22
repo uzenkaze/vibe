@@ -95,12 +95,22 @@ export default function App() {
   const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState(false)
   const [isInspectionModalOpen, setIsInspectionModalOpen] = useState(false)
 
-  // Insurance & Inspection state
+  // Insurance & Inspection state (비로그인 시 데이터 미표시)
   const [insurance, setInsurance] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('carrep_insurance') || 'null') } catch { return null }
+    const user = JSON.parse(localStorage.getItem('carrep_current_user') || 'null')
+    if (!user) return null
+    try {
+      const userIdKey = getUserIdKey(user)
+      return JSON.parse(localStorage.getItem(`carrep_insurance_${userIdKey}`) || 'null')
+    } catch { return null }
   })
   const [inspection, setInspection] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('carrep_inspection') || 'null') } catch { return null }
+    const user = JSON.parse(localStorage.getItem('carrep_current_user') || 'null')
+    if (!user) return null
+    try {
+      const userIdKey = getUserIdKey(user)
+      return JSON.parse(localStorage.getItem(`carrep_inspection_${userIdKey}`) || 'null')
+    } catch { return null }
   })
 
   // Fuel modal state
@@ -126,6 +136,8 @@ export default function App() {
     const userIdKey = getUserIdKey(user)
     const userMyCarKey = `carrep_mycar_${userIdKey}`
     const userReportsKey = `carrep_reports_${userIdKey}`
+    const userInsuranceKey = `carrep_insurance_${userIdKey}`
+    const userInspectionKey = `carrep_inspection_${userIdKey}`
 
     // 1. 사용자 차량 정보 연동
     if (user && user.car) {
@@ -162,6 +174,17 @@ export default function App() {
       } catch (e) {}
     }
 
+    // 3. 사용자 개별 보험 및 자동차 검사 정보 로드
+    try {
+      const ins = localStorage.getItem(userInsuranceKey)
+      setInsurance(ins ? JSON.parse(ins) : null)
+    } catch { setInsurance(null) }
+
+    try {
+      const insp = localStorage.getItem(userInspectionKey)
+      setInspection(insp ? JSON.parse(insp) : null)
+    } catch { setInspection(null) }
+
     showToast(`✨ ${user.name || '사용자'}님, 성공적으로 로그인 되었습니다!`, 'success', 4000)
     setStep(1)
   }
@@ -173,6 +196,8 @@ export default function App() {
     setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '', driveType: '', fuelType: '', regDate: '', fuelEconomy: '', tireSize: '', engineDisp: '' })
     setReports([])
     setRepairItems([])
+    setInsurance(null)
+    setInspection(null)
     showToast('로그아웃 되었습니다.', 'info', 3000)
     setStep(1)
   }
@@ -631,12 +656,20 @@ export default function App() {
 
   const handleSaveInsurance = (data) => {
     setInsurance(data)
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_insurance_${userIdKey}`, JSON.stringify(data))
+    }
     localStorage.setItem('carrep_insurance', JSON.stringify(data))
     showToast('🛡️ 보험 정보가 저장되었습니다!', 'success', 3000)
   }
 
   const handleSaveInspection = (data) => {
     setInspection(data)
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_inspection_${userIdKey}`, JSON.stringify(data))
+    }
     localStorage.setItem('carrep_inspection', JSON.stringify(data))
     showToast('🔍 자동차 검사 기간이 저장되었습니다!', 'success', 3000)
   }
