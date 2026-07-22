@@ -695,6 +695,7 @@ export default function App() {
     >
       {step === 1 && (
         <Dashboard
+          currentUser={currentUser}
           myCar={myCar}
           vehicleInfo={vehicleInfo}
           dbStatus={dbStatus}

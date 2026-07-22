@@ -116,6 +116,7 @@ function removeBgFromImage(base64Url, callback) {
 }
 
 export default function Dashboard({
+  currentUser,
   myCar, vehicleInfo, dbStatus,
   reports,
   insurance, inspection,
@@ -359,12 +360,66 @@ export default function Dashboard({
             </div>
 
             <div className={styles.profileCarImageWrap}>
-              <img
-                src={userPhoto || carImageUrl || getImagePath('/mohave_exterior.png')}
-                alt={carName || '차량 이미지'}
-                className={styles.profileCarImage}
-                onError={e => { e.target.src = getImagePath('/mohave_exterior.png') }}
-              />
+              {currentUser ? (
+                <img
+                  src={userPhoto || carImageUrl || getImagePath('/mohave_exterior.png')}
+                  alt={carName || '차량 이미지'}
+                  className={styles.profileCarImage}
+                  onError={e => { e.target.src = getImagePath('/mohave_exterior.png') }}
+                />
+              ) : (
+                <div className={styles.guestVectorCarWrap} title="로그인 후 내 차량 사진을 확인할 수 있습니다">
+                  <svg
+                    viewBox="0 0 320 160"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={styles.guestVectorCarSvg}
+                  >
+                    {/* 모던 미래지향 스포츠 SUV 벡터 스케치 */}
+                    <path
+                      d="M25 105C30 90 45 78 70 72L120 62L165 40C175 35 195 35 210 40L250 55C265 62 280 72 290 85L305 100C312 108 310 118 300 120H285C280 108 268 100 255 100C242 100 230 108 225 120H115C110 108 98 100 85 100C72 100 60 108 55 120H20C12 120 10 115 15 110L25 105Z"
+                      fill="url(#carBodyGrad)"
+                      stroke="var(--accent-blue)"
+                      strokeWidth="2.5"
+                    />
+                    {/* 루프 글래스 라인 */}
+                    <path
+                      d="M125 63L165 43C173 39 190 39 203 43L235 56C245 62 255 70 262 78L220 78H125V63Z"
+                      fill="url(#glassGrad)"
+                      stroke="var(--border)"
+                      strokeWidth="1.5"
+                    />
+                    {/* 사이드 윈도우 분할선 */}
+                    <line x1="175" y1="43" x2="175" y2="78" stroke="var(--border)" strokeWidth="1.5"/>
+                    {/* 헤드램프 LED 라이트 */}
+                    <path d="M285 88L302 98L288 102Z" fill="#45f3ff" opacity="0.9"/>
+                    {/* 테일램프 LED */}
+                    <path d="M25 102L18 108L28 112Z" fill="#ef4444" opacity="0.9"/>
+                    {/* 전륜 휠 & 타이어 */}
+                    <circle cx="255" cy="120" r="22" fill="#1e293b" stroke="var(--accent-blue)" strokeWidth="3.5"/>
+                    <circle cx="255" cy="120" r="14" fill="#334155" stroke="var(--border)" strokeWidth="2"/>
+                    <circle cx="255" cy="120" r="6" fill="#94a3b8"/>
+                    {/* 후륜 휠 & 타이어 */}
+                    <circle cx="85" cy="120" r="22" fill="#1e293b" stroke="var(--accent-blue)" strokeWidth="3.5"/>
+                    <circle cx="85" cy="120" r="14" fill="#334155" stroke="var(--border)" strokeWidth="2"/>
+                    <circle cx="85" cy="120" r="6" fill="#94a3b8"/>
+                    {/* 하단 그라운드 조명 그림자 */}
+                    <ellipse cx="160" cy="146" rx="130" ry="8" fill="rgba(59, 130, 246, 0.25)" filter="blur(4px)"/>
+
+                    <defs>
+                      <linearGradient id="carBodyGrad" x1="20" y1="40" x2="300" y2="120" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="var(--bg-card)"/>
+                        <stop offset="50%" stopColor="var(--bg-input)"/>
+                        <stop offset="100%" stopColor="var(--bg-secondary)"/>
+                      </linearGradient>
+                      <linearGradient id="glassGrad" x1="125" y1="40" x2="260" y2="78" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="rgba(69, 243, 255, 0.3)"/>
+                        <stop offset="100%" stopColor="rgba(59, 130, 246, 0.15)"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+              )}
             </div>
           </div>
         </div>
