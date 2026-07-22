@@ -100,7 +100,11 @@ export default function AppLayout({ step, goToStep, dbStatus, githubToken, curre
             title={currentUser ? `${currentUser.name || '사용자'} 프로필 (클릭하여 관리)` : "로그인 / 회원가입"}
           >
             {currentUser ? (
-              <img src={`${import.meta.env.BASE_URL}user_avatar.jpg`} alt="사용자 아바타" className={styles.avatarImgIcon} />
+              <img
+                src={`${import.meta.env.BASE_URL}${currentUser.avatar || 'avatars/m1.jpg'}`}
+                alt="사용자 프로필 캐릭터"
+                className={styles.avatarImgIcon}
+              />
             ) : (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>

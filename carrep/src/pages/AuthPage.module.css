@@ -30,13 +30,16 @@
   text-align: center;
 }
 
-.avatarWrap {
+.avatarWrapPlaceholder {
   width: 72px;
   height: 72px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--accent-blue);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+  border: 2px dashed var(--border);
+  background: var(--bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
 }
 
@@ -44,6 +47,102 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* ── 캐릭터 아바타 셀렉터 그리드 ── */
+.avatarPickerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.avatarPickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.genderTabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  padding: 2px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.genderTab {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.genderActive {
+  background: var(--accent-blue);
+  color: #ffffff !important;
+}
+
+.avatarGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.avatarGridItem {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--bg-card);
+}
+
+.avatarGridItem:hover {
+  transform: scale(1.06);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.avatarSelected {
+  border-color: var(--accent-blue) !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+  transform: scale(1.05);
+}
+
+.avatarThumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarCheckBadge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .avatarWrapLarge {
