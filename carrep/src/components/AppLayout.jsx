@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react'
 import styles from './AppLayout.module.css'
 
-const steps = [
-  { num: 1, label: '차량 정보' },
-  { num: 2, label: '정비 내역' },
-  { num: 3, label: '보고서' },
-]
-
 export default function AppLayout({ step, goToStep, dbStatus, githubToken, currentUser, onGoAuth, onOpenSetting, onOpenMyCar, onLogoClick, children }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('carrep_theme') || 'dark')
 
@@ -33,24 +27,6 @@ export default function AppLayout({ step, goToStep, dbStatus, githubToken, curre
           <span className={styles.logoIcon}>🔧</span>
           <span className={styles.logoText}>Car<span className={styles.logoAccent}>Rep</span></span>
         </button>
-
-        <div className={styles.stepper}>
-          {steps.map((s, i) => (
-            <div key={s.num} className={styles.stepWrapper}>
-              <button
-                className={`${styles.stepBtn} ${step === s.num ? styles.active : ''} ${step > s.num ? styles.done : ''}`}
-                onClick={() => step > s.num && goToStep(s.num)}
-                disabled={step < s.num}
-              >
-                {step > s.num ? '✓' : s.num}
-              </button>
-              <span className={`${styles.stepLabel} ${step === s.num ? styles.activeLabel : ''}`}>{s.label}</span>
-              {i < steps.length - 1 && (
-                <div className={`${styles.stepLine} ${step > s.num ? styles.lineDone : ''}`} />
-              )}
-            </div>
-          ))}
-        </div>
 
         <div className={styles.headerRight}>
           <button
