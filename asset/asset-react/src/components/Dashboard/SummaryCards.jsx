@@ -1,16 +1,43 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
 function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, tooltipContent, compareDiff, compareRate, hasPrev }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleOutsideClick = (e) => {
+      if (cardRef.current && !cardRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    // 약간의 딜레이를 주어 현재 클릭 이벤트 전파와 겹치지 않게 함
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleOutsideClick);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isOpen]);
 
   const handleMouseEnter = () => {
-    setIsHovered(true);
+    // PC 호버 지원
+    setIsOpen(true);
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
+    setIsOpen(false);
+  };
+
+  const handleToggleClick = (e) => {
+    e.stopPropagation();
+    setIsOpen(prev => !prev);
   };
 
   const { dark } = useApp();
@@ -34,9 +61,11 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
   return (
     <div 
       className="summary-card-outer"
+      ref={cardRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ zIndex: isHovered ? 100 : 1, position: 'relative' }}
+      onClick={handleToggleClick}
+      style={{ zIndex: isOpen ? 100 : 1, position: 'relative', cursor: 'pointer' }}
     >
       <div className="summary-card-inner">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.55rem' }}>
@@ -86,24 +115,26 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
         )}
       </div>
 
-      {isHovered && tooltipContent && (
-        <div style={{
-          position: 'absolute',
-          top: 'calc(100% + 10px)',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: '16px',
-          padding: '0.875rem',
-          boxShadow: 'var(--shadow-md)',
-          zIndex: 1000,
-          minWidth: '240px',
-          color: 'var(--text-primary)',
-          pointerEvents: 'none',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-        }}>
+      {isOpen && tooltipContent && (
+        <div 
+          onClick={(e) => e.stopPropagation()} // 툴팁 영역 클릭 시 레이어가 닫히지 않도록 방지
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 10px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: '16px',
+            padding: '0.875rem',
+            boxShadow: 'var(--shadow-md)',
+            zIndex: 1000,
+            minWidth: '240px',
+            color: 'var(--text-primary)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
+        >
           {tooltipContent}
         </div>
       )}
