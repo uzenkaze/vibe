@@ -452,7 +452,7 @@ export default function Dashboard({
                   )}
 
                   {carMileage && (
-                    <div className={`${styles.carSpecWidgetCard} ${styles.widgetCardBattery}`} title="누적 주행거리 및 메인 트립">
+                    <div className={styles.carSpecWidgetCard} title="누적 주행거리 및 메인 트립">
                       <div className={styles.widgetHeader}>
                         <span className={`${styles.widgetBadgeIcon} ${styles.iconBattery}`}>
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -465,13 +465,9 @@ export default function Dashboard({
                         <span className={styles.widgetLabel}>TOTAL ODOMETER</span>
                         <span className={styles.livePulseDot} />
                       </div>
-                      <div className={styles.widgetMainValueGroup}>
-                        <span className={styles.widgetNumVal}>{Number(carMileage).toLocaleString()}</span>
-                        <span className={styles.widgetUnitText}>KM</span>
-                      </div>
-                      {/* Dribbble EV Battery 위젯 특유의 네온 프로그레스 레벨 바 */}
-                      <div className={styles.evBatteryTrack}>
-                        <div className={styles.evBatteryFill} style={{ width: '85%' }} />
+                      <div className={styles.widgetValue}>
+                        <strong className={styles.widgetNumVal}>{Number(carMileage).toLocaleString()}</strong>
+                        <span className={styles.widgetUnitText}> KM</span>
                       </div>
                     </div>
                   )}
