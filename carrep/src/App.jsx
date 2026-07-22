@@ -286,15 +286,23 @@ export default function App() {
   }
 
   // Hybrid Fast Parallel Data Loading Chain
-  const loadData = async (tokenVal = githubToken) => {
-    // 비로그인 상태(게스트)일 때는 데이터 미표시
+  const loadData = async () => {
     const savedUser = localStorage.getItem('carrep_current_user')
-    if (!savedUser && !currentUser) {
-      setMyCar(null)
+    const activeUser = currentUser || (savedUser ? JSON.parse(savedUser) : null)
+
+    // [보안 및 격리] 로그인하지 않은 게스트의 경우 타인의 데이터를 절대로 로드하지 않고 완전 빈 데이터 보장
+    if (!activeUser) {
       setReports([])
+      setMyCar(null)
+      setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '', driveType: '', fuelType: '', regDate: '', fuelEconomy: '', tireSize: '', engineDisp: '' })
+      setInsurance(null)
+      setInspection(null)
+      setFuelHistory([])
+      setDbStatus('offline')
       return null
     }
 
+    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 
     // 1. Try loading from Live Local API Server ONLY if on localhost (Avoid 5s timeout on web)
@@ -459,12 +467,20 @@ export default function App() {
     setAttachedImages([])
     setSavedReportId(null)
 
-    // Registered vehicle info fast retrieval
-    const cachedMyCarStr = localStorage.getItem('carrep_cached_mycar') || localStorage.getItem('carrep_temp_mycar')
+    // 비로그인 상태인 경우 개인 데이터(차량 번호, 스펙 등) 절대 복구하지 않음
+    if (!currentUser) {
+      setMyCar(null)
+      setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '', driveType: '', fuelType: '', regDate: '', fuelEconomy: '', tireSize: '', engineDisp: '' })
+      return
+    }
+
+    // 로그인된 사용자만 본인 데이터에 안전하게 바인딩
+    const userIdKey = getUserIdKey(currentUser)
+    const userMyCarStr = localStorage.getItem(`carrep_mycar_${userIdKey}`)
     let activeCar = myCar
-    if (!activeCar && cachedMyCarStr) {
+    if (!activeCar && userMyCarStr) {
       try {
-        activeCar = JSON.parse(cachedMyCarStr)
+        activeCar = JSON.parse(userMyCarStr)
         setMyCar(activeCar)
       } catch (e) {}
     }
@@ -477,10 +493,14 @@ export default function App() {
         mileage: activeCar.mileage || '',
         repairDate: '',
         shopName: '',
-        color: activeCar.color || ''
+        color: activeCar.color || '',
+        driveType: activeCar.driveType || '',
+        fuelType: activeCar.fuelType || '',
+        regDate: activeCar.regDate || '',
+        fuelEconomy: activeCar.fuelEconomy || '',
+        tireSize: activeCar.tireSize || '',
+        engineDisp: activeCar.engineDisp || ''
       })
-    } else {
-      setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '' })
     }
   }
 
