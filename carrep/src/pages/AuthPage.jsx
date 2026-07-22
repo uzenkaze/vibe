@@ -21,10 +21,10 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
   const [name, setName] = useState('')
   const [selectedAvatar, setSelectedAvatar] = useState('m1')
   const [genderFilter, setGenderFilter] = useState('all') // 'all' | 'male' | 'female'
-  const [carModel, setCarModel] = useState('모하비 더 마스터')
-  const [carPlate, setCarPlate] = useState('12가 3456')
-  const [carYear, setCarYear] = useState('2022')
-  const [carMileage, setCarMileage] = useState('45000')
+  const [carModel, setCarModel] = useState('')
+  const [carPlate, setCarPlate] = useState('')
+  const [carYear, setCarYear] = useState('')
+  const [carMileage, setCarMileage] = useState('')
 
   // 이미 로그인된 경우 프로필 정보 및 로그아웃 제공
   if (currentUser) {
