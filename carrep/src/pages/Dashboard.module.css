@@ -701,6 +701,7 @@
   font-size: 0.78rem;
   font-weight: 900;
   font-family: 'Outfit', 'Inter', sans-serif;
+  color: rgb(144, 144, 144) !important;
 }
 
 .segmentBarGroup {
@@ -900,17 +901,21 @@
 
 /* ── Showroom Cars Sell Center Dashboard Light Mode Enhancements ── */
 
-/* 라이트모드: carSpecBadgesWrap 위젯 카드 배경 밝게 변경 */
+/* 라이트모드: carSpecBadgesWrap 및 위젯 카드 배경 밝게 변경 */
+[data-theme="light"] .carSpecBadgesWrap {
+  background: transparent !important;
+}
+
 [data-theme="light"] .carSpecWidgetCard {
-  background: linear-gradient(135deg, #f0f6ff 0%, #e8f0fe 100%) !important;
-  border: 1px solid rgba(59, 130, 246, 0.2) !important;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 1px rgba(255,255,255,0.9) !important;
 }
 
 [data-theme="light"] .carSpecWidgetCard:hover {
-  background: linear-gradient(135deg, #e8f0fe 0%, #dbeafe 100%) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.14), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1), inset 0 1px 1px rgba(255,255,255,0.9) !important;
 }
 
 [data-theme="light"] .widgetCardBattery {
