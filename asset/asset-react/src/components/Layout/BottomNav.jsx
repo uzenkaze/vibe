@@ -43,6 +43,17 @@ const BOTTOM_NAV_ITEMS = [
     ),
   },
   {
+    id: 'cardPayments',
+    label: '현금납부',
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <circle cx="12" cy="12" r="2" />
+        <path d="M6 12h.01M18 12h.01" />
+      </svg>
+    ),
+  },
+  {
     id: 'pension',
     label: '연금',
     icon: (
