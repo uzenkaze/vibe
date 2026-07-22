@@ -818,24 +818,15 @@ export default function CardPaymentsPage() {
             </span>
           </div>
           
-          {/* 프로그레스 트랙 */}
-          <div style={{ 
-            height: '10px', 
-            background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', 
-            borderRadius: '99px', 
-            overflow: 'hidden',
-            position: 'relative'
-          }}>
+          {/* 프로그레스 트랙 (Yellow Tick Gauge 계기판) */}
+          <div className="yellow-tick-gauge-track">
             {/* 프로그레스 필 */}
-            <div style={{
-              width: `${clampedPercent}%`,
-              height: '100%',
-              background: isShortage 
-                ? 'linear-gradient(90deg, #ff8a00 0%, var(--coral) 100%)' 
-                : 'linear-gradient(90deg, #5D6BF8 0%, var(--teal) 100%)',
-              borderRadius: '99px',
-              transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
-            }} />
+            <div 
+              className={isShortage ? "yellow-tick-gauge-fill-expense" : "yellow-tick-gauge-fill-income"}
+              style={{
+                width: `${clampedPercent}%`
+              }} 
+            />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', fontSize: '0.7rem', color: 'var(--text-muted)' }}>

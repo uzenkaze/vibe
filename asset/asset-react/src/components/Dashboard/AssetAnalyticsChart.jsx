@@ -138,41 +138,39 @@ export default function AssetAnalyticsChart() {
             </span>
           </div>
 
-          {/* 수입 바 */}
+          {/* 수입 바 (Yellow Tick Gauge 계기판) */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 700, marginBottom: '0.2rem' }}>
-              <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} /> 당월 총 수입
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.35rem' }}>
+              <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 6px #f59e0b' }} /> 당월 총 수입
               </span>
-              <span style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{formatKRW(totals.income)}원</span>
+              <span style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800 }}>{formatKRW(totals.income)}원</span>
             </div>
-            <div style={{ height: 8, background: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0', borderRadius: 99, overflow: 'hidden' }}>
-              <div style={{
-                width: `${Math.min((totals.income / (Math.max(totals.income, totals.totalExpense) || 1)) * 100, 100)}%`,
-                height: '100%',
-                background: 'linear-gradient(90deg, #10b981 0%, #00e676 100%)',
-                borderRadius: 99,
-                transition: 'width 0.5s ease'
-              }} />
+            <div className="yellow-tick-gauge-track">
+              <div 
+                className="yellow-tick-gauge-fill-income"
+                style={{
+                  width: `${Math.min((totals.income / (Math.max(totals.income, totals.totalExpense) || 1)) * 100, 100)}%`
+                }} 
+              />
             </div>
           </div>
 
-          {/* 지출 바 */}
+          {/* 지출 바 (Yellow Tick Gauge 계기판) */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 700, marginBottom: '0.2rem' }}>
-              <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} /> 당월 총 지출
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.35rem' }}>
+              <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef4444' }} /> 당월 총 지출
               </span>
-              <span style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{formatKRW(totals.totalExpense)}원</span>
+              <span style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800 }}>{formatKRW(totals.totalExpense)}원</span>
             </div>
-            <div style={{ height: 8, background: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0', borderRadius: 99, overflow: 'hidden' }}>
-              <div style={{
-                width: `${Math.min((totals.totalExpense / (Math.max(totals.income, totals.totalExpense) || 1)) * 100, 100)}%`,
-                height: '100%',
-                background: 'linear-gradient(90deg, #ef4444 0%, #f43f5e 100%)',
-                borderRadius: 99,
-                transition: 'width 0.5s ease'
-              }} />
+            <div className="yellow-tick-gauge-track">
+              <div 
+                className="yellow-tick-gauge-fill-expense"
+                style={{
+                  width: `${Math.min((totals.totalExpense / (Math.max(totals.income, totals.totalExpense) || 1)) * 100, 100)}%`
+                }} 
+              />
             </div>
           </div>
         </div>
