@@ -193,6 +193,49 @@ export default function Dashboard({
   const [userPhoto, setUserPhoto] = useState(() => {
     try { return localStorage.getItem('carrep_user_car_photo') || null } catch { return null }
   })
+  const [guestTeslaPhoto, setGuestTeslaPhoto] = useState(null)
+
+  // 비로그인 테슬라 이미지도 모하비 차량처럼 흰색 배경을 제거하여 차량만 투명하게 렌더링
+  useEffect(() => {
+    if (!currentUser) {
+      const getImagePath = (path) => {
+        const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '/'
+        const cleanPath = path.startsWith('/') ? path.slice(1) : path
+        const cleanBase = base.endsWith('/') ? base : `${base}/`
+        return `${cleanBase}${cleanPath}`
+      }
+      const teslaImgUrl = getImagePath('/tesla_front.jpg')
+
+      // 이미지를 캔버스에 로드하여 흰색 배경 제거 (투명화)
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas')
+          canvas.width = img.width
+          canvas.height = img.height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0)
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+          const data = imgData.data
+
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i], g = data[i + 1], b = data[i + 2]
+            // 밝은 흰색/연회색 배경 추출하여 알파 투명도(0)로 변경
+            if (r > 215 && g > 215 && b > 215) {
+              data[i + 3] = 0
+            }
+          }
+          ctx.putImageData(imgData, 0, 0)
+          setGuestTeslaPhoto(canvas.toDataURL('image/png'))
+        } catch (e) {
+          setGuestTeslaPhoto(teslaImgUrl)
+        }
+      }
+      img.onerror = () => setGuestTeslaPhoto(teslaImgUrl)
+      img.src = teslaImgUrl
+    }
+  }, [currentUser])
 
   const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0]
@@ -429,10 +472,10 @@ export default function Dashboard({
                 />
               ) : (
                 <img
-                  src={getImagePath('/tesla_front.jpg')}
+                  src={guestTeslaPhoto || getImagePath('/tesla_front.jpg')}
                   alt="테슬라 정면 실사컷"
                   className={styles.profileCarImage}
-                  style={{ objectFit: 'contain', filter: 'drop-shadow(0 12px 20px rgba(0, 0, 0, 0.4))' }}
+                  style={{ objectFit: 'contain', filter: 'drop-shadow(0 14px 24px rgba(0, 0, 0, 0.45))' }}
                   title="로그인 후 내 차량 사진을 확인할 수 있습니다"
                 />
               )}
