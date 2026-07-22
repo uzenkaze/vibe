@@ -250,6 +250,44 @@
   text-align: center;
 }
 
+@media (max-width: 480px) {
+  .page {
+    padding: 12px 10px 60px;
+  }
+  .card {
+    padding: 20px 16px;
+    border-radius: 22px;
+  }
+  .avatarWrap {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .subtitle {
+    font-size: 0.76rem;
+  }
+  .signUpCarBox, .carInfoBox {
+    padding: 12px 10px;
+    border-radius: 14px;
+    gap: 8px;
+  }
+  .fieldGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .input {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+  .btnSubmit {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
 /* ── 라이트 모드 대응 ── */
 [data-theme="light"] .card {
   background: #ffffff;

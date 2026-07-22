@@ -15,8 +15,15 @@ import BottomNav from './components/BottomNav'
 import { getGithubJson, saveGithubJson, validateGithubToken } from './utils/githubDb'
 
 const API_BASE = 'http://localhost:5500'
-const REPORTS_PATH = 'carrep/public/data/reports.json'
-const MYCAR_PATH = 'carrep/public/data/mycar.json'
+
+// 회원 아이디(이메일 ID)를 포함한 회원별 데이터 경로 생성 함수
+const getUserIdKey = (user) => {
+  if (!user || !user.email) return 'default'
+  return user.email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '_')
+}
+
+const getReportsPath = (user) => `carrep/public/data/reports_${getUserIdKey(user)}.json`
+const getMyCarPath = (user) => `carrep/public/data/mycar_${getUserIdKey(user)}.json`
 
 export default function App() {
   const [step, setStep] = useState(1)
@@ -419,7 +426,7 @@ export default function App() {
     if (githubToken) {
       try {
         await saveGithubJson(
-          REPORTS_PATH,
+          getReportsPath(currentUser),
           updatedReports,
           githubToken,
           `chore(data): delete repair report ${id}`
@@ -489,7 +496,7 @@ export default function App() {
     if (githubToken) {
       try {
         await saveGithubJson(
-          REPORTS_PATH,
+          getReportsPath(currentUser),
           updatedReports,
           githubToken,
           savedReportId ? `chore(data): update repair report ${newReport.id}` : `chore(data): create repair report ${newReport.id}`
@@ -561,7 +568,7 @@ export default function App() {
     if (githubToken) {
       try {
         await saveGithubJson(
-          MYCAR_PATH,
+          getMyCarPath(currentUser),
           myCarData,
           githubToken,
           'chore(data): update MyCar profile'

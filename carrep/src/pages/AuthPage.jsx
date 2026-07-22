@@ -253,12 +253,6 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
             {isSignUp ? '로그인 하기' : '회원가입 하기'}
           </button>
         </div>
-
-        {!isSignUp && (
-          <div className={styles.demoNotice}>
-            💡 <strong>빠른 테스트용 계정:</strong> demo@kia.com / 1234
-          </div>
-        )}
       </div>
     </div>
   )
