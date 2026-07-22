@@ -431,23 +431,48 @@ export default function Dashboard({
           <div className={styles.profileCardBottomRow}>
             <div className={styles.profileBottomLeft}>
 
-              {/* 벡터 아이콘을 포함한 세련된 차량 정보 스펙 뱃지 영역 */}
+              {/* Dribbble EV Smart Car UI 배터리 & 텔레메트리 위젯 스타일의 carSpecBadgesWrap */}
               {currentUser && (carDriveType || carGrade || carMileage) && (
                 <div className={styles.carSpecBadgesWrap}>
                   {(carDriveType || carGrade) && (
-                    <div className={styles.carSpecTagItem} title="차량 등급 및 구동방식">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={styles.carSpecTagIcon}>
-                        <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-4"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                      </svg>
-                      <span>{[carDriveType, carGrade].filter(Boolean).join(' ')}</span>
+                    <div className={styles.carSpecWidgetCard} title="차량 등급 및 구동 사양">
+                      <div className={styles.widgetHeader}>
+                        <span className={styles.widgetBadgeIcon}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.05 11 2 11.3 2 11.5V16c0 .6.4 1 1 1h2"/>
+                            <circle cx="7" cy="17" r="2.5"/><circle cx="17" cy="17" r="2.5"/>
+                          </svg>
+                        </span>
+                        <span className={styles.widgetLabel}>SPEC & GRADE</span>
+                      </div>
+                      <div className={styles.widgetValue}>
+                        {[carDriveType, carGrade].filter(Boolean).join(' · ')}
+                      </div>
                     </div>
                   )}
+
                   {carMileage && (
-                    <div className={styles.carSpecTagItem} title="현재 차량 총 주행거리">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={styles.carSpecTagIcon}>
-                        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-                      </svg>
-                      <span>{Number(carMileage).toLocaleString()}km 주행</span>
+                    <div className={`${styles.carSpecWidgetCard} ${styles.widgetCardBattery}`} title="누적 주행거리 및 메인 트립">
+                      <div className={styles.widgetHeader}>
+                        <span className={`${styles.widgetBadgeIcon} ${styles.iconBattery}`}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="7" width="16" height="10" rx="2" ry="2"/>
+                            <line x1="22" y1="11" x2="22" y2="13"/>
+                            <line x1="6" y1="11" x2="6" y2="13"/>
+                            <line x1="10" y1="11" x2="10" y2="13"/>
+                          </svg>
+                        </span>
+                        <span className={styles.widgetLabel}>TOTAL ODOMETER</span>
+                        <span className={styles.livePulseDot} />
+                      </div>
+                      <div className={styles.widgetMainValueGroup}>
+                        <span className={styles.widgetNumVal}>{Number(carMileage).toLocaleString()}</span>
+                        <span className={styles.widgetUnitText}>KM</span>
+                      </div>
+                      {/* Dribbble EV Battery 위젯 특유의 네온 프로그레스 레벨 바 */}
+                      <div className={styles.evBatteryTrack}>
+                        <div className={styles.evBatteryFill} style={{ width: '85%' }} />
+                      </div>
                     </div>
                   )}
                 </div>
