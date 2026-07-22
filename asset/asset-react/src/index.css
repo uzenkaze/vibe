@@ -2181,7 +2181,48 @@ html.dark .custom-dropdown-menu {
    ============================ */
 .empty-state {
   text-align: center;
-  padding: 1.75rem;
+  padding: 3rem 1.5rem;
   color: var(--text-muted);
-  font-size: 0.835rem;
+}
+
+/* ============================
+   CARD PAYMENTS MOBILE COMPACT TABLE
+   ============================ */
+.card-payments-compact-table th,
+.card-payments-compact-table td {
+  padding: 0.35rem 0.25rem !important;
+  font-size: 0.8rem;
+}
+
+.card-payments-compact-table input[type="text"],
+.card-payments-compact-table input[type="number"],
+.card-payments-compact-table .number-input-field {
+  padding: 0.25rem 0.35rem !important;
+  font-size: 0.78rem !important;
+  width: 100% !important;
+}
+
+.card-payments-compact-table .custom-dropdown-trigger {
+  padding: 0.25rem 0.3rem !important;
+  font-size: 0.75rem !important;
+  min-width: 65px !important;
+}
+
+@media (max-width: 768px) {
+  .card-payments-table-container {
+    padding: 0 0.25rem 1rem !important;
+  }
+  .card-payments-compact-table {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+  .card-payments-compact-table th,
+  .card-payments-compact-table td {
+    padding: 0.3rem 0.15rem !important;
+    font-size: 0.72rem !important;
+  }
+  .card-payments-compact-table .btn-sm {
+    padding: 2px 4px !important;
+    font-size: 0.65rem !important;
+  }
 }
