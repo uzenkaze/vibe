@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 import NumberInput from '../UI/NumberInput';
@@ -124,6 +124,26 @@ export default function CardPaymentsPage() {
   }, [yearData, year]);
 
   const [hoveredPoint, setHoveredPoint] = useState(null);
+  const [isIncomeHovered, setIsIncomeHovered] = useState(false);
+  const [isExpenseHovered, setIsExpenseHovered] = useState(false);
+  
+  const incomeCardRef = useRef(null);
+  const expenseCardRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (incomeCardRef.current && !incomeCardRef.current.contains(e.target)) {
+        setIsIncomeHovered(false);
+      }
+      if (expenseCardRef.current && !expenseCardRef.current.contains(e.target)) {
+        setIsExpenseHovered(false);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, []);
 
   // --- SVG Chart Dimensions ---
   const width = 800;
@@ -605,31 +625,137 @@ export default function CardPaymentsPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           {/* 수입 카드 */}
-          <div style={{
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: '12px',
-            padding: '1rem 1.25rem',
-            borderLeft: '4px solid var(--teal)'
-          }}>
+          <div 
+            ref={incomeCardRef}
+            onMouseEnter={() => setIsIncomeHovered(true)}
+            onMouseLeave={() => setIsIncomeHovered(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsIncomeHovered(prev => !prev);
+            }}
+            style={{
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              padding: '1rem 1.25rem',
+              borderLeft: '4px solid var(--teal)',
+              position: 'relative',
+              zIndex: isIncomeHovered ? 50 : 1,
+              cursor: 'pointer'
+            }}
+          >
             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>수입</div>
             <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
               {formatKRW(totalIncome)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
             </div>
+
+            {/* 수입 상세 레이어 */}
+            {isIncomeHovered && (
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 8px)',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  padding: '0.75rem 1rem',
+                  boxShadow: 'var(--shadow-md)',
+                  zIndex: 1000,
+                  minWidth: '220px',
+                  color: 'var(--text-primary)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                }}
+              >
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
+                  수입 상세 내역
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '150px', overflowY: 'auto' }}>
+                  {(sections.income || []).length === 0 ? (
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>등록된 수입 내역이 없습니다.</div>
+                  ) : (
+                    (sections.income || []).map((i, idx) => (
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                        <span style={{ fontWeight: 600 }}>{i.item || '미지정'}</span>
+                        <span style={{ fontWeight: 800, color: 'var(--teal)' }}>{formatKRW(i.amount)}원</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 지출 카드 */}
-          <div style={{
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            borderRadius: '12px',
-            padding: '1rem 1.25rem',
-            borderLeft: '4px solid #ff8a00'
-          }}>
+          <div 
+            ref={expenseCardRef}
+            onMouseEnter={() => setIsExpenseHovered(true)}
+            onMouseLeave={() => setIsExpenseHovered(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpenseHovered(prev => !prev);
+            }}
+            style={{
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              padding: '1rem 1.25rem',
+              borderLeft: '4px solid #ff8a00',
+              position: 'relative',
+              zIndex: isExpenseHovered ? 50 : 1,
+              cursor: 'pointer'
+            }}
+          >
             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>지출</div>
             <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
               {formatKRW(paymentsTotalAmount)} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>원</span>
             </div>
+
+            {/* 지출 상세 레이어 */}
+            {isExpenseHovered && (
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 8px)',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  padding: '0.75rem 1rem',
+                  boxShadow: 'var(--shadow-md)',
+                  zIndex: 1000,
+                minWidth: '240px',
+                color: 'var(--text-primary)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+              }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
+                  현금 납부 지출 상세
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '150px', overflowY: 'auto' }}>
+                  {cardPayments.length === 0 ? (
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>등록된 지출 내역이 없습니다.</div>
+                  ) : (
+                    cardPayments.map((p, idx) => (
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                        <span style={{ fontWeight: 600 }}>
+                          {p.item || '미지정'}
+                          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginLeft: '4px', fontWeight: 500 }}>
+                            ({displayPayDate(p.payDate)})
+                          </span>
+                        </span>
+                        <span style={{ fontWeight: 800, color: '#ff8a00' }}>{formatKRW(p.amount)}원</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 결과 카드 (부족 또는 남음) */}
