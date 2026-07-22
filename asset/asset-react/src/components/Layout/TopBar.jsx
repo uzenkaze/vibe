@@ -8,7 +8,7 @@ const PAGE_TITLES = {
   expenses: '부채 · 지출',
   installment: '카드 내역',
   cardPayments: '현금 납부',
-  pension: '연금 정보',
+  pension: '내 연금',
 };
 
 // Custom Dropdown for premium selection UI (prevents native dropdown look)

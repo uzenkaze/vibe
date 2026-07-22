@@ -58,7 +58,7 @@ const NAV_ITEMS = [
   },
   {
     id: 'pension',
-    label: '연금 정보',
+    label: '내 연금',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
