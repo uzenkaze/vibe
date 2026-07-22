@@ -50,8 +50,8 @@ const CATEGORY_DETAILS = {
     desc: 'GDS/KDS 컴퓨터 스캔 진단 점검, 휠 얼라이먼트 조정, 정기 종합 검사 대행 등 진단 분석 공임'
   },
   '기타': {
-    label: '기타 정비 (분류 외 작업)',
-    desc: '위 분류에 해당하지 않는 가벼운 소모품 정비, 엔진룸 크리닝, 실내 탈취 작업 등'
+    label: '기타 정비 가이드',
+    desc: '해당하지 않는 가벼운 소모품 정비, 엔진룸 크리닝, 실내 탈취 작업 등'
   }
 }
 
@@ -373,32 +373,38 @@ export default function Step2Repairs({
 
   return (
     <div className={styles.container}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px', gap: '16px', flexWrap: 'wrap' }}>
-        <div className={styles.header} style={{ flex: 1, minWidth: '240px', marginBottom: 0 }}>
-          <h1 className={styles.title}>정비 내역 입력</h1>
-          <p className={styles.subtitle}>수리한 항목과 금액을 직접 입력하거나, 정비 영수증/이미지를 첨부하면 정비 항목이 자동 추출 및 등록됩니다.</p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <button className={`${styles.btn} ${styles.btnGhost}`} onClick={onPrev}>
-            ← 이전
-          </button>
-          {onSave && (
-            <button
-              type="button"
-              className={styles.btn}
-              onClick={handleSaveClick}
-              disabled={repairItems.length === 0 && attachedImages.length === 0 && !form.name}
-              style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#fff',
-                border: 'none',
-                fontWeight: 700,
-                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)'
-              }}
-            >
-              💾 저장
-            </button>
-          )}
+      <div className={styles.headerRow}>
+        <div className={styles.headerTitleGroup}>
+          <div className={styles.titleWithActions}>
+            <h1 className={styles.title}>정비 내역 입력</h1>
+            <div className={styles.topActionBtns}>
+              <button className={styles.btnSmallIcon} onClick={onPrev} title="이전 단계로 이동">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                </svg>
+                <span>이전</span>
+              </button>
+              {onSave && (
+                <button
+                  type="button"
+                  className={styles.btnSmallIconSave}
+                  onClick={handleSaveClick}
+                  disabled={repairItems.length === 0 && attachedImages.length === 0 && !form.name}
+                  title="정비내역 저장"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                  </svg>
+                  <span>저장</span>
+                </button>
+              )}
+            </div>
+          </div>
+          <p className={styles.subtitle}>
+            수리한 항목과 금액을 직접 입력하거나, 정비 영수증/이미지를 첨부하면 정비 항목이 자동 추출 및 등록됩니다.
+          </p>
         </div>
       </div>
 
@@ -420,24 +426,28 @@ export default function Step2Repairs({
             <span>{editingId ? '✏️ 항목 수정' : '➕ 항목추가'}</span>
           </div>
           <div className={styles.formGrid}>
-            <div className={styles.field}>
-              <label className={styles.label}>📅 정비 일자 <span className={styles.req}>*</span></label>
-              <input
-                className={styles.input}
-                type="date"
-                value={form.repairDate || new Date().toISOString().split('T')[0]}
-                onChange={e => setF('repairDate', e.target.value)}
-              />
+            {/* 모바일 1행: 정비일자 + 정비항목명 */}
+            <div className={styles.fieldRowInline}>
+              <div className={styles.field}>
+                <label className={styles.label}>📅 정비 일자 <span className={styles.req}>*</span></label>
+                <input
+                  className={styles.input}
+                  type="date"
+                  value={form.repairDate || new Date().toISOString().split('T')[0]}
+                  onChange={e => setF('repairDate', e.target.value)}
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>정비 항목명 <span className={styles.req}>*</span></label>
+                <input
+                  className={styles.input}
+                  placeholder="예: 에어쇼바, 엔진오일..."
+                  value={form.name}
+                  onChange={handleNameChange}
+                />
+              </div>
             </div>
-            <div className={styles.field}>
-              <label className={styles.label}>정비 항목명 <span className={styles.req}>*</span></label>
-              <input
-                className={styles.input}
-                placeholder="예: 에어쇼바 교체, 브레이크 패드, 엔진오일..."
-                value={form.name}
-                onChange={handleNameChange}
-              />
-            </div>
+
             <div className={styles.field}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                 <label className={styles.label} style={{ margin: 0 }}>부위 구분</label>
@@ -465,23 +475,27 @@ export default function Step2Repairs({
                 {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_DETAILS[c].label}</option>)}
               </select>
             </div>
-            <div className={styles.field}>
-              <label className={styles.label}>부품비 (원)</label>
-              <FormattedNumberInput
-                className={styles.input}
-                placeholder="0"
-                value={form.partsCost}
-                onChange={val => setF('partsCost', val)}
-              />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>공임비 (원)</label>
-              <FormattedNumberInput
-                className={styles.input}
-                placeholder="0"
-                value={form.laborCost}
-                onChange={val => setF('laborCost', val)}
-              />
+
+            {/* 모바일 1행: 부품비 + 공임비 */}
+            <div className={styles.fieldRowInline}>
+              <div className={styles.field}>
+                <label className={styles.label}>부품비 (원)</label>
+                <FormattedNumberInput
+                  className={styles.input}
+                  placeholder="0"
+                  value={form.partsCost}
+                  onChange={val => setF('partsCost', val)}
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>공임비 (원)</label>
+                <FormattedNumberInput
+                  className={styles.input}
+                  placeholder="0"
+                  value={form.laborCost}
+                  onChange={val => setF('laborCost', val)}
+                />
+              </div>
             </div>
             <div className={styles.field}>
               <label className={styles.label} style={{ color: 'var(--accent-blue)', fontWeight: '700' }}>
