@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import styles from './Dashboard.module.css'
 import { getMaintenanceStatus } from '../utils/carMaintenance'
 import MaintenanceRegisterModal from '../components/MaintenanceRegisterModal'
