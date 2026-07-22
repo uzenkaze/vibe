@@ -2299,3 +2299,27 @@ html.dark .asset-analytics-card {
     padding-bottom: 1.25rem !important;
   }
 }
+
+/* ============================
+   iOS PULL-TO-REFRESH SPINNER
+   ============================ */
+.ios-spinner-ring {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(99, 102, 241, 0.2);
+  border-top: 2.5px solid #6366f1;
+  border-right: 2.5px solid #6366f1;
+  border-radius: 50%;
+  animation: iosSpinnerRotate 0.75s linear infinite;
+}
+
+html.dark .ios-spinner-ring {
+  border: 2.5px solid rgba(129, 140, 248, 0.2);
+  border-top: 2.5px solid #818cf8;
+  border-right: 2.5px solid #38bdf8;
+}
+
+@keyframes iosSpinnerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

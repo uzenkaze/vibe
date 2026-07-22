@@ -26,6 +26,7 @@ import SummaryModal from './components/UI/SummaryModal';
 import DataModal from './components/UI/DataModal';
 import GitHubModal from './components/UI/GitHubModal';
 import ExpenseDetailModal from './components/UI/ExpenseDetailModal';
+import PullToRefresh from './components/UI/PullToRefresh';
 
 function Dashboard() {
   const { navSection, showToast, persistSections, getCurrentSections, updateRow } = useApp();
@@ -138,60 +139,62 @@ function Dashboard() {
           onGithubModal={() => setGithubModal(true)}
         />
 
-        <div className="page-container">
-          {/* 대시보드: 요약카드 + 분석 차트 + 전체 */}
-          {(navSection === 'dashboard') && (
-            <>
-              <SummaryCards />
-              <AssetAnalyticsChart />
-              <InstallmentOverview />
-              <div className="dashboard-grid">
+        <PullToRefresh>
+          <div className="page-container">
+            {/* 대시보드: 요약카드 + 분석 차트 + 전체 */}
+            {(navSection === 'dashboard') && (
+              <>
+                <SummaryCards />
+                <AssetAnalyticsChart />
+                <InstallmentOverview />
+                <div className="dashboard-grid">
+                  <AssetSection onSummary={() => setSummaryModal('assets')} />
+                  <ExpenseSection
+                    onSummary={() => setSummaryModal('expenses')}
+                    onExpenseDetail={handleExpenseDetailOpen}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* 자산·수입 전용 */}
+            {navSection === 'assets' && (
+              <>
+                <SummaryCards />
                 <AssetSection onSummary={() => setSummaryModal('assets')} />
-                <ExpenseSection
-                  onSummary={() => setSummaryModal('expenses')}
+              </>
+            )}
+
+            {/* 부채·지출 전용 */}
+            {navSection === 'expenses' && (
+              <>
+                <SummaryCards />
+                <ExpenseSection 
+                  onSummary={() => setSummaryModal('expenses')} 
                   onExpenseDetail={handleExpenseDetailOpen}
                 />
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {/* 자산·수입 전용 */}
-          {navSection === 'assets' && (
-            <>
-              <SummaryCards />
-              <AssetSection onSummary={() => setSummaryModal('assets')} />
-            </>
-          )}
+            {/* 할부 관리 */}
+            {navSection === 'installment' && (
+              <>
+                <SummaryCards />
+                <InstallmentPage />
+              </>
+            )}
 
-          {/* 부채·지출 전용 */}
-          {navSection === 'expenses' && (
-            <>
-              <SummaryCards />
-              <ExpenseSection 
-                onSummary={() => setSummaryModal('expenses')} 
-                onExpenseDetail={handleExpenseDetailOpen}
-              />
-            </>
-          )}
+            {/* 카드 납부 내역 */}
+            {navSection === 'cardPayments' && (
+              <CardPaymentsPage />
+            )}
 
-          {/* 할부 관리 */}
-          {navSection === 'installment' && (
-            <>
-              <SummaryCards />
-              <InstallmentPage />
-            </>
-          )}
-
-          {/* 카드 납부 내역 */}
-          {navSection === 'cardPayments' && (
-            <CardPaymentsPage />
-          )}
-
-          {/* 연금 정보 관리 */}
-          {navSection === 'pension' && (
-            <PensionPage />
-          )}
-        </div>
+            {/* 연금 정보 관리 */}
+            {navSection === 'pension' && (
+              <PensionPage />
+            )}
+          </div>
+        </PullToRefresh>
       </main>
 
       {/* Bottom Nav (mobile) */}
