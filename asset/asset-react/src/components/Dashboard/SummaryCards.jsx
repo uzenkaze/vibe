@@ -47,16 +47,16 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
   const isBlue = (label === '순자산 (Net Worth)' || label === '월 손익 (P&L)') && !isPositive;
 
   const badgeBg = isBlue 
-    ? (dark ? 'rgba(59, 130, 246, 0.18)' : 'rgba(59, 130, 246, 0.1)') 
-    : (isGood ? 'var(--teal-dim)' : 'var(--coral-dim)');
+    ? (dark ? 'rgba(99, 102, 241, 0.18)' : 'rgba(99, 102, 241, 0.1)') 
+    : (isGood ? 'rgba(0, 230, 118, 0.15)' : 'rgba(244, 63, 94, 0.15)');
 
   const badgeColor = isBlue 
-    ? (dark ? '#60a5fa' : '#1d4ed8') 
-    : (isGood ? 'var(--teal)' : 'var(--coral)');
+    ? (dark ? '#818cf8' : '#4f46e5') 
+    : (isGood ? 'var(--income-color)' : 'var(--expense-color)');
 
   const badgeShadow = isBlue 
-    ? (dark ? '0 0 10px rgba(59, 130, 246, 0.2)' : '0 0 10px rgba(59, 130, 246, 0.12)') 
-    : (isGood ? '0 0 10px var(--teal-dim)' : '0 0 10px var(--coral-dim)');
+    ? (dark ? '0 0 12px rgba(99, 102, 241, 0.3)' : '0 0 10px rgba(99, 102, 241, 0.15)') 
+    : (isGood ? '0 0 12px rgba(0, 230, 118, 0.3)' : '0 0 12px rgba(244, 63, 94, 0.3)');
 
   return (
     <div 
@@ -68,26 +68,28 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
       style={{ zIndex: isOpen ? 100 : 1, position: 'relative', cursor: 'pointer' }}
     >
       <div className="summary-card-inner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.55rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.65rem' }}>
           <div style={{
-            width: 28, height: 28,
-            borderRadius: '50%',
-            background: accentColorDim || 'rgba(0,0,0,0.05)',
+            width: 32, height: 32,
+            borderRadius: '10px',
+            background: accentColorDim || 'rgba(99,102,241,0.08)',
+            border: `1px solid ${accentColor ? accentColor + '33' : 'rgba(255,255,255,0.1)'}`,
+            boxShadow: `0 0 12px ${accentColorDim || 'transparent'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: accentColor, flexShrink: 0,
+            color: accentColor || 'var(--brand)', flexShrink: 0,
           }}>
             {icon}
           </div>
-          <div className="summary-card-label" style={{ margin: 0, fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+          <div className="summary-card-label" style={{ margin: 0, fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             {label}
           </div>
         </div>
         <div
           className="summary-card-value num"
-          style={{ color: 'var(--text-primary)', fontSize: '1.25rem', fontWeight: 900, marginBottom: 0, letterSpacing: '-0.02em', textAlign: 'right' }}
+          style={{ color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 900, marginBottom: 0, letterSpacing: '-0.03em', textAlign: 'right', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
           {formatKRW(value)}
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginLeft: 2, fontWeight: 600 }}>원</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 3, fontWeight: 700 }}>원</span>
         </div>
 
         {/* 전월대비 증감율 캡슐 뱃지 */}
