@@ -113,6 +113,17 @@ export default function App() {
     } catch { return null }
   })
 
+  // Fuel History state (비로그인 시 빈 배열)
+  const [fuelHistory, setFuelHistory] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('carrep_current_user') || 'null')
+    if (!user) return []
+    try {
+      const userIdKey = getUserIdKey(user)
+      const cached = localStorage.getItem(`carrep_fuel_history_${userIdKey}`) || localStorage.getItem('carrep_fuel_history')
+      return cached ? JSON.parse(cached) : []
+    } catch (e) { return [] }
+  })
+
   // Fuel modal state
   const [isFuelModalOpen, setIsFuelModalOpen] = useState(false)
 
