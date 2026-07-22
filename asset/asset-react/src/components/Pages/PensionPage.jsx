@@ -56,17 +56,7 @@ export default function PensionPage() {
         overflow: 'hidden',
         boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
       }}>
-        {/* 배경 장식 원 */}
-        <div style={{
-          position: 'absolute', top: -60, right: -60,
-          width: 220, height: 220, borderRadius: '50%',
-          background: 'rgba(245,166,35,0.08)', pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: -40, left: -40,
-          width: 160, height: 160, borderRadius: '50%',
-          background: 'rgba(45,201,160,0.06)', pointerEvents: 'none',
-        }} />
+
 
         {/* 헤더 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' }}>
