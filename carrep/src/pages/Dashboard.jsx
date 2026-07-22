@@ -700,20 +700,21 @@ export default function Dashboard({
                       </div>
 
                       <div className={styles.repairSummaryRight}>
-                        {/* 첨부 이미지 스타일의 Segment Bar 인디케이터 */}
-                        <div className={styles.segmentBarGroup}>
-                          {Array.from({ length: totalBars }).map((_, bIdx) => (
-                            <span
-                              key={bIdx}
-                              className={styles.segmentBarItem}
+                        {/* 🔋 실감나는 배터리 림 & 캡 수치 게이지 인디케이터 */}
+                        <div className={styles.batteryWidgetWrap} title={`잔여 수명 ${item.health}%`}>
+                          <div className={styles.batteryBody}>
+                            <div
+                              className={styles.batteryFill}
                               style={{
-                                backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
-                                opacity: bIdx < activeBars ? 1 : 0.25
+                                width: `${Math.max(5, Math.min(100, item.health))}%`,
+                                backgroundColor: barColor,
+                                boxShadow: `0 0 8px ${barColor}`
                               }}
                             />
-                          ))}
+                          </div>
+                          <div className={styles.batteryTip} style={{ backgroundColor: barColor }} />
                         </div>
-                        <span className={styles.repairSummaryHealth}>{item.health}%</span>
+                        <span className={styles.repairSummaryHealth} style={{ color: barColor }}>{item.health}%</span>
                       </div>
                     </div>
                   )
@@ -752,28 +753,29 @@ export default function Dashboard({
                   {insRem && (
                     <div style={{ marginTop: '8px' }}>
                       <div className={styles.repairSummaryRight} style={{ width: '100%', justifyContent: 'space-between', marginBottom: '3px' }}>
-                        <div className={styles.segmentBarGroup}>
-                          {Array.from({ length: 5 }).map((_, bIdx) => {
-                            const activeBars = Math.max(0, Math.min(5, Math.round((insRem.pct / 100) * 5)))
-                            const barColor = insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#22c55e'
-                            return (
-                              <span
-                                key={bIdx}
-                                className={styles.segmentBarItem}
-                                style={{
-                                  backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
-                                  opacity: bIdx < activeBars ? 1 : 0.25
-                                }}
-                              />
-                            )
-                          })}
-                        </div>
-                        <span className={styles.repairSummaryHealth} style={{
-                          color: insRem.expired ? '#ef4444' : insRem.rem <= 30 ? '#f97316' : '#22c55e',
-                          fontWeight: '800'
-                        }}>
-                          {Math.round(insRem.pct)}% ({insRem.label})
-                        </span>
+                        {(() => {
+                          const barColor = insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#22c55e'
+                          return (
+                            <>
+                              <div className={styles.batteryWidgetWrap} title={`남은 기간 ${Math.round(insRem.pct)}%`}>
+                                <div className={styles.batteryBody} style={{ width: '65px' }}>
+                                  <div
+                                    className={styles.batteryFill}
+                                    style={{
+                                      width: `${Math.max(5, Math.min(100, insRem.pct))}%`,
+                                      backgroundColor: barColor,
+                                      boxShadow: `0 0 8px ${barColor}`
+                                    }}
+                                  />
+                                </div>
+                                <div className={styles.batteryTip} style={{ backgroundColor: barColor }} />
+                              </div>
+                              <span className={styles.repairSummaryHealth} style={{ color: barColor, fontWeight: '800' }}>
+                                {Math.round(insRem.pct)}% ({insRem.label})
+                              </span>
+                            </>
+                          )
+                        })()}
                       </div>
                     </div>
                   )}
@@ -821,28 +823,29 @@ export default function Dashboard({
                   {inspRem && (
                     <div style={{ marginTop: '8px' }}>
                       <div className={styles.repairSummaryRight} style={{ width: '100%', justifyContent: 'space-between', marginBottom: '3px' }}>
-                        <div className={styles.segmentBarGroup}>
-                          {Array.from({ length: 5 }).map((_, bIdx) => {
-                            const activeBars = Math.max(0, Math.min(5, Math.round((inspRem.pct / 100) * 5)))
-                            const barColor = inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#22c55e'
-                            return (
-                              <span
-                                key={bIdx}
-                                className={styles.segmentBarItem}
-                                style={{
-                                  backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
-                                  opacity: bIdx < activeBars ? 1 : 0.25
-                                }}
-                              />
-                            )
-                          })}
-                        </div>
-                        <span className={styles.repairSummaryHealth} style={{
-                          color: inspRem.expired ? '#ef4444' : inspRem.rem <= 30 ? '#f97316' : '#22c55e',
-                          fontWeight: '800'
-                        }}>
-                          {Math.round(inspRem.pct)}% ({inspRem.label})
-                        </span>
+                        {(() => {
+                          const barColor = inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#22c55e'
+                          return (
+                            <>
+                              <div className={styles.batteryWidgetWrap} title={`남은 기간 ${Math.round(inspRem.pct)}%`}>
+                                <div className={styles.batteryBody} style={{ width: '65px' }}>
+                                  <div
+                                    className={styles.batteryFill}
+                                    style={{
+                                      width: `${Math.max(5, Math.min(100, inspRem.pct))}%`,
+                                      backgroundColor: barColor,
+                                      boxShadow: `0 0 8px ${barColor}`
+                                    }}
+                                  />
+                                </div>
+                                <div className={styles.batteryTip} style={{ backgroundColor: barColor }} />
+                              </div>
+                              <span className={styles.repairSummaryHealth} style={{ color: barColor, fontWeight: '800' }}>
+                                {Math.round(inspRem.pct)}% ({inspRem.label})
+                              </span>
+                            </>
+                          )
+                        })()}
                       </div>
                     </div>
                   )}
