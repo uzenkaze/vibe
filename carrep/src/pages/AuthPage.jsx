@@ -172,7 +172,12 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
               {/* 캐릭터 아바타 선택 영역 */}
               <div className={styles.avatarPickerSection}>
                 <div className={styles.avatarPickerHeader}>
-                  <label className={styles.label}>🎭 프로필 캐릭터 선택 <span className={styles.req}>*</span></label>
+                  <label className={styles.label} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent-blue)' }}>
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>프로필 캐릭터 선택</span> <span className={styles.req}>*</span>
+                  </label>
                   <div className={styles.genderTabs}>
                     <button
                       type="button"
@@ -186,14 +191,14 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
                       className={`${styles.genderTab} ${genderFilter === 'male' ? styles.genderActive : ''}`}
                       onClick={() => setGenderFilter('male')}
                     >
-                      👨 남성
+                      남성
                     </button>
                     <button
                       type="button"
                       className={`${styles.genderTab} ${genderFilter === 'female' ? styles.genderActive : ''}`}
                       onClick={() => setGenderFilter('female')}
                     >
-                      👩 여성
+                      여성
                     </button>
                   </div>
                 </div>
@@ -259,7 +264,15 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
 
           {isSignUp && (
             <div className={styles.signUpCarBox}>
-              <div className={styles.boxTitle}>🚘 기본 보유 차량 등록</div>
+              <div className={styles.boxTitle} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent-blue)', verticalAlign: 'middle' }}>
+                  <rect x="1" y="3" width="15" height="13"/>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/>
+                  <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                <span>기본 보유 차량 등록</span>
+              </div>
               <div className={styles.fieldGrid}>
                 <div className={styles.field}>
                   <label className={styles.label}>차종 / 모델명</label>
