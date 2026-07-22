@@ -1108,25 +1108,25 @@
   }
 
   :root:not([data-theme="light"]) .specCard {
-    background: #ffffff !important;
-    border: none !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 20px !important;
     padding: 12px 14px !important;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: none !important;
   }
 
   :root:not([data-theme="light"]) .specCardIcon {
-    color: #2563eb !important;
-    background: rgba(37, 99, 235, 0.1) !important;
+    color: #60a5fa !important;
+    background: rgba(59, 130, 246, 0.18) !important;
   }
 
   :root:not([data-theme="light"]) .specCardLabel {
-    color: #64748b !important;
+    color: #94a3b8 !important;
     font-weight: 700 !important;
   }
 
   :root:not([data-theme="light"]) .specCardVal {
-    color: #0f172a !important;
+    color: #f8fafc !important;
     font-weight: 900 !important;
   }
 
