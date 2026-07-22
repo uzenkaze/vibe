@@ -1312,7 +1312,7 @@
 [data-theme="light"] .yellowTickGaugeWrapFull {
   background: #e2e8f0;
   border-color: #cbd5e1;
-  --tick-good-color: #059669;
+  --tick-good-color: #ccff00;
 }
 
 .yellowTickItem {
