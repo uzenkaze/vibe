@@ -603,7 +603,18 @@
   transition: all 0.2s ease;
 }
 .specCard:hover { border-color: #4b5563; background: var(--bg-input-hover); }
-.specCardIcon { font-size: 1.3rem; flex-shrink: 0; }
+.specCardIcon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  color: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.15);
+}
 .specCardMeta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .specCardLabel { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
 .specCardVal { font-size: 0.88rem; color: var(--text-main); font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1102,6 +1113,11 @@
     border-radius: 20px !important;
     padding: 12px 14px !important;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  :root:not([data-theme="light"]) .specCardIcon {
+    color: #2563eb !important;
+    background: rgba(37, 99, 235, 0.1) !important;
   }
 
   :root:not([data-theme="light"]) .specCardLabel {
