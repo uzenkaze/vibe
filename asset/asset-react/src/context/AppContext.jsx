@@ -147,7 +147,7 @@ export function AppProvider({ children }) {
     }
   }, []);
 
-  // Initial Data Load
+  // Initial Data Load & Tab Visibility Auto Sync
   useEffect(() => {
     if (screen === 'dashboard') {
       loadYearData(year);
@@ -155,6 +155,18 @@ export function AppProvider({ children }) {
       const prevYear = String(parseInt(year) - 1);
       loadYearData(prevYear);
     }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && screen === 'dashboard') {
+        console.log('[AutoSync] Tab became visible, refreshing latest data from server/GitHub...');
+        loadYearData(year);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [screen, year, loadYearData]);
 
   // --- Persist ---
