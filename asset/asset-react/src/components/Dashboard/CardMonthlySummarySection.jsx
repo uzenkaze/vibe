@@ -56,11 +56,7 @@ export default function CardMonthlySummarySection() {
   }, [cardMonthlySummaries]);
 
   return (
-    <div style={{
-      marginTop: '2rem',
-      paddingTop: '1.5rem',
-      borderTop: '2px dashed var(--card-border)'
-    }}>
+    <div className="section-card" style={{ marginTop: '2rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
       {/* 헤더 타이틀 및 추가 버튼 */}
       <div style={{
         display: 'flex',
