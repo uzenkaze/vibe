@@ -16,8 +16,21 @@ export const AVATAR_OPTIONS = [
 
 export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
   const [isSignUp, setIsSignUp] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(() => {
+    try { return localStorage.getItem('carrep_remember_me') === 'true' } catch { return false }
+  })
+  const [email, setEmail] = useState(() => {
+    try {
+      const savedEmail = localStorage.getItem('carrep_saved_email')
+      return savedEmail || ''
+    } catch { return '' }
+  })
+  const [password, setPassword] = useState(() => {
+    try {
+      const savedPwd = localStorage.getItem('carrep_saved_pwd')
+      return savedPwd || ''
+    } catch { return '' }
+  })
   const [name, setName] = useState('')
   const [selectedAvatar, setSelectedAvatar] = useState('m1')
   const [genderFilter, setGenderFilter] = useState('all') // 'all' | 'male' | 'female'
@@ -149,6 +162,17 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
         if (!user || user.password !== password) {
           alert('이메일 또는 비밀번호가 올바르지 않습니다.')
           return
+        }
+
+        // 계정정보 저장 (Remember Me) 처리
+        if (rememberMe) {
+          localStorage.setItem('carrep_remember_me', 'true')
+          localStorage.setItem('carrep_saved_email', email)
+          localStorage.setItem('carrep_saved_pwd', password)
+        } else {
+          localStorage.removeItem('carrep_remember_me')
+          localStorage.removeItem('carrep_saved_email')
+          localStorage.removeItem('carrep_saved_pwd')
         }
 
         onLogin(user)
@@ -283,6 +307,21 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
               required
             />
           </div>
+
+          {!isSignUp && (
+            <div className={styles.rememberOptionRow} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '-4px', marginBottom: '8px' }}>
+              <input
+                type="checkbox"
+                id="rememberMeCheck"
+                checked={rememberMe}
+                onChange={e => setRememberMe(e.target.checked)}
+                style={{ width: '16px', height: '16px', accentColor: 'var(--accent-blue)', cursor: 'pointer' }}
+              />
+              <label htmlFor="rememberMeCheck" style={{ fontSize: '13px', color: 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
+                🔑 계정 정보 저장 (자동 완성)
+              </label>
+            </div>
+          )}
 
           {isSignUp && (
             <div className={styles.signUpCarBox}>
