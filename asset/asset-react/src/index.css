@@ -94,52 +94,51 @@
 }
 
 html.dark {
-  /* ── Dark Mode — Deep TradoX Slate & Vivid Accents ── */
-  --bg:               #090b10;
-  --bg-alt:           #111422;
-  --surface:          #161928;
-  --surface-raised:   #1e2236;
-  --surface-overlay:  rgba(18, 21, 35, 0.97);
+  /* ── Dark Mode — Crypto Asset Monitoring Cyber Theme ── */
+  --bg:               #07090e;
+  --bg-alt:           #0c0f17;
+  --surface:          #121622;
+  --surface-raised:   #191e2e;
+  --surface-overlay:  rgba(15, 18, 29, 0.98);
 
   /* 레거시 컴포넌트 호환 변수 백업 */
   --card:             var(--surface);
   --card-border:      var(--border);
 
   --border:         rgba(255, 255, 255, 0.08);
-  --border-strong:  rgba(255, 255, 255, 0.16);
-  --border-focus:   var(--brand-light);
+  --border-strong:  rgba(255, 255, 255, 0.18);
+  --border-focus:   #06b6d4;
 
-  --sidebar-bg:          #0d0f19;
+  --sidebar-bg:          #080a10;
   --sidebar-border:      rgba(255, 255, 255, 0.06);
   --sidebar-text:        rgba(241, 245, 249, 0.45);
-  --sidebar-active-bg:   rgba(99, 102, 241, 0.16);
-  --sidebar-active-text: #818cf8;
+  --sidebar-active-bg:   rgba(6, 182, 212, 0.15);
+  --sidebar-active-text: #22d3ee;
 
   --text-primary:   #f8fafc;
-  --text-secondary: rgba(248, 250, 252, 0.70);
-  --text-muted:     rgba(248, 250, 252, 0.40);
+  --text-secondary: rgba(248, 250, 252, 0.72);
+  --text-muted:     rgba(248, 250, 252, 0.42);
   --text-disabled:  rgba(248, 250, 252, 0.20);
 
   --income-color:  #00e676;
-  --expense-color: #ff3b30;
-  --neutral-color: #818cf8;
+  --expense-color: #ff2a5f;
+  --neutral-color: #a78bfa;
 
   /* Table specific - dark */
-  --table-header-bg:   rgba(255, 255, 255, 0.025);
-  --table-row-hover:   rgba(99, 102, 241, 0.08);
-  --table-row-even:    rgba(255, 255, 255, 0.012);
+  --table-header-bg:   rgba(255, 255, 255, 0.02);
+  --table-row-hover:   rgba(6, 182, 212, 0.08);
+  --table-row-even:    rgba(255, 255, 255, 0.01);
   --table-border:      rgba(255, 255, 255, 0.07);
   --table-header-text: rgba(248, 250, 252, 0.45);
-  --subtotal-bg:       rgba(99, 102, 241, 0.09);
-  --total-bg:          rgba(99, 102, 241, 0.15);
+  --subtotal-bg:       rgba(6, 182, 212, 0.08);
+  --total-bg:          rgba(6, 182, 212, 0.15);
 
-  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(99, 102, 241, 0.06);
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.70), 0 0 40px rgba(99, 102, 241, 0.12);
-  --shadow-orange: 0 8px 26px rgba(99, 102, 241, 0.35);
-
-  --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.75), 0 0 25px rgba(6, 182, 212, 0.08);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.85), 0 0 50px rgba(139, 92, 246, 0.15);
+  --shadow-orange: 0 8px 28px rgba(6, 182, 212, 0.35);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.16);
 }
 
 /* ============================
@@ -738,8 +737,9 @@ html.dark .topbar-btn.github-sync-btn.connected:hover {
 }
 
 html.dark .summary-card-outer {
-  background: linear-gradient(145deg, rgba(22, 25, 40, 0.9) 0%, rgba(17, 20, 32, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(18, 22, 34, 0.95) 0%, rgba(12, 15, 23, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .summary-card-outer:hover {
@@ -749,8 +749,8 @@ html.dark .summary-card-outer {
 }
 
 html.dark .summary-card-outer:hover {
-  border-color: rgba(129, 140, 248, 0.4);
-  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.18);
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.7), 0 0 25px rgba(6, 182, 212, 0.22);
 }
 
 .summary-card-inner {
@@ -848,9 +848,9 @@ html.dark .summary-card-outer:hover {
 }
 
 html.dark .section-card {
-  background: linear-gradient(160deg, rgba(22, 25, 40, 0.95) 0%, rgba(17, 20, 34, 0.98) 100%);
+  background: linear-gradient(160deg, rgba(18, 22, 34, 0.96) 0%, rgba(11, 14, 22, 0.99) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65), 0 0 30px rgba(6, 182, 212, 0.05);
 }
 
 .section-card-header {
@@ -878,6 +878,11 @@ html.dark .section-card-header {
   left: 0; top: 0; bottom: 0;
   width: 3px;
   background: linear-gradient(180deg, var(--brand), var(--brand-dark));
+}
+
+html.dark .section-card-header::before {
+  background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 100%);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
 }
 
 .section-card-title {
