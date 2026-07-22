@@ -10,6 +10,24 @@ export function getDataKey(year) {
   return `${DATA_KEY_PREFIX}${year}`;
 }
 
+// 타임아웃이 적용된 fetch 헬퍼 (네트워크 지연 방지)
+async function fetchWithTimeout(resource, options = {}) {
+  const { timeout = 1500 } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+}
+
 // 특정 연도 데이터 저장
 export async function saveData(year, plainData) {
   try {
@@ -35,19 +53,23 @@ export async function saveData(year, plainData) {
     localStorage.setItem(`${getDataKey(year)}_updatedAt`, String(updatedAt));
 
     // 2. 서버 API — 반드시 평문(plainData) 전달 (암호화 제외)
-    const apiUrls = [
-      '/api/save-asset',
-      'http://localhost:5500/api/save-asset',
-      'http://127.0.0.1:5500/api/save-asset'
-    ];
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const apiUrls = ['/api/save-asset'];
+    if (isLocalhost) {
+      apiUrls.push(
+        'http://localhost:5500/api/save-asset',
+        'http://127.0.0.1:5500/api/save-asset'
+      );
+    }
 
     let apiSaved = false;
     for (const url of apiUrls) {
       try {
-        const response = await fetch(url, {
+        const response = await fetchWithTimeout(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ year, data: dataWithTs }),
+          timeout: 1000
         });
         if (response.ok) {
           console.log(`[Storage] Successfully saved data to server via API: ${url}`);
@@ -76,17 +98,22 @@ export async function loadData(year) {
     let data = null;
     const timestamp = Date.now();
 
-    // 1. 서버의 JSON 파일들로부터 최신 데이터 로드 시도 (캐시 버스터 쿼리 추가)
+    // 1. 서버의 JSON 파일들로부터 최신 데이터 로드 시도
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const urls = [
       `/asset/data/assetData_${year}.json?t=${timestamp}`,
-      `../../data/assetData_${year}.json?t=${timestamp}`,
-      `http://localhost:5500/asset/data/assetData_${year}.json?t=${timestamp}`,
-      `http://127.0.0.1:5500/asset/data/assetData_${year}.json?t=${timestamp}`
+      `../../data/assetData_${year}.json?t=${timestamp}`
     ];
+    if (isLocalhost) {
+      urls.push(
+        `http://localhost:5500/asset/data/assetData_${year}.json?t=${timestamp}`,
+        `http://127.0.0.1:5500/asset/data/assetData_${year}.json?t=${timestamp}`
+      );
+    }
 
     for (const url of urls) {
       try {
-        const res = await fetch(url);
+        const res = await fetchWithTimeout(url, { timeout: 1200 });
         if (res.ok) {
           const serverData = await res.json();
           if (!serverData) continue;
