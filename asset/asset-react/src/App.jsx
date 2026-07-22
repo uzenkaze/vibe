@@ -12,6 +12,7 @@ import LoginModal from './components/Auth/LoginModal';
 
 // Dashboard
 import SummaryCards from './components/Dashboard/SummaryCards';
+import AssetAnalyticsChart from './components/Dashboard/AssetAnalyticsChart';
 import AssetSection from './components/Dashboard/AssetSection';
 import ExpenseSection from './components/Dashboard/ExpenseSection';
 import InstallmentOverview from './components/Dashboard/InstallmentOverview';
@@ -138,10 +139,11 @@ function Dashboard() {
         />
 
         <div className="page-container">
-          {/* 대시보드: 요약카드 + 전체 */}
+          {/* 대시보드: 요약카드 + 분석 차트 + 전체 */}
           {(navSection === 'dashboard') && (
             <>
               <SummaryCards />
+              <AssetAnalyticsChart />
               <InstallmentOverview />
               <div className="dashboard-grid">
                 <AssetSection onSummary={() => setSummaryModal('assets')} />

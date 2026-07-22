@@ -2226,3 +2226,36 @@ html.dark .custom-dropdown-menu {
     font-size: 0.65rem !important;
   }
 }
+
+/* ============================
+   ASSET ANALYTICS CHART (Dribbble 16803692 Inspired)
+   ============================ */
+.asset-analytics-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+html.dark .asset-analytics-card {
+  background: linear-gradient(160deg, rgba(18, 22, 34, 0.96) 0%, rgba(11, 14, 22, 0.99) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65), 0 0 30px rgba(6, 182, 212, 0.05);
+}
+
+@media (max-width: 768px) {
+  .asset-analytics-card {
+    padding: 1rem !important;
+  }
+  .asset-analytics-card > div {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+  .asset-analytics-card > div > div:first-child {
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding-right: 0 !important;
+    padding-bottom: 1.25rem !important;
+  }
+}
