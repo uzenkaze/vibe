@@ -750,18 +750,32 @@ export default function Dashboard({
                     {insurance.startDate ? `${fmtDate(insurance.startDate)} ~ ` : ''}{fmtDate(insurance.endDate)}
                   </div>
                   {insRem && (
-                    <>
-                      <div className={styles.inspProgressBar}>
-                        <div className={styles.inspProgressFill} style={{
-                          width: `${insRem.pct}%`,
-                          background: insRem.rem <= 30 ? 'var(--accent-red)' : insRem.rem <= 90 ? 'var(--accent-orange)' : 'var(--accent-green)'
-                        }} />
+                    <div style={{ marginTop: '8px' }}>
+                      <div className={styles.repairSummaryRight} style={{ width: '100%', justifyContent: 'space-between', marginBottom: '3px' }}>
+                        <div className={styles.segmentBarGroup}>
+                          {Array.from({ length: 5 }).map((_, bIdx) => {
+                            const activeBars = Math.max(0, Math.min(5, Math.round((insRem.pct / 100) * 5)))
+                            const barColor = insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#22c55e'
+                            return (
+                              <span
+                                key={bIdx}
+                                className={styles.segmentBarItem}
+                                style={{
+                                  backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
+                                  opacity: bIdx < activeBars ? 1 : 0.25
+                                }}
+                              />
+                            )
+                          })}
+                        </div>
+                        <span className={styles.repairSummaryHealth} style={{
+                          color: insRem.expired ? '#ef4444' : insRem.rem <= 30 ? '#f97316' : '#22c55e',
+                          fontWeight: '800'
+                        }}>
+                          {Math.round(insRem.pct)}% ({insRem.label})
+                        </span>
                       </div>
-                      <div className={styles.inspRemLabel}
-                        style={{ color: insRem.expired ? 'var(--accent-red)' : insRem.rem <= 30 ? 'var(--accent-orange)' : 'var(--accent-blue)' }}>
-                        {insRem.label}
-                      </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
@@ -805,18 +819,32 @@ export default function Dashboard({
                     {fmtDate(inspection.startDate)} ~ {fmtDate(inspection.endDate)}
                   </div>
                   {inspRem && (
-                    <>
-                      <div className={styles.inspProgressBar}>
-                        <div className={styles.inspProgressFill} style={{
-                          width: `${inspRem.pct}%`,
-                          background: inspRem.rem <= 30 ? 'var(--accent-red)' : inspRem.rem <= 90 ? 'var(--accent-orange)' : 'var(--accent-green)'
-                        }} />
+                    <div style={{ marginTop: '8px' }}>
+                      <div className={styles.repairSummaryRight} style={{ width: '100%', justifyContent: 'space-between', marginBottom: '3px' }}>
+                        <div className={styles.segmentBarGroup}>
+                          {Array.from({ length: 5 }).map((_, bIdx) => {
+                            const activeBars = Math.max(0, Math.min(5, Math.round((inspRem.pct / 100) * 5)))
+                            const barColor = inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#22c55e'
+                            return (
+                              <span
+                                key={bIdx}
+                                className={styles.segmentBarItem}
+                                style={{
+                                  backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
+                                  opacity: bIdx < activeBars ? 1 : 0.25
+                                }}
+                              />
+                            )
+                          })}
+                        </div>
+                        <span className={styles.repairSummaryHealth} style={{
+                          color: inspRem.expired ? '#ef4444' : inspRem.rem <= 30 ? '#f97316' : '#22c55e',
+                          fontWeight: '800'
+                        }}>
+                          {Math.round(inspRem.pct)}% ({inspRem.label})
+                        </span>
                       </div>
-                      <div className={styles.inspRemLabel}
-                        style={{ color: inspRem.expired ? 'var(--accent-red)' : inspRem.rem <= 30 ? 'var(--accent-orange)' : 'var(--accent-blue)' }}>
-                        {inspRem.label}
-                      </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>

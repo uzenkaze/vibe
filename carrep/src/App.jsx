@@ -689,16 +689,20 @@ export default function App() {
       engineDisp: carInfo.engineDisp || ''
     }
 
-    // 차량 정보를 메인 대시보드(히어로 배너 포함)에 즉시 자동 적용 및 캐시 저장
-    localStorage.setItem('carrep_cached_mycar', JSON.stringify(myCarData))
+    // 1. 전역 myCar 및 vehicleInfo state 즉시 전체 업데이트
+    setMyCar(myCarData)
     setVehicleInfo(prev => ({
       ...prev,
-      maker: myCarData.maker,
-      model: myCarData.model,
-      year: myCarData.year,
-      mileage: myCarData.mileage,
-      color: myCarData.color
+      ...myCarData
     }))
+
+    // 2. 로그인된 사용자가 있는 경우 해당 유저 전용 localStorage 키에도 동기화 저장
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_mycar_${userIdKey}`, JSON.stringify(myCarData))
+    }
+    localStorage.setItem('carrep_cached_mycar', JSON.stringify(myCarData))
+    localStorage.setItem('carrep_temp_mycar', JSON.stringify(myCarData))
 
     // Scenario A: Local backend server is active
     if (dbStatus === 'local') {
@@ -709,7 +713,6 @@ export default function App() {
           body: JSON.stringify(myCarData)
         })
         if (res.ok) {
-          setMyCar(myCarData)
           showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
           return
         }
@@ -727,7 +730,6 @@ export default function App() {
           githubToken,
           'chore(data): update MyCar profile'
         )
-        setMyCar(myCarData)
         showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
         return
       } catch (err) {
@@ -737,9 +739,6 @@ export default function App() {
       }
     }
 
-    // 임시 로컬 환경일 경우 임시 브라우저 세션에 저장
-    setMyCar(myCarData)
-    localStorage.setItem('carrep_temp_mycar', JSON.stringify(myCarData))
     showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
   }
 
