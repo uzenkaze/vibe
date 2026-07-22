@@ -647,14 +647,14 @@ export default function Dashboard({
           </div>
         </div>
 
-        {/* 카드 4: 정비 소모품 수명 요약 (Top 3) */}
+        {/* 카드 4: 교체 대상 소모품 (교체/점검 필요 소모품 3건) */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <span className={styles.cardTitle}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'6px'}}>
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
               </svg>
-              주요 정비 소모품
+              교체 대상 소모품
             </span>
             {currentUser && (
               <button className={styles.detailBtn} onClick={() => { if (onGoConsumables) onGoConsumables(); else if (onNext) onNext(); }}>
@@ -669,43 +669,56 @@ export default function Dashboard({
             </button>
           ) : (
             <div className={styles.repairSummaryList}>
-              {maintenanceItems.slice(0, 3).map((item, idx) => {
-                const isDanger = item.status === 'danger'
-                const isWarning = item.status === 'warning'
-                const statusText = isDanger ? '교체' : isWarning ? '점검' : '양호'
-                const badgeStyle = isDanger ? styles.badgeDanger : isWarning ? styles.badgeWarning : styles.badgeGood
-                
-                // 5단계 Segment 수치 인디케이터
-                const totalBars = 5
-                const activeBars = Math.max(0, Math.min(totalBars, Math.round((item.health / 100) * totalBars)))
-                const barColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#22c55e'
+              {(() => {
+                // 교체대상(danger) 및 점검권장(warning) 항목 우선, 잔여 수명(health) 오름차순 정렬하여 상위 3건만 추출
+                const toReplaceItems = [...maintenanceItems]
+                  .filter(i => i.status === 'danger' || i.status === 'warning')
+                  .sort((a, b) => a.health - b.health)
+                  .slice(0, 3)
 
-                return (
-                  <div key={idx} className={styles.repairSummaryItem}>
-                    <div className={styles.repairSummaryLeft}>
-                      <span className={styles.repairSummaryName}>{item.name}</span>
-                      <span className={`${styles.repairSummaryBadge} ${badgeStyle}`}>{statusText}</span>
-                    </div>
+                // 만약 danger/warning 항목이 3개 미만이면 전체 소모품 중 잔여 수명이 가장 적은 순으로 채움
+                const finalItems = toReplaceItems.length > 0 
+                  ? toReplaceItems 
+                  : [...maintenanceItems].sort((a, b) => a.health - b.health).slice(0, 3)
 
-                    <div className={styles.repairSummaryRight}>
-                      {/* 첨부 이미지 스타일의 Segment Bar 인디케이터 */}
-                      <div className={styles.segmentBarGroup}>
-                        {Array.from({ length: totalBars }).map((_, bIdx) => (
-                          <span
-                            key={bIdx}
-                            className={styles.segmentBarItem}
-                            style={{
-                              backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
-                              opacity: bIdx < activeBars ? 1 : 0.25
-                            }}
-                          />
-                        ))}
+                return finalItems.map((item, idx) => {
+                  const isDanger = item.status === 'danger'
+                  const isWarning = item.status === 'warning'
+                  const statusText = isDanger ? '교체' : isWarning ? '점검' : '양호'
+                  const badgeStyle = isDanger ? styles.badgeDanger : isWarning ? styles.badgeWarning : styles.badgeGood
+                  
+                  // 5단계 Segment 수치 인디케이터
+                  const totalBars = 5
+                  const activeBars = Math.max(0, Math.min(totalBars, Math.round((item.health / 100) * totalBars)))
+                  const barColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#22c55e'
+
+                  return (
+                    <div key={idx} className={styles.repairSummaryItem}>
+                      <div className={styles.repairSummaryLeft}>
+                        <span className={styles.repairSummaryName}>{item.name}</span>
+                        <span className={`${styles.repairSummaryBadge} ${badgeStyle}`}>{statusText}</span>
                       </div>
-                      <span className={styles.repairSummaryHealth}>{item.health}%</span>
+
+                      <div className={styles.repairSummaryRight}>
+                        {/* 첨부 이미지 스타일의 Segment Bar 인디케이터 */}
+                        <div className={styles.segmentBarGroup}>
+                          {Array.from({ length: totalBars }).map((_, bIdx) => (
+                            <span
+                              key={bIdx}
+                              className={styles.segmentBarItem}
+                              style={{
+                                backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
+                                opacity: bIdx < activeBars ? 1 : 0.25
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <span className={styles.repairSummaryHealth}>{item.health}%</span>
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })
+              })()}
             </div>
           )}
         </div>
