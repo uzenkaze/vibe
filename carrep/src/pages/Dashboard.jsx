@@ -684,10 +684,6 @@ export default function Dashboard({
                   const statusText = isDanger ? '교체' : isWarning ? '점검' : '양호'
                   const badgeStyle = isDanger ? styles.badgeDanger : isWarning ? styles.badgeWarning : styles.badgeGood
                   
-                  const totalBars = 5
-                  const activeBars = Math.max(0, Math.min(totalBars, Math.round((item.health / 100) * totalBars)))
-                  const barColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#22c55e'
-
                   return (
                     <div key={idx} className={styles.repairSummaryItem}>
                       <div className={styles.repairSummaryLeft}>
@@ -696,19 +692,25 @@ export default function Dashboard({
                       </div>
 
                       <div className={styles.repairSummaryRight}>
-                        <div className={styles.segmentBarGroup}>
-                          {Array.from({ length: totalBars }).map((_, bIdx) => (
-                            <span
-                              key={bIdx}
-                              className={styles.segmentBarItem}
-                              style={{
-                                backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
-                                opacity: bIdx < activeBars ? 1 : 0.25
-                              }}
-                            />
-                          ))}
+                        {/* ⚡ 첨부 이미지 레퍼런스 스타일: 28핀 네온 옐로우 틱 파티션 프로그레스 게이지 */}
+                        <div className={styles.yellowTickGaugeWrap} title={`잔여 수명 ${item.health}%`}>
+                          {Array.from({ length: 28 }).map((_, tIdx) => {
+                            const activeCount = Math.round((item.health / 100) * 28)
+                            const isActive = tIdx < activeCount
+                            const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00'
+                            return (
+                              <span
+                                key={tIdx}
+                                className={styles.yellowTickItem}
+                                style={{
+                                  backgroundColor: isActive ? activeTickColor : 'rgba(148, 163, 184, 0.25)',
+                                  boxShadow: isActive ? `0 0 4px ${activeTickColor}` : 'none'
+                                }}
+                              />
+                            )
+                          })}
                         </div>
-                        <span className={styles.repairSummaryHealth}>{item.health}%</span>
+                        <span className={styles.repairSummaryHealth} style={{ color: isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00' }}>{item.health}%</span>
                       </div>
                     </div>
                   )
@@ -745,18 +747,31 @@ export default function Dashboard({
                     {insurance.startDate ? `${fmtDate(insurance.startDate)} ~ ` : ''}{fmtDate(insurance.endDate)}
                   </div>
                   {insRem && (
-                    <>
-                      <div className={styles.inspProgressBar}>
-                        <div className={styles.inspProgressFill} style={{
-                          width: `${insRem.pct}%`,
-                          background: insRem.rem <= 30 ? 'var(--accent-red)' : insRem.rem <= 90 ? 'var(--accent-orange)' : 'var(--accent-green)'
-                        }} />
+                    <div style={{ marginTop: '8px' }}>
+                      <div className={styles.tickGaugeHeaderRow}>
+                        <span className={styles.tickGaugeLabel}>보증 잔여 기간</span>
+                        <span className={styles.tickGaugePct} style={{ color: insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#ccff00' }}>
+                          {Math.round(insRem.pct)}% ({insRem.label})
+                        </span>
                       </div>
-                      <div className={styles.inspRemLabel}
-                        style={{ color: insRem.expired ? 'var(--accent-red)' : insRem.rem <= 30 ? 'var(--accent-orange)' : 'var(--accent-blue)' }}>
-                        {insRem.label}
+                      <div className={styles.yellowTickGaugeWrapFull}>
+                        {Array.from({ length: 42 }).map((_, tIdx) => {
+                          const activeCount = Math.round((insRem.pct / 100) * 42)
+                          const isActive = tIdx < activeCount
+                          const activeTickColor = insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#ccff00'
+                          return (
+                            <span
+                              key={tIdx}
+                              className={styles.yellowTickItem}
+                              style={{
+                                backgroundColor: isActive ? activeTickColor : 'rgba(148, 163, 184, 0.25)',
+                                boxShadow: isActive ? `0 0 4px ${activeTickColor}` : 'none'
+                              }}
+                            />
+                          )
+                        })}
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
@@ -800,18 +815,31 @@ export default function Dashboard({
                     {fmtDate(inspection.startDate)} ~ {fmtDate(inspection.endDate)}
                   </div>
                   {inspRem && (
-                    <>
-                      <div className={styles.inspProgressBar}>
-                        <div className={styles.inspProgressFill} style={{
-                          width: `${inspRem.pct}%`,
-                          background: inspRem.rem <= 30 ? 'var(--accent-red)' : inspRem.rem <= 90 ? 'var(--accent-orange)' : 'var(--accent-green)'
-                        }} />
+                    <div style={{ marginTop: '8px' }}>
+                      <div className={styles.tickGaugeHeaderRow}>
+                        <span className={styles.tickGaugeLabel}>검사 유효 잔여</span>
+                        <span className={styles.tickGaugePct} style={{ color: inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#ccff00' }}>
+                          {Math.round(inspRem.pct)}% ({inspRem.label})
+                        </span>
                       </div>
-                      <div className={styles.inspRemLabel}
-                        style={{ color: inspRem.expired ? 'var(--accent-red)' : inspRem.rem <= 30 ? 'var(--accent-orange)' : 'var(--accent-blue)' }}>
-                        {inspRem.label}
+                      <div className={styles.yellowTickGaugeWrapFull}>
+                        {Array.from({ length: 42 }).map((_, tIdx) => {
+                          const activeCount = Math.round((inspRem.pct / 100) * 42)
+                          const isActive = tIdx < activeCount
+                          const activeTickColor = inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#ccff00'
+                          return (
+                            <span
+                              key={tIdx}
+                              className={styles.yellowTickItem}
+                              style={{
+                                backgroundColor: isActive ? activeTickColor : 'rgba(148, 163, 184, 0.25)',
+                                boxShadow: isActive ? `0 0 4px ${activeTickColor}` : 'none'
+                              }}
+                            />
+                          )
+                        })}
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
