@@ -180,6 +180,19 @@
   pointer-events: none;
 }
 
+.guestProfileCarImageWrap {
+  margin-top: -68px !important;
+  margin-bottom: 0px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-width: 240px !important;
+  align-self: center !important;
+}
+
+.guestProfileCarImageWrap .profileCarImage {
+  object-position: center center !important;
+}
+
 .carSpecWidgetCard {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.85) 100%);
   border: 1px solid rgba(59, 130, 246, 0.25);

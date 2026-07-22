@@ -520,7 +520,7 @@ export default function Dashboard({
               )}
             </div>
 
-            <div className={styles.profileCarImageWrap}>
+            <div className={`${styles.profileCarImageWrap} ${!currentUser ? styles.guestProfileCarImageWrap : ''}`}>
               {currentUser ? (
                 <img
                   src={userPhoto || carImageUrl || getImagePath('/mohave_exterior.png')}
