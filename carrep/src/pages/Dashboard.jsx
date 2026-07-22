@@ -670,13 +670,10 @@ export default function Dashboard({
           ) : (
             <div className={styles.repairSummaryList}>
               {(() => {
-                // 교체대상(danger) 및 점검권장(warning) 항목 우선, 잔여 수명(health) 오름차순 정렬하여 상위 3건만 추출
                 const toReplaceItems = [...maintenanceItems]
                   .filter(i => i.status === 'danger' || i.status === 'warning')
                   .sort((a, b) => a.health - b.health)
                   .slice(0, 3)
-
-                // 만약 danger/warning 항목이 3개 미만이면 전체 소모품 중 잔여 수명이 가장 적은 순으로 채움
                 const finalItems = toReplaceItems.length > 0 
                   ? toReplaceItems 
                   : [...maintenanceItems].sort((a, b) => a.health - b.health).slice(0, 3)
@@ -687,7 +684,6 @@ export default function Dashboard({
                   const statusText = isDanger ? '교체' : isWarning ? '점검' : '양호'
                   const badgeStyle = isDanger ? styles.badgeDanger : isWarning ? styles.badgeWarning : styles.badgeGood
                   
-                  // 5단계 Segment 수치 인디케이터
                   const totalBars = 5
                   const activeBars = Math.max(0, Math.min(totalBars, Math.round((item.health / 100) * totalBars)))
                   const barColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#22c55e'
@@ -700,21 +696,19 @@ export default function Dashboard({
                       </div>
 
                       <div className={styles.repairSummaryRight}>
-                        {/* 🔋 실감나는 배터리 림 & 캡 수치 게이지 인디케이터 */}
-                        <div className={styles.batteryWidgetWrap} title={`잔여 수명 ${item.health}%`}>
-                          <div className={styles.batteryBody}>
-                            <div
-                              className={styles.batteryFill}
+                        <div className={styles.segmentBarGroup}>
+                          {Array.from({ length: totalBars }).map((_, bIdx) => (
+                            <span
+                              key={bIdx}
+                              className={styles.segmentBarItem}
                               style={{
-                                width: `${Math.max(5, Math.min(100, item.health))}%`,
-                                backgroundColor: barColor,
-                                boxShadow: `0 0 8px ${barColor}`
+                                backgroundColor: bIdx < activeBars ? barColor : 'var(--border)',
+                                opacity: bIdx < activeBars ? 1 : 0.25
                               }}
                             />
-                          </div>
-                          <div className={styles.batteryTip} style={{ backgroundColor: barColor }} />
+                          ))}
                         </div>
-                        <span className={styles.repairSummaryHealth} style={{ color: barColor }}>{item.health}%</span>
+                        <span className={styles.repairSummaryHealth}>{item.health}%</span>
                       </div>
                     </div>
                   )
@@ -751,33 +745,18 @@ export default function Dashboard({
                     {insurance.startDate ? `${fmtDate(insurance.startDate)} ~ ` : ''}{fmtDate(insurance.endDate)}
                   </div>
                   {insRem && (
-                    <div style={{ marginTop: '8px' }}>
-                      <div className={styles.repairSummaryRight} style={{ width: '100%', justifyContent: 'space-between', marginBottom: '3px' }}>
-                        {(() => {
-                          const barColor = insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#22c55e'
-                          return (
-                            <>
-                              <div className={styles.batteryWidgetWrap} title={`남은 기간 ${Math.round(insRem.pct)}%`}>
-                                <div className={styles.batteryBody} style={{ width: '65px' }}>
-                                  <div
-                                    className={styles.batteryFill}
-                                    style={{
-                                      width: `${Math.max(5, Math.min(100, insRem.pct))}%`,
-                                      backgroundColor: barColor,
-                                      boxShadow: `0 0 8px ${barColor}`
-                                    }}
-                                  />
-                                </div>
-                                <div className={styles.batteryTip} style={{ backgroundColor: barColor }} />
-                              </div>
-                              <span className={styles.repairSummaryHealth} style={{ color: barColor, fontWeight: '800' }}>
-                                {Math.round(insRem.pct)}% ({insRem.label})
-                              </span>
-                            </>
-                          )
-                        })()}
+                    <>
+                      <div className={styles.inspProgressBar}>
+                        <div className={styles.inspProgressFill} style={{
+                          width: `${insRem.pct}%`,
+                          background: insRem.rem <= 30 ? 'var(--accent-red)' : insRem.rem <= 90 ? 'var(--accent-orange)' : 'var(--accent-green)'
+                        }} />
                       </div>
-                    </div>
+                      <div className={styles.inspRemLabel}
+                        style={{ color: insRem.expired ? 'var(--accent-red)' : insRem.rem <= 30 ? 'var(--accent-orange)' : 'var(--accent-blue)' }}>
+                        {insRem.label}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -821,33 +800,18 @@ export default function Dashboard({
                     {fmtDate(inspection.startDate)} ~ {fmtDate(inspection.endDate)}
                   </div>
                   {inspRem && (
-                    <div style={{ marginTop: '8px' }}>
-                      <div className={styles.repairSummaryRight} style={{ width: '100%', justifyContent: 'space-between', marginBottom: '3px' }}>
-                        {(() => {
-                          const barColor = inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#22c55e'
-                          return (
-                            <>
-                              <div className={styles.batteryWidgetWrap} title={`남은 기간 ${Math.round(inspRem.pct)}%`}>
-                                <div className={styles.batteryBody} style={{ width: '65px' }}>
-                                  <div
-                                    className={styles.batteryFill}
-                                    style={{
-                                      width: `${Math.max(5, Math.min(100, inspRem.pct))}%`,
-                                      backgroundColor: barColor,
-                                      boxShadow: `0 0 8px ${barColor}`
-                                    }}
-                                  />
-                                </div>
-                                <div className={styles.batteryTip} style={{ backgroundColor: barColor }} />
-                              </div>
-                              <span className={styles.repairSummaryHealth} style={{ color: barColor, fontWeight: '800' }}>
-                                {Math.round(inspRem.pct)}% ({inspRem.label})
-                              </span>
-                            </>
-                          )
-                        })()}
+                    <>
+                      <div className={styles.inspProgressBar}>
+                        <div className={styles.inspProgressFill} style={{
+                          width: `${inspRem.pct}%`,
+                          background: inspRem.rem <= 30 ? 'var(--accent-red)' : inspRem.rem <= 90 ? 'var(--accent-orange)' : 'var(--accent-green)'
+                        }} />
                       </div>
-                    </div>
+                      <div className={styles.inspRemLabel}
+                        style={{ color: inspRem.expired ? 'var(--accent-red)' : inspRem.rem <= 30 ? 'var(--accent-orange)' : 'var(--accent-blue)' }}>
+                        {inspRem.label}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
