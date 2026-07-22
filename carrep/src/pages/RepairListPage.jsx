@@ -316,17 +316,33 @@ export default function RepairListPage({
                     >
                       <div className={styles.consumableTopRow}>
                         <span className={styles.consumableName}>{item.name}</span>
-                        <span className={styles.healthPct}>{item.health}%</span>
                       </div>
 
-                      <div className={styles.progressBarBg}>
-                        <div
-                          className={styles.progressBarFill}
-                          style={{
-                            width: `${item.health}%`,
-                            backgroundColor: isDanger ? '#ef4444' : isWarning ? '#f97316' : '#22c55e'
-                          }}
-                        />
+                      {/* ⚡ 메인과 동일한 틱 파티션 세그먼트 프로그레스 게이지 */}
+                      <div className={styles.tickGaugeRow}>
+                        <div className={styles.yellowTickGaugeWrapFull} title={`잔여 수명 ${item.health}%`}>
+                          {Array.from({ length: 28 }).map((_, tIdx) => {
+                            const activeCount = Math.round((item.health / 100) * 28)
+                            const isActive = tIdx < activeCount
+                            const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00'
+                            return (
+                              <span
+                                key={tIdx}
+                                className={styles.yellowTickItem}
+                                style={{
+                                  backgroundColor: isActive ? activeTickColor : 'rgba(148, 163, 184, 0.25)',
+                                  boxShadow: isActive ? `0 0 4px ${activeTickColor}` : 'none'
+                                }}
+                              />
+                            )
+                          })}
+                        </div>
+                        <span
+                          className={styles.healthPct}
+                          style={{ color: isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00' }}
+                        >
+                          {item.health}%
+                        </span>
                       </div>
 
                       <div className={styles.consumableMidRow}>
