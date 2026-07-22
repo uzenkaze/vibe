@@ -119,8 +119,11 @@ export default function Step1Vehicle({
   }
 
   // Handle adding a new history record
-  const handleSaveDiagOverride = (itemName, data) => {
+  const handleSaveDiagOverride = (arg1, arg2) => {
+    const itemName = typeof arg1 === 'string' ? arg1 : selectedDiagItem
+    const data = typeof arg1 === 'string' ? arg2 : arg1
     if (!itemName || !data) return
+
     const currentList = historyMap[itemName] || []
     const parsedKm = Number(data.km)
     const parsedCost = Number(data.cost)
@@ -782,7 +785,7 @@ export default function Step1Vehicle({
         <MaintenanceRegisterModal
           isOpen={isDiagModalOpen}
           onClose={() => setIsDiagModalOpen(false)}
-          onSave={(item, data) => handleSaveDiagOverride(item || selectedDiagItem, data)}
+          onSave={(arg1, arg2) => handleSaveDiagOverride(arg1, arg2)}
           itemName={selectedDiagItem}
           currentMileage={vehicleInfo.mileage}
         />
