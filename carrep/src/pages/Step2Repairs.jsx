@@ -423,7 +423,12 @@ export default function Step2Repairs({
       {tab === 'manual' && (
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span>{editingId ? '✏️ 항목 수정' : '➕ 항목추가'}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent-blue)', verticalAlign: 'middle' }}>
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              {editingId ? '항목 수정' : '정비'}
+            </span>
           </div>
           <div className={styles.formGrid}>
             {/* 모바일 1행: 정비일자 + 정비항목명 */}

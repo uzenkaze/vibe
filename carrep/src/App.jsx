@@ -604,7 +604,7 @@ export default function App() {
   return (
     <AppLayout
       step={step}
-      goToStep={goStep}
+      goToStep={(n) => setStep(n)}
       dbStatus={dbStatus}
       githubToken={githubToken}
       currentUser={currentUser}
