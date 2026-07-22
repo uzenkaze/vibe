@@ -45,23 +45,27 @@ export default function MaintenanceHistoryModal({
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedHistory.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.date}</td>
-                      <td>{Number(item.km).toLocaleString()} km</td>
-                      <td>{item.cost ? `${Number(item.cost).toLocaleString()}원` : '미입력'}</td>
-                      <td>
-                        <button
-                          type="button"
-                          className={styles.deleteRowBtn}
-                          onClick={() => onDeleteItem(item.id)}
-                          title="정비 기록 삭제"
-                        >
-                          ✕
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {sortedHistory.map((item) => {
+                    const displayKm = isNaN(Number(item.km)) ? 0 : Number(item.km)
+                    const displayCost = isNaN(Number(item.cost)) ? 0 : Number(item.cost)
+                    return (
+                      <tr key={item.id}>
+                        <td>{item.date || '날짜 미입력'}</td>
+                        <td>{displayKm.toLocaleString()} km</td>
+                        <td>{displayCost > 0 ? `${displayCost.toLocaleString()}원` : '미입력'}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className={styles.deleteRowBtn}
+                            onClick={() => onDeleteItem(item.id)}
+                            title="정비 기록 삭제"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

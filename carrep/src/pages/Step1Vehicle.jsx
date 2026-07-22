@@ -120,12 +120,16 @@ export default function Step1Vehicle({
 
   // Handle adding a new history record
   const handleSaveDiagOverride = (itemName, data) => {
+    if (!itemName || !data) return
     const currentList = historyMap[itemName] || []
+    const parsedKm = Number(data.km)
+    const parsedCost = Number(data.cost)
     const newRecord = {
       id: Date.now(),
-      date: data.date,
-      km: data.km,
-      cost: data.cost
+      date: data.date || new Date().toISOString().split('T')[0],
+      km: isNaN(parsedKm) ? 0 : parsedKm,
+      cost: isNaN(parsedCost) ? 0 : parsedCost,
+      notes: data.notes || ''
     }
 
     const updatedHistory = {
@@ -774,13 +778,15 @@ export default function Step1Vehicle({
       )}
 
       {/* Manual Diagnostic Log Registration Modal */}
-      <MaintenanceRegisterModal
-        isOpen={isDiagModalOpen}
-        onClose={() => setIsDiagModalOpen(false)}
-        onSave={handleSaveDiagOverride}
-        itemName={selectedDiagItem}
-        currentMileage={vehicleInfo.mileage}
-      />
+      {isDiagModalOpen && selectedDiagItem && (
+        <MaintenanceRegisterModal
+          isOpen={isDiagModalOpen}
+          onClose={() => setIsDiagModalOpen(false)}
+          onSave={(item, data) => handleSaveDiagOverride(item || selectedDiagItem, data)}
+          itemName={selectedDiagItem}
+          currentMileage={vehicleInfo.mileage}
+        />
+      )}
 
       {/* Maintenance History List View Modal */}
       <MaintenanceHistoryModal

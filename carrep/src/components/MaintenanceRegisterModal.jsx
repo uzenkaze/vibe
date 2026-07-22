@@ -35,14 +35,16 @@ export default function MaintenanceRegisterModal({
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!km) {
-      alert('정비 당시의 주행거리를 입력해 주세요.')
+    const parsedKm = Number(km)
+    if (isNaN(parsedKm) || parsedKm <= 0) {
+      alert('정비 당시의 올바른 주행거리를 입력해 주세요.')
       return
     }
+    const parsedCost = cost ? Number(cost) : 0
     onSave(itemName, {
-      date,
-      km: Number(km),
-      cost: cost ? Number(cost) : 0,
+      date: date || new Date().toISOString().split('T')[0],
+      km: parsedKm,
+      cost: isNaN(parsedCost) ? 0 : parsedCost,
       addToReport
     })
   }
