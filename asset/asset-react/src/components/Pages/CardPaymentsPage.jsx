@@ -972,34 +972,7 @@ export default function CardPaymentsPage() {
             </table>
           </div>
 
-          {/* Payments Total Summary */}
-          <div style={{ 
-            margin: '0 1.5rem 1.5rem', 
-            padding: '1.25rem 1.5rem', 
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #ff8a00 0%, #ea580c 100%)', 
-            color: '#ffffff',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            boxShadow: '0 4px 14px rgba(255, 138, 0, 0.22)'
-          }}>
-            <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.9)' }}>
-              합계
-            </span>
-            <span style={{ 
-              fontSize: '1.8rem', 
-              fontWeight: 900, 
-              color: '#ffffff',
-              fontFamily: 'Inter, sans-serif',
-              letterSpacing: '-0.03em' 
-            }}>
-              {formatKRW(paymentsTotalAmount)}
-              <span style={{ fontSize: '0.95rem', fontWeight: 'bold', marginLeft: '4px', color: 'rgba(255, 255, 255, 0.8)' }}>
-                원
-              </span>
-            </span>
-          </div>
+
         </div>
       </div>
 
