@@ -627,11 +627,23 @@ export default function CardPaymentsPage() {
           {/* 수입 카드 */}
           <div 
             ref={incomeCardRef}
-            onMouseEnter={() => setIsIncomeHovered(true)}
-            onMouseLeave={() => setIsIncomeHovered(false)}
+            onMouseEnter={() => {
+              if (window.innerWidth > 768) {
+                setIsExpenseHovered(false);
+                setIsIncomeHovered(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (window.innerWidth > 768) {
+                setIsIncomeHovered(false);
+              }
+            }}
             onClick={(e) => {
               e.stopPropagation();
-              setIsIncomeHovered(prev => !prev);
+              if (window.innerWidth <= 768) {
+                setIsExpenseHovered(false);
+                setIsIncomeHovered(prev => !prev);
+              }
             }}
             style={{
               background: 'var(--bg)',
@@ -697,14 +709,20 @@ export default function CardPaymentsPage() {
           <div 
             ref={expenseCardRef}
             onMouseEnter={() => {
-              if (window.innerWidth > 768) setIsExpenseHovered(true);
+              if (window.innerWidth > 768) {
+                setIsIncomeHovered(false);
+                setIsExpenseHovered(true);
+              }
             }}
             onMouseLeave={() => {
-              if (window.innerWidth > 768) setIsExpenseHovered(false);
+              if (window.innerWidth > 768) {
+                setIsExpenseHovered(false);
+              }
             }}
             onClick={(e) => {
               e.stopPropagation();
               if (window.innerWidth <= 768) {
+                setIsIncomeHovered(false);
                 setIsExpenseHovered(prev => !prev);
               }
             }}
