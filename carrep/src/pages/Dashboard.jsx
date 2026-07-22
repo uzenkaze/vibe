@@ -427,9 +427,32 @@ export default function Dashboard({
             ) : null}
           </div>
 
-          {/* 하단 3행: 좌측 📷 사진넣기 (로그인 시에만 노출) / 우측 큼직한 차량 실사컷 */}
+          {/* 하단 3행: 좌측 벡터 아이콘 스펙 태그 뱃지 + 📷 사진 버튼 / 우측 큼직한 차량 실사컷 */}
           <div className={styles.profileCardBottomRow}>
             <div className={styles.profileBottomLeft}>
+
+              {/* 벡터 아이콘을 포함한 세련된 차량 정보 스펙 뱃지 영역 */}
+              {currentUser && (carDriveType || carGrade || carMileage) && (
+                <div className={styles.carSpecBadgesWrap}>
+                  {(carDriveType || carGrade) && (
+                    <div className={styles.carSpecTagItem} title="차량 등급 및 구동방식">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={styles.carSpecTagIcon}>
+                        <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-4"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                      </svg>
+                      <span>{[carDriveType, carGrade].filter(Boolean).join(' ')}</span>
+                    </div>
+                  )}
+                  {carMileage && (
+                    <div className={styles.carSpecTagItem} title="현재 차량 총 주행거리">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={styles.carSpecTagIcon}>
+                        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                      </svg>
+                      <span>{Number(carMileage).toLocaleString()}km 주행</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {currentUser && (
                 <>
                   {!userPhoto ? (
@@ -506,9 +529,6 @@ export default function Dashboard({
               </svg>
               <div>
                 <div className={styles.cardTitle}>{currentUser ? (carName || '내 차 상태 점검') : '스마트 상태 진단'}</div>
-                {(carDriveType || carGrade) && currentUser && (
-                  <div className={styles.carSubtitle}>{[carDriveType, carGrade].filter(Boolean).join(' ')}</div>
-                )}
               </div>
             </div>
             {currentUser && (
@@ -518,11 +538,6 @@ export default function Dashboard({
               </button>
             )}
           </div>
-          {carMileage && (
-            <div className={styles.mileageText}>
-              {Number(carMileage).toLocaleString()}km 주행기준
-            </div>
-          )}
           <div className={styles.statGrid}>
             <div className={`${styles.statItem} ${styles.statDanger}`}
               onClick={() => { setSelectedFilterType('danger'); setIsFilterModalOpen(true) }}

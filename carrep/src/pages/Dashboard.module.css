@@ -149,8 +149,46 @@
 
 .profileBottomLeft {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   padding-bottom: 4px;
+}
+
+/* 벡터 아이콘이 포함된 고급 차량 스펙 뱃지 태그 */
+.carSpecBadgesWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.carSpecTagItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: var(--accent-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  letter-spacing: -0.01em;
+  transition: all 0.2s ease;
+}
+
+.carSpecTagItem:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.carSpecTagIcon {
+  color: var(--accent-blue);
+  flex-shrink: 0;
 }
 
 /* Nocra AI 카메라 버튼 (사진 없을 때만) */
