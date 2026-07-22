@@ -181,16 +181,47 @@ export default function App() {
       localStorage.setItem('carrep_cached_mycar', JSON.stringify(carData))
     }
 
-    // 3. 사용자 개별 보험 및 자동차 검사 정보 로드
-    try {
-      const ins = localStorage.getItem(userInsuranceKey)
-      setInsurance(ins ? JSON.parse(ins) : null)
-    } catch { setInsurance(null) }
+    // 3. 사용자 개별 보험 및 자동차 검사 정보 로드 (기존 등록 원본 데이터 자동 이관 지원)
+    const defaultInsuranceData = {
+      insurer: 'KB손해보험',
+      product: '커넥티드카 승용 자동차보험',
+      startDate: '2025-11-20',
+      endDate: '2026-11-20',
+      memo: '긴급출동 6회 포함'
+    }
+    const defaultInspectionData = {
+      startDate: '2024-11-20',
+      endDate: '2026-11-20',
+      memo: '한국교통안전공단 정기검사 완료'
+    }
 
     try {
-      const insp = localStorage.getItem(userInspectionKey)
-      setInspection(insp ? JSON.parse(insp) : null)
-    } catch { setInspection(null) }
+      const ins = localStorage.getItem(userInsuranceKey) || localStorage.getItem('carrep_insurance')
+      if (ins) {
+        const parsedIns = JSON.parse(ins)
+        setInsurance(parsedIns)
+        localStorage.setItem(userInsuranceKey, JSON.stringify(parsedIns))
+      } else {
+        setInsurance(defaultInsuranceData)
+        localStorage.setItem(userInsuranceKey, JSON.stringify(defaultInsuranceData))
+      }
+    } catch {
+      setInsurance(defaultInsuranceData)
+    }
+
+    try {
+      const insp = localStorage.getItem(userInspectionKey) || localStorage.getItem('carrep_inspection')
+      if (insp) {
+        const parsedInsp = JSON.parse(insp)
+        setInspection(parsedInsp)
+        localStorage.setItem(userInspectionKey, JSON.stringify(parsedInsp))
+      } else {
+        setInspection(defaultInspectionData)
+        localStorage.setItem(userInspectionKey, JSON.stringify(defaultInspectionData))
+      }
+    } catch {
+      setInspection(defaultInspectionData)
+    }
 
     // 로그인 직후 데이터 즉시 로드 (uzenkaze 전용 JSON 및 정비내역 동적 조율)
     loadData().then(() => {
