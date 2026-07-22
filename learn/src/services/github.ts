@@ -32,15 +32,29 @@ export function saveGitHubConfig(config: GitHubConfig): void {
 export async function downloadFromGitHub<T>(config: GitHubConfig, path: string = DATA_PATH): Promise<T | null> {
   if (!config.repo) return null;
 
+  // 토큰이 없는 퍼블릭 요청의 경우, API 레이턴시와 Rate limit 회피를 위해 곧바로 raw.githubusercontent.com으로 고속 요청
+  if (!config.token) {
+    try {
+      const rawUrl = `https://raw.githubusercontent.com/${config.repo}/${config.branch || 'main'}/${path}?t=${Date.now()}`;
+      const rawRes = await fetch(rawUrl, { cache: 'no-store' });
+      if (rawRes.ok) {
+        const data = await rawRes.json();
+        return data as T;
+      }
+    } catch (e) {
+      console.error('GitHub Raw Download Error:', e);
+    }
+    return null;
+  }
+
+  // 토큰이 있는 경우만 API 요청 시도
   const url = `https://api.github.com/repos/${config.repo}/contents/${path}?ref=${config.branch || 'main'}&t=${Date.now()}`;
   const headers: Record<string, string> = {
     'Accept': 'application/vnd.github.v3+json',
     'Cache-Control': 'no-cache',
     'Pragma': 'no-cache',
+    'Authorization': `token ${config.token}`,
   };
-  if (config.token) {
-    headers['Authorization'] = `token ${config.token}`;
-  }
 
   try {
     const res = await fetch(url, { headers });
@@ -52,8 +66,9 @@ export async function downloadFromGitHub<T>(config: GitHubConfig, path: string =
         if (!json.content || json.size > 1000000) {
           if (json.sha) {
             const blobUrl = `https://api.github.com/repos/${config.repo}/git/blobs/${json.sha}`;
-            const blobHeaders: Record<string, string> = {};
-            if (config.token) blobHeaders['Authorization'] = `token ${config.token}`;
+            const blobHeaders: Record<string, string> = {
+              'Authorization': `token ${config.token}`
+            };
             const blobRes = await fetch(blobUrl, { headers: blobHeaders });
             if (blobRes.ok) {
               const blobJson = await blobRes.json();
