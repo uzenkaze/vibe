@@ -6,6 +6,7 @@ import Step2Repairs from './pages/Step2Repairs'
 import Step3Report from './pages/Step3Report'
 import RepairListPage from './pages/RepairListPage'
 import FuelPage from './pages/FuelPage'
+import AuthPage from './pages/AuthPage'
 import GitHubModal from './components/GitHubModal'
 import MyCarModal from './components/MyCarModal'
 import InsuranceModal from './components/InsuranceModal'
@@ -19,6 +20,14 @@ const MYCAR_PATH = 'carrep/public/data/mycar.json'
 
 export default function App() {
   const [step, setStep] = useState(1)
+
+  // Current logged in user state
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('carrep_current_user')
+      return saved ? JSON.parse(saved) : null
+    } catch (e) { return null }
+  })
   const [vehicleInfo, setVehicleInfo] = useState(() => {
     try {
       const cached = localStorage.getItem('carrep_cached_mycar') || localStorage.getItem('carrep_temp_mycar')
@@ -90,11 +99,44 @@ export default function App() {
     setStep(4)
   }
 
-  const [fuelHistory, setFuelHistory] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('carrep_fuel_history') || '[]')
-    } catch (e) { return [] }
-  })
+  const handleLogin = (user) => {
+    setCurrentUser(user)
+    localStorage.setItem('carrep_current_user', JSON.stringify(user))
+
+    // 로그인 한 사용자인 경우 기 등록된 차량 정보 자동 연동 및 적용
+    if (user && user.car) {
+      const carData = {
+        maker: user.car.maker || '기아',
+        model: user.car.model || '모하비',
+        year: user.car.year || '2022',
+        mileage: user.car.mileage || '45000',
+        color: user.car.color || '',
+        nickname: user.car.nickname || `${user.name || '사용자'}의 차`,
+        plate: user.car.plate || '',
+        grade: user.car.grade || '',
+        driveType: user.car.driveType || '4WD',
+        fuelType: user.car.fuelType || '경유',
+        regDate: user.car.regDate || '2022.05.10',
+        fuelEconomy: user.car.fuelEconomy || '9.4 km/L',
+        tireSize: user.car.tireSize || '265/60R18',
+        engineDisp: user.car.engineDisp || '2,959 cc'
+      }
+
+      setMyCar(carData)
+      setVehicleInfo(prev => ({ ...prev, ...carData }))
+      localStorage.setItem('carrep_cached_mycar', JSON.stringify(carData))
+    }
+
+    showToast(`✨ ${user.name || '사용자'}님, 성공적으로 로그인 되었습니다!`, 'success', 4000)
+    setStep(1)
+  }
+
+  const handleLogout = () => {
+    setCurrentUser(null)
+    localStorage.removeItem('carrep_current_user')
+    showToast('로그아웃 되었습니다.', 'info', 3000)
+    setStep(1)
+  }
 
   const handleSaveFuel = (newItem) => {
     const exists = fuelHistory.some(f => f.id === newItem.id)
@@ -562,9 +604,11 @@ export default function App() {
   return (
     <AppLayout
       step={step}
-      goToStep={goToStep}
+      goToStep={goStep}
       dbStatus={dbStatus}
       githubToken={githubToken}
+      currentUser={currentUser}
+      onGoAuth={() => setStep(6)}
       onOpenSetting={() => setIsModalOpen(true)}
       onOpenMyCar={() => setIsMyCarModalOpen(true)}
       onLogoClick={handleLogoClick}
@@ -633,6 +677,15 @@ export default function App() {
           fuelHistory={fuelHistory}
           onSaveFuel={handleSaveFuel}
           onDeleteFuel={handleDeleteFuel}
+        />
+      )}
+
+      {step === 6 && (
+        <AuthPage
+          currentUser={currentUser}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+          onGoHome={() => setStep(1)}
         />
       )}
 

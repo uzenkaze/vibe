@@ -7,7 +7,7 @@ const steps = [
   { num: 3, label: '보고서' },
 ]
 
-export default function AppLayout({ step, goToStep, dbStatus, githubToken, onOpenSetting, onOpenMyCar, onLogoClick, children }) {
+export default function AppLayout({ step, goToStep, dbStatus, githubToken, currentUser, onGoAuth, onOpenSetting, onOpenMyCar, onLogoClick, children }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('carrep_theme') || 'dark')
 
   useEffect(() => {
@@ -93,11 +93,19 @@ export default function AppLayout({ step, goToStep, dbStatus, githubToken, onOpe
             <span className={styles.statusDot} />
           </button>
 
-          {/* 첨부 이미지 스타일의 유저 3D 둥근 아바타 버튼 */}
-          <div className={styles.userAvatarBtn} onClick={onOpenMyCar} title="사용자 프로필 설정">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-            </svg>
+          {/* 유저 아바타 버튼 (로그인 한 경우 캐릭터 이미지 렌더링, 클릭 시 로그인 페이지 이동) */}
+          <div
+            className={styles.userAvatarBtn}
+            onClick={onGoAuth}
+            title={currentUser ? `${currentUser.name || '사용자'} 프로필 (클릭하여 관리)` : "로그인 / 회원가입"}
+          >
+            {currentUser ? (
+              <img src={`${import.meta.env.BASE_URL}user_avatar.jpg`} alt="사용자 아바타" className={styles.avatarImgIcon} />
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+            )}
           </div>
         </div>
       </header>

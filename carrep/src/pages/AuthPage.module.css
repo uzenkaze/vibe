@@ -1,0 +1,262 @@
+/* ── AuthPage.module.css ── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 24px 16px 80px;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 32px 28px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: slideUp 0.3s ease-out;
+}
+
+.header, .profileHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.avatarWrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--accent-blue);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+  margin-bottom: 12px;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarWrapLarge {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3.5px solid var(--accent-blue);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  margin-bottom: 14px;
+}
+
+.avatarImgLarge {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--text-main);
+  margin: 0 0 6px 0;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.profileName {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.profileEmail {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.input {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: var(--accent-blue);
+}
+
+.signUpCarBox, .carInfoBox {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.boxTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.infoLabel {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.infoVal {
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.btnSubmit {
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--bg-btn-primary);
+  color: var(--text-btn-primary);
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.btnSubmit:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btnHome {
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--bg-btn-primary);
+  color: var(--text-btn-primary);
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btnLogout {
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--bg-input);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  border-top: 1px dashed var(--border);
+  padding-top: 16px;
+}
+
+.btnSwitch {
+  background: transparent;
+  border: none;
+  color: var(--accent-blue);
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.btnSwitch:hover {
+  text-decoration: underline;
+}
+
+.demoNotice {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: var(--accent-blue);
+  text-align: center;
+}
+
+/* ── 라이트 모드 대응 ── */
+[data-theme="light"] .card {
+  background: #ffffff;
+}
+
+[data-theme="light"] .btnSubmit,
+[data-theme="light"] .btnHome {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+}
