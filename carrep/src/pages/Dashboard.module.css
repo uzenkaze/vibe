@@ -141,10 +141,11 @@
 
 .profileCardBottomRow {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-top: 8px;
+  margin-top: 4px;
+  position: relative;
 }
 
 .profileBottomLeft {
@@ -152,7 +153,8 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  padding-bottom: 4px;
+  padding-bottom: 0px;
+  z-index: 2;
 }
 
 /* ⚡ Dribbble Electric Vehicle Smart Car Mobile UI 배터리 위젯 스타일 (carSpecBadgesWrap) */
@@ -162,6 +164,20 @@
   align-items: flex-start;
   gap: 8px;
   margin-bottom: 10px;
+}
+
+.profileCarImageWrap {
+  width: 100%;
+  max-width: 320px;
+  height: 155px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  margin-top: -36px;
+  margin-bottom: -10px;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .carSpecWidgetCard {
@@ -318,17 +334,6 @@
 .changePhotoBtnInline:hover {
   opacity: 1;
   color: var(--accent-red);
-}
-
-.profileCarImageWrap {
-  width: 100%;
-  max-width: 320px;
-  height: 155px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  margin-top: 4px;
 }
 
 .profileCarImage {
