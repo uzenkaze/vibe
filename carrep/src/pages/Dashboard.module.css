@@ -839,11 +839,6 @@
 
 .healthText { font-size: 0.78rem; font-weight: 800; color: var(--text-muted); margin-left: auto; flex-shrink: 0; }
 
-.progressBarBg {
-  width: 100%; height: 5px;
-  background: var(--border); border-radius: 3px; overflow: hidden;
-}
-.progressBarFill { height: 100%; border-radius: 3px; transition: width 0.4s; }
 
 .consumableFooterBlock { display: flex; flex-direction: column; gap: 3px; }
 .consumableReason { font-size: 0.72rem; color: var(--text-muted); line-height: 1.45; font-weight: 500; }
