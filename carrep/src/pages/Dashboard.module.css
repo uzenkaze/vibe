@@ -1464,3 +1464,42 @@
   color: #05141f !important;
   filter: drop-shadow(0 1px 2px rgba(5, 20, 31, 0.15)) !important;
 }
+
+/* ⚡ carSpecBadgesWrap 및 carSpecWidgetCard 라이트모드 전용 밝은 배경 오버라이드 */
+[data-theme="light"] .carSpecBadgesWrap {
+  background: transparent !important;
+}
+
+[data-theme="light"] .carSpecWidgetCard {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="light"] .carSpecWidgetCard:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="light"] .widgetHeader .widgetLabel {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .widgetValue {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .widgetNumVal {
+  color: #059669 !important;
+}
+
+[data-theme="light"] .widgetUnitText {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .widgetBadgeIcon {
+  background: #e2e8f0 !important;
+  color: #2563eb !important;
+}
+
