@@ -694,14 +694,19 @@ export default function CardPaymentsPage() {
             )}
           </div>
 
-          {/* 지출 카드 */}
           <div 
             ref={expenseCardRef}
-            onMouseEnter={() => setIsExpenseHovered(true)}
-            onMouseLeave={() => setIsExpenseHovered(false)}
+            onMouseEnter={() => {
+              if (window.innerWidth > 768) setIsExpenseHovered(true);
+            }}
+            onMouseLeave={() => {
+              if (window.innerWidth > 768) setIsExpenseHovered(false);
+            }}
             onClick={(e) => {
               e.stopPropagation();
-              setIsExpenseHovered(prev => !prev);
+              if (window.innerWidth <= 768) {
+                setIsExpenseHovered(prev => !prev);
+              }
             }}
             style={{
               background: 'var(--bg)',
