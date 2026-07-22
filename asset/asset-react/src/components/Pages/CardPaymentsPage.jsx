@@ -608,7 +608,7 @@ export default function CardPaymentsPage() {
       </div>
 
       {/* 수입 대비 현금 지출 비교 영역 (도식화) */}
-      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem', position: 'relative', zIndex: 100, overflow: 'visible' }}>
         <div className="section-card-header" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
           <div className="section-card-title">
             <span className="section-dot" style={{ background: isShortage ? 'var(--coral)' : 'var(--teal)' }} />
