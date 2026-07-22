@@ -428,11 +428,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    loadData().then(carData => {
-      if (githubToken && (!carData || !carData.maker)) {
-        showToast('🚗 GitHub에 연결되었으나 등록된 내 차량 정보가 없습니다. 차량을 먼저 등록하세요.', 'warning', 6000)
-      }
-    })
+    loadData()
   }, [githubToken])
 
   // GitHub 연결 또는 데이터 로드 완료 시 등록된 내 차량 정보가 있으면 자동으로 차량 정보에 반영
@@ -541,9 +537,7 @@ export default function App() {
       setGithubToken(token)
       setIsModalOpen(false)
       const carData = await loadData(token)
-      if (!carData || !carData.maker) {
-        showToast('🚗 GitHub에 연결되었으나 등록된 내 차량 정보가 없습니다. 차량을 먼저 등록하세요.', 'warning', 6000)
-      } else {
+      if (carData && carData.maker) {
         showToast('✨ GitHub 연결 및 내 차량 정보 조회가 완료되었습니다!', 'success', 4000)
       }
     } else {
