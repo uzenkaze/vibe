@@ -35,9 +35,16 @@ export default function App() {
       return saved ? JSON.parse(saved) : null
     } catch (e) { return null }
   })
+
+  // 비로그인 상태일 때는 데이터 미표시 (초기 빈값)
   const [vehicleInfo, setVehicleInfo] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('carrep_current_user') || 'null')
+    if (!user) {
+      return { maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '', driveType: '', fuelType: '', regDate: '', fuelEconomy: '', tireSize: '', engineDisp: '' }
+    }
     try {
-      const cached = localStorage.getItem('carrep_cached_mycar') || localStorage.getItem('carrep_temp_mycar')
+      const userIdKey = getUserIdKey(user)
+      const cached = localStorage.getItem(`carrep_mycar_${userIdKey}`) || localStorage.getItem('carrep_cached_mycar')
       if (cached) {
         const car = JSON.parse(cached)
         return {
@@ -62,15 +69,21 @@ export default function App() {
   const [repairItems, setRepairItems] = useState([])
   const [attachedImages, setAttachedImages] = useState([])
   const [reports, setReports] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('carrep_current_user') || 'null')
+    if (!user) return []
     try {
-      const cached = localStorage.getItem('carrep_cached_reports')
+      const userIdKey = getUserIdKey(user)
+      const cached = localStorage.getItem(`carrep_reports_${userIdKey}`) || localStorage.getItem('carrep_cached_reports')
       return cached ? JSON.parse(cached) : []
     } catch (e) { return [] }
   })
   const [savedReportId, setSavedReportId] = useState(null)
   const [myCar, setMyCar] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('carrep_current_user') || 'null')
+    if (!user) return null
     try {
-      const cached = localStorage.getItem('carrep_cached_mycar') || localStorage.getItem('carrep_temp_mycar')
+      const userIdKey = getUserIdKey(user)
+      const cached = localStorage.getItem(`carrep_mycar_${userIdKey}`) || localStorage.getItem('carrep_cached_mycar')
       return cached ? JSON.parse(cached) : null
     } catch (e) { return null }
   })
@@ -156,6 +169,10 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null)
     localStorage.removeItem('carrep_current_user')
+    setMyCar(null)
+    setVehicleInfo({ maker: '', model: '', year: '', mileage: '', repairDate: '', shopName: '', color: '', driveType: '', fuelType: '', regDate: '', fuelEconomy: '', tireSize: '', engineDisp: '' })
+    setReports([])
+    setRepairItems([])
     showToast('로그아웃 되었습니다.', 'info', 3000)
     setStep(1)
   }
@@ -193,6 +210,14 @@ export default function App() {
 
   // Hybrid Fast Parallel Data Loading Chain
   const loadData = async (tokenVal = githubToken) => {
+    // 비로그인 상태(게스트)일 때는 데이터 미표시
+    const savedUser = localStorage.getItem('carrep_current_user')
+    if (!savedUser && !currentUser) {
+      setMyCar(null)
+      setReports([])
+      return null
+    }
+
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 
     // 1. Try loading from Live Local API Server ONLY if on localhost (Avoid 5s timeout on web)
