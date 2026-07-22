@@ -110,20 +110,24 @@ export default function App() {
     setCurrentUser(user)
     localStorage.setItem('carrep_current_user', JSON.stringify(user))
 
-    // 로그인 한 사용자인 경우 기 등록된 차량 정보 자동 연동 및 적용
+    const userIdKey = getUserIdKey(user)
+    const userMyCarKey = `carrep_mycar_${userIdKey}`
+    const userReportsKey = `carrep_reports_${userIdKey}`
+
+    // 1. 사용자 차량 정보 연동
     if (user && user.car) {
       const carData = {
         maker: user.car.maker || '기아',
-        model: user.car.model || '모하비',
+        model: user.car.model || '모하비 더 마스터',
         year: user.car.year || '2022',
-        mileage: user.car.mileage || '45000',
+        mileage: user.car.mileage || '48200',
         color: user.car.color || '',
-        nickname: user.car.nickname || `${user.name || '사용자'}의 차`,
-        plate: user.car.plate || '',
+        nickname: user.car.nickname || `${user.name || '사용자'}의 모하비`,
+        plate: user.car.plate || '12가 3456',
         grade: user.car.grade || '',
         driveType: user.car.driveType || '4WD',
         fuelType: user.car.fuelType || '경유',
-        regDate: user.car.regDate || '2022.05.10',
+        regDate: user.car.regDate || '2022.03.15',
         fuelEconomy: user.car.fuelEconomy || '9.4 km/L',
         tireSize: user.car.tireSize || '265/60R18',
         engineDisp: user.car.engineDisp || '2,959 cc'
@@ -131,7 +135,18 @@ export default function App() {
 
       setMyCar(carData)
       setVehicleInfo(prev => ({ ...prev, ...carData }))
+      localStorage.setItem(userMyCarKey, JSON.stringify(carData))
       localStorage.setItem('carrep_cached_mycar', JSON.stringify(carData))
+    }
+
+    // 2. 사용자 개별 정비 내역 로드 및 이관
+    const userSavedReports = localStorage.getItem(userReportsKey)
+    if (userSavedReports) {
+      try {
+        const parsed = JSON.parse(userSavedReports)
+        setReports(parsed)
+        localStorage.setItem('carrep_cached_reports', JSON.stringify(parsed))
+      } catch (e) {}
     }
 
     showToast(`✨ ${user.name || '사용자'}님, 성공적으로 로그인 되었습니다!`, 'success', 4000)

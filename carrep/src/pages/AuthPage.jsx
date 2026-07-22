@@ -96,30 +96,48 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
 
         const chosenAvatarObj = AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0]
 
+        // 회원가입 시 사용자가 별도 입력을 하지 않았더라도 기 등록된 기본 모하비 차량 정보 자동 이관
+        const defaultMohaveCar = {
+          maker: '기아',
+          model: '모하비 더 마스터',
+          plate: '12가 3456',
+          year: '2022',
+          mileage: '48200',
+          nickname: `${name || '사용자'}의 모하비`,
+          driveType: '4WD',
+          fuelType: '경유',
+          regDate: '2022.03.15',
+          fuelEconomy: '9.4 km/L',
+          tireSize: '265/60R18',
+          engineDisp: '2,959 cc'
+        }
+
+        const userCar = {
+          maker: '기아',
+          model: carModel.trim() || defaultMohaveCar.model,
+          plate: carPlate.trim() || defaultMohaveCar.plate,
+          year: carYear.trim() || defaultMohaveCar.year,
+          mileage: carMileage.trim() || defaultMohaveCar.mileage,
+          nickname: `${name || '사용자'}의 차`,
+          driveType: '4WD',
+          fuelType: '경유',
+          regDate: '2022.03.15',
+          fuelEconomy: '9.4 km/L',
+          tireSize: '265/60R18',
+          engineDisp: '2,959 cc'
+        }
+
         const newUser = {
           email,
           password,
           name: name || email.split('@')[0],
           avatar: chosenAvatarObj.src,
-          car: {
-            maker: '기아',
-            model: carModel || '모하비',
-            plate: carPlate || '',
-            year: carYear || '2022',
-            mileage: carMileage || '45000',
-            nickname: `${name || '사용자'}의 차`,
-            driveType: '4WD',
-            fuelType: '경유',
-            regDate: '2022.05.10',
-            fuelEconomy: '9.4 km/L',
-            tireSize: '265/60R18',
-            engineDisp: '2,959 cc'
-          }
+          car: userCar
         }
 
         users[email] = newUser
         localStorage.setItem('carrep_users', JSON.stringify(users))
-        alert('회원가입이 완료되었습니다! 자동 로그인됩니다.')
+        alert('회원가입이 완료되었습니다! 기존 데이터가 연결되어 자동 로그인됩니다.')
         onLogin(newUser)
       } else {
         // 로그인 처리
