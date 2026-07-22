@@ -5,19 +5,36 @@ import MaintenanceRegisterModal from '../components/MaintenanceRegisterModal'
 import MaintenanceHistoryModal from '../components/MaintenanceHistoryModal'
 import DiagnosticFilterModal from '../components/DiagnosticFilterModal'
 
-function BrandLogo({ maker }) {
-  const isKia = !maker || maker.includes('기아') || maker.includes('KIA')
-  const isHyundai = maker && (maker.includes('현대') || maker.includes('HYUNDAI'))
-
-  if (isKia) {
-    // 공식 KIA 2021 리브랜딩 로고 (Simple Icons / kia.com 동일 path)
+function BrandLogo({ maker, isGuest }) {
+  if (isGuest || (maker && (maker.includes('테슬라') || maker.includes('TESLA')))) {
+    // 공식 테슬라 (Tesla) T 메인 SVG 로고
     return (
       <svg
         role="img"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
-        width="108"
-        height="38"
+        width="34"
+        height="34"
+        fill="currentColor"
+        style={{ color: '#e82127' }}
+        title="테슬라 (Tesla)"
+      >
+        <path d="M12 4.18c-3.13 0-5.78.68-7.79 1.72l.48 2.06c1.68-.86 4.02-1.42 6.81-1.42 2.79 0 5.13.56 6.81 1.42l.48-2.06c-2.01-1.04-4.66-1.72-7.79-1.72zm-7.61.16L0 4.88c.84.45 1.74.83 2.7 1.15l1.69-1.69zM19.61 6.03c.96-.32 1.86-.7 2.7-1.15l-4.39-.54 1.69 1.69zM12 8.35c-2.88 0-5.32.74-7.05 1.86l.66 2.09c1.47-.94 3.7-1.57 6.39-1.57 2.69 0 4.92.63 6.39 1.57l.66-2.09c-1.73-1.12-4.17-1.86-7.05-1.86zm0 3.32c-1.84 0-3.41.48-4.52 1.21l.88 2.14c.9-.59 2.16-1 3.64-1 1.48 0 2.74.41 3.64 1l.88-2.14c-1.11-.73-2.68-1.21-4.52-1.21zM11.16 16.5v7.08h1.68V16.5c-.27.02-.55.04-.84.04s-.57-.02-.84-.04z"/>
+      </svg>
+    )
+  }
+
+  const m = (maker || '').toUpperCase()
+
+  if (m.includes('기아') || m.includes('KIA')) {
+    // 공식 KIA 2021 리브랜딩 로고
+    return (
+      <svg
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        width="95"
+        height="32"
         fill="currentColor"
         className={styles.kiaLogoSvg}
         title="기아 (KIA)"
@@ -27,16 +44,58 @@ function BrandLogo({ maker }) {
     )
   }
 
-  if (isHyundai) {
+  if (m.includes('현대') || m.includes('HYUNDAI')) {
+    // 현대 (HYUNDAI) 이발 엠블럼 SVG
     return (
-      <svg width="60" height="24" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="50" cy="20" rx="42" ry="16" stroke="#9ca3af" strokeWidth="4"/>
-        <path d="M28 30L40 10M72 30L60 10M34 20H66" stroke="#9ca3af" strokeWidth="4" strokeLinecap="round"/>
+      <svg width="56" height="28" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" title="현대자동차">
+        <ellipse cx="50" cy="25" rx="46" ry="20" stroke="currentColor" strokeWidth="4.5"/>
+        <path d="M30 38L42 12M70 38L58 12M36 25H64" stroke="currentColor" strokeWidth="5.5" strokeLinecap="round"/>
       </svg>
     )
   }
 
-  return <span className={styles.makerText}>{maker}</span>
+  if (m.includes('제네시스') || m.includes('GENESIS')) {
+    return (
+      <svg width="70" height="24" viewBox="0 0 120 40" fill="currentColor" title="제네시스 (GENESIS)">
+        <path d="M60 10L68 25H52L60 10ZM10 20L50 22L10 24ZM110 20L70 22L110 24Z"/>
+        <circle cx="60" cy="25" r="8" fill="none" stroke="currentColor" strokeWidth="2"/>
+      </svg>
+    )
+  }
+
+  if (m.includes('BMW')) {
+    return (
+      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" title="BMW">
+        <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="3"/>
+        <circle cx="20" cy="20" r="12" fill="#1e293b"/>
+        <path d="M20 8V32M8 20H32" stroke="currentColor" strokeWidth="2"/>
+        <path d="M20 8A12 12 0 0 1 32 20H20V8Z" fill="#3b82f6"/>
+        <path d="M8 20A12 12 0 0 1 20 32V20H8Z" fill="#3b82f6"/>
+      </svg>
+    )
+  }
+
+  if (m.includes('벤츠') || m.includes('BENZ') || m.includes('MERCEDES')) {
+    return (
+      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" title="메르세데스-벤츠">
+        <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2.5"/>
+        <path d="M20 4L24 18L35 27L20 22L5 27L16 18L20 4Z" fill="currentColor"/>
+      </svg>
+    )
+  }
+
+  if (m.includes('아우디') || m.includes('AUDI')) {
+    return (
+      <svg width="65" height="24" viewBox="0 0 110 40" fill="none" stroke="currentColor" strokeWidth="3" title="아우디 (AUDI)">
+        <circle cx="25" cy="20" r="14"/>
+        <circle cx="45" cy="20" r="14"/>
+        <circle cx="65" cy="20" r="14"/>
+        <circle cx="85" cy="20" r="14"/>
+      </svg>
+    )
+  }
+
+  return <span className={styles.makerText}>{maker || 'CAR'}</span>
 }
 
 function fmtDate(dateStr) {
@@ -299,7 +358,7 @@ export default function Dashboard({
             </div>
 
             <div className={styles.brandLogoWrap}>
-              <BrandLogo maker={carMaker || '기아'} />
+              <BrandLogo maker={carMaker || '기아'} isGuest={!currentUser} />
             </div>
           </div>
 
@@ -368,57 +427,12 @@ export default function Dashboard({
                   onError={e => { e.target.src = getImagePath('/mohave_exterior.png') }}
                 />
               ) : (
-                <div className={styles.guestVectorCarWrap} title="로그인 후 내 차량 사진을 확인할 수 있습니다">
-                  <svg
-                    viewBox="0 0 320 160"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={styles.guestVectorCarSvg}
-                  >
-                    {/* 모던 미래지향 스포츠 SUV 벡터 스케치 */}
-                    <path
-                      d="M25 105C30 90 45 78 70 72L120 62L165 40C175 35 195 35 210 40L250 55C265 62 280 72 290 85L305 100C312 108 310 118 300 120H285C280 108 268 100 255 100C242 100 230 108 225 120H115C110 108 98 100 85 100C72 100 60 108 55 120H20C12 120 10 115 15 110L25 105Z"
-                      fill="url(#carBodyGrad)"
-                      stroke="var(--accent-blue)"
-                      strokeWidth="2.5"
-                    />
-                    {/* 루프 글래스 라인 */}
-                    <path
-                      d="M125 63L165 43C173 39 190 39 203 43L235 56C245 62 255 70 262 78L220 78H125V63Z"
-                      fill="url(#glassGrad)"
-                      stroke="var(--border)"
-                      strokeWidth="1.5"
-                    />
-                    {/* 사이드 윈도우 분할선 */}
-                    <line x1="175" y1="43" x2="175" y2="78" stroke="var(--border)" strokeWidth="1.5"/>
-                    {/* 헤드램프 LED 라이트 */}
-                    <path d="M285 88L302 98L288 102Z" fill="#45f3ff" opacity="0.9"/>
-                    {/* 테일램프 LED */}
-                    <path d="M25 102L18 108L28 112Z" fill="#ef4444" opacity="0.9"/>
-                    {/* 전륜 휠 & 타이어 */}
-                    <circle cx="255" cy="120" r="22" fill="#1e293b" stroke="var(--accent-blue)" strokeWidth="3.5"/>
-                    <circle cx="255" cy="120" r="14" fill="#334155" stroke="var(--border)" strokeWidth="2"/>
-                    <circle cx="255" cy="120" r="6" fill="#94a3b8"/>
-                    {/* 후륜 휠 & 타이어 */}
-                    <circle cx="85" cy="120" r="22" fill="#1e293b" stroke="var(--accent-blue)" strokeWidth="3.5"/>
-                    <circle cx="85" cy="120" r="14" fill="#334155" stroke="var(--border)" strokeWidth="2"/>
-                    <circle cx="85" cy="120" r="6" fill="#94a3b8"/>
-                    {/* 하단 그라운드 조명 그림자 */}
-                    <ellipse cx="160" cy="146" rx="130" ry="8" fill="rgba(59, 130, 246, 0.25)" filter="blur(4px)"/>
-
-                    <defs>
-                      <linearGradient id="carBodyGrad" x1="20" y1="40" x2="300" y2="120" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="var(--bg-card)"/>
-                        <stop offset="50%" stopColor="var(--bg-input)"/>
-                        <stop offset="100%" stopColor="var(--bg-secondary)"/>
-                      </linearGradient>
-                      <linearGradient id="glassGrad" x1="125" y1="40" x2="260" y2="78" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="rgba(69, 243, 255, 0.3)"/>
-                        <stop offset="100%" stopColor="rgba(59, 130, 246, 0.15)"/>
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
+                <img
+                  src={getImagePath('/tesla_exterior.jpg')}
+                  alt="테슬라 Model S"
+                  className={styles.profileCarImage}
+                  title="로그인 후 내 차량 사진을 확인할 수 있습니다"
+                />
               )}
             </div>
           </div>

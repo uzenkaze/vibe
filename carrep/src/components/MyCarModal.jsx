@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import styles from './MyCarModal.module.css'
 import FormattedNumberInput from './FormattedNumberInput'
 
-const CAR_MAKERS = ['현대', '기아', '쉐보레', 'BMW', '벤츠', '아우디', '도요타', '혼다', '닛산', '폭스바겐', '볼보', '포드', '기타']
+const CAR_MAKERS = ['현대', '기아', '제네시스', '테슬라', 'KG모빌리티(쌍용)', '르노코리아', '쉐보레', 'BMW', '벤츠', '아우디', '도요타', '혼다', '포르쉐', '폭스바겐', '볼보', '포드', '기타']
 
 const COLOR_OPTIONS = [
   { label: '선택 안함', value: '', hex: null },
