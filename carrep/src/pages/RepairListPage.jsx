@@ -55,7 +55,13 @@ export default function RepairListPage({
   // ── 정비 이력 등록 ──
   const handleSaveDiagOverride = (itemName, data) => {
     const currentList = historyMap[itemName] || []
-    const newRecord = { id: Date.now(), date: data.date, km: data.km, cost: data.cost }
+    const newRecord = {
+      id: Date.now(),
+      date: data.date,
+      km: data.km,
+      cost: data.cost,
+      notes: data.notes || ''
+    }
     const updatedHistory = { ...historyMap, [itemName]: [...currentList, newRecord] }
     setHistoryMap(updatedHistory)
     localStorage.setItem('carrep_maintenance_history', JSON.stringify(updatedHistory))
@@ -68,20 +74,22 @@ export default function RepairListPage({
       else if (['브레이크', '패드'].some(k => itemName.includes(k))) category = '제동계'
       else if (['조향', '벨트', '점화'].some(k => itemName.includes(k))) category = '조향계'
       const newRepair = {
-        id: Date.now(), category, name: `${itemName} 교환`,
-        partsCost: data.cost || 0, laborCost: 0,
-        details: `${data.date} 주행거리 ${Number(data.km).toLocaleString()}km 시점에 정비 등록.`
+        id: Date.now(),
+        category,
+        name: `${itemName} 교환`,
+        partsCost: Number(data.cost) || 0,
+        laborCost: 0,
+        repairDate: data.date,
+        details: `${data.date} 주행거리 ${Number(data.km).toLocaleString()}km 시점에 정비 등록.${data.notes ? ' ' + data.notes : ''}`
       }
       setRepairItems(prev => [newRepair, ...prev])
-      alert(`'${itemName}' 정비 이력이 추가 등록되었으며, 현재 정비 내역에 자동 등록되었습니다!`)
-    } else {
-      alert(`'${itemName}' 정비 이력이 성공적으로 추가 등록되었습니다!`)
     }
   }
 
   const handleDeleteHistoryItem = (itemName, itemId) => {
+    if (!window.confirm('이 정비 기록을 삭제하시겠습니까?\n삭제 시 해당 항목의 수명 진단 기준이 자동으로 변경됩니다.')) return
     const currentList = historyMap[itemName] || []
-    const updatedList = currentList.filter(item => item.id !== itemId)
+    const updatedList = currentList.filter(item => String(item.id) !== String(itemId))
     const updatedHistory = { ...historyMap, [itemName]: updatedList }
     if (updatedList.length === 0) delete updatedHistory[itemName]
     setHistoryMap(updatedHistory)
@@ -416,7 +424,7 @@ export default function RepairListPage({
           isOpen={isHistoryModalOpen}
           itemName={selectedDiagItem}
           historyList={historyMap[selectedDiagItem] || []}
-          onDelete={(itemId) => handleDeleteHistoryItem(selectedDiagItem, itemId)}
+          onDeleteItem={(itemId) => handleDeleteHistoryItem(selectedDiagItem, itemId)}
           onClose={() => setIsHistoryModalOpen(false)}
         />
       )}

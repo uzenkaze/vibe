@@ -54,11 +54,7 @@ export default function MaintenanceHistoryModal({
                         <button
                           type="button"
                           className={styles.deleteRowBtn}
-                          onClick={() => {
-                            if (window.confirm('이 정비 기록을 삭제하시겠습니까? 삭제 시 수명 진단 기준이 자동으로 변경됩니다.')) {
-                              onDeleteItem(itemName, item.id)
-                            }
-                          }}
+                          onClick={() => onDeleteItem(item.id)}
                           title="정비 기록 삭제"
                         >
                           ✕
