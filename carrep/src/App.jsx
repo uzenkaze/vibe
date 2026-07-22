@@ -710,7 +710,7 @@ export default function App() {
         })
         if (res.ok) {
           setMyCar(myCarData)
-          showToast('내차 정보가 서버에 정상적으로 저장되었습니다.', 'success', 4000, 'local-server')
+          showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
           return
         }
       } catch (err) {
@@ -728,7 +728,7 @@ export default function App() {
           'chore(data): update MyCar profile'
         )
         setMyCar(myCarData)
-        showToast('내차 정보가 서버에 정상적으로 저장되었습니다.', 'success', 4000, 'git')
+        showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
         return
       } catch (err) {
         console.error('Save My Car via GitHub API failed', err)
@@ -740,7 +740,7 @@ export default function App() {
     // 임시 로컬 환경일 경우 임시 브라우저 세션에 저장
     setMyCar(myCarData)
     localStorage.setItem('carrep_temp_mycar', JSON.stringify(myCarData))
-    showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'local-server')
+    showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
   }
 
   const handleSaveInsurance = (data) => {
@@ -913,7 +913,12 @@ export default function App() {
           title={toast.type === 'warning' ? "클릭하여 내 차량 정보 등록하기" : ""}
         >
           <span className="toastIcon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-            {toast.icon === 'git' ? (
+            {toast.icon === 'car' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', color: '#4ade80' }}>
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.05 11 2 11.3 2 11.5V16c0 .6.4 1 1 1h2"/>
+                <circle cx="7" cy="17" r="2.5"/><circle cx="17" cy="17" r="2.5"/>
+              </svg>
+            ) : toast.icon === 'git' ? (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: 'middle' }}>
                 <path d="M21.5 10.5l-8-8c-.6-.6-1.5-.6-2.1 0l-1.9 1.9 2.5 2.5c.6-.2 1.3 0 1.8.5.5.5.7 1.2.5 1.8l2.4 2.4c.6-.2 1.3 0 1.8.5.7.7.7 1.8 0 2.5s-1.8.7-2.5 0c-.5-.5-.7-1.2-.5-1.8l-2.2-2.2v5.7c.2.1.4.3.5.5.7.7.7 1.8 0 2.5s-1.8.7-2.5 0c-.7-.7-.7-1.8 0-2.5.2-.2.4-.4.7-.5v-5.7c-.3-.1-.5-.3-.7-.5-.5-.5-.7-1.2-.5-1.8l-2.4-2.4c-.6.2-1.3 0-1.8-.5-.7-.7-.7-1.8 0-2.5.7-.7 1.8-.7 2.5 0 .5.5.7 1.2.5 1.8l2.2 2.2V6.3l-2.5-2.5L2.5 10.5c-.6.6-.6 1.5 0 2.1l8 8c.6.6 1.5.6 2.1 0l8.9-8.9c.6-.6.6-1.6 0-2.2z"/>
               </svg>
