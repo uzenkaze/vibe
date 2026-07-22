@@ -623,7 +623,7 @@ export default function CardPaymentsPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem', position: 'relative', zIndex: 10 }}>
           {/* 수입 카드 */}
           <div 
             ref={incomeCardRef}
@@ -655,7 +655,7 @@ export default function CardPaymentsPage() {
                 onClick={(e) => e.stopPropagation()}
                 style={{
                   position: 'absolute',
-                  bottom: 'calc(100% + 8px)',
+                  top: 'calc(100% + 8px)',
                   left: '50%',
                   transform: 'translateX(-50%)',
                   background: 'var(--surface)',
@@ -720,7 +720,7 @@ export default function CardPaymentsPage() {
                 onClick={(e) => e.stopPropagation()}
                 style={{
                   position: 'absolute',
-                  bottom: 'calc(100% + 8px)',
+                  top: 'calc(100% + 8px)',
                   left: '50%',
                   transform: 'translateX(-50%)',
                   background: 'var(--surface)',
