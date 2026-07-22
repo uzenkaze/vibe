@@ -664,7 +664,7 @@ export default function CardPaymentsPage() {
                   padding: '0.75rem 1rem',
                   boxShadow: 'var(--shadow-md)',
                   zIndex: 1000,
-                  minWidth: '220px',
+                  minWidth: '260px',
                   color: 'var(--text-primary)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
@@ -678,7 +678,7 @@ export default function CardPaymentsPage() {
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>등록된 수입 내역이 없습니다.</div>
                   ) : (
                     (sections.income || []).map((i, idx) => (
-                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1rem', whiteSpace: 'nowrap' }}>
                         <span style={{ fontWeight: 600 }}>{i.item || '미지정'}</span>
                         <span style={{ fontWeight: 800, color: 'var(--teal)' }}>{formatKRW(i.amount)}원</span>
                       </div>
@@ -729,11 +729,12 @@ export default function CardPaymentsPage() {
                   padding: '0.75rem 1rem',
                   boxShadow: 'var(--shadow-md)',
                   zIndex: 1000,
-                minWidth: '240px',
-                color: 'var(--text-primary)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-              }}>
+                  minWidth: '300px',
+                  color: 'var(--text-primary)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                }}
+              >
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
                   현금 납부 지출 상세
                 </div>
@@ -742,7 +743,7 @@ export default function CardPaymentsPage() {
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>등록된 지출 내역이 없습니다.</div>
                   ) : (
                     cardPayments.map((p, idx) => (
-                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1.25rem', whiteSpace: 'nowrap' }}>
                         <span style={{ fontWeight: 600 }}>
                           {p.item || '미지정'}
                           <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginLeft: '4px', fontWeight: 500 }}>
