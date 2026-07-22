@@ -139,39 +139,46 @@ export default function App() {
     const userInsuranceKey = `carrep_insurance_${userIdKey}`
     const userInspectionKey = `carrep_inspection_${userIdKey}`
 
-    // 1. 사용자 차량 정보 연동
+    // 1. 사용자 차량 정보 연동 (기존 등록 원본 모하비 데이터 기반)
+    const originalMohaveCar = {
+      maker: '기아',
+      model: '모하비',
+      year: 2009,
+      mileage: 177000,
+      color: '티타늄실버',
+      nickname: '하비',
+      plate: '43누5894',
+      grade: 'KV300 최고급형',
+      driveType: '2WD',
+      fuelType: '경유',
+      regDate: '2008.11.20',
+      fuelEconomy: '9.4 km/L',
+      tireSize: '265/60R18',
+      engineDisp: '2,959 cc'
+    }
+
     if (user && user.car) {
       const carData = {
-        maker: user.car.maker || '기아',
-        model: user.car.model || '모하비 더 마스터',
-        year: user.car.year || '2022',
-        mileage: user.car.mileage || '48200',
-        color: user.car.color || '',
-        nickname: user.car.nickname || `${user.name || '사용자'}의 모하비`,
-        plate: user.car.plate || '12가 3456',
-        grade: user.car.grade || '',
-        driveType: user.car.driveType || '4WD',
-        fuelType: user.car.fuelType || '경유',
-        regDate: user.car.regDate || '2022.03.15',
-        fuelEconomy: user.car.fuelEconomy || '9.4 km/L',
-        tireSize: user.car.tireSize || '265/60R18',
-        engineDisp: user.car.engineDisp || '2,959 cc'
+        maker: user.car.maker || originalMohaveCar.maker,
+        model: user.car.model || originalMohaveCar.model,
+        year: user.car.year || originalMohaveCar.year,
+        mileage: user.car.mileage || originalMohaveCar.mileage,
+        color: user.car.color || originalMohaveCar.color,
+        nickname: user.car.nickname || originalMohaveCar.nickname,
+        plate: user.car.plate || originalMohaveCar.plate,
+        grade: user.car.grade || originalMohaveCar.grade,
+        driveType: user.car.driveType || originalMohaveCar.driveType,
+        fuelType: user.car.fuelType || originalMohaveCar.fuelType,
+        regDate: user.car.regDate || originalMohaveCar.regDate,
+        fuelEconomy: user.car.fuelEconomy || originalMohaveCar.fuelEconomy,
+        tireSize: user.car.tireSize || originalMohaveCar.tireSize,
+        engineDisp: user.car.engineDisp || originalMohaveCar.engineDisp
       }
 
       setMyCar(carData)
       setVehicleInfo(prev => ({ ...prev, ...carData }))
       localStorage.setItem(userMyCarKey, JSON.stringify(carData))
       localStorage.setItem('carrep_cached_mycar', JSON.stringify(carData))
-    }
-
-    // 2. 사용자 개별 정비 내역 로드 및 이관
-    const userSavedReports = localStorage.getItem(userReportsKey)
-    if (userSavedReports) {
-      try {
-        const parsed = JSON.parse(userSavedReports)
-        setReports(parsed)
-        localStorage.setItem('carrep_cached_reports', JSON.stringify(parsed))
-      } catch (e) {}
     }
 
     // 3. 사용자 개별 보험 및 자동차 검사 정보 로드
@@ -185,7 +192,10 @@ export default function App() {
       setInspection(insp ? JSON.parse(insp) : null)
     } catch { setInspection(null) }
 
-    showToast(`✨ ${user.name || '사용자'}님, 성공적으로 로그인 되었습니다!`, 'success', 4000)
+    // 로그인 직후 데이터 즉시 로드 (uzenkaze 전용 JSON 및 정비내역 동적 조율)
+    loadData().then(() => {
+      showToast(`✨ ${user.name || user.email.split('@')[0]}님, 성공적으로 로그인 되었습니다!`, 'success', 4000)
+    })
     setStep(1)
   }
 
@@ -300,10 +310,22 @@ export default function App() {
     // 3. GitHub Pages Deployed Static JSON Mode (Parallel fetch)
     try {
       const basePath = window.location.pathname.includes('/vibe') ? '/vibe/carrep' : '/carrep'
-      const [reportsRes, myCarRes] = await Promise.all([
-        fetch(`${basePath}/data/reports.json?t=${Date.now()}`).catch(() => null),
-        fetch(`${basePath}/data/mycar.json?t=${Date.now()}`).catch(() => null)
+      const activeUser = currentUser || (savedUser ? JSON.parse(savedUser) : null)
+      const userIdKey = getUserIdKey(activeUser)
+
+      // 로그인한 사용자별 전용 JSON 파일(예: reports_uzenkaze.json, mycar_uzenkaze.json) 우선 동적 페치
+      const userReportsUrl = `${basePath}/data/reports_${userIdKey}.json?t=${Date.now()}`
+      const userMyCarUrl = `${basePath}/data/mycar_${userIdKey}.json?t=${Date.now()}`
+      const defaultReportsUrl = `${basePath}/data/reports.json?t=${Date.now()}`
+      const defaultMyCarUrl = `${basePath}/data/mycar.json?t=${Date.now()}`
+
+      const [userReportsRes, userMyCarRes] = await Promise.all([
+        fetch(userReportsUrl).catch(() => null),
+        fetch(userMyCarUrl).catch(() => null)
       ])
+
+      let reportsRes = (userReportsRes && userReportsRes.ok) ? userReportsRes : await fetch(defaultReportsUrl).catch(() => null)
+      let myCarRes = (userMyCarRes && userMyCarRes.ok) ? userMyCarRes : await fetch(defaultMyCarUrl).catch(() => null)
 
       let reportsData = []
       let loadedMyCar = null
@@ -312,7 +334,8 @@ export default function App() {
         reportsData = await reportsRes.json()
 
         // Merge user modified cached reports from localStorage if available
-        const cachedStr = localStorage.getItem('carrep_cached_reports')
+        const userReportsKey = `carrep_reports_${userIdKey}`
+        const cachedStr = localStorage.getItem(userReportsKey) || localStorage.getItem('carrep_cached_reports')
         if (cachedStr) {
           try {
             const cachedReports = JSON.parse(cachedStr)
@@ -326,13 +349,17 @@ export default function App() {
         }
 
         setReports(reportsData)
+        localStorage.setItem(`carrep_reports_${userIdKey}`, JSON.stringify(reportsData))
         localStorage.setItem('carrep_cached_reports', JSON.stringify(reportsData))
       }
 
       if (myCarRes && myCarRes.ok) {
         loadedMyCar = await myCarRes.json()
         setMyCar(loadedMyCar)
-        if (loadedMyCar) localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
+        if (loadedMyCar) {
+          localStorage.setItem(`carrep_mycar_${userIdKey}`, JSON.stringify(loadedMyCar))
+          localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
+        }
       }
 
       if (reportsRes?.ok || myCarRes?.ok) {

@@ -96,17 +96,19 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
 
         const chosenAvatarObj = AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0]
 
-        // 회원가입 시 사용자가 별도 입력을 하지 않았더라도 기 등록된 기본 모하비 차량 정보 자동 이관
+        // 회원가입 시 사용자가 별도 입력을 하지 않았더라도 기존 등록되었던 원본 모하비 차량 정보 자동 이관
         const defaultMohaveCar = {
           maker: '기아',
-          model: '모하비 더 마스터',
-          plate: '12가 3456',
-          year: '2022',
-          mileage: '48200',
-          nickname: `${name || '사용자'}의 모하비`,
-          driveType: '4WD',
+          model: '모하비',
+          plate: '43누5894',
+          year: 2009,
+          mileage: 177000,
+          color: '티타늄실버',
+          nickname: '하비',
+          grade: 'KV300 최고급형',
+          driveType: '2WD',
           fuelType: '경유',
-          regDate: '2022.03.15',
+          regDate: '2008.11.20',
           fuelEconomy: '9.4 km/L',
           tireSize: '265/60R18',
           engineDisp: '2,959 cc'
@@ -116,15 +118,17 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
           maker: '기아',
           model: carModel.trim() || defaultMohaveCar.model,
           plate: carPlate.trim() || defaultMohaveCar.plate,
-          year: carYear.trim() || defaultMohaveCar.year,
-          mileage: carMileage.trim() || defaultMohaveCar.mileage,
-          nickname: `${name || '사용자'}의 차`,
-          driveType: '4WD',
-          fuelType: '경유',
-          regDate: '2022.03.15',
-          fuelEconomy: '9.4 km/L',
-          tireSize: '265/60R18',
-          engineDisp: '2,959 cc'
+          year: carYear.trim() ? Number(carYear.trim()) : defaultMohaveCar.year,
+          mileage: carMileage.trim() ? Number(carMileage.trim()) : defaultMohaveCar.mileage,
+          color: defaultMohaveCar.color,
+          nickname: carModel.trim() ? `${name || '사용자'}의 차` : defaultMohaveCar.nickname,
+          grade: defaultMohaveCar.grade,
+          driveType: defaultMohaveCar.driveType,
+          fuelType: defaultMohaveCar.fuelType,
+          regDate: defaultMohaveCar.regDate,
+          fuelEconomy: defaultMohaveCar.fuelEconomy,
+          tireSize: defaultMohaveCar.tireSize,
+          engineDisp: defaultMohaveCar.engineDisp
         }
 
         const newUser = {
