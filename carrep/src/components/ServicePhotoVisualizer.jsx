@@ -145,6 +145,38 @@ function getPhotoConfigForItem(item) {
       label: '라디에이터 및 냉각수 부동액 탱크'
     }
   }
+  if (name.includes('예열플러그') || name.includes('가열플러그') || name.includes('glowplug')) {
+    return {
+      url: '/mohave_engine_layout_1783410118006.png',
+      pinX: 52,
+      pinY: 34,
+      label: '디젤 엔진 실린더 헤드 예열플러그 (Glow Plug) & 모듈 결합부'
+    }
+  }
+  if (name.includes('점화플러그') || name.includes('점화코일') || name.includes('sparkplug')) {
+    return {
+      url: '/mohave_engine_layout_1783410118006.png',
+      pinX: 50,
+      pinY: 35,
+      label: '가솔린 엔진 실린더 블록 점화플러그 & 고압 코일 어셈블리'
+    }
+  }
+  if (name.includes('인젝터') || name.includes('연료필터') || name.includes('고압펌프')) {
+    return {
+      url: '/mohave_engine_layout_1783410118006.png',
+      pinX: 45,
+      pinY: 36,
+      label: '커먼레일 초고압 인젝터 및 연료 분사 시스템'
+    }
+  }
+  if (name.includes('타이밍') || name.includes('겉벨트') || name.includes('팬벨트') || name.includes('텐셔너') || name.includes('베어링')) {
+    return {
+      url: '/mohave_engine_layout_1783410118006.png',
+      pinX: 30,
+      pinY: 42,
+      label: '엔진 구동 벨트 (V-Ribbed Belt) & 오토 텐셔너 베어링'
+    }
+  }
   if (name.includes('브레이크') || name.includes('패드') || name.includes('디스크') || name.includes('캘리퍼') || name.includes('라이닝')) {
     return {
       url: '/brake_disc_caliper_clean.png',

@@ -140,6 +140,30 @@ function getItemPinConfig(item) {
     x = 320
     y = 280
     color = '#26de81'
+  } else if (name.includes('예열플러그') || name.includes('가열플러그') || name.includes('glowplug')) {
+    viewTab = 'engine_oil'
+    x = 520
+    y = 340
+    color = '#fd9644'
+    labelTitle = `${item.name} (디젤 예열플러그 & 모듈)`
+  } else if (name.includes('점화플러그') || name.includes('점화코일') || name.includes('sparkplug')) {
+    viewTab = 'engine_oil'
+    x = 500
+    y = 350
+    color = '#fd9644'
+    labelTitle = `${item.name} (점화플러그 & 점화코일)`
+  } else if (name.includes('인젝터') || name.includes('연료필터') || name.includes('고압펌프')) {
+    viewTab = 'engine_oil'
+    x = 450
+    y = 360
+    color = '#fd9644'
+    labelTitle = `${item.name} (연료 분사 어셈블리)`
+  } else if (name.includes('타이밍') || name.includes('겉벨트') || name.includes('팬벨트')) {
+    viewTab = 'engine_oil'
+    x = 300
+    y = 420
+    color = '#26de81'
+    labelTitle = `${item.name} (구동 벨트 & 베어링)`
   } else if (name.includes('배터리') || name.includes('제네레이터')) {
     viewTab = 'engine_oil'
     x = 750
