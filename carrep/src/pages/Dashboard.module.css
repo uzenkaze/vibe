@@ -657,6 +657,7 @@
 [data-theme="light"] .yellowTickGaugeWrap {
   background: #e2e8f0;
   border-color: #cbd5e1;
+  --tick-good-color: #059669;
 }
 
 .yellowTickGaugeWrapFull {
@@ -674,6 +675,7 @@
 [data-theme="light"] .yellowTickGaugeWrapFull {
   background: #e2e8f0;
   border-color: #cbd5e1;
+  --tick-good-color: #059669;
 }
 
 .yellowTickItem {

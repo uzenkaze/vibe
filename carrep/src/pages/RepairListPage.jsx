@@ -332,7 +332,7 @@ export default function RepairListPage({
                           {Array.from({ length: 28 }).map((_, tIdx) => {
                             const activeCount = Math.round((item.health / 100) * 28)
                             const isActive = tIdx < activeCount
-                            const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00'
+                            const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : 'var(--tick-good-color, #ccff00)'
                             return (
                               <span
                                 key={tIdx}
@@ -347,7 +347,7 @@ export default function RepairListPage({
                         </div>
                         <span
                           className={styles.healthPct}
-                          style={{ color: isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00' }}
+                          style={{ color: isDanger ? '#ef4444' : isWarning ? '#f97316' : 'var(--tick-good-color, #ccff00)' }}
                         >
                           {item.health}%
                         </span>

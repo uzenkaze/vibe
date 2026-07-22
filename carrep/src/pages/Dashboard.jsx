@@ -697,7 +697,7 @@ export default function Dashboard({
                           {Array.from({ length: 28 }).map((_, tIdx) => {
                             const activeCount = Math.round((item.health / 100) * 28)
                             const isActive = tIdx < activeCount
-                            const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00'
+                            const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : 'var(--tick-good-color, #ccff00)'
                             return (
                               <span
                                 key={tIdx}
@@ -710,7 +710,7 @@ export default function Dashboard({
                             )
                           })}
                         </div>
-                        <span className={styles.repairSummaryHealth} style={{ color: isDanger ? '#ef4444' : isWarning ? '#f97316' : '#ccff00' }}>{item.health}%</span>
+                        <span className={styles.repairSummaryHealth} style={{ color: isDanger ? '#ef4444' : isWarning ? '#f97316' : 'var(--tick-good-color, #ccff00)' }}>{item.health}%</span>
                       </div>
                     </div>
                   )
@@ -750,7 +750,7 @@ export default function Dashboard({
                     <div style={{ marginTop: '8px' }}>
                       <div className={styles.tickGaugeHeaderRow}>
                         <span className={styles.tickGaugeLabel}>보증 잔여 기간</span>
-                        <span className={styles.tickGaugePct} style={{ color: insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#ccff00' }}>
+                        <span className={styles.tickGaugePct} style={{ color: insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : 'var(--tick-good-color, #ccff00)' }}>
                           {Math.round(insRem.pct)}% ({insRem.label})
                         </span>
                       </div>
@@ -758,7 +758,7 @@ export default function Dashboard({
                         {Array.from({ length: 42 }).map((_, tIdx) => {
                           const activeCount = Math.round((insRem.pct / 100) * 42)
                           const isActive = tIdx < activeCount
-                          const activeTickColor = insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : '#ccff00'
+                          const activeTickColor = insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : 'var(--tick-good-color, #ccff00)'
                           return (
                             <span
                               key={tIdx}
@@ -818,7 +818,7 @@ export default function Dashboard({
                     <div style={{ marginTop: '8px' }}>
                       <div className={styles.tickGaugeHeaderRow}>
                         <span className={styles.tickGaugeLabel}>검사 유효 잔여</span>
-                        <span className={styles.tickGaugePct} style={{ color: inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#ccff00' }}>
+                        <span className={styles.tickGaugePct} style={{ color: inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : 'var(--tick-good-color, #ccff00)' }}>
                           {Math.round(inspRem.pct)}% ({inspRem.label})
                         </span>
                       </div>
@@ -826,7 +826,7 @@ export default function Dashboard({
                         {Array.from({ length: 42 }).map((_, tIdx) => {
                           const activeCount = Math.round((inspRem.pct / 100) * 42)
                           const isActive = tIdx < activeCount
-                          const activeTickColor = inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : '#ccff00'
+                          const activeTickColor = inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : 'var(--tick-good-color, #ccff00)'
                           return (
                             <span
                               key={tIdx}
