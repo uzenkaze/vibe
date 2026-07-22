@@ -664,7 +664,7 @@ export default function CardPaymentsPage() {
                   padding: '0.75rem 1rem',
                   boxShadow: 'var(--shadow-md)',
                   zIndex: 1000,
-                  minWidth: '300px',
+                  minWidth: '360px',
                   color: 'var(--text-primary)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
@@ -679,7 +679,12 @@ export default function CardPaymentsPage() {
                   ) : (
                     (sections.income || []).map((i, idx) => (
                       <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1.5rem', width: '100%', whiteSpace: 'nowrap' }}>
-                        <span style={{ fontWeight: 600, textAlign: 'left', whiteSpace: 'nowrap' }}>{i.item || '미지정'}</span>
+                        <span style={{ fontWeight: 600, textAlign: 'left', whiteSpace: 'nowrap' }}>
+                          {(i.category && i.content) 
+                            ? (i.category === i.content ? i.category : `${i.category} (${i.content})`) 
+                            : (i.category || i.content || '미지정')
+                          }
+                        </span>
                         <span style={{ fontWeight: 800, color: 'var(--teal)', textAlign: 'right', flexShrink: 0 }}>{formatKRW(i.amount)}원</span>
                       </div>
                     ))
