@@ -2643,10 +2643,10 @@ th,
     border-radius: 4px;
   }
   .mobile-card-deck > div {
-    flex: 0 0 240px !important;
+    flex: 0 0 210px !important;
     scroll-snap-align: start !important;
-    height: 145px !important;
-    padding: 0.9rem 1rem !important;
+    height: 116px !important;
+    padding: 0.65rem 0.8rem !important;
   }
 
   /* 모바일 비교 차트 폰트 축소 */
