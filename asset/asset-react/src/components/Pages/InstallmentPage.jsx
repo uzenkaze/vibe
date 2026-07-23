@@ -387,7 +387,7 @@ export default function InstallmentPage() {
       <CardManagementSection />
 
       {/* 카드 할부 상세 관리 테이블 */}
-      <div className="section-card" style={{ marginBottom: '1.5rem' }}>
+      <div className="section-card" style={{ marginBottom: '1.5rem', maxWidth: '100%', overflow: 'hidden' }}>
         <div className="section-card-header">
           <div className="section-card-title">
             <span className="section-dot" style={{ background: '#5B6BF8' }} />

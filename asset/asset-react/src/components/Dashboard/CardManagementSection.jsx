@@ -209,7 +209,7 @@ export default function CardManagementSection() {
   }
 
   return (
-    <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem' }}>
+    <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem', maxWidth: '100%', overflow: 'hidden' }}>
       {/* 헤더 */}
       <div className="section-card-header" style={{ marginBottom: '1rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border)' }}>
         <div className="section-card-title">

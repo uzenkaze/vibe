@@ -56,7 +56,7 @@ export default function CardMonthlySummarySection() {
   }, [cardMonthlySummaries]);
 
   return (
-    <div className="section-card" style={{ marginTop: '2rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
+    <div className="section-card" style={{ marginTop: '2rem', padding: '1.5rem', marginBottom: '1.5rem', maxWidth: '100%', overflow: 'hidden' }}>
       {/* 헤더 타이틀 및 추가 버튼 */}
       <div style={{
         display: 'flex',
