@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 import CustomDropdown from '../UI/CustomDropdown';
@@ -108,7 +108,19 @@ export default function CardManagementSection() {
     return sections.userCards;
   }, [sections.userCards]);
 
+  // 컴포넌트 마운트 시 실제 로컬스토리지에 현대카드 레거시 데이터 영구 제거
+  useEffect(() => {
+    const hasHyundai = sections.userCards && sections.userCards.some(c => c.brandKey === 'HYUNDAI');
+    if (!sections.userCards || sections.userCards.length === 0 || hasHyundai) {
+      persistSections({
+        ...sections,
+        userCards: DEFAULT_USER_CARDS
+      });
+    }
+  }, [sections, persistSections]);
+
   const installments = sections.installment || [];
+  const cardMonthlySummaries = sections.cardMonthlySummaries || [];
 
   // 지난달 연월 산출
   let prevYearVal = parseInt(year);
@@ -125,37 +137,59 @@ export default function CardManagementSection() {
   const prevMonths = prevYd.months || {};
   const prevMonthData = prevMonths[prevMonthUnpadded] || prevMonths[prevMonthPadded] || {};
   const prevSections = prevMonthData.sections || {};
-  const prevInstallments = prevSections.installment || [];
+  const prevCardMonthlySummaries = prevSections.cardMonthlySummaries || [];
 
-  // 이달 및 지난달 태그
-  const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
-  const prevTag = `${String(prevYearStr).substring(2)}.${prevMonthPadded}`;
-
-  // 이번 달 카드별 결제금액 집계
+  // 이번 달 카드별 결제금액 집계 (결제내역 기준)
   const thisMonthUsageMap = useMemo(() => {
     const map = {};
-    installments.forEach(r => {
-      const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
-      if (isExpired || Number(r.currentMonth) === 0) return;
-      const cardName = r.card || '국민';
-      const monthlyAmt = (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
-      map[cardName] = (map[cardName] || 0) + monthlyAmt;
+    cardMonthlySummaries.forEach(item => {
+      const cardName = item.cardName || '';
+      const amt = Number(item.currentMonthTotal) || 0;
+      
+      let foundKey = 'KB';
+      if (cardName.includes('신한')) foundKey = 'SHINHAN';
+      else if (cardName.includes('롯데')) foundKey = 'LOTTE';
+      else if (cardName.includes('농협') || cardName.includes('NH')) foundKey = 'NH';
+      else if (cardName.includes('국민') || cardName.includes('KB')) foundKey = 'KB';
+      else if (cardName.includes('현대')) foundKey = 'HYUNDAI';
+      else if (cardName.includes('삼성')) foundKey = 'SAMSUNG';
+      else if (cardName.includes('우리')) foundKey = 'WOORI';
+      else if (cardName.includes('하나')) foundKey = 'HANA';
+      else if (cardName.includes('카카오')) foundKey = 'KAKAO';
+      else if (cardName.includes('토스')) foundKey = 'TOSS';
+      
+      const shortName = CARD_BRANDS[foundKey]?.short || '국민';
+      map[shortName] = (map[shortName] || 0) + amt;
+      map[cardName] = (map[cardName] || 0) + amt;
     });
     return map;
-  }, [installments, currentTag]);
+  }, [cardMonthlySummaries]);
 
-  // 지난달 카드별 결제금액 집계
+  // 지난달 카드별 결제금액 집계 (결제내역 기준)
   const prevMonthUsageMap = useMemo(() => {
     const map = {};
-    prevInstallments.forEach(r => {
-      const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < prevTag) || (Number(r.currentMonth) > Number(r.totalMonths));
-      if (isExpired || Number(r.currentMonth) === 0) return;
-      const cardName = r.card || '국민';
-      const monthlyAmt = (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
-      map[cardName] = (map[cardName] || 0) + monthlyAmt;
+    prevCardMonthlySummaries.forEach(item => {
+      const cardName = item.cardName || '';
+      const amt = Number(item.currentMonthTotal) || 0;
+      
+      let foundKey = 'KB';
+      if (cardName.includes('신한')) foundKey = 'SHINHAN';
+      else if (cardName.includes('롯데')) foundKey = 'LOTTE';
+      else if (cardName.includes('농협') || cardName.includes('NH')) foundKey = 'NH';
+      else if (cardName.includes('국민') || cardName.includes('KB')) foundKey = 'KB';
+      else if (cardName.includes('현대')) foundKey = 'HYUNDAI';
+      else if (cardName.includes('삼성')) foundKey = 'SAMSUNG';
+      else if (cardName.includes('우리')) foundKey = 'WOORI';
+      else if (cardName.includes('하나')) foundKey = 'HANA';
+      else if (cardName.includes('카카오')) foundKey = 'KAKAO';
+      else if (cardName.includes('토스')) foundKey = 'TOSS';
+      
+      const shortName = CARD_BRANDS[foundKey]?.short || '국민';
+      map[shortName] = (map[shortName] || 0) + amt;
+      map[cardName] = (map[cardName] || 0) + amt;
     });
     return map;
-  }, [prevInstallments, prevTag]);
+  }, [prevCardMonthlySummaries]);
 
   // 모달 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
