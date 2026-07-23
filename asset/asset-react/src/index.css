@@ -430,7 +430,19 @@ html.dark .nav-item.active {
     animation: fadeIn 0.2s ease;
   }
   .hamburger-btn { display: flex !important; }
-  .topbar { padding: 0.6rem 1rem !important; gap: 0.5rem !important; }
+  .topbar { 
+    position: sticky !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 999 !important;
+    background: var(--surface) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+    padding: 0.6rem 1rem !important; 
+    gap: 0.5rem !important; 
+  }
   .topbar-title { display: none !important; }
   .topbar-center {
     position: static !important;
