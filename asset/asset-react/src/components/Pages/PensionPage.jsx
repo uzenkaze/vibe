@@ -589,16 +589,16 @@ export default function PensionPage() {
             </div>
 
             <div className="card-payments-table-container" style={{ padding: '0 0.25rem 1.25rem', overflowX: 'auto' }}>
-              <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '540px' }}>
+              <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '320px' }}>
                 <thead>
                   <tr>
-                    <th style={{ minWidth: 140, textAlign: 'left', padding: '0.6rem 0.4rem' }}>상품명</th>
+                    <th style={{ minWidth: 120, textAlign: 'left', padding: '0.6rem 0.4rem' }}>상품명</th>
                     <th style={{ width: 68, textAlign: 'center', padding: '0.6rem 0.2rem' }}>유형</th>
                     <th style={{ width: 85, textAlign: 'right', padding: '0.6rem 0.3rem' }}>납입원금</th>
                     <th style={{ width: 80, textAlign: 'right', padding: '0.6rem 0.3rem' }}>평가손익</th>
                     <th style={{ width: 65, textAlign: 'right', padding: '0.6rem 0.2rem' }}>수익률</th>
-                    <th style={{ width: 55, textAlign: 'right', padding: '0.6rem 0.2rem' }}>보유좌수</th>
-                    <th style={{ width: 68, textAlign: 'center', padding: '0.6rem 0.2rem' }}>신규일</th>
+                    <th className="pension-hide-mobile" style={{ width: 55, textAlign: 'right', padding: '0.6rem 0.2rem' }}>보유좌수</th>
+                    <th className="pension-hide-mobile" style={{ width: 68, textAlign: 'center', padding: '0.6rem 0.2rem' }}>신규일</th>
                     <th style={{ width: 40, textAlign: 'center', padding: '0.6rem 0.2rem' }}>작업</th>
                   </tr>
                 </thead>
@@ -614,8 +614,8 @@ export default function PensionPage() {
                       const isPositive = (Number(prod.profit) || 0) >= 0;
                       return (
                         <tr key={prod.id}>
-                          {/* 상품명 (모바일 140px 규격으로 유연화) */}
-                          <td style={{ minWidth: 140, padding: '0.3rem 0.3rem' }}>
+                          {/* 상품명 */}
+                          <td style={{ minWidth: 120, padding: '0.3rem 0.3rem' }}>
                             <input
                               type="text"
                               value={prod.name || ''}
@@ -625,7 +625,7 @@ export default function PensionPage() {
                             />
                           </td>
 
-                          {/* 유형 (TDF 포함, 잘림 완벽 예방) */}
+                          {/* 유형 */}
                           <td style={{ width: 68, padding: '0.3rem 0.1rem' }}>
                             <select
                               value={prod.type || 'ETF'}
@@ -642,7 +642,7 @@ export default function PensionPage() {
                             </select>
                           </td>
 
-                          {/* 납입원금 (잘림 완벽 예방) */}
+                          {/* 납입원금 */}
                           <td className="amount-cell" style={{ width: 85, padding: '0.3rem 0.2rem' }}>
                             <NumberInput
                               value={prod.principal || 0}
@@ -671,8 +671,8 @@ export default function PensionPage() {
                             {isPositive ? '+' : ''}{(Number(prod.returnRate) || 0).toFixed(1)}%
                           </td>
 
-                          {/* 보유좌수 */}
-                          <td style={{ width: 55, textAlign: 'right', padding: '0.3rem 0.2rem' }}>
+                          {/* 보유좌수 (모바일 숨김) */}
+                          <td className="pension-hide-mobile" style={{ width: 55, textAlign: 'right', padding: '0.3rem 0.2rem' }}>
                             <NumberInput
                               value={prod.quantity || 0}
                               onChange={(val) => handleUpdateRetirementProduct(prod.id, 'quantity', val)}
@@ -680,8 +680,8 @@ export default function PensionPage() {
                             />
                           </td>
 
-                          {/* 신규일 */}
-                          <td style={{ width: 68, padding: '0.3rem 0.1rem' }}>
+                          {/* 신규일 (모바일 숨김) */}
+                          <td className="pension-hide-mobile" style={{ width: 68, padding: '0.3rem 0.1rem' }}>
                             <input
                               type="text"
                               value={prod.startDate || ''}
