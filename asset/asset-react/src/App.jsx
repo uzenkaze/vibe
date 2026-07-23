@@ -178,10 +178,7 @@ function Dashboard() {
 
             {/* 할부 관리 */}
             {navSection === 'installment' && (
-              <>
-                <SummaryCards />
-                <InstallmentPage />
-              </>
+              <InstallmentPage />
             )}
 
             {/* 카드 납부 내역 */}
