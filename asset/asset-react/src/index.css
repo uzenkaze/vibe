@@ -2726,3 +2726,123 @@ th,
     display: inline !important;
   }
 }
+
+/* ==========================================================
+   갤럭시 탭S11 플러스 및 태블릿 최적화 (1024px 이하)
+   ========================================================== */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 0 !important;
+    padding-bottom: 75px !important;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: none !important;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-lg) !important;
+  }
+  .mobile-header-logo {
+    display: flex !important;
+  }
+  .topbar .hamburger-btn {
+    display: flex !important;
+  }
+  .page-container {
+    padding: 0.75rem 1rem !important;
+  }
+  
+  /* 대시보드 그리드 배치 2열로 유지하여 태블릿 화면 핏팅 */
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.85rem !important;
+  }
+  
+  /* 태블릿 폰트 및 여백 자동 비례 축소 */
+  .summary-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.6rem !important;
+  }
+  .summary-card-inner {
+    padding: 0.75rem 0.85rem !important;
+  }
+}
+
+/* ==========================================================
+   갤럭시 Z 플립 6 및 초소형/폴더블 스마트폰 최적화 (400px 이하)
+   ========================================================== */
+@media (max-width: 400px) {
+  /* Z플립 6 가로 폭에 핏팅되도록 기본 여백 제거 */
+  .page-container {
+    padding: 0.35rem !important;
+  }
+  
+  /* 대시보드 2열 그리드는 모바일에서 1열로 확실하게 핏 */
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.6rem !important;
+  }
+
+  /* BottomNav 버튼 6개 우겨넣기 폰트/간격 압축 */
+  .bottom-nav {
+    padding: 0.35rem 0.2rem !important;
+    gap: 2px !important;
+  }
+  .bottom-nav-item {
+    font-size: 0.62rem !important;
+    padding: 0.2rem 0.1rem !important;
+    min-width: 0 !important;
+  }
+  .bottom-nav-item svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  /* Z플립 세로 스크롤 최소화를 위한 요약 카드 세밀화 */
+  .summary-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.35rem !important;
+    margin-bottom: 0.6rem !important;
+  }
+  .summary-card-inner {
+    padding: 0.45rem 0.5rem !important;
+  }
+  .summary-card-label {
+    font-size: 0.62rem !important;
+  }
+  .summary-card-value {
+    font-size: 0.88rem !important;
+  }
+  
+  /* 카드 보유 3D 실물 플레이트 Z플립 크기 최적 피팅 */
+  .mobile-card-deck > div {
+    flex: 0 0 178px !important;
+    height: 98px !important;
+    padding: 0.5rem 0.65rem !important;
+  }
+  .mobile-card-deck > div div[style*="font-size: 1.15rem"],
+  .mobile-card-deck > div div[style*="font-size: 1.1rem"] {
+    font-size: 0.95rem !important;
+  }
+  
+  /* 테이블 입력 영역 Z플립 가로 잘림 방지용 크기 줄임 */
+  .data-table th {
+    font-size: 0.58rem !important;
+    padding: 0.3rem 0.15rem !important;
+  }
+  .data-table td {
+    font-size: 0.68rem !important;
+    padding: 0.25rem 0.15rem !important;
+  }
+  .data-table input, .data-table select {
+    font-size: 0.68rem !important;
+    padding: 0.1rem 0.1rem !important;
+  }
+  
+  /* 버튼 등 여백 압축 */
+  .btn {
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.68rem !important;
+  }
+}
