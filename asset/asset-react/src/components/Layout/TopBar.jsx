@@ -85,6 +85,10 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
   const years = getYearList();
   const months = getMonthList();
 
+  const handleMobileLogoClick = () => {
+    setNavSection('dashboard');
+  };
+
   return (
     <div className="topbar">
       <div className="topbar-left">
@@ -97,7 +101,19 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
           </svg>
         </button>
 
-        <h1 className="topbar-title">{PAGE_TITLES[navSection] || '대시보드'}</h1>
+        {/* Mobile Header Logo (Icon + Asset text) */}
+        <div className="mobile-header-logo" onClick={handleMobileLogoClick} title="대시보드로 이동">
+          <div className="sidebar-logo-icon" style={{ width: 28, height: 28, minWidth: 28 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2L20 12L12 22L4 12Z" />
+              <path d="M12 2V22" strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.6" />
+            </svg>
+          </div>
+          <span className="mobile-header-logo-text">Asset</span>
+        </div>
+
+        {/* Desktop Header Title */}
+        <h1 className="topbar-title desktop-only-title">{PAGE_TITLES[navSection] || '대시보드'}</h1>
       </div>
 
       <div className="topbar-center">

@@ -2468,9 +2468,34 @@ html.dark .top-volume-card-next {
   box-shadow: 0 14px 35px -8px rgba(0, 0, 0, 0.65), 0 0 20px rgba(245, 158, 11, 0.12);
 }
 
-/* 모바일 전용 컬럼 숨김 헬퍼 */
+/* 모바일 전용 컬럼 숨김 헬퍼 & 모바일 헤더 로고 표출 */
+.mobile-header-logo {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mobile-header-logo-text {
+  font-weight: 900;
+  font-size: 1.15rem;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1;
+}
+
 @media (max-width: 768px) {
   .pension-hide-mobile {
+    display: none !important;
+  }
+
+  .mobile-header-logo {
+    display: flex !important;
+  }
+
+  .desktop-only-title {
     display: none !important;
   }
 }
