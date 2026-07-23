@@ -2622,3 +2622,50 @@ th,
 .pension-mobile-table th {
   text-align: center !important;
 }
+
+/* 카드 내역 페이지 모바일 최적화 및 한화면 핏팅 */
+@media (max-width: 768px) {
+  /* 카드 보유 플레이트 모바일 가로 휠 스크롤 */
+  .mobile-card-deck {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 0.85rem !important;
+    padding-bottom: 0.5rem !important;
+    grid-template-columns: none !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-card-deck::-webkit-scrollbar {
+    height: 4px;
+  }
+  .mobile-card-deck::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  .mobile-card-deck > div {
+    flex: 0 0 240px !important;
+    scroll-snap-align: start !important;
+    height: 145px !important;
+    padding: 0.9rem 1rem !important;
+  }
+
+  /* 모바일 비교 차트 폰트 축소 */
+  .mobile-chart-section {
+    padding: 0.85rem !important;
+  }
+  
+  /* 테이블을 숨기고 모바일 컴팩트 카드 리스트로 노출 */
+  .desktop-installment-table {
+    display: none !important;
+  }
+  .mobile-installment-list {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* 데스크탑 뷰에서는 모바일 리스트 숨김 */
+.mobile-installment-list {
+  display: none;
+}

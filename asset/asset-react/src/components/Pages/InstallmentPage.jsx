@@ -403,7 +403,7 @@ export default function InstallmentPage() {
           <button className="btn btn-dark" onClick={handleAdd}>+ 할부 추가</button>
         </div>
 
-      <div style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
+      <div className="desktop-installment-table" style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
         <table className="data-table" style={{ minWidth: 1000 }}>
           <thead>
             <tr>
@@ -559,6 +559,121 @@ export default function InstallmentPage() {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* 모바일 버전: 간소화 카드 리스트 */}
+      <div className="mobile-installment-list" style={{ padding: '0 1rem 1rem' }}>
+        {installments.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+            등록된 할부 내역이 없습니다.
+          </div>
+        ) : (
+          installments.map(r => {
+            const currentTag = `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+            const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+            const monthlyAmt = (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
+
+            return (
+              <div 
+                key={r.id}
+                style={{
+                  background: 'var(--card)',
+                  border: '1px solid var(--card-border)',
+                  borderRadius: '12px',
+                  padding: '0.85rem 1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                  opacity: isExpired ? 0.7 : 1,
+                  position: 'relative'
+                }}
+              >
+                {/* 상단: 사용일 및 카드사 배지 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    📅 {r.date || '—'}
+                  </span>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <span style={{
+                      fontSize: '0.65rem',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      background: isExpired ? 'var(--border)' : 'var(--orange-dim)',
+                      color: isExpired ? 'var(--text-muted)' : 'var(--orange)',
+                      fontWeight: 700
+                    }}>
+                      {r.card}
+                    </span>
+                    {isExpired && (
+                      <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(120, 120, 120, 0.1)', color: 'var(--text-muted)', fontWeight: 700 }}>
+                        종료
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 중단: 사용처 및 총액 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {r.content || '할부 내역'}
+                  </div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>
+                    총 {formatKRW(r.amount)}원
+                  </div>
+                </div>
+
+                {/* 하단: 회차 / 이달 청구 금액 / 잔액 */}
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(3, 1fr)', 
+                  gap: '4px',
+                  background: 'var(--bg)',
+                  padding: '6px 8px',
+                  borderRadius: '6px',
+                  fontSize: '0.72rem',
+                  marginTop: '4px'
+                }}>
+                  <div>
+                    <div style={{ color: 'var(--text-muted)', marginBottom: '2px' }}>회차</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                      {r.currentMonth}/{r.totalMonths}회
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ color: 'var(--text-muted)', marginBottom: '2px' }}>이달 청구</div>
+                    <div style={{ fontWeight: 800, color: isExpired ? 'var(--text-muted)' : 'var(--teal)' }}>
+                      {isExpired ? '0원' : `${formatKRW(monthlyAmt)}원`}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ color: 'var(--text-muted)', marginBottom: '2px' }}>남은 잔액</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                      {formatKRW(r.remAmount)}원
+                    </div>
+                  </div>
+                </div>
+
+                {/* 관리 버튼 */}
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '6px' }}>
+                  <button 
+                    className="btn btn-ghost btn-xs"
+                    style={{ fontSize: '0.7rem', padding: '3px 8px' }}
+                    onClick={() => handleDetail(r.id)}
+                  >
+                    상세보기
+                  </button>
+                  <button 
+                    className="btn btn-dark btn-xs"
+                    style={{ fontSize: '0.7rem', padding: '3px 8px', color: 'var(--coral)' }}
+                    onClick={() => handleDelete(r.id)}
+                  >
+                    삭제
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
 

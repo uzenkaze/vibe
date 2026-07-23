@@ -204,12 +204,15 @@ export default function CardManagementSection() {
       </div>
 
       {/* 3D 실물 카드 슬라이더 / 그리드 영역 */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-        gap: '1.25rem',
-        marginBottom: '2rem'
-      }}>
+      <div 
+        className="mobile-card-deck"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '2rem'
+        }}
+      >
         {userCards.map(card => {
           const brand = CARD_BRANDS[card.brandKey] || CARD_BRANDS.KB;
           const shortName = brand.short;
