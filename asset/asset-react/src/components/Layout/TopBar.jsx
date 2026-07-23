@@ -101,15 +101,14 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
           </svg>
         </button>
 
-        {/* Mobile Header Logo (Icon + Asset text) */}
+        {/* Mobile Header Logo (Icon Only for compact view) */}
         <div className="mobile-header-logo" onClick={handleMobileLogoClick} title="대시보드로 이동">
-          <div className="sidebar-logo-icon" style={{ width: 28, height: 28, minWidth: 28 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="sidebar-logo-icon" style={{ width: 26, height: 26, minWidth: 26 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L20 12L12 22L4 12Z" />
               <path d="M12 2V22" strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.6" />
             </svg>
           </div>
-          <span className="mobile-header-logo-text">Asset</span>
         </div>
 
         {/* Desktop Header Title */}
@@ -134,7 +133,7 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
           />
         </div>
 
-        {/* Actions (PC Center) */}
+        {/* Actions (Compact list for both PC & Mobile) */}
         <div className="topbar-actions">
           {/* Save */}
           <button className="topbar-btn save-btn" onClick={onSaveSync} title="저장 및 동기화" aria-label="저장">
@@ -146,14 +145,14 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
           </button>
 
           {/* GitHub */}
-          <button className={`topbar-btn nav-action-btn github-sync-btn ${isGithubConnected ? 'connected' : ''}`} onClick={onGithubModal} title="GitHub 동기화" aria-label="GitHub">
+          <button className={`topbar-btn github-sync-btn ${isGithubConnected ? 'connected' : ''}`} onClick={onGithubModal} title="GitHub 동기화" aria-label="GitHub">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
             </svg>
           </button>
 
-          {/* Data */}
-          <button className="topbar-btn nav-action-btn" onClick={onDataModal} title="데이터 관리" aria-label="데이터">
+          {/* Data Management */}
+          <button className="topbar-btn data-modal-btn" onClick={onDataModal} title="데이터 관리" aria-label="데이터">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <ellipse cx="12" cy="5" rx="9" ry="3" />
               <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
@@ -162,7 +161,7 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
           </button>
 
           {/* Manual */}
-          <button className="topbar-btn nav-action-btn" onClick={onManual} title="사용 매뉴얼" aria-label="매뉴얼">
+          <button className="topbar-btn manual-btn" onClick={onManual} title="사용 매뉴얼" aria-label="매뉴얼">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
