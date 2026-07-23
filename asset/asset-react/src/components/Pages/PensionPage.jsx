@@ -288,33 +288,41 @@ export default function PensionPage() {
               </div>
             </div>
 
-            {/* 진행률 바 */}
-            {totalMonths > 0 && (
-              <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 99, overflow: 'hidden', height: 10, marginBottom: '0.75rem' }}>
-                <div style={{
-                  width: `${Math.min(ratio * 100, 100)}%`,
-                  height: '100%',
-                  background: 'linear-gradient(90deg, #2DC9A0, #3DDBB1)',
-                  borderRadius: 99,
-                  transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
-                  boxShadow: '0 0 10px rgba(45,201,160,0.5)',
-                }} />
+            {/* ── 연금 개시 시기 계기판 게이지 (Yellow Tick Gauge Style) ── */}
+            <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px dashed rgba(255,255,255,0.15)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }} />
+                  연금 개시 시기
+                </span>
+                <span style={{ color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800 }}>
+                  {formData.startDate ? `${formData.startDate} (65세 개시)` : '2039년 03월 (65세부터 수령)'}
+                </span>
               </div>
-            )}
-            {totalMonths > 0 ? (
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.5)', fontSize: '0.78rem', fontWeight: 600 }}>
-                <span>총 {totalMonths}개월 중 {paidMonths}개월 납부</span>
-                <span style={{ color: '#2DC9A0', fontWeight: 700 }}>{pct}%</span>
+
+              {/* Yellow Tick Gauge 게이지 바 */}
+              <div className="yellow-tick-gauge-track" style={{ height: '12px', background: 'rgba(0, 0, 0, 0.4)' }}>
+                <div 
+                  className="yellow-tick-gauge-fill-income"
+                  style={{
+                    width: totalMonths > 0 ? `${Math.min(ratio * 100, 100)}%` : '100%'
+                  }} 
+                />
               </div>
-            ) : (
-              <div style={{
-                background: 'rgba(255,255,255,0.07)', borderRadius: 10,
-                padding: '0.75rem 1rem', fontSize: '0.78rem',
-                color: 'rgba(255,255,255,0.5)', lineHeight: 1.6,
-              }}>
-                ※ 납입 기간 입력 시 실시간 진행률 및 예상 수령액이 계산됩니다.
-              </div>
-            )}
+
+              {/* 하단 진행 달성률 서브 라벨 */}
+              {totalMonths > 0 ? (
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', fontWeight: 700, marginTop: '0.5rem' }}>
+                  <span>총 {totalMonths}개월 중 {paidMonths}개월 납부 완료</span>
+                  <span style={{ color: '#f59e0b', fontWeight: 800 }}>납부 진행률 {pct}%</span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.5)', fontSize: '0.72rem', fontWeight: 600, marginTop: '0.4rem' }}>
+                  <span>하단 정보 입력 시 진행률 및 수령 시기가 연동됩니다</span>
+                  <span style={{ color: '#f59e0b', fontWeight: 700 }}>65세 수령</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ── 인포 카드 그리드 ── */}
