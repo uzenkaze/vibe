@@ -357,7 +357,7 @@ export default function PensionPage() {
                   연금 개시 시기
                 </span>
                 <span style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 900 }}>
-                  {pensionAgeCalc.startDateStr} (만 65세 수령 개시)
+                  연금 개시 {pensionAgeCalc.startDateStr} (만 65세)
                 </span>
               </div>
 
@@ -371,23 +371,20 @@ export default function PensionPage() {
                 />
               </div>
 
-              {/* 하단 정밀 남은 시간 서브 카운터 (SVG 벡터 아이콘 적용) */}
+              {/* 하단 정밀 남은 시간 서브 카운터 */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 700, marginTop: '0.6rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-primary)' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                   </svg>
-                  <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.85rem' }}>
-                    {pensionAgeCalc.isPayoutStarted ? '연금 수령 대상' : '수령 개시까지 남은 기간:'}
-                  </span>
-                  <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.9rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.85rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                     {pensionAgeCalc.isPayoutStarted 
                       ? '만 65세 수령 개시' 
-                      : `${pensionAgeCalc.remainingTotalMonths}개월 (${pensionAgeCalc.remainingYears}년 ${pensionAgeCalc.remainingRemMonths}개월 남음)`}
+                      : `수령개시 ${pensionAgeCalc.remainingTotalMonths}개월 (${pensionAgeCalc.remainingYears}년 ${pensionAgeCalc.remainingRemMonths}개월 남음)`}
                   </span>
                 </div>
                 <div style={{ color: 'var(--text-muted)', fontWeight: 700 }}>
-                  준비 진행률 <span style={{ color: '#f59e0b', fontWeight: 900 }}>{pensionAgeCalc.progressPct}%</span> (총 {pensionAgeCalc.totalCareerMonths}개월 중 {pensionAgeCalc.elapsedCareerMonths}개월 경과)
+                  진행률 <span style={{ color: '#f59e0b', fontWeight: 900 }}>{pensionAgeCalc.progressPct}%</span> ({pensionAgeCalc.totalCareerMonths}개월 중 {pensionAgeCalc.elapsedCareerMonths}개월 경과)
                 </div>
               </div>
             </div>
@@ -467,14 +464,13 @@ export default function PensionPage() {
             </div>
 
             <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {/* 출생일 (연도.월) */}
+              {/* 출생일 */}
               <div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
                     <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
                   </svg>
-                  <span>🎂 출생일 (연도.월)</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>(입력 시 만 65세 수령 시기 및 게이지가 자동 계산됩니다)</span>
+                  <span>🎂 출생일</span>
                 </label>
                 <input
                   style={{
@@ -490,6 +486,9 @@ export default function PensionPage() {
                   value={formData.birthDate || '1974.02'}
                   onChange={e => handleNationalChange('birthDate', e.target.value)}
                 />
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '0.4rem', textAlign: 'left' }}>
+                  (입력 시 만 65세 수령 시기 및 게이지가 자동 계산됩니다)
+                </div>
               </div>
 
               {/* 납입 기간 */}
@@ -609,28 +608,28 @@ export default function PensionPage() {
                   {formatKRW(retirementSummary.totalEvaluation)} <span style={{ fontSize: '1rem', fontWeight: 700 }}>원</span>
                 </div>
                 
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <div className="retirement-kpi-group" style={{ display: 'flex', gap: '0.8rem', marginTop: '1rem' }}>
                   <div>
                     <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>납입 원금</span>
-                    <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                      {formatKRW(retirementSummary.totalPrincipal)}원
+                    <span className="retirement-kpi-val" style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      {formatKRW(retirementSummary.totalPrincipal)}
                     </span>
                   </div>
-                  <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '1rem' }}>
+                  <div className="retirement-kpi-border" style={{ borderLeft: '1px solid var(--border)', paddingLeft: '0.8rem' }}>
                     <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>평가 손익</span>
-                    <span style={{
-                      fontSize: '0.95rem',
+                    <span className="retirement-kpi-val" style={{
+                      fontSize: '0.9rem',
                       fontWeight: 800,
                       color: retirementSummary.totalProfit >= 0 ? '#10b981' : '#ef4444',
                       fontFamily: "'Plus Jakarta Sans', sans-serif"
                     }}>
-                      {retirementSummary.totalProfit >= 0 ? '+' : ''}{formatKRW(retirementSummary.totalProfit)}원
+                      {retirementSummary.totalProfit >= 0 ? '+' : ''}{formatKRW(retirementSummary.totalProfit)}
                     </span>
                   </div>
-                  <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '1rem' }}>
+                  <div className="retirement-kpi-border" style={{ borderLeft: '1px solid var(--border)', paddingLeft: '0.8rem' }}>
                     <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>전체 수익률</span>
-                    <span style={{
-                      fontSize: '0.95rem',
+                    <span className="retirement-kpi-val" style={{
+                      fontSize: '0.9rem',
                       fontWeight: 800,
                       color: retirementSummary.overallReturnRate >= 0 ? '#10b981' : '#ef4444',
                       fontFamily: "'Plus Jakarta Sans', sans-serif"
@@ -690,17 +689,17 @@ export default function PensionPage() {
             </div>
 
             <div className="card-payments-table-container" style={{ padding: '0 0.25rem 1.25rem', overflowX: 'auto' }}>
-              <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '320px' }}>
+              <table className="data-table card-payments-compact-table pension-mobile-table" style={{ width: '100%', minWidth: '280px' }}>
                 <thead>
                   <tr>
-                    <th style={{ minWidth: 120, textAlign: 'left', padding: '0.6rem 0.4rem' }}>상품명</th>
-                    <th style={{ width: 68, textAlign: 'center', padding: '0.6rem 0.2rem' }}>유형</th>
-                    <th style={{ width: 85, textAlign: 'right', padding: '0.6rem 0.3rem' }}>납입원금</th>
-                    <th style={{ width: 80, textAlign: 'right', padding: '0.6rem 0.3rem' }}>평가손익</th>
-                    <th style={{ width: 65, textAlign: 'right', padding: '0.6rem 0.2rem' }}>수익률</th>
-                    <th className="pension-hide-mobile" style={{ width: 55, textAlign: 'right', padding: '0.6rem 0.2rem' }}>보유좌수</th>
-                    <th className="pension-hide-mobile" style={{ width: 68, textAlign: 'center', padding: '0.6rem 0.2rem' }}>신규일</th>
-                    <th style={{ width: 40, textAlign: 'center', padding: '0.6rem 0.2rem' }}>작업</th>
+                    <th style={{ minWidth: 96, textAlign: 'left', padding: '0.5rem 0.2rem' }}>상품명</th>
+                    <th style={{ width: 56, textAlign: 'center', padding: '0.5rem 0.1rem' }}>유형</th>
+                    <th style={{ width: 70, textAlign: 'right', padding: '0.5rem 0.2rem' }}>납입원금</th>
+                    <th style={{ width: 66, textAlign: 'right', padding: '0.5rem 0.2rem' }}>평가손익</th>
+                    <th style={{ width: 50, textAlign: 'right', padding: '0.5rem 0.1rem' }}>수익률</th>
+                    <th className="pension-hide-mobile" style={{ width: 50, textAlign: 'right', padding: '0.5rem 0.1rem' }}>보유좌수</th>
+                    <th className="pension-hide-mobile" style={{ width: 62, textAlign: 'center', padding: '0.5rem 0.1rem' }}>신규일</th>
+                    <th style={{ width: 32, textAlign: 'center', padding: '0.5rem 0.1rem' }}>작업</th>
                   </tr>
                 </thead>
                 <tbody>

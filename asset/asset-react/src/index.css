@@ -2555,6 +2555,21 @@ html.dark .top-volume-card-next {
   .data-modal-footer {
     padding: 0.75rem 1rem !important;
   }
+
+  /* 퇴직연금 요약 KPI & 테이블 모바일 한 화면 핏팅 */
+  .retirement-kpi-group {
+    gap: 0.35rem !important;
+  }
+  .retirement-kpi-border {
+    padding-left: 0.35rem !important;
+  }
+  .retirement-kpi-val {
+    font-size: 0.78rem !important;
+  }
+  .pension-mobile-table th, .pension-mobile-table td {
+    padding: 0.35rem 0.15rem !important;
+    font-size: 0.76rem !important;
+  }
 }
 
 /* 모바일 bottom-nav 스크롤 트랜지션 */
