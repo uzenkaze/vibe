@@ -12,6 +12,7 @@ export default function PensionPage() {
   const [formData, setFormData] = useState(() => {
     const p = getCurrentPension();
     return {
+      birthDate: '1974.02',
       beforeTax: '',
       afterTax: '',
       startDate: '',
@@ -25,6 +26,7 @@ export default function PensionPage() {
   useEffect(() => {
     const p = getCurrentPension();
     setFormData({
+      birthDate: '1974.02',
       beforeTax: '',
       afterTax: '',
       startDate: '',
@@ -34,6 +36,60 @@ export default function PensionPage() {
       ...p
     });
   }, [getCurrentPension, year, month]);
+
+  // --- 국민연금 출생일 기준 65세 수령 개시 동적 연산 ---
+  const pensionAgeCalc = useMemo(() => {
+    const rawBirth = formData.birthDate || '1974.02';
+    const match = String(rawBirth).match(/(\d{4})[.]?(\d{1,2})/);
+    let birthY = 1974, birthM = 2;
+    if (match) {
+      birthY = parseInt(match[1], 10);
+      birthM = parseInt(match[2], 10);
+    }
+
+    const startAge65Y = birthY + 65;
+    const startAge65M = birthM;
+    const startDateStr = `${startAge65Y}년 ${String(startAge65M).padStart(2, '0')}월`;
+
+    const curY = 2026;
+    const curM = 7;
+
+    const remainingTotalMonths = (startAge65Y - curY) * 12 + (startAge65M - curM);
+    const isPayoutStarted = remainingTotalMonths <= 0;
+
+    let remainingYears = 0;
+    let remainingRemMonths = 0;
+    if (!isPayoutStarted) {
+      remainingYears = Math.floor(remainingTotalMonths / 12);
+      remainingRemMonths = remainingTotalMonths % 12;
+    }
+
+    const startAge18Y = birthY + 18;
+    const totalCareerMonths = (startAge65Y - startAge18Y) * 12;
+    const elapsedCareerMonths = (curY - startAge18Y) * 12 + (curM - birthM);
+
+    let progressPct = 0;
+    if (isPayoutStarted) {
+      progressPct = 100;
+    } else {
+      progressPct = Math.min(Math.max((elapsedCareerMonths / totalCareerMonths) * 100, 0), 100).toFixed(1);
+    }
+
+    return {
+      birthY,
+      birthM,
+      startAge65Y,
+      startAge65M,
+      startDateStr,
+      remainingTotalMonths,
+      remainingYears,
+      remainingRemMonths,
+      isPayoutStarted,
+      totalCareerMonths,
+      elapsedCareerMonths,
+      progressPct
+    };
+  }, [formData.birthDate]);
 
   // --- 국민연금 연산 ---
   const { totalMonths, paidMonths, currentAmount, ratio } = useMemo(() => {
@@ -284,24 +340,24 @@ export default function PensionPage() {
               </div>
             </div>
 
-            {/* ── 연금 개시 시기 계기판 게이지 (1974년 2월생 기준 2039년 2월 수령 연산) ── */}
+            {/* ── 연금 개시 시기 계기판 게이지 (동적 출생연월 연산 적용) ── */}
             <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px dashed var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', fontWeight: 800, marginBottom: '0.6rem' }}>
                 <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 10px #f59e0b' }} />
-                  연금 개시 시기 (1974년 02월생 기준)
+                  연금 개시 시기
                 </span>
                 <span style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 900 }}>
-                  2039년 02월 (만 65세 수령 개시)
+                  {pensionAgeCalc.startDateStr} (만 65세 수령 개시)
                 </span>
               </div>
 
-              {/* Yellow Tick Gauge 게이지 바 (18세 가입 ~ 65세 수령 564개월 중 413개월 경과 = 73.2% 달성) */}
+              {/* Yellow Tick Gauge 게이지 바 */}
               <div className="yellow-tick-gauge-track" style={{ height: '14px' }}>
                 <div 
                   className="yellow-tick-gauge-fill-income"
                   style={{
-                    width: '73.2%'
+                    width: `${pensionAgeCalc.progressPct}%`
                   }} 
                 />
               </div>
@@ -309,13 +365,17 @@ export default function PensionPage() {
               {/* 하단 정밀 남은 시간 서브 카운터 */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 700, marginTop: '0.6rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-primary)' }}>
-                  <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.85rem' }}>⏳ 수령 개시까지 남은 기간:</span>
+                  <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.85rem' }}>
+                    {pensionAgeCalc.isPayoutStarted ? '🎉 연금 수령 대상' : '⏳ 수령 개시까지 남은 기간:'}
+                  </span>
                   <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.9rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    151개월 (12년 7개월 남음)
+                    {pensionAgeCalc.isPayoutStarted 
+                      ? '만 65세 수령 개시' 
+                      : `${pensionAgeCalc.remainingTotalMonths}개월 (${pensionAgeCalc.remainingYears}년 ${pensionAgeCalc.remainingRemMonths}개월 남음)`}
                   </span>
                 </div>
                 <div style={{ color: 'var(--text-muted)', fontWeight: 700 }}>
-                  준비 진행률 <span style={{ color: '#f59e0b', fontWeight: 900 }}>73.2%</span> (총 564개월 중 413개월 경과)
+                  준비 진행률 <span style={{ color: '#f59e0b', fontWeight: 900 }}>{pensionAgeCalc.progressPct}%</span> (총 {pensionAgeCalc.totalCareerMonths}개월 중 {pensionAgeCalc.elapsedCareerMonths}개월 경과)
                 </div>
               </div>
             </div>
@@ -395,6 +455,31 @@ export default function PensionPage() {
             </div>
 
             <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {/* 출생일 (연도.월) */}
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
+                    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                  </svg>
+                  <span>🎂 출생일 (연도.월)</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>(입력 시 만 65세 수령 시기 및 게이지가 자동 계산됩니다)</span>
+                </label>
+                <input
+                  style={{
+                    width: '100%', background: 'var(--card)', border: '1.5px solid rgba(245, 158, 11, 0.25)',
+                    color: 'var(--text-primary)', borderRadius: 'var(--radius-sm)',
+                    padding: '0.825rem 1rem', fontSize: '0.95rem', fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontWeight: 800, outline: 'none', transition: 'all 0.2s ease',
+                    boxSizing: 'border-box', textAlign: 'center',
+                  }}
+                  onFocus={e => { e.target.style.borderColor = '#f59e0b'; e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.15)'; }}
+                  onBlur={e => { e.target.style.borderColor = 'rgba(245, 158, 11, 0.25)'; e.target.style.boxShadow = 'none'; }}
+                  placeholder="예: 1974.02"
+                  value={formData.birthDate || '1974.02'}
+                  onChange={e => handleNationalChange('birthDate', e.target.value)}
+                />
+              </div>
+
               {/* 납입 기간 */}
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
