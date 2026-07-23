@@ -941,22 +941,34 @@
     font-size: 0.95rem !important;
   }
   
-  /* 번호판 슬림 콤팩트화 */
+  /* 번호판 슬림 콤팩트화 극대화 */
   .realPlateBox { 
-    padding: 2px 8px !important; 
-    gap: 5px !important; 
-    border-radius: 6px !important;
+    padding: 1px 4px !important; 
+    gap: 3px !important; 
+    border-radius: 4px !important;
     border-width: 1px !important;
   }
   
   .plateText { 
-    font-size: 0.9rem !important; 
-    letter-spacing: 1.2px !important;
+    font-size: 0.72rem !important; 
+    letter-spacing: 0.5px !important;
   }
   
   .plateScrew {
-    width: 4px !important;
-    height: 4px !important;
+    width: 2px !important;
+    height: 2px !important;
+  }
+
+  /* 모바일 스펙 배지 가로 배치 영역 및 칩 축소 */
+  .carSpecBadgesMobileRow {
+    gap: 2px !important;
+    margin-bottom: 2px !important;
+  }
+  
+  .mobileSpecChip {
+    padding: 1.5px 4px !important;
+    font-size: 8.5px !important;
+    border-radius: 8px !important;
   }
   
   /* 차량 이미지 100% 한눈에 보임 처리 */
@@ -1071,6 +1083,34 @@
   }
   .specCardVal {
     font-size: 0.74rem !important;
+  }
+
+  /* 초소형 번호판 및 스펙 칩 극소형화 */
+  .realPlateBox { 
+    padding: 0.8px 3px !important; 
+    gap: 2px !important; 
+    border-radius: 3px !important;
+  }
+  
+  .plateText { 
+    font-size: 0.64rem !important; 
+    letter-spacing: 0.3px !important;
+  }
+  
+  .plateScrew {
+    width: 1.8px !important;
+    height: 1.8px !important;
+  }
+
+  .carSpecBadgesMobileRow {
+    gap: 1.5px !important;
+    margin-bottom: 1px !important;
+  }
+  
+  .mobileSpecChip {
+    padding: 1px 3px !important;
+    font-size: 7.5px !important;
+    border-radius: 6px !important;
   }
 
   .repairSummaryItem { padding: 8px 8px !important; gap: 3px !important; }
@@ -1696,4 +1736,6 @@
   background: #e2e8f0 !important;
   color: #2563eb !important;
 }
+
+/* cache busting index css hash update: 2026-07-24-0852 */
 
