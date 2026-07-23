@@ -166,6 +166,30 @@
   margin-bottom: 10px;
 }
 
+/* 모바일: 스펙 값만 chip으로 가로 배치 */
+.carSpecBadgesMobileRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.mobileSpecChip {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18) 0%, rgba(99, 102, 241, 0.15) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #93c5fd;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 .profileCarImageWrap {
   width: 100%;
   max-width: 320px;

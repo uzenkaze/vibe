@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import styles from './Dashboard.module.css'
 import { getMaintenanceStatus } from '../utils/carMaintenance'
 import MaintenanceRegisterModal from '../components/MaintenanceRegisterModal'
@@ -6,8 +6,8 @@ import MaintenanceHistoryModal from '../components/MaintenanceHistoryModal'
 import DiagnosticFilterModal from '../components/DiagnosticFilterModal'
 
 function BrandLogo({ maker, isGuest }) {
-  if (isGuest || (maker && (maker.includes('테슬라') || maker.includes('TESLA')))) {
-    // Icons8 스타일 테슬라 시그니처 쉴드 엠블럼 SVG
+  if (isGuest || (maker && (maker.includes('?뚯뒳??) || maker.includes('TESLA')))) {
+    // Icons8 ?ㅽ????뚯뒳???쒓렇?덉쿂 ?대뱶 ?좊툝??SVG
     return (
       <svg
         role="img"
@@ -15,7 +15,7 @@ function BrandLogo({ maker, isGuest }) {
         xmlns="http://www.w3.org/2000/svg"
         width="36"
         height="36"
-        title="테슬라 (Tesla)"
+        title="?뚯뒳??(Tesla)"
       >
         <path
           d="M25 5C17.5 5 11 6.8 6 9.8L8.2 13.8C12.5 11.2 18.2 9.8 25 9.8C31.8 9.8 37.5 11.2 41.8 13.8L44 9.8C39 6.8 32.5 5 25 5Z"
@@ -35,8 +35,8 @@ function BrandLogo({ maker, isGuest }) {
 
   const m = (maker || '').toUpperCase()
 
-  if (m.includes('기아') || m.includes('KIA')) {
-    // 공식 KIA 2021 리브랜딩 로고
+  if (m.includes('湲곗븘') || m.includes('KIA')) {
+    // 怨듭떇 KIA 2021 由щ툕?쒕뵫 濡쒓퀬
     return (
       <svg
         role="img"
@@ -46,26 +46,26 @@ function BrandLogo({ maker, isGuest }) {
         height="32"
         fill="currentColor"
         className={styles.kiaLogoSvg}
-        title="기아 (KIA)"
+        title="湲곗븘 (KIA)"
       >
         <path d="M13.923 14.175c0 .046.015.072.041.072a.123.123 0 0 0 .058-.024l7.48-4.854a.72.72 0 0 1 .432-.13h1.644c.252 0 .422.168.422.42v3.139c0 .38-.084.6-.42.801l-1.994 1.2a.137.137 0 0 1-.067.024c-.024 0-.048-.019-.048-.088v-3.663c0-.043-.012-.071-.041-.071a.113.113 0 0 0-.058.024l-5.466 3.551a.733.733 0 0 1-.42.127h-3.624c-.254 0-.422-.168-.422-.422V9.757c0-.033-.015-.064-.044-.064a.118.118 0 0 0-.057.024L7.732 11.88c-.036.024-.046.041-.046.058 0 .014.008.029.032.055l2.577 2.575c.034.034.058.06.058.089 0 .024-.039.043-.084.043H7.94c-.183 0-.324-.026-.423-.125l-1.562-1.56a.067.067 0 0 0-.048-.024.103.103 0 0 0-.048.015l-2.61 1.57a.72.72 0 0 1-.423.122H.425C.168 14.7 0 14.53 0 14.279v-3.08c0-.38.084-.6.422-.8L2.43 9.192a.103.103 0 0 1 .052-.016c.032 0 .048.03.048.1V13.4c0 .043.01.063.041.063a.144.144 0 0 0 .06-.024L9.407 9.36a.733.733 0 0 1 .446-.124h3.648c.252 0 .422.168.422.42l-.002 4.518z" />
       </svg>
     )
   }
 
-  if (m.includes('현대') || m.includes('HYUNDAI')) {
-    // 현대 (HYUNDAI) 이발 엠블럼 SVG
+  if (m.includes('?꾨?') || m.includes('HYUNDAI')) {
+    // ?꾨? (HYUNDAI) ?대컻 ?좊툝??SVG
     return (
-      <svg width="56" height="28" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" title="현대자동차">
+      <svg width="56" height="28" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" title="?꾨??먮룞李?>
         <ellipse cx="50" cy="25" rx="46" ry="20" stroke="currentColor" strokeWidth="4.5"/>
         <path d="M30 38L42 12M70 38L58 12M36 25H64" stroke="currentColor" strokeWidth="5.5" strokeLinecap="round"/>
       </svg>
     )
   }
 
-  if (m.includes('제네시스') || m.includes('GENESIS')) {
+  if (m.includes('?쒕꽕?쒖뒪') || m.includes('GENESIS')) {
     return (
-      <svg width="70" height="24" viewBox="0 0 120 40" fill="currentColor" title="제네시스 (GENESIS)">
+      <svg width="70" height="24" viewBox="0 0 120 40" fill="currentColor" title="?쒕꽕?쒖뒪 (GENESIS)">
         <path d="M60 10L68 25H52L60 10ZM10 20L50 22L10 24ZM110 20L70 22L110 24Z"/>
         <circle cx="60" cy="25" r="8" fill="none" stroke="currentColor" strokeWidth="2"/>
       </svg>
@@ -84,18 +84,18 @@ function BrandLogo({ maker, isGuest }) {
     )
   }
 
-  if (m.includes('벤츠') || m.includes('BENZ') || m.includes('MERCEDES')) {
+  if (m.includes('踰ㅼ툩') || m.includes('BENZ') || m.includes('MERCEDES')) {
     return (
-      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" title="메르세데스-벤츠">
+      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" title="硫붾Ⅴ?몃뜲??踰ㅼ툩">
         <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2.5"/>
         <path d="M20 4L24 18L35 27L20 22L5 27L16 18L20 4Z" fill="currentColor"/>
       </svg>
     )
   }
 
-  if (m.includes('아우디') || m.includes('AUDI')) {
+  if (m.includes('?꾩슦??) || m.includes('AUDI')) {
     return (
-      <svg width="65" height="24" viewBox="0 0 110 40" fill="none" stroke="currentColor" strokeWidth="3" title="아우디 (AUDI)">
+      <svg width="65" height="24" viewBox="0 0 110 40" fill="none" stroke="currentColor" strokeWidth="3" title="?꾩슦??(AUDI)">
         <circle cx="25" cy="20" r="14"/>
         <circle cx="45" cy="20" r="14"/>
         <circle cx="65" cy="20" r="14"/>
@@ -121,8 +121,8 @@ function getDdayLabel(endDate) {
   now.setHours(0,0,0,0)
   d.setHours(0,0,0,0)
   const diff = Math.ceil((d - now) / (1000*60*60*24))
-  if (diff < 0) return { text: `${Math.abs(diff)}일 지났어요`, color: 'var(--accent-red)' }
-  if (diff === 0) return { text: '오늘 만료!', color: 'var(--accent-red)' }
+  if (diff < 0) return { text: `${Math.abs(diff)}??吏?ъ뼱??, color: 'var(--accent-red)' }
+  if (diff === 0) return { text: '?ㅻ뒛 留뚮즺!', color: 'var(--accent-red)' }
   if (diff <= 30) return { text: `D-${diff}`, color: 'var(--accent-orange)' }
   return { text: `D-${diff}`, color: 'var(--accent-green)' }
 }
@@ -136,8 +136,8 @@ function getInspRemaining(start, end) {
   const months = Math.floor(Math.abs(rem) / 30)
   const days = Math.abs(rem) % 30
   const label = rem < 0
-    ? `${months > 0 ? months + '개월 ' : ''}${days}일 지났어요`
-    : `${months > 0 ? months + '개월 ' : ''}${days}일 남음`
+    ? `${months > 0 ? months + '媛쒖썡 ' : ''}${days}??吏?ъ뼱??
+    : `${months > 0 ? months + '媛쒖썡 ' : ''}${days}???⑥쓬`
   return { rem, pct, label, expired: rem < 0 }
 }
 
@@ -204,15 +204,8 @@ export default function Dashboard({
     try { return localStorage.getItem('carrep_user_car_photo') || null } catch { return null }
   })
   const [guestTeslaPhoto, setGuestTeslaPhoto] = useState(null)
-  // 모바일 판별 (768px 이하)
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth <= 768)
-    window.addEventListener('resize', handler)
-    return () => window.removeEventListener('resize', handler)
-  }, [])
 
-  // 비로그인 테슬라 이미지도 모하비 차량처럼 흰색 배경을 제거하여 차량만 투명하게 렌더링
+  // 鍮꾨줈洹몄씤 ?뚯뒳???대?吏??紐⑦븯鍮?李⑤웾泥섎읆 ?곗깋 諛곌꼍???쒓굅?섏뿬 李⑤웾留??щ챸?섍쾶 ?뚮뜑留?
   useEffect(() => {
     if (!currentUser) {
       const getImagePath = (path) => {
@@ -223,7 +216,7 @@ export default function Dashboard({
       }
       const teslaImgUrl = getImagePath('/tesla_front.jpg')
 
-      // 이미지를 캔버스에 로드하여 흰색 배경 제거 (투명화)
+      // ?대?吏瑜?罹붾쾭?ㅼ뿉 濡쒕뱶?섏뿬 ?곗깋 諛곌꼍 ?쒓굅 (?щ챸??
       const img = new Image()
       img.crossOrigin = 'anonymous'
       img.onload = () => {
@@ -238,7 +231,7 @@ export default function Dashboard({
 
           for (let i = 0; i < data.length; i += 4) {
             const r = data[i], g = data[i + 1], b = data[i + 2]
-            // 밝은 흰색/연회색 배경 추출하여 알파 투명도(0)로 변경
+            // 諛앹? ?곗깋/?고쉶??諛곌꼍 異붿텧?섏뿬 ?뚰뙆 ?щ챸??0)濡?蹂寃?
             if (r > 215 && g > 215 && b > 215) {
               data[i + 3] = 0
             }
@@ -260,7 +253,7 @@ export default function Dashboard({
       const reader = new FileReader()
       reader.onload = (event) => {
         const rawBase64 = event.target.result
-        // 사진 등록 시 단색/흰색 배경을 지우고 차량 본체만 보이도록 투명화 처리
+        // ?ъ쭊 ?깅줉 ???⑥깋/?곗깋 諛곌꼍??吏?곌퀬 李⑤웾 蹂몄껜留?蹂댁씠?꾨줉 ?щ챸??泥섎━
         removeBgFromImage(rawBase64, (processedPng) => {
           setUserPhoto(processedPng)
           localStorage.setItem('carrep_user_car_photo', processedPng)
@@ -276,7 +269,7 @@ export default function Dashboard({
     localStorage.removeItem('carrep_user_car_photo')
   }
 
-  // ── 소모품 정비 이력 상태 (localStorage 유지) ──
+  // ?? ?뚮え???뺣퉬 ?대젰 ?곹깭 (localStorage ?좎?) ??
   const [historyMap, setHistoryMap] = useState(() => {
     try {
       const saved = localStorage.getItem('carrep_maintenance_history')
@@ -303,14 +296,14 @@ export default function Dashboard({
     return {}
   })
 
-  // ── 소모품 모달 상태 ──
+  // ?? ?뚮え??紐⑤떖 ?곹깭 ??
   const [isDiagModalOpen, setIsDiagModalOpen] = useState(false)
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [selectedDiagItem, setSelectedDiagItem] = useState(null)
   const [selectedFilterType, setSelectedFilterType] = useState(null)
 
-  // ── 정비 이력 등록 ──
+  // ?? ?뺣퉬 ?대젰 ?깅줉 ??
   const handleSaveDiagOverride = (itemName, data) => {
     const currentList = historyMap[itemName] || []
     const newRecord = { id: Date.now(), date: data.date, km: data.km, cost: data.cost }
@@ -319,21 +312,21 @@ export default function Dashboard({
     localStorage.setItem('carrep_maintenance_history', JSON.stringify(updatedHistory))
     setIsDiagModalOpen(false)
     if (data.addToReport && setRepairItems) {
-      let category = '기타'
-      if (['엔진', '오일', '부동액', '냉각수'].some(k => itemName.includes(k))) category = '오일류'
-      else if (['쇼바', '서스', '미미', '마운트', '타이어', '얼라인'].some(k => itemName.includes(k))) category = '현가계'
-      else if (['미션', '구동'].some(k => itemName.includes(k))) category = '구동계'
-      else if (['브레이크', '패드'].some(k => itemName.includes(k))) category = '제동계'
-      else if (['조향', '벨트', '점화'].some(k => itemName.includes(k))) category = '조향계'
+      let category = '湲고?'
+      if (['?붿쭊', '?ㅼ씪', '遺?숈븸', '?됯컖??].some(k => itemName.includes(k))) category = '?ㅼ씪瑜?
+      else if (['?쇰컮', '?쒖뒪', '誘몃?', '留덉슫??, '??댁뼱', '?쇰씪??].some(k => itemName.includes(k))) category = '?꾧?怨?
+      else if (['誘몄뀡', '援щ룞'].some(k => itemName.includes(k))) category = '援щ룞怨?
+      else if (['釉뚮젅?댄겕', '?⑤뱶'].some(k => itemName.includes(k))) category = '?쒕룞怨?
+      else if (['議고뼢', '踰⑦듃', '?먰솕'].some(k => itemName.includes(k))) category = '議고뼢怨?
       const newRepair = {
-        id: Date.now(), category, name: `${itemName} 교환`,
+        id: Date.now(), category, name: `${itemName} 援먰솚`,
         partsCost: data.cost || 0, laborCost: 0,
-        details: `${data.date} 주행거리 ${Number(data.km).toLocaleString()}km 시점에 정비 등록.`
+        details: `${data.date} 二쇳뻾嫄곕━ ${Number(data.km).toLocaleString()}km ?쒖젏???뺣퉬 ?깅줉.`
       }
       setRepairItems(prev => [newRepair, ...prev])
-      alert(`'${itemName}' 정비 이력이 추가 등록되었으며, 현재 정비 내역에 자동 등록되었습니다!`)
+      alert(`'${itemName}' ?뺣퉬 ?대젰??異붽? ?깅줉?섏뿀?쇰ŉ, ?꾩옱 ?뺣퉬 ?댁뿭???먮룞 ?깅줉?섏뿀?듬땲??`)
     } else {
-      alert(`'${itemName}' 정비 이력이 성공적으로 추가 등록되었습니다!`)
+      alert(`'${itemName}' ?뺣퉬 ?대젰???깃났?곸쑝濡?異붽? ?깅줉?섏뿀?듬땲??`)
     }
   }
 
@@ -347,7 +340,7 @@ export default function Dashboard({
     if (updatedList.length === 0) setIsHistoryModalOpen(false)
   }
 
-  // ── 차량 정보 계산 ──
+  // ?? 李⑤웾 ?뺣낫 怨꾩궛 ??
   const carName = myCar?.model || vehicleInfo?.model || ''
   const carMaker = myCar?.maker || vehicleInfo?.maker || ''
   const carNickname = myCar?.nickname || ''
@@ -358,31 +351,31 @@ export default function Dashboard({
   const carFuelEconomy = myCar?.fuelEconomy || vehicleInfo?.fuelEconomy || ''
   const carTireSize = myCar?.tireSize || vehicleInfo?.tireSize || ''
   const carEngineDisp = myCar?.engineDisp || vehicleInfo?.engineDisp || ''
-  const carFuelType = myCar?.fuelType || vehicleInfo?.fuelType || '경유'
+  const carFuelType = myCar?.fuelType || vehicleInfo?.fuelType || '寃쎌쑀'
   const carYear = myCar?.year || vehicleInfo?.year || ''
   const carMileage = myCar?.mileage || vehicleInfo?.mileage || ''
 
-  // 차량 이미지
+  // 李⑤웾 ?대?吏
   const getImagePath = (path) => {
     const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '/'
     const cleanPath = path.startsWith('/') ? path.slice(1) : path
     const cleanBase = base.endsWith('/') ? base : `${base}/`
     return `${cleanBase}${cleanPath}`
   }
-  const isMohave = carName?.toLowerCase()?.includes('모하비') || carName?.toLowerCase()?.includes('mohave')
+  const isMohave = carName?.toLowerCase()?.includes('紐⑦븯鍮?) || carName?.toLowerCase()?.includes('mohave')
   const carImageUrl = isMohave
-    ? (myCar?.color === '티타늄실버' || !myCar?.color
+    ? (myCar?.color === '?고??꾩떎踰? || !myCar?.color
       ? getImagePath('/mohave_titanium.png')
       : getImagePath('/mohave_exterior.png'))
     : null
 
-  // ── 소모품 진단 계산 ──
+  // ?? ?뚮え??吏꾨떒 怨꾩궛 ??
   const maintenanceItems = getMaintenanceStatus(carMileage, carYear, historyMap)
   const dangerItems = maintenanceItems.filter(i => i.status === 'danger')
   const warningItems = maintenanceItems.filter(i => i.status === 'warning')
   const goodItems = maintenanceItems.filter(i => i.status === 'good')
 
-  // ── 보험/검사 계산 ──
+  // ?? 蹂댄뿕/寃??怨꾩궛 ??
   const insEndDday = insurance?.endDate ? getDdayLabel(insurance.endDate) : null
   const insRem = insurance?.startDate && insurance?.endDate
     ? getInspRemaining(insurance.startDate, insurance.endDate)
@@ -394,7 +387,7 @@ export default function Dashboard({
     ? getInspRemaining(inspection.startDate, inspection.endDate) : null
 
 
-  // ── 정비 내역 정렬 ──
+  // ?? ?뺣퉬 ?댁뿭 ?뺣젹 ??
   const sortedReports = [...(reports || [])].sort((a, b) => {
     const da = (a.repairItems || []).map(i => i.repairDate).filter(Boolean).sort().reverse()[0] || a.createdAt
     const db2 = (b.repairItems || []).map(i => i.repairDate).filter(Boolean).sort().reverse()[0] || b.createdAt
@@ -404,26 +397,26 @@ export default function Dashboard({
   return (
     <div className={styles.dashboard}>
 
-      {/* ── 상단 2컬럼: 내 차량 카드 + 상태 점검 카드 ── */}
+      {/* ?? ?곷떒 2而щ읆: ??李⑤웾 移대뱶 + ?곹깭 ?먭? 移대뱶 ?? */}
       <div className={styles.topGrid}>
 
-        {/* 카드 1: 내 차량 (첨부 이미지 레이아웃 100% 반영) */}
+        {/* 移대뱶 1: ??李⑤웾 (泥⑤? ?대?吏 ?덉씠?꾩썐 100% 諛섏쁺) */}
         <div className={`${styles.card} ${styles.heroProfileCard}`}>
-          {/* 상단 1행: 좌측 닉네임 + ✏️ / 우측 기아 공식 엠블럼 로고 */}
+          {/* ?곷떒 1?? 醫뚯륫 ?됰꽕??+ ?륅툘 / ?곗륫 湲곗븘 怨듭떇 ?좊툝??濡쒓퀬 */}
           <div className={styles.profileCardTopRow}>
             <div className={styles.carNicknameRow}>
               <span className={styles.carNickname}>
-                {currentUser ? (carNickname || carName || '내 차량') : '마이카'}
+                {currentUser ? (carNickname || carName || '??李⑤웾') : '留덉씠移?}
               </span>
-              <button className={styles.editIconBtn} onClick={onOpenMyCarModal} title="내차 정보 수정">✏️</button>
+              <button className={styles.editIconBtn} onClick={onOpenMyCarModal} title="?댁감 ?뺣낫 ?섏젙">?륅툘</button>
             </div>
 
             <div className={styles.brandLogoWrap}>
-              <BrandLogo maker={carMaker || '기아'} isGuest={!currentUser} />
+              <BrandLogo maker={carMaker || '湲곗븘'} isGuest={!currentUser} />
             </div>
           </div>
 
-          {/* 중단 2행: 번호판 (등록된 경우만 표시) */}
+          {/* 以묐떒 2?? 踰덊샇??(?깅줉??寃쎌슦留??쒖떆) */}
           <div className={styles.profileCardMidRow}>
             {carPlate ? (
               <div className={styles.realPlateBox}>
@@ -434,65 +427,51 @@ export default function Dashboard({
             ) : null}
           </div>
 
-          {/* 하단 3행: 좌측 벡터 아이콘 스펙 태그 뱃지 + 📷 사진 버튼 / 우측 큼직한 차량 실사컷 */}
+          {/* ?섎떒 3?? 醫뚯륫 踰≫꽣 ?꾩씠肄??ㅽ럺 ?쒓렇 諭껋? + ?벜 ?ъ쭊 踰꾪듉 / ?곗륫 ?쇱쭅??李⑤웾 ?ㅼ궗而?*/}
           <div className={styles.profileCardBottomRow}>
             <div className={styles.profileBottomLeft}>
 
-              {/* Dribbble EV Smart Car UI 배터리 & 텔레메트리 위젯 스타일의 carSpecBadgesWrap */}
+              {/* Dribbble EV Smart Car UI 諛고꽣由?& ?붾젅硫뷀듃由??꾩젽 ?ㅽ??쇱쓽 carSpecBadgesWrap */}
               {currentUser && (carDriveType || carGrade || carMileage) && (
-                isMobile ? (
-                  <div className={styles.carSpecBadgesMobileRow}>
-                    {(carDriveType || carGrade) && (
-                      <span className={styles.mobileSpecChip}>
-                        {[carDriveType, carGrade].filter(Boolean).join(' · ')}
-                      </span>
-                    )}
-                    {carMileage && (
-                      <span className={styles.mobileSpecChip}>
-                        {Number(carMileage).toLocaleString()}Km
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <div className={styles.carSpecBadgesWrap}>
-                    {(carDriveType || carGrade) && (
-                      <div className={styles.carSpecWidgetCard} title="차량 등급 및 구동 사양">
-                        <div className={styles.widgetHeader}>
-                          <span className={styles.widgetBadgeIcon}>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.05 11 2 11.3 2 11.5V16c0 .6.4 1 1 1h2"/>
-                              <circle cx="7" cy="17" r="2.5"/><circle cx="17" cy="17" r="2.5"/>
-                            </svg>
-                          </span>
-                          <span className={styles.widgetLabel}>SPEC &amp; GRADE</span>
-                        </div>
-                        <div className={styles.widgetValue}>
-                          {[carDriveType, carGrade].filter(Boolean).join(' · ')}
-                        </div>
+                <div className={styles.carSpecBadgesWrap}>
+                  {(carDriveType || carGrade) && (
+                    <div className={styles.carSpecWidgetCard} title="李⑤웾 ?깃툒 諛?援щ룞 ?ъ뼇">
+                      <div className={styles.widgetHeader}>
+                        <span className={styles.widgetBadgeIcon}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.05 11 2 11.3 2 11.5V16c0 .6.4 1 1 1h2"/>
+                            <circle cx="7" cy="17" r="2.5"/><circle cx="17" cy="17" r="2.5"/>
+                          </svg>
+                        </span>
+                        <span className={styles.widgetLabel}>SPEC & GRADE</span>
                       </div>
-                    )}
-                    {carMileage && (
-                      <div className={styles.carSpecWidgetCard} title="누적 주행거리 및 메인 트립">
-                        <div className={styles.widgetHeader}>
-                          <span className={`${styles.widgetBadgeIcon} ${styles.iconBattery}`}>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="2" y="7" width="16" height="10" rx="2" ry="2"/>
-                              <line x1="22" y1="11" x2="22" y2="13"/>
-                              <line x1="6" y1="11" x2="6" y2="13"/>
-                              <line x1="10" y1="11" x2="10" y2="13"/>
-                            </svg>
-                          </span>
-                          <span className={styles.widgetLabel}>TOTAL ODOMETER</span>
-                          <span className={styles.livePulseDot} />
-                        </div>
-                        <div className={styles.widgetValue}>
-                          <strong className={styles.widgetNumVal}>{Number(carMileage).toLocaleString()}</strong>
-                          <span className={styles.widgetUnitText}> KM</span>
-                        </div>
+                      <div className={styles.widgetValue}>
+                        {[carDriveType, carGrade].filter(Boolean).join(' 쨌 ')}
                       </div>
-                    )}
-                  </div>
-                )
+                    </div>
+                  )}
+
+                  {carMileage && (
+                    <div className={styles.carSpecWidgetCard} title="?꾩쟻 二쇳뻾嫄곕━ 諛?硫붿씤 ?몃┰">
+                      <div className={styles.widgetHeader}>
+                        <span className={`${styles.widgetBadgeIcon} ${styles.iconBattery}`}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="7" width="16" height="10" rx="2" ry="2"/>
+                            <line x1="22" y1="11" x2="22" y2="13"/>
+                            <line x1="6" y1="11" x2="6" y2="13"/>
+                            <line x1="10" y1="11" x2="10" y2="13"/>
+                          </svg>
+                        </span>
+                        <span className={styles.widgetLabel}>TOTAL ODOMETER</span>
+                        <span className={styles.livePulseDot} />
+                      </div>
+                      <div className={styles.widgetValue}>
+                        <strong className={styles.widgetNumVal}>{Number(carMileage).toLocaleString()}</strong>
+                        <span className={styles.widgetUnitText}> KM</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
               {currentUser && (
@@ -502,10 +481,10 @@ export default function Dashboard({
                       type="button"
                       className={styles.addPhotoBtnInline}
                       onClick={() => fileInputRef.current?.click()}
-                      title="차량 사진 업로드"
+                      title="李⑤웾 ?ъ쭊 ?낅줈??
                     >
                       <span className={styles.camIcon}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
-                      <span className={styles.addPhotoLabel}>사진넣기</span>
+                      <span className={styles.addPhotoLabel}>?ъ쭊?ｊ린</span>
                     </button>
                   ) : (
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
@@ -513,20 +492,20 @@ export default function Dashboard({
                         type="button"
                         className={styles.changePhotoBtnInline}
                         onClick={() => fileInputRef.current?.click()}
-                        title="새로운 차량 사진 선택 및 변경"
+                        title="?덈줈??李⑤웾 ?ъ쭊 ?좏깮 諛?蹂寃?
                       >
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        사진 변경
+                        ?ъ쭊 蹂寃?
                       </button>
                       <button
                         type="button"
                         className={styles.changePhotoBtnInline}
                         onClick={handleRemoveUserPhoto}
-                        title="등록된 사용자 사진 삭제 및 초기화"
+                        title="?깅줉???ъ슜???ъ쭊 ??젣 諛?珥덇린??
                         style={{ opacity: 0.7 }}
                       >
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                        삭제
+                        ??젣
                       </button>
                     </div>
                   )}
@@ -545,24 +524,24 @@ export default function Dashboard({
               {currentUser ? (
                 <img
                   src={userPhoto || carImageUrl || getImagePath('/mohave_exterior.png')}
-                  alt={carName || '차량 이미지'}
+                  alt={carName || '李⑤웾 ?대?吏'}
                   className={styles.profileCarImage}
                   onError={e => { e.target.src = getImagePath('/mohave_exterior.png') }}
                 />
               ) : (
                 <img
                   src={guestTeslaPhoto || getImagePath('/tesla_front.jpg')}
-                  alt="테슬라 정면 실사컷"
+                  alt="?뚯뒳???뺣㈃ ?ㅼ궗而?
                   className={styles.profileCarImage}
                   style={{ objectFit: 'contain', filter: 'drop-shadow(0 14px 24px rgba(0, 0, 0, 0.45))' }}
-                  title="로그인 후 내 차량 사진을 확인할 수 있습니다"
+                  title="濡쒓렇??????李⑤웾 ?ъ쭊???뺤씤?????덉뒿?덈떎"
                 />
               )}
             </div>
           </div>
         </div>
 
-        {/* 카드 2: 내 차 상태 점검 */}
+        {/* 移대뱶 2: ??李??곹깭 ?먭? */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -570,54 +549,54 @@ export default function Dashboard({
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
               </svg>
               <div>
-                <div className={styles.cardTitle}>{currentUser ? (carName || '내 차 상태 점검') : '스마트 상태 진단'}</div>
+                <div className={styles.cardTitle}>{currentUser ? (carName || '??李??곹깭 ?먭?') : '?ㅻ쭏???곹깭 吏꾨떒'}</div>
               </div>
             </div>
             {currentUser && (
               <button className={styles.detailBtn} onClick={onOpenMyCarModal}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                상세보기 &gt;
+                ?곸꽭蹂닿린 &gt;
               </button>
             )}
           </div>
           <div className={styles.statGrid}>
             <div className={`${styles.statItem} ${styles.statDanger}`}
               onClick={() => { setSelectedFilterType('danger'); setIsFilterModalOpen(true) }}
-              style={{ cursor: 'pointer' }} title="교체 대상 항목 보기">
-              <div className={styles.statLabel}>교체 대상</div>
+              style={{ cursor: 'pointer' }} title="援먯껜 ?????ぉ 蹂닿린">
+              <div className={styles.statLabel}>援먯껜 ???/div>
               <div className={styles.statNum}>{dangerItems.length}</div>
             </div>
             <div className={`${styles.statItem} ${styles.statWarning}`}
               onClick={() => { setSelectedFilterType('warning'); setIsFilterModalOpen(true) }}
-              style={{ cursor: 'pointer' }} title="점검 권장 항목 보기">
-              <div className={styles.statLabel}>점검 권장</div>
+              style={{ cursor: 'pointer' }} title="?먭? 沅뚯옣 ??ぉ 蹂닿린">
+              <div className={styles.statLabel}>?먭? 沅뚯옣</div>
               <div className={styles.statNum}>{warningItems.length}</div>
             </div>
             <div className={`${styles.statItem} ${styles.statGood}`}
               onClick={() => { setSelectedFilterType('good'); setIsFilterModalOpen(true) }}
-              style={{ cursor: 'pointer' }} title="상태 양호 항목 보기">
-              <div className={styles.statLabel}>상태 양호</div>
+              style={{ cursor: 'pointer' }} title="?곹깭 ?묓샇 ??ぉ 蹂닿린">
+              <div className={styles.statLabel}>?곹깭 ?묓샇</div>
               <div className={styles.statNum}>{goodItems.length}</div>
             </div>
             <div className={`${styles.statItem} ${styles.statTotal}`}>
-              <div className={styles.statLabel}>전체 점검</div>
+              <div className={styles.statLabel}>?꾩껜 ?먭?</div>
               <div className={styles.statNum}>{maintenanceItems.length}</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── 중단 2x2 컬럼: 차량 스펙 + 소모품 정비 + 자동차 보험 + 검사/보증 ── */}
+      {/* ?? 以묐떒 2x2 而щ읆: 李⑤웾 ?ㅽ럺 + ?뚮え???뺣퉬 + ?먮룞李?蹂댄뿕 + 寃??蹂댁쬆 ?? */}
       <div className={styles.midGrid}>
 
-        {/* 카드 3: 차량 스펙 */}
+        {/* 移대뱶 3: 李⑤웾 ?ㅽ럺 */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <span className={styles.cardTitle}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'6px'}}>
                 <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-4"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
               </svg>
-              차량 정보
+              李⑤웾 ?뺣낫
             </span>
           </div>
           <div className={styles.specGrid}>
@@ -628,7 +607,7 @@ export default function Dashboard({
                 </svg>
               </span>
               <div className={styles.specCardMeta}>
-                <span className={styles.specCardLabel}>차량 등록일</span>
+                <span className={styles.specCardLabel}>李⑤웾 ?깅줉??/span>
                 <span className={styles.specCardVal}>{carRegDate || '-'}</span>
               </div>
             </div>
@@ -639,7 +618,7 @@ export default function Dashboard({
                 </svg>
               </span>
               <div className={styles.specCardMeta}>
-                <span className={styles.specCardLabel}>공인연비</span>
+                <span className={styles.specCardLabel}>怨듭씤?곕퉬</span>
                 <span className={styles.specCardVal}>{carFuelEconomy || '-'}</span>
               </div>
             </div>
@@ -650,7 +629,7 @@ export default function Dashboard({
                 </svg>
               </span>
               <div className={styles.specCardMeta}>
-                <span className={styles.specCardLabel}>타이어 사이즈</span>
+                <span className={styles.specCardLabel}>??댁뼱 ?ъ씠利?/span>
                 <span className={styles.specCardVal}>{carTireSize || '-'}</span>
               </div>
             </div>
@@ -661,32 +640,32 @@ export default function Dashboard({
                 </svg>
               </span>
               <div className={styles.specCardMeta}>
-                <span className={styles.specCardLabel}>배기량</span>
+                <span className={styles.specCardLabel}>諛곌린??/span>
                 <span className={styles.specCardVal}>{carEngineDisp || '-'}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 카드 4: 교체 대상 소모품 (교체/점검 필요 소모품 3건) */}
+        {/* 移대뱶 4: 援먯껜 ????뚮え??(援먯껜/?먭? ?꾩슂 ?뚮え??3嫄? */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <span className={styles.cardTitle}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'6px'}}>
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
               </svg>
-              교체 대상 소모품
+              援먯껜 ????뚮え??
             </span>
             {currentUser && (
               <button className={styles.detailBtn} onClick={() => { if (onGoConsumables) onGoConsumables(); else if (onNext) onNext(); }}>
-                전체보기 &gt;
+                ?꾩껜蹂닿린 &gt;
               </button>
             )}
           </div>
 
           {!(carYear || carMileage) ? (
             <button className={styles.registerPromptBtn} onClick={onOpenMyCarModal}>
-              + 차량 주행거리 등록하기
+              + 李⑤웾 二쇳뻾嫄곕━ ?깅줉?섍린
             </button>
           ) : (
             <div className={styles.repairSummaryList}>
@@ -702,7 +681,7 @@ export default function Dashboard({
                 return finalItems.map((item, idx) => {
                   const isDanger = item.status === 'danger'
                   const isWarning = item.status === 'warning'
-                  const statusText = isDanger ? '교체' : isWarning ? '점검' : '양호'
+                  const statusText = isDanger ? '援먯껜' : isWarning ? '?먭?' : '?묓샇'
                   const badgeStyle = isDanger ? styles.badgeDanger : isWarning ? styles.badgeWarning : styles.badgeGood
                   
                   return (
@@ -713,8 +692,8 @@ export default function Dashboard({
                       </div>
 
                       <div className={styles.repairSummaryRight}>
-                        {/* ⚡ 첨부 이미지 레퍼런스 스타일: 28핀 네온 옐로우 틱 파티션 프로그레스 게이지 */}
-                        <div className={styles.yellowTickGaugeWrap} title={`잔여 수명 ${item.health}%`}>
+                        {/* ??泥⑤? ?대?吏 ?덊띁?곗뒪 ?ㅽ??? 28? ?ㅼ삩 ?먮줈?????뚰떚???꾨줈洹몃젅??寃뚯씠吏 */}
+                        <div className={styles.yellowTickGaugeWrap} title={`?붿뿬 ?섎챸 ${item.health}%`}>
                           {Array.from({ length: 28 }).map((_, tIdx) => {
                             const activeCount = Math.round((item.health / 100) * 28)
                             const isActive = tIdx < activeCount
@@ -741,17 +720,17 @@ export default function Dashboard({
           )}
         </div>
 
-        {/* 카드 5: 보험 (의무/책임보험) */}
+        {/* 移대뱶 5: ?먮룞李?蹂댄뿕 (?섎Т/梨낆엫蹂댄뿕) */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <span className={styles.cardTitle}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'6px'}}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              보험
+              ?먮룞李?蹂댄뿕
             </span>
             {currentUser && (
               <button className={styles.detailBtn} onClick={onOpenInsuranceModal}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                상세보기 &gt;
+                ?곸꽭蹂닿린 &gt;
               </button>
             )}
           </div>
@@ -762,7 +741,7 @@ export default function Dashboard({
                 <div style={{ flex: 1 }}>
                   <div className={styles.insuranceName}>
                     {[insurance.insurer, insurance.product].filter(Boolean).join(' ')}
-                    {new Date(insurance.endDate) < new Date() && <span className={styles.expiredTag}> (만료됨)</span>}
+                    {new Date(insurance.endDate) < new Date() && <span className={styles.expiredTag}> (留뚮즺??</span>}
                   </div>
                   <div className={styles.insuranceDate}>
                     {insurance.startDate ? `${fmtDate(insurance.startDate)} ~ ` : ''}{fmtDate(insurance.endDate)}
@@ -770,7 +749,7 @@ export default function Dashboard({
                   {insRem && (
                     <div style={{ marginTop: '8px' }}>
                       <div className={styles.tickGaugeHeaderRow}>
-                        <span className={styles.tickGaugeLabel}>보증 잔여 기간</span>
+                        <span className={styles.tickGaugeLabel}>蹂댁쬆 ?붿뿬 湲곌컙</span>
                         <span className={styles.tickGaugePct} style={{ color: insRem.rem <= 30 ? '#ef4444' : insRem.rem <= 90 ? '#f97316' : 'var(--tick-good-color, #ccff00)' }}>
                           {Math.round(insRem.pct)}% ({insRem.label})
                         </span>
@@ -799,12 +778,12 @@ export default function Dashboard({
             </>
           ) : (
             <button className={styles.registerPromptBtn} onClick={onOpenInsuranceModal}>
-              + 보험 정보 등록하기
+              + 蹂댄뿕 ?뺣낫 ?깅줉?섍린
             </button>
           )}
         </div>
 
-        {/* 카드 6: 정기검사/운행 보험 보증 */}
+        {/* 移대뱶 6: ?뺢린寃???댄뻾 蹂댄뿕 蹂댁쬆 */}
         <div className={styles.card}>
           <div className={styles.cardTitleRow}>
             <span className={styles.cardTitle}>
@@ -812,12 +791,12 @@ export default function Dashboard({
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 <path d="m9 12 2 2 4-4"/>
               </svg>
-              운행 보증 보험 (정기검사)
+              ?댄뻾 蹂댁쬆 蹂댄뿕 (?뺢린寃??
             </span>
             {currentUser && (
               <button className={styles.detailBtn} onClick={onOpenInspectionModal}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:'4px'}}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                상세보기 &gt;
+                ?곸꽭蹂닿린 &gt;
               </button>
             )}
           </div>
@@ -831,14 +810,14 @@ export default function Dashboard({
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className={styles.insuranceName}>정기 검사 보증</div>
+                  <div className={styles.insuranceName}>?먮룞李??뺢린 寃??蹂댁쬆</div>
                   <div className={styles.insuranceDate}>
                     {fmtDate(inspection.startDate)} ~ {fmtDate(inspection.endDate)}
                   </div>
                   {inspRem && (
                     <div style={{ marginTop: '8px' }}>
                       <div className={styles.tickGaugeHeaderRow}>
-                        <span className={styles.tickGaugeLabel}>검사 유효 잔여</span>
+                        <span className={styles.tickGaugeLabel}>寃???좏슚 ?붿뿬</span>
                         <span className={styles.tickGaugePct} style={{ color: inspRem.rem <= 30 ? '#ef4444' : inspRem.rem <= 90 ? '#f97316' : 'var(--tick-good-color, #ccff00)' }}>
                           {Math.round(inspRem.pct)}% ({inspRem.label})
                         </span>
@@ -867,14 +846,14 @@ export default function Dashboard({
             </>
           ) : (
             <button className={styles.registerPromptBtn} onClick={onOpenInspectionModal}>
-              + 검사 보증 기간 등록하기
+              + 寃??蹂댁쬆 湲곌컙 ?깅줉?섍린
             </button>
           )}
         </div>
       </div>
 
 
-      {/* ── 소모품 모달들 ── */}
+      {/* ?? ?뚮え??紐⑤떖???? */}
       {isDiagModalOpen && selectedDiagItem && (
         <MaintenanceRegisterModal
           isOpen={isDiagModalOpen}
@@ -912,3 +891,4 @@ export default function Dashboard({
     </div>
   )
 }
+
