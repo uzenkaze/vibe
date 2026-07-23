@@ -357,32 +357,22 @@ export default function CardPaymentsPage() {
     return (sections.income || []).reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
   }, [sections.income]);
 
-  // 메뉴 > 카드 내역(Installment) 데이터 중 이번 달 결제 금액 계산
-  const installments = sections.installment || [];
-  const currentTag = useMemo(() => {
-    return `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
-  }, [year, month]);
+  // 메뉴 > 카드 내역 페이지 하단의 카드별 결제금액 내역(cardMonthlySummaries)의 이달 결제금액 기준 계산
+  const cardMonthlySummaries = sections.cardMonthlySummaries || [];
 
   const cardTotalAmount = useMemo(() => {
-    return installments.reduce((a, r) => {
-      const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
-      if (isExpired || Number(r.currentMonth) === 0) return a;
-      return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
+    return cardMonthlySummaries.reduce((a, r) => {
+      return a + (Number(r.currentMonthTotal) || 0);
     }, 0);
-  }, [installments, currentTag]);
+  }, [cardMonthlySummaries]);
 
   // 카드별 결제 내역 그룹핑
   const cardBreakdown = useMemo(() => {
-    const map = {};
-    installments.forEach(r => {
-      const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
-      if (isExpired || Number(r.currentMonth) === 0) return;
-      const cardName = r.card || '카드';
-      const monthlyAmt = (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
-      map[cardName] = (map[cardName] || 0) + monthlyAmt;
-    });
-    return Object.entries(map).map(([card, amount]) => ({ card, amount }));
-  }, [installments, currentTag]);
+    return cardMonthlySummaries.map(item => ({
+      card: item.cardName || '카드',
+      amount: Number(item.currentMonthTotal) || 0
+    })).filter(item => item.amount > 0);
+  }, [cardMonthlySummaries]);
 
   // 부족금액 = 수입 - (현금 지출 + 카드 지출)
   const totalOutflow = paymentsTotalAmount + cardTotalAmount;
