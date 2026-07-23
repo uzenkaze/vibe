@@ -126,9 +126,11 @@ export default function CardPaymentsPage() {
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [isIncomeHovered, setIsIncomeHovered] = useState(false);
   const [isExpenseHovered, setIsExpenseHovered] = useState(false);
+  const [isCardHovered, setIsCardHovered] = useState(false);
   
   const incomeCardRef = useRef(null);
   const expenseCardRef = useRef(null);
+  const cardCardRef = useRef(null);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -137,6 +139,9 @@ export default function CardPaymentsPage() {
       }
       if (expenseCardRef.current && !expenseCardRef.current.contains(e.target)) {
         setIsExpenseHovered(false);
+      }
+      if (cardCardRef.current && !cardCardRef.current.contains(e.target)) {
+        setIsCardHovered(false);
       }
     };
     document.addEventListener('click', handleOutsideClick);
@@ -352,13 +357,41 @@ export default function CardPaymentsPage() {
     return (sections.income || []).reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
   }, [sections.income]);
 
-  // 부족금액 = 수입내역합계 - 현금납부합계
-  const difference = totalIncome - paymentsTotalAmount;
+  // 메뉴 > 카드 내역(Installment) 데이터 중 이번 달 결제 금액 계산
+  const installments = sections.installment || [];
+  const currentTag = useMemo(() => {
+    return `${String(year).substring(2)}.${String(month).padStart(2, '0')}`;
+  }, [year, month]);
+
+  const cardTotalAmount = useMemo(() => {
+    return installments.reduce((a, r) => {
+      const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+      if (isExpired || Number(r.currentMonth) === 0) return a;
+      return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
+    }, 0);
+  }, [installments, currentTag]);
+
+  // 카드별 결제 내역 그룹핑
+  const cardBreakdown = useMemo(() => {
+    const map = {};
+    installments.forEach(r => {
+      const isExpired = r.repayStatus === 'full' || (r.endDate && r.endDate < currentTag) || (Number(r.currentMonth) > Number(r.totalMonths));
+      if (isExpired || Number(r.currentMonth) === 0) return;
+      const cardName = r.card || '카드';
+      const monthlyAmt = (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
+      map[cardName] = (map[cardName] || 0) + monthlyAmt;
+    });
+    return Object.entries(map).map(([card, amount]) => ({ card, amount }));
+  }, [installments, currentTag]);
+
+  // 부족금액 = 수입 - (현금 지출 + 카드 지출)
+  const totalOutflow = paymentsTotalAmount + cardTotalAmount;
+  const difference = totalIncome - totalOutflow;
   const isShortage = difference < 0;
   const absDifference = Math.abs(difference);
 
-  // 퍼센트율 계산 (수입 대비 지출 비율)
-  const percent = totalIncome > 0 ? (paymentsTotalAmount / totalIncome) * 100 : (paymentsTotalAmount > 0 ? 100 : 0);
+  // 퍼센트율 계산 (수입 대비 총지출(현금+카드) 비율)
+  const percent = totalIncome > 0 ? (totalOutflow / totalIncome) * 100 : (totalOutflow > 0 ? 100 : 0);
   const clampedPercent = Math.min(percent, 100);
 
   return (
@@ -607,30 +640,31 @@ export default function CardPaymentsPage() {
         </div>
       </div>
 
-      {/* 수입 대비 현금 지출 비교 영역 (도식화) */}
-      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem', position: 'relative', zIndex: 100, overflow: 'visible' }}>
+      {/* 수입 대비 지출 비교 영역 (수입, 현금, 카드, 부족/여유 4대 카드) */}
+      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem 1.5rem', position: 'relative', zIndex: 100, overflow: 'visible' }}>
         <div className="section-card-header" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)' }}>
           <div className="section-card-title">
             <span className="section-dot" style={{ background: isShortage ? 'var(--coral)' : 'var(--teal)' }} />
-            수입 대비 현금 지출
+            수입 대비 지출 현황 (현금 & 카드)
             <span style={{
               fontSize: '0.65rem', color: 'var(--text-muted)',
               fontWeight: 600, letterSpacing: '0.05em',
               textTransform: 'uppercase', marginLeft: 4,
             }}>
-              Income vs Cash Expense
+              Income vs Cash & Card Expense
             </span>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem', position: 'relative', zIndex: 10 }}>
-          {/* 1. 수입 카드 (Dribbble 16586448 Top Volume Style) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '1rem', position: 'relative', zIndex: 10 }}>
+          {/* 1. 수입 카드 */}
           <div 
             ref={incomeCardRef}
             className="top-volume-card top-volume-card-current"
             onMouseEnter={() => {
               if (window.innerWidth > 768) {
                 setIsExpenseHovered(false);
+                setIsCardHovered(false);
                 setIsIncomeHovered(true);
               }
             }}
@@ -643,6 +677,7 @@ export default function CardPaymentsPage() {
               e.stopPropagation();
               if (window.innerWidth <= 768) {
                 setIsExpenseHovered(false);
+                setIsCardHovered(false);
                 setIsIncomeHovered(prev => !prev);
               }
             }}
@@ -652,30 +687,30 @@ export default function CardPaymentsPage() {
               cursor: 'pointer'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <div style={{
-                  width: 32, height: 32, borderRadius: '9px',
+                  width: 28, height: 28, borderRadius: '8px',
                   background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'var(--teal)',
                   border: '1px solid rgba(6, 182, 212, 0.3)'
                 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Total Income
+                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    INCOME
                   </div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                     수입
                   </div>
                 </div>
               </div>
               <span style={{
-                fontSize: '0.65rem', fontWeight: 800, padding: '2px 7px', borderRadius: '20px',
+                fontSize: '0.6rem', fontWeight: 800, padding: '2px 6px', borderRadius: '20px',
                 background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)'
               }}>
                 INFLOW
@@ -683,20 +718,20 @@ export default function CardPaymentsPage() {
             </div>
 
             <div style={{ 
-              fontSize: 'clamp(1.4rem, 3.5vw, 1.8rem)', 
+              fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)', 
               fontWeight: 900, 
               color: 'var(--text-primary)', 
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               letterSpacing: '-0.03em',
-              marginBottom: '0.5rem',
+              marginBottom: '0.4rem',
               lineHeight: 1.1
             }}>
-              {formatKRW(totalIncome)} <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
+              {formatKRW(totalIncome)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
-              <span>수입 항목 {(sections.income || []).length}건</span>
-              <span style={{ color: 'var(--teal)', fontWeight: 700 }}>터치 시 상세 조회</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+              <span>수입 {(sections.income || []).length}건</span>
+              <span style={{ color: 'var(--teal)', fontWeight: 700 }}>상세 보기</span>
             </div>
 
             {/* 수입 상세 레이어 */}
@@ -714,7 +749,8 @@ export default function CardPaymentsPage() {
                   padding: '0.75rem 1rem',
                   boxShadow: 'var(--shadow-md)',
                   zIndex: 1000,
-                  minWidth: '320px',
+                  minWidth: '280px',
+                  maxWidth: '90vw',
                   color: 'var(--text-primary)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
@@ -728,7 +764,7 @@ export default function CardPaymentsPage() {
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>등록된 수입 내역이 없습니다.</div>
                   ) : (
                     (sections.income || []).map((i, idx) => (
-                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1.5rem', width: '100%', whiteSpace: 'nowrap' }}>
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1rem', width: '100%', whiteSpace: 'nowrap' }}>
                         <span style={{ fontWeight: 600, textAlign: 'left', whiteSpace: 'nowrap' }}>
                           {(i.category && i.content) 
                             ? (i.category === i.content ? i.category : `${i.category} (${i.content})`) 
@@ -744,13 +780,14 @@ export default function CardPaymentsPage() {
             )}
           </div>
 
-          {/* 2. 지출 카드 (Dribbble 16586448 Top Volume Style) */}
+          {/* 2. 현금 카드 */}
           <div 
             ref={expenseCardRef}
             className="top-volume-card top-volume-card-next"
             onMouseEnter={() => {
               if (window.innerWidth > 768) {
                 setIsIncomeHovered(false);
+                setIsCardHovered(false);
                 setIsExpenseHovered(true);
               }
             }}
@@ -763,6 +800,7 @@ export default function CardPaymentsPage() {
               e.stopPropagation();
               if (window.innerWidth <= 768) {
                 setIsIncomeHovered(false);
+                setIsCardHovered(false);
                 setIsExpenseHovered(prev => !prev);
               }
             }}
@@ -772,54 +810,54 @@ export default function CardPaymentsPage() {
               cursor: 'pointer'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <div style={{
-                  width: 32, height: 32, borderRadius: '9px',
+                  width: 28, height: 28, borderRadius: '8px',
                   background: 'linear-gradient(135deg, rgba(255, 138, 0, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: '#ff8a00',
                   border: '1px solid rgba(255, 138, 0, 0.3)'
                 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Cash Expense
+                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    CASH
                   </div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    지출
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    현금
                   </div>
                 </div>
               </div>
               <span style={{
-                fontSize: '0.65rem', fontWeight: 800, padding: '2px 7px', borderRadius: '20px',
+                fontSize: '0.6rem', fontWeight: 800, padding: '2px 6px', borderRadius: '20px',
                 background: 'rgba(255, 138, 0, 0.15)', color: '#ff8a00', border: '1px solid rgba(255, 138, 0, 0.3)'
               }}>
-                OUTFLOW
+                CASH OUT
               </span>
             </div>
 
             <div style={{ 
-              fontSize: 'clamp(1.4rem, 3.5vw, 1.8rem)', 
+              fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)', 
               fontWeight: 900, 
               color: '#ff8a00', 
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               letterSpacing: '-0.03em',
-              marginBottom: '0.5rem',
+              marginBottom: '0.4rem',
               lineHeight: 1.1
             }}>
-              {formatKRW(paymentsTotalAmount)} <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
+              {formatKRW(paymentsTotalAmount)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
               <span>현금 지출 {cardPayments.length}건</span>
-              <span style={{ color: '#ff8a00', fontWeight: 700 }}>터치 시 상세 조회</span>
+              <span style={{ color: '#ff8a00', fontWeight: 700 }}>상세 보기</span>
             </div>
 
-            {/* 지출 상세 레이어 */}
+            {/* 현금 지출 상세 레이어 */}
             {isExpenseHovered && (
               <div 
                 onClick={(e) => e.stopPropagation()}
@@ -834,7 +872,8 @@ export default function CardPaymentsPage() {
                   padding: '0.75rem 1rem',
                   boxShadow: 'var(--shadow-md)',
                   zIndex: 1000,
-                  minWidth: '320px',
+                  minWidth: '280px',
+                  maxWidth: '90vw',
                   color: 'var(--text-primary)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
@@ -848,7 +887,7 @@ export default function CardPaymentsPage() {
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>등록된 지출 내역이 없습니다.</div>
                   ) : (
                     cardPayments.map((p, idx) => (
-                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1.5rem', width: '100%', whiteSpace: 'nowrap' }}>
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1rem', width: '100%', whiteSpace: 'nowrap' }}>
                         <span style={{ fontWeight: 600, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', textAlign: 'left' }}>
                           {p.item || '미지정'}
                           <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginLeft: '4px', fontWeight: 500, whiteSpace: 'nowrap' }}>
@@ -864,17 +903,139 @@ export default function CardPaymentsPage() {
             )}
           </div>
 
-          {/* 3. 결과 카드 (부족 또는 남음) (Dribbble 16586448 Top Volume Style) */}
+          {/* 3. 카드 카드 (신규 추가: 메뉴 > 카드 내역 이달 결제액 연동) */}
+          <div 
+            ref={cardCardRef}
+            className="top-volume-card"
+            onMouseEnter={() => {
+              if (window.innerWidth > 768) {
+                setIsIncomeHovered(false);
+                setIsExpenseHovered(false);
+                setIsCardHovered(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (window.innerWidth > 768) {
+                setIsCardHovered(false);
+              }
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (window.innerWidth <= 768) {
+                setIsIncomeHovered(false);
+                setIsExpenseHovered(false);
+                setIsCardHovered(prev => !prev);
+              }
+            }}
+            style={{
+              position: 'relative',
+              zIndex: isCardHovered ? 50 : 1,
+              cursor: 'pointer',
+              borderTop: '3px solid #3b82f6'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: '8px',
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#3b82f6',
+                  border: '1px solid rgba(59, 130, 246, 0.3)'
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                    <line x1="1" y1="10" x2="23" y2="10" />
+                  </svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    CARD
+                  </div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    카드
+                  </div>
+                </div>
+              </div>
+              <span style={{
+                fontSize: '0.6rem', fontWeight: 800, padding: '2px 6px', borderRadius: '20px',
+                background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)'
+              }}>
+                CARD OUT
+              </span>
+            </div>
+
+            <div style={{ 
+              fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)', 
+              fontWeight: 900, 
+              color: '#3b82f6', 
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              letterSpacing: '-0.03em',
+              marginBottom: '0.4rem',
+              lineHeight: 1.1
+            }}>
+              {formatKRW(cardTotalAmount)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+              <span>카드 결제 {cardBreakdown.length}건</span>
+              <span style={{ color: '#3b82f6', fontWeight: 700 }}>상세 보기</span>
+            </div>
+
+            {/* 카드별 결제 내역 상세 툴팁 레이어 */}
+            {isCardHovered && (
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '14px',
+                  padding: '0.75rem 1rem',
+                  boxShadow: 'var(--shadow-md)',
+                  zIndex: 1000,
+                  minWidth: '280px',
+                  maxWidth: '90vw',
+                  color: 'var(--text-primary)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                }}
+              >
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
+                  이달 카드별 결제 내역 (카드 내역 연동)
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '150px', overflowY: 'auto' }}>
+                  {cardBreakdown.length === 0 ? (
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>이번 달 카드 결제 내역이 없습니다.</div>
+                  ) : (
+                    cardBreakdown.map((b, idx) => (
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1rem', width: '100%', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontWeight: 600, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                          💳 {b.card}
+                        </span>
+                        <span style={{ fontWeight: 800, color: '#3b82f6', textAlign: 'right', flexShrink: 0 }}>{formatKRW(b.amount)}원</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 4. 부족금액 / 여유자금 카드 */}
           <div 
             className="top-volume-card"
             style={{
               borderTop: `3px solid ${isShortage ? 'var(--coral)' : 'var(--teal)'}`
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <div style={{
-                  width: 32, height: 32, borderRadius: '9px',
+                  width: 28, height: 28, borderRadius: '8px',
                   background: isShortage 
                     ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(244, 63, 94, 0.2) 100%)' 
                     : 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%)',
@@ -883,26 +1044,26 @@ export default function CardPaymentsPage() {
                   border: `1px solid ${isShortage ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
                 }}>
                   {isShortage ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                     </svg>
                   ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                   )}
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {isShortage ? 'Shortage Balance' : 'Net Surplus'}
+                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {isShortage ? 'SHORTAGE' : 'SURPLUS'}
                   </div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    {isShortage ? '부족 금액' : '남은 여유 자금'}
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {isShortage ? '부족 금액' : '여유 자금'}
                   </div>
                 </div>
               </div>
               <span style={{
-                fontSize: '0.65rem', fontWeight: 800, padding: '2px 7px', borderRadius: '20px',
+                fontSize: '0.6rem', fontWeight: 800, padding: '2px 6px', borderRadius: '20px',
                 background: isShortage ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
                 color: isShortage ? 'var(--coral)' : '#10b981',
                 border: `1px solid ${isShortage ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
@@ -912,25 +1073,26 @@ export default function CardPaymentsPage() {
             </div>
 
             <div style={{ 
-              fontSize: 'clamp(1.4rem, 3.5vw, 1.8rem)', 
+              fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)', 
               fontWeight: 900, 
               color: isShortage ? 'var(--coral)' : 'var(--teal)', 
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               letterSpacing: '-0.03em',
-              marginBottom: '0.5rem',
+              marginBottom: '0.4rem',
               lineHeight: 1.1
             }}>
-              {formatKRW(absDifference)} <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
+              {formatKRW(absDifference)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
-              <span>예산 상태</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+              <span>{isShortage ? '지출 초과' : '수입 여유'}</span>
               <span style={{ color: isShortage ? 'var(--coral)' : 'var(--teal)', fontWeight: 700 }}>
-                {isShortage ? '추가 자금 필요' : '여유 자금 보유'}
+                {isShortage ? '자금 추가 필요' : '정상 상태'}
               </span>
             </div>
           </div>
         </div>
+      </div>
 
         {/* 비주얼 프로그레스 바 영역 */}
         <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem' }}>
@@ -958,7 +1120,6 @@ export default function CardPaymentsPage() {
             <span>100%</span>
           </div>
         </div>
-      </div>
 
       <div className="section-card" style={{ marginBottom: '1.5rem', minHeight: '60vh' }}>
         <div className="section-card-header">
