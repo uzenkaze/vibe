@@ -262,10 +262,16 @@ export default function PensionPage() {
                 ? (dark ? '#ffffff' : '#4f46e5') 
                 : 'var(--text-muted)',
               boxShadow: activeTab === 'national' ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
-              fontFamily: "'Plus Jakarta Sans', sans-serif"
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem'
             }}
           >
-            🏛️ 국민연금
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"/>
+            </svg>
+            국민연금
           </button>
           <button
             onClick={() => setActiveTab('retirement')}
@@ -284,10 +290,16 @@ export default function PensionPage() {
                 ? (dark ? '#ffffff' : '#4f46e5') 
                 : 'var(--text-muted)',
               boxShadow: activeTab === 'retirement' ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
-              fontFamily: "'Plus Jakarta Sans', sans-serif"
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem'
             }}
           >
-            📈 퇴직연금 (IRP/DC)
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            퇴직연금 (IRP/DC)
           </button>
         </div>
       </div>
@@ -324,10 +336,7 @@ export default function PensionPage() {
 
             {/* 메인 금액 */}
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem' }}>
-                {formData.startDate ? `${formData.startDate}(65세)부터` : '연금 개시 시기(65세)부터'}&nbsp;받게 될 예상 연금액
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '1rem', fontWeight: 700, marginBottom: '0.2rem' }}>매월</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '1rem', fontWeight: 800, marginBottom: '0.25rem' }}>매월</div>
               <div style={{
                 color: 'var(--teal)',
                 fontSize: 'clamp(2.2rem, 6vw, 3.2rem)',
@@ -340,7 +349,7 @@ export default function PensionPage() {
               </div>
             </div>
 
-            {/* ── 연금 개시 시기 계기판 게이지 (동적 출생연월 연산 적용) ── */}
+            {/* ── 연금 개시 시기 계기판 게이지 ── */}
             <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px dashed var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', fontWeight: 800, marginBottom: '0.6rem' }}>
                 <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -362,11 +371,14 @@ export default function PensionPage() {
                 />
               </div>
 
-              {/* 하단 정밀 남은 시간 서브 카운터 */}
+              {/* 하단 정밀 남은 시간 서브 카운터 (SVG 벡터 아이콘 적용) */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 700, marginTop: '0.6rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-primary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-primary)' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
                   <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.85rem' }}>
-                    {pensionAgeCalc.isPayoutStarted ? '🎉 연금 수령 대상' : '⏳ 수령 개시까지 남은 기간:'}
+                    {pensionAgeCalc.isPayoutStarted ? '연금 수령 대상' : '수령 개시까지 남은 기간:'}
                   </span>
                   <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.9rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                     {pensionAgeCalc.isPayoutStarted 
