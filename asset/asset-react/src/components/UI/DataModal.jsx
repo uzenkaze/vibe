@@ -348,44 +348,16 @@ export default function DataModal({ onClose }) {
     setIsDragging(true);
   };
 
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer?.files?.[0];
-    if (file) {
-      readFile(file);
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      readFile(file);
-    }
-  };
-
-  const readFile = (file) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setImportText(ev.target.result || '');
-      showToast('JSON 파일을 성공적으로 읽었습니다.', 'success');
-    };
-    reader.readAsText(file);
-  };
-
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div 
-        className="modal-box" 
+        className="modal-box data-modal-box" 
         style={{ 
-          maxWidth: 600, 
+          maxWidth: 560, 
+          width: '92%',
           padding: 0, 
           overflow: 'hidden', 
-          borderRadius: '32px',
+          borderRadius: '24px',
           background: 'var(--card)',
           border: '1px solid var(--card-border)',
           boxShadow: 'var(--shadow-lg)'
@@ -393,29 +365,29 @@ export default function DataModal({ onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ padding: '2rem 2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="data-modal-header" style={{ padding: '1.5rem 1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{
-              width: 40,
-              height: 40,
+              width: 34,
+              height: 34,
               background: 'var(--teal-dim)',
               color: 'var(--teal)',
-              borderRadius: 12,
+              borderRadius: 10,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.25rem',
+              fontSize: '1.1rem',
               fontWeight: 'bold'
             }}>⚙️</div>
-            <span style={{ fontSize: '1.45rem', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
+            <span className="data-modal-title" style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
               데이터 관리 (백업 및 복구)
             </span>
           </div>
           <button 
             onClick={onClose}
             style={{
-              width: 40,
-              height: 40,
+              width: 34,
+              height: 34,
               border: 'none',
               background: 'none',
               cursor: 'pointer',
@@ -428,46 +400,46 @@ export default function DataModal({ onClose }) {
             }}
             className="close-hover-btn"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Body */}
-        <div style={{ padding: '0 2rem 2rem', maxHeight: '65vh', overflowY: 'auto' }}>
+        <div className="data-modal-body" style={{ padding: '0 1.5rem 1.5rem', maxHeight: '65vh', overflowY: 'auto' }}>
           
           {/* Section: Backup & Export */}
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <h4 style={{
               fontSize: '11px',
               fontWeight: 900,
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               color: 'var(--text-secondary)',
-              marginBottom: '0.75rem'
+              marginBottom: '0.6rem'
             }}>
               Backup & Export
             </h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
               <button 
                 onClick={handleDownload}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '0.95rem',
-                  borderRadius: 16,
+                  padding: '0.75rem 0.5rem',
+                  borderRadius: 14,
                   border: '1px solid var(--input-border)',
                   background: 'var(--input-bg)',
                   color: 'var(--text-primary)',
                   fontWeight: 'bold',
                   cursor: 'pointer',
-                  fontSize: '0.95rem'
+                  fontSize: '0.85rem'
                 }}
                 className="btn-backup-item"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 8, color: 'var(--teal)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6, color: 'var(--teal)' }}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
                 </svg>
                 파일 다운로드
@@ -478,18 +450,18 @@ export default function DataModal({ onClose }) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '0.95rem',
-                  borderRadius: 16,
+                  padding: '0.75rem 0.5rem',
+                  borderRadius: 14,
                   border: '1px solid var(--input-border)',
                   background: 'var(--input-bg)',
                   color: 'var(--text-primary)',
                   fontWeight: 'bold',
                   cursor: 'pointer',
-                  fontSize: '0.95rem'
+                  fontSize: '0.85rem'
                 }}
                 className="btn-backup-item"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 8, color: 'var(--teal)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6, color: 'var(--teal)' }}>
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
@@ -500,10 +472,10 @@ export default function DataModal({ onClose }) {
 
           {/* Section: Monthly Operations */}
           <div style={{
-            marginBottom: '2rem',
-            padding: '1.5rem',
+            marginBottom: '1.5rem',
+            padding: '1.1rem 1.25rem',
             background: 'var(--input-bg)',
-            borderRadius: 24,
+            borderRadius: 18,
             border: '1.5px dashed var(--teal-dim)'
           }}>
             <h4 style={{
@@ -512,11 +484,11 @@ export default function DataModal({ onClose }) {
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               color: 'var(--text-secondary)',
-              marginBottom: '1rem'
+              marginBottom: '0.75rem'
             }}>
               Monthly Operations
             </h4>
-            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', alignItems: 'center' }}>
               <CustomDropdown 
                 value={selectedYear} 
                 onChange={setSelectedYear} 
@@ -532,25 +504,25 @@ export default function DataModal({ onClose }) {
               />
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <button 
                 onClick={handleCopyMonthToNext}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '1rem',
-                  borderRadius: 16,
+                  padding: '0.8rem',
+                  borderRadius: 12,
                   border: 'none',
                   background: 'var(--teal)',
                   color: '#FFFFFF',
                   fontWeight: 'bold',
                   cursor: 'pointer',
-                  fontSize: '0.95rem'
+                  fontSize: '0.85rem'
                 }}
                 className="btn-teal-hover"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 8 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6 }}>
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
                 선택 월 데이터를 다음 달로 복사
@@ -561,19 +533,19 @@ export default function DataModal({ onClose }) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '1rem',
-                  borderRadius: 16,
+                  padding: '0.8rem',
+                  borderRadius: 12,
                   border: '1.5px solid var(--coral)',
                   background: 'var(--coral-dim)',
                   color: 'var(--coral)',
                   fontWeight: 'bold',
                   cursor: 'pointer',
-                  fontSize: '0.95rem',
+                  fontSize: '0.85rem',
                   transition: 'background-color 0.2s, color 0.2s'
                 }}
                 className="btn-danger-hover"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 8 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6 }}>
                   <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
                 </svg>
                 선택 월 데이터 전체 삭제
@@ -589,7 +561,7 @@ export default function DataModal({ onClose }) {
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               color: 'var(--text-secondary)',
-              marginBottom: '0.75rem'
+              marginBottom: '0.6rem'
             }}>
               Import Data
             </h4>
@@ -601,13 +573,13 @@ export default function DataModal({ onClose }) {
               onDrop={handleDrop}
               style={{
                 border: `2px dashed ${isDragging ? 'var(--teal)' : 'var(--text-muted)'}`,
-                borderRadius: 16,
-                padding: '1.5rem',
+                borderRadius: 14,
+                padding: '1rem 0.75rem',
                 textAlign: 'center',
                 cursor: 'pointer',
-                marginBottom: '1rem',
+                marginBottom: '0.75rem',
                 color: 'var(--text-secondary)',
-                fontSize: '0.9rem',
+                fontSize: '0.82rem',
                 background: isDragging ? 'var(--teal-dim)' : 'var(--input-bg)',
                 transition: 'border-color 0.2s, background-color 0.2s'
               }}
@@ -620,26 +592,27 @@ export default function DataModal({ onClose }) {
                 id="modal-file-input" 
               />
               <label htmlFor="modal-file-input" style={{ cursor: 'pointer', display: 'block', fontWeight: 'bold' }}>
-                📂 JSON 파일을 드래그하거나 클릭하여 선택
+                📂 JSON 파일 드래그 또는 선택
               </label>
             </div>
 
             <textarea 
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
-              placeholder="JSON 데이터를 여기에 붙여넣거나 파일을 드래그하세요..."
+              placeholder="JSON 데이터를 여기에 붙여넣거나 파일을 선택하세요..."
               style={{
                 width: '100%',
-                height: 120,
-                padding: '1rem',
-                borderRadius: 16,
+                height: 90,
+                padding: '0.75rem',
+                borderRadius: 12,
                 border: '1.5px solid var(--input-border)',
                 background: 'var(--card)',
                 color: 'var(--text-primary)',
                 fontFamily: 'monospace',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 resize: 'vertical',
-                outline: 'none'
+                outline: 'none',
+                boxSizing: 'border-box'
               }}
             />
           </div>
@@ -647,24 +620,25 @@ export default function DataModal({ onClose }) {
         </div>
 
         {/* Footer */}
-        <div style={{
-          padding: '1.25rem 2rem',
+        <div className="data-modal-footer" style={{
+          padding: '1rem 1.5rem',
           background: 'var(--bg)',
           display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '0.75rem',
+          justify: 'flex-end',
+          gap: '0.5rem',
           borderTop: '1px solid var(--card-border)'
         }}>
           <button 
             onClick={onClose}
             style={{
-              padding: '0.75rem 1.75rem',
-              borderRadius: 12,
+              padding: '0.65rem 1.25rem',
+              borderRadius: 10,
               border: '1.5px solid var(--card-border)',
               background: 'var(--card)',
               color: 'var(--text-primary)',
               fontWeight: 'bold',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              fontSize: '0.85rem'
             }}
             className="btn-cancel"
           >
@@ -673,13 +647,14 @@ export default function DataModal({ onClose }) {
           <button 
             onClick={handleImport}
             style={{
-              padding: '0.75rem 1.75rem',
-              borderRadius: 12,
+              padding: '0.65rem 1.25rem',
+              borderRadius: 10,
               border: 'none',
               background: 'var(--teal)',
               color: '#FFFFFF',
               fontWeight: 'bold',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              fontSize: '0.85rem'
             }}
             className="btn-apply"
           >
