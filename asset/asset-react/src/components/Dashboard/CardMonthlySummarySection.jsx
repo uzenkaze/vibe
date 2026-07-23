@@ -215,8 +215,14 @@ export default function CardMonthlySummarySection() {
           <tbody>
             {cardMonthlySummaries.length === 0 ? (
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)' }}>
-                  등록된 카드별 결제금액 내역이 없습니다. [+ 카드 결제금액 추가] 버튼을 클릭해 카드를 입력해보세요.
+                <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+                  <div className="desktop-only-text">
+                    등록된 카드별 결제금액 내역이 없습니다.<br />
+                    [+ 카드 결제금액 추가] 버튼을 클릭해 카드를 입력해보세요.
+                  </div>
+                  <div className="mobile-only-text">
+                    등록된 카드별 결제금액 내역이 없습니다.
+                  </div>
                 </td>
               </tr>
             ) : (

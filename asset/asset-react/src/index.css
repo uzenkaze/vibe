@@ -2669,3 +2669,19 @@ th,
 .mobile-installment-list {
   display: none;
 }
+
+/* 데스크탑 전용 및 모바일 전용 텍스트 유틸리티 */
+.desktop-only-text {
+  display: inline;
+}
+.mobile-only-text {
+  display: none;
+}
+@media (max-width: 768px) {
+  .desktop-only-text {
+    display: none !important;
+  }
+  .mobile-only-text {
+    display: inline !important;
+  }
+}
