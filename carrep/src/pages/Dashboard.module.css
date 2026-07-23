@@ -941,34 +941,34 @@
     font-size: 0.95rem !important;
   }
   
-  /* 번호판 슬림 콤팩트화 극대화 */
+  /* 번호판 슬림 콤팩트화 극대화 (1.5배 키움 적용) */
   .realPlateBox { 
-    padding: 1px 4px !important; 
-    gap: 3px !important; 
-    border-radius: 4px !important;
+    padding: 2px 6px !important; 
+    gap: 4px !important; 
+    border-radius: 6px !important;
     border-width: 1px !important;
   }
   
   .plateText { 
-    font-size: 0.72rem !important; 
-    letter-spacing: 0.5px !important;
+    font-size: 1.1rem !important; 
+    letter-spacing: 0.8px !important;
   }
   
   .plateScrew {
-    width: 2px !important;
-    height: 2px !important;
+    width: 3px !important;
+    height: 3px !important;
   }
 
-  /* 모바일 스펙 배지 가로 배치 영역 및 칩 축소 */
+  /* 모바일 스펙 배지 가로 배치 영역 및 칩 축소 (1.2배 키움 적용) */
   .carSpecBadgesMobileRow {
-    gap: 2px !important;
-    margin-bottom: 2px !important;
+    gap: 3px !important;
+    margin-bottom: 3px !important;
   }
   
   .mobileSpecChip {
-    padding: 1.5px 4px !important;
-    font-size: 8.5px !important;
-    border-radius: 8px !important;
+    padding: 2px 5px !important;
+    font-size: 10px !important;
+    border-radius: 10px !important;
   }
   
   /* 차량 이미지 100% 한눈에 보임 처리 */
@@ -1085,32 +1085,32 @@
     font-size: 0.74rem !important;
   }
 
-  /* 초소형 번호판 및 스펙 칩 극소형화 */
+  /* 초소형 번호판 및 스펙 칩 극소형화 (1.5배 / 1.2배 복원 적용) */
   .realPlateBox { 
-    padding: 0.8px 3px !important; 
-    gap: 2px !important; 
-    border-radius: 3px !important;
+    padding: 1.5px 5px !important; 
+    gap: 3px !important; 
+    border-radius: 5px !important;
   }
   
   .plateText { 
-    font-size: 0.64rem !important; 
-    letter-spacing: 0.3px !important;
+    font-size: 0.96rem !important; 
+    letter-spacing: 0.5px !important;
   }
   
   .plateScrew {
-    width: 1.8px !important;
-    height: 1.8px !important;
+    width: 2.5px !important;
+    height: 2.5px !important;
   }
 
   .carSpecBadgesMobileRow {
-    gap: 1.5px !important;
-    margin-bottom: 1px !important;
+    gap: 2px !important;
+    margin-bottom: 2px !important;
   }
   
   .mobileSpecChip {
-    padding: 1px 3px !important;
-    font-size: 7.5px !important;
-    border-radius: 6px !important;
+    padding: 1.5px 4px !important;
+    font-size: 9px !important;
+    border-radius: 8px !important;
   }
 
   .repairSummaryItem { padding: 8px 8px !important; gap: 3px !important; }
@@ -1737,5 +1737,5 @@
   color: #2563eb !important;
 }
 
-/* cache busting index css hash update: 2026-07-24-0852 */
+/* cache busting index css hash update: 2026-07-24-0858 */
 
