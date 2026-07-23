@@ -87,18 +87,27 @@ export const CARD_BRANDS = {
   }
 };
 
-// 카드 기본값 (초기 사용자용)
+// 카드 기본값 (초기 사용자용 - KB, 신한, 롯데, NH농협카드)
 const DEFAULT_USER_CARDS = [
-  { id: 'default-kb', brandKey: 'KB', name: 'KB국민 톡톡카드', lastDigits: '4281' },
-  { id: 'default-hyundai', brandKey: 'HYUNDAI', name: '현대카드 M3 Boost', lastDigits: '8910' },
-  { id: 'default-shinhan', brandKey: 'SHINHAN', name: '신한 Mr.Life', lastDigits: '1052' }
+  { id: 'default-kb', brandKey: 'KB', name: 'KB국민카드', lastDigits: '4281' },
+  { id: 'default-shinhan', brandKey: 'SHINHAN', name: '신한카드', lastDigits: '1052' },
+  { id: 'default-lotte', brandKey: 'LOTTE', name: '롯데카드', lastDigits: '8821' },
+  { id: 'default-nh', brandKey: 'NH', name: 'NH농협카드', lastDigits: '3365' }
 ];
 
 export default function CardManagementSection() {
   const { getCurrentSections, persistSections, year, month, yearData } = useApp();
   const sections = getCurrentSections();
 
-  const userCards = sections.userCards && sections.userCards.length > 0 ? sections.userCards : DEFAULT_USER_CARDS;
+  // 기존 사용자 데이터에 현대카드(HYUNDAI)가 들어있거나 비어있으면 4대 카드(KB, 신한, 롯데, NH)로 자동 전환
+  const userCards = useMemo(() => {
+    const hasHyundai = sections.userCards && sections.userCards.some(c => c.brandKey === 'HYUNDAI');
+    if (!sections.userCards || sections.userCards.length === 0 || hasHyundai) {
+      return DEFAULT_USER_CARDS;
+    }
+    return sections.userCards;
+  }, [sections.userCards]);
+
   const installments = sections.installment || [];
 
   // 지난달 연월 산출
