@@ -241,67 +241,63 @@ export default function PensionPage() {
          ========================================================================= */}
       {activeTab === 'national' && (
         <div style={{ animation: 'tabFadeIn 0.25s ease' }}>
-          {/* ── Hero Highlight Card ── */}
-          <div style={{
-            background: 'linear-gradient(135deg, #1A1F3C 0%, #2D3561 50%, #1a3a5c 100%)',
-            borderRadius: 'var(--radius-xl)',
-            padding: '2.5rem 2rem',
+          {/* ── Hero Highlight Card (section-card Style) ── */}
+          <div className="section-card" style={{
+            padding: '2rem 2rem',
             marginBottom: '1.5rem',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
           }}>
             {/* 헤더 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
               <div style={{
-                width: 42, height: 42, borderRadius: '12px',
+                width: 40, height: 40, borderRadius: '12px',
                 background: 'linear-gradient(135deg, #F5A623, #F59E0B)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(245,166,35,0.4)',
+                boxShadow: '0 4px 12px rgba(245,166,35,0.3)',
               }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M21.18 8A10 10 0 0 0 12 2v10z"/>
                 </svg>
               </div>
               <div>
-                <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>국민연금 수령 예상액</div>
-                <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>National Pension Simulation</div>
+                <div style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>국민연금 수령 예상액</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>National Pension Simulation</div>
               </div>
             </div>
 
             {/* 메인 금액 */}
-            <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-              <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem' }}>
                 {formData.startDate ? `${formData.startDate}(65세)부터` : '연금 개시 시기(65세)부터'}&nbsp;받게 될 예상 연금액
               </div>
-              <div style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.25rem' }}>매월</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '1rem', fontWeight: 700, marginBottom: '0.2rem' }}>매월</div>
               <div style={{
-                color: '#2DC9A0',
+                color: 'var(--teal)',
                 fontSize: 'clamp(2.2rem, 6vw, 3.2rem)',
                 fontWeight: 900,
                 letterSpacing: '-0.04em',
                 lineHeight: 1.1,
-                textShadow: '0 0 30px rgba(45,201,160,0.4)',
                 fontFamily: "'Plus Jakarta Sans', sans-serif"
               }}>
-                {formatKRW(currentAmount)}<span style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: 4 }}>원</span>
+                {formatKRW(currentAmount)}<span style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: 4, color: 'var(--text-secondary)' }}>원</span>
               </div>
             </div>
 
             {/* ── 연금 개시 시기 계기판 게이지 (Yellow Tick Gauge Style) ── */}
-            <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px dashed rgba(255,255,255,0.15)' }}>
+            <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px dashed var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>
                 <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b' }} />
                   연금 개시 시기
                 </span>
-                <span style={{ color: '#ffffff', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800 }}>
+                <span style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800 }}>
                   {formData.startDate ? `${formData.startDate} (65세 개시)` : '2039년 03월 (65세부터 수령)'}
                 </span>
               </div>
 
               {/* Yellow Tick Gauge 게이지 바 */}
-              <div className="yellow-tick-gauge-track" style={{ height: '12px', background: 'rgba(0, 0, 0, 0.4)' }}>
+              <div className="yellow-tick-gauge-track" style={{ height: '12px' }}>
                 <div 
                   className="yellow-tick-gauge-fill-income"
                   style={{
@@ -312,12 +308,12 @@ export default function PensionPage() {
 
               {/* 하단 진행 달성률 서브 라벨 */}
               {totalMonths > 0 ? (
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', fontWeight: 700, marginTop: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, marginTop: '0.5rem' }}>
                   <span>총 {totalMonths}개월 중 {paidMonths}개월 납부 완료</span>
                   <span style={{ color: '#f59e0b', fontWeight: 800 }}>납부 진행률 {pct}%</span>
                 </div>
               ) : (
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.5)', fontSize: '0.72rem', fontWeight: 600, marginTop: '0.4rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.72rem', fontWeight: 600, marginTop: '0.4rem' }}>
                   <span>하단 정보 입력 시 진행률 및 수령 시기가 연동됩니다</span>
                   <span style={{ color: '#f59e0b', fontWeight: 700 }}>65세 수령</span>
                 </div>
