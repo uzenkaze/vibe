@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 
 const BOTTOM_NAV_ITEMS = [
@@ -67,9 +68,36 @@ const BOTTOM_NAV_ITEMS = [
 
 export default function BottomNav() {
   const { navSection, setNavSection } = useApp();
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+
+      // 상단 최상단 부근(40px 이내)일 때는 항상 표시
+      if (currentScrollY < 40) {
+        setVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // 위로 스크롤 시 숨김, 아래로 스크롤 시 표시
+      if (currentScrollY < lastScrollY.current - 4) {
+        setVisible(false); // 위로 올리면 숨김
+      } else if (currentScrollY > lastScrollY.current + 4) {
+        setVisible(true);  // 아래로 내리면 표시
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="bottom-nav">
+    <nav className={`bottom-nav ${visible ? '' : 'hide-scroll'}`}>
       {BOTTOM_NAV_ITEMS.map(item => (
         <button
           key={item.id}

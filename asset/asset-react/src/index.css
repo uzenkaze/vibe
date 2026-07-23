@@ -2511,3 +2511,14 @@ html.dark .top-volume-card-next {
     display: none !important;
   }
 }
+
+/* 모바일 bottom-nav 스크롤 트랜지션 */
+.bottom-nav {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease !important;
+}
+
+.bottom-nav.hide-scroll {
+  transform: translate(-50%, 120px) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
