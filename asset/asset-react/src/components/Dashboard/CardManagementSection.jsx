@@ -92,46 +92,6 @@ export default function CardManagementSection() {
 
   const cardMonthlySummaries = sections.cardMonthlySummaries || [];
 
-  // 1. 하단 결제금액 내역에서 등록된 고유 카드사 동적 추출
-  const userCards = useMemo(() => {
-    const seen = new Set();
-    const list = [];
-    
-    cardMonthlySummaries.forEach(item => {
-      const cardName = item.cardName || '';
-      if (!cardName.trim()) return;
-      
-      let brandKey = '';
-      if (cardName.includes('신한')) brandKey = 'SHINHAN';
-      else if (cardName.includes('롯데')) brandKey = 'LOTTE';
-      else if (cardName.includes('농협') || cardName.includes('NH')) brandKey = 'NH';
-      else if (cardName.includes('국민') || cardName.includes('KB')) brandKey = 'KB';
-      else if (cardName.includes('현대')) brandKey = 'HYUNDAI';
-      else if (cardName.includes('삼성')) brandKey = 'SAMSUNG';
-      else if (cardName.includes('우리')) brandKey = 'WOORI';
-      else if (cardName.includes('하나')) brandKey = 'HANA';
-      else if (cardName.includes('카카오')) brandKey = 'KAKAO';
-      else if (cardName.includes('토스')) brandKey = 'TOSS';
-      else return; // 매칭되지 않는 텍스트는 보류
-      
-      const brandShort = CARD_BRANDS[brandKey]?.short || '';
-      if (brandShort && !seen.has(brandShort)) {
-        seen.add(brandShort);
-        // 비고란 등에서 뒷자리 번호 추출 시도
-        const noteDigits = item.note ? item.note.replace(/[^0-9]/g, '') : '';
-        const digits = noteDigits.length >= 4 ? noteDigits.slice(-4) : '3302';
-        
-        list.push({
-          id: `dyn-${brandKey}`,
-          brandKey,
-          name: cardName,
-          lastDigits: digits
-        });
-      }
-    });
-    return list;
-  }, [cardMonthlySummaries]);
-
   // 지난달 연월 산출
   let prevYearVal = parseInt(year);
   let prevMonthVal = parseInt(month) - 1;
@@ -148,6 +108,48 @@ export default function CardManagementSection() {
   const prevMonthData = prevMonths[prevMonthUnpadded] || prevMonths[prevMonthPadded] || {};
   const prevSections = prevMonthData.sections || {};
   const prevCardMonthlySummaries = prevSections.cardMonthlySummaries || [];
+
+  // 1. 이번달 및 지난달 결제내역에서 등록된 고유 카드사 모두 추출 (이달 내역이 없어도 지난달 정보 기반으로 노출되도록 보장)
+  const userCards = useMemo(() => {
+    const seen = new Set();
+    const list = [];
+    
+    // 이번 달과 지난 달 카드 리스트 병합 취합
+    const combinedSummaries = [...cardMonthlySummaries, ...prevCardMonthlySummaries];
+    
+    combinedSummaries.forEach(item => {
+      const cardName = item.cardName || '';
+      if (!cardName.trim()) return;
+      
+      let brandKey = '';
+      if (cardName.includes('신한')) brandKey = 'SHINHAN';
+      else if (cardName.includes('롯데')) brandKey = 'LOTTE';
+      else if (cardName.includes('농협') || cardName.includes('NH')) brandKey = 'NH';
+      else if (cardName.includes('국민') || cardName.includes('KB')) brandKey = 'KB';
+      else if (cardName.includes('현대')) brandKey = 'HYUNDAI';
+      else if (cardName.includes('삼성')) brandKey = 'SAMSUNG';
+      else if (cardName.includes('우리')) brandKey = 'WOORI';
+      else if (cardName.includes('하나')) brandKey = 'HANA';
+      else if (cardName.includes('카카오')) brandKey = 'KAKAO';
+      else if (cardName.includes('토스')) brandKey = 'TOSS';
+      else return;
+      
+      const brandShort = CARD_BRANDS[brandKey]?.short || '';
+      if (brandShort && !seen.has(brandShort)) {
+        seen.add(brandShort);
+        const noteDigits = item.note ? item.note.replace(/[^0-9]/g, '') : '';
+        const digits = noteDigits.length >= 4 ? noteDigits.slice(-4) : '3302';
+        
+        list.push({
+          id: `dyn-${brandKey}`,
+          brandKey,
+          name: cardName,
+          lastDigits: digits
+        });
+      }
+    });
+    return list;
+  }, [cardMonthlySummaries, prevCardMonthlySummaries]);
 
   // 이번 달 카드별 결제금액 집계 (결제내역 기준)
   const thisMonthUsageMap = useMemo(() => {
@@ -201,8 +203,8 @@ export default function CardManagementSection() {
     return map;
   }, [prevCardMonthlySummaries]);
 
-  // 2. 결제금액 내역 데이터가 없으면 상단 보유 현황 영역 미표시 처리
-  if (cardMonthlySummaries.length === 0 || userCards.length === 0) {
+  // 2. 이번달 및 지난달 결제금액 내역 둘 다 아예 카드가 등록 안 되어 있으면 보유 현황 감춤
+  if (userCards.length === 0) {
     return null;
   }
 
@@ -223,7 +225,7 @@ export default function CardManagementSection() {
         </div>
       </div>
 
-      {/* 3D 실물 카드 슬라이더 / 그리드 영역 (가로 크기 & 하단 여백 축소) */}
+      {/* 3D 실물 카드 슬라이더 / 그리드 영역 */}
       <div 
         className="mobile-card-deck"
         style={{
@@ -253,7 +255,7 @@ export default function CardManagementSection() {
                 padding: '0.75rem 0.9rem',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between',
+                justify: 'space-between',
                 boxShadow: '0 8px 20px -4px rgba(0, 0, 0, 0.2)',
                 overflow: 'hidden',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -329,7 +331,7 @@ export default function CardManagementSection() {
         })}
       </div>
 
-      {/* 카드별 지난달 대비 지출 비교 차트 영역 */}
+      {/* 카드별 지난달 대비 지출 비교 차트 영역 (Striped Yellow Tick Gauge 로 전면 리디자인) */}
       <div style={{
         background: 'var(--surface)',
         border: '1px solid var(--border)',
@@ -341,11 +343,11 @@ export default function CardManagementSection() {
             📊 카드별 결제금액 비교 차트 ({prevMonthVal}월 vs {month}월)
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.68rem', fontWeight: 700 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#3b82f6' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6' }} /> {month}월
+            <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#10b981' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} /> {month}월 (이번달)
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--text-muted)' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--border)' }} /> {prevMonthVal}월
+            <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#ef4444' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} /> {prevMonthVal}월 (전월)
             </span>
           </div>
         </div>
@@ -359,35 +361,34 @@ export default function CardManagementSection() {
             const prevAmt = prevMonthUsageMap[shortName] || prevMonthUsageMap[card.name] || 0;
             const maxVal = Math.max(thisAmt, prevAmt, 100000);
 
+            // 게이지 백분율 계산
             const thisWidthPct = Math.min((thisAmt / maxVal) * 100, 100);
             const prevWidthPct = Math.min((prevAmt / maxVal) * 100, 100);
             const diff = thisAmt - prevAmt;
 
             return (
-              <div key={card.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div key={card.id} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
                   <span style={{ fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ width: 8, height: 8, borderRadius: '2px', background: brand.bg }} />
                     {card.name} <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 500 }}>({shortName})</span>
                   </span>
                   <span style={{ fontSize: '0.7rem', fontWeight: 700, color: diff > 0 ? 'var(--coral)' : (diff < 0 ? 'var(--teal)' : 'var(--text-muted)') }}>
-                    {diff > 0 ? `+${formatKRW(diff)}원` : (diff < 0 ? `-${formatKRW(Math.abs(diff))}원` : '변동없음')}
+                    {diff > 0 ? `+${formatKRW(diff)}원 (증가)` : (diff < 0 ? `-${formatKRW(Math.abs(diff))}원 (절감)` : '변동없음')}
                   </span>
                 </div>
 
-                {/* 차트 트랙 2개 (이번달 & 지난달) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  {/* 이번달 막대 */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '0.6rem', width: '28px', color: '#3b82f6', fontWeight: 700 }}>{month}월</span>
-                    <div style={{ flex: 1, height: '8px', background: 'var(--bg)', borderRadius: '4px', overflow: 'hidden' }}>
+                {/* 빗금 눈금(Yellow Tick) 게이지 모양 트랙 2개 */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {/* 이번달 지출 게이지 (초록빛/오렌지 빛 빗금형식) */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '0.62rem', width: '28px', color: 'var(--text-secondary)', fontWeight: 700 }}>{month}월</span>
+                    <div className="yellow-tick-gauge-track" style={{ flex: 1, height: '9px' }}>
                       <div
+                        className="yellow-tick-gauge-fill-income"
                         style={{
                           width: `${thisWidthPct}%`,
-                          height: '100%',
-                          background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)',
-                          borderRadius: '4px',
-                          transition: 'width 0.4s ease'
+                          height: '100%'
                         }}
                       />
                     </div>
@@ -396,17 +397,15 @@ export default function CardManagementSection() {
                     </span>
                   </div>
 
-                  {/* 지난달 막대 */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '0.6rem', width: '28px', color: 'var(--text-muted)', fontWeight: 600 }}>{prevMonthVal}월</span>
-                    <div style={{ flex: 1, height: '6px', background: 'var(--bg)', borderRadius: '3px', overflow: 'hidden' }}>
+                  {/* 지난달 지출 게이지 (붉은빛 빗금형식) */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '0.62rem', width: '28px', color: 'var(--text-muted)', fontWeight: 600 }}>{prevMonthVal}월</span>
+                    <div className="yellow-tick-gauge-track" style={{ flex: 1, height: '9px' }}>
                       <div
+                        className="yellow-tick-gauge-fill-expense"
                         style={{
                           width: `${prevWidthPct}%`,
-                          height: '100%',
-                          background: 'var(--border)',
-                          borderRadius: '3px',
-                          transition: 'width 0.4s ease'
+                          height: '100%'
                         }}
                       />
                     </div>
