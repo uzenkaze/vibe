@@ -152,11 +152,11 @@ export default function CardPaymentsPage() {
 
   // --- SVG Chart Dimensions ---
   const width = 800;
-  const height = 250;
-  const paddingLeft = 75;
-  const paddingRight = 40;
-  const paddingTop = 45;
-  const paddingBottom = 45;
+  const height = 340;
+  const paddingLeft = 55;
+  const paddingRight = 15;
+  const paddingTop = 25;
+  const paddingBottom = 30;
 
   const plotWidth = width - paddingLeft - paddingRight;
   const plotHeight = height - paddingTop - paddingBottom;
@@ -469,7 +469,7 @@ export default function CardPaymentsPage() {
                   strokeDasharray={idx === 0 ? "none" : "4 4"}
                 />
                 <text
-                  x={paddingLeft - 12}
+                  x={paddingLeft - 8}
                   y={line.y + 4}
                   textAnchor="end"
                   fill="var(--text-muted)"
@@ -709,7 +709,8 @@ export default function CardPaymentsPage() {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               letterSpacing: '-0.03em',
               marginBottom: '0.4rem',
-              lineHeight: 1.1
+              lineHeight: 1.1,
+              textAlign: 'right'
             }}>
               {formatKRW(totalIncome)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
             </div>
@@ -827,7 +828,8 @@ export default function CardPaymentsPage() {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               letterSpacing: '-0.03em',
               marginBottom: '0.4rem',
-              lineHeight: 1.1
+              lineHeight: 1.1,
+              textAlign: 'right'
             }}>
               {formatKRW(paymentsTotalAmount)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
             </div>
@@ -947,7 +949,8 @@ export default function CardPaymentsPage() {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               letterSpacing: '-0.03em',
               marginBottom: '0.4rem',
-              lineHeight: 1.1
+              lineHeight: 1.1,
+              textAlign: 'right'
             }}>
               {formatKRW(cardTotalAmount)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
             </div>
@@ -1047,7 +1050,8 @@ export default function CardPaymentsPage() {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               letterSpacing: '-0.03em',
               marginBottom: '0.4rem',
-              lineHeight: 1.1
+              lineHeight: 1.1,
+              textAlign: 'right'
             }}>
               {formatKRW(absDifference)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
             </div>
