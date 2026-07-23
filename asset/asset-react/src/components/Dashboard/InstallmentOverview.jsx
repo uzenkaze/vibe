@@ -205,8 +205,8 @@ export default function InstallmentOverview() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>내용 (카드)</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>남은 잔액</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>내용 (카드)</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>남은 잔액</th>
               </tr>
             </thead>
             <tbody>
@@ -325,13 +325,13 @@ export default function InstallmentOverview() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>내용</th>
-                <th>카드</th>
-                <th style={{ textAlign: 'right' }}>총금액</th>
+                <th style={{ textAlign: 'center' }}>내용</th>
+                <th style={{ textAlign: 'center' }}>카드</th>
+                <th style={{ textAlign: 'center' }}>총금액</th>
                 <th style={{ textAlign: 'center' }}>회차</th>
-                <th style={{ textAlign: 'right' }}>월납부</th>
-                <th style={{ textAlign: 'right' }}>잔액</th>
-                <th style={{ textAlign: 'right' }}>종료</th>
+                <th style={{ textAlign: 'center' }}>월납부</th>
+                <th style={{ textAlign: 'center' }}>잔액</th>
+                <th style={{ textAlign: 'center' }}>종료</th>
               </tr>
             </thead>
             <tbody>

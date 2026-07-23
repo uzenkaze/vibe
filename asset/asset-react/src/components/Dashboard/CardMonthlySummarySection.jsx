@@ -204,11 +204,11 @@ export default function CardMonthlySummarySection() {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ width: '150px' }}>카드</th>
+              <th style={{ width: '150px', textAlign: 'center' }}>카드</th>
               <th style={{ width: '110px', textAlign: 'center' }}>결제일</th>
-              <th style={{ textAlign: 'right', width: '160px' }}>이달 결제액</th>
-              <th style={{ textAlign: 'right', width: '160px' }}>다음달 결제액</th>
-              <th>비고</th>
+              <th style={{ textAlign: 'center', width: '160px' }}>이달 결제액</th>
+              <th style={{ textAlign: 'center', width: '160px' }}>다음달 결제액</th>
+              <th style={{ textAlign: 'center' }}>비고</th>
               <th style={{ width: '80px', textAlign: 'center' }}>작업</th>
             </tr>
           </thead>

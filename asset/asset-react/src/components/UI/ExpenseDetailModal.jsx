@@ -44,9 +44,9 @@ export default function ExpenseDetailModal({ item, sectionKey, onClose, onSave, 
           <table className="data-table">
             <thead>
               <tr>
-                <th>분류 (내용)</th>
-                <th style={{ width: 160, textAlign: 'right' }}>금액</th>
-                <th>비고</th>
+                <th style={{ textAlign: 'center' }}>분류 (내용)</th>
+                <th style={{ width: 160, textAlign: 'center' }}>금액</th>
+                <th style={{ textAlign: 'center' }}>비고</th>
                 <th style={{ width: 50, textAlign: 'center' }}>삭제</th>
               </tr>
             </thead>

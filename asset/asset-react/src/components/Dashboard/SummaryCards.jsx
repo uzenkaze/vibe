@@ -299,8 +299,8 @@ export default function SummaryCards() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>분류</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>분류</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>금액</th>
               </tr>
             </thead>
             <tbody>
@@ -340,8 +340,8 @@ export default function SummaryCards() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>분류</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>분류</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>금액</th>
               </tr>
             </thead>
             <tbody>
@@ -376,8 +376,8 @@ export default function SummaryCards() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>항목</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>항목</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>금액</th>
               </tr>
             </thead>
             <tbody>
@@ -410,8 +410,8 @@ export default function SummaryCards() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>항목</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>금액</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>항목</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>금액</th>
               </tr>
             </thead>
             <tbody>

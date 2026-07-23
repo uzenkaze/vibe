@@ -1056,7 +1056,7 @@ html.dark .data-table thead {
 }
 
 .data-table th {
-  text-align: center;
+  text-align: center !important;
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -1075,7 +1075,7 @@ html.dark .data-table thead {
 }
 
 .data-table th:first-child { 
-  text-align: left; 
+  text-align: center !important; 
 }
 
 html.dark .data-table th {
@@ -1857,7 +1857,7 @@ html.dark .section-subtotal {
   color: var(--table-header-text);
   border-bottom: 1px solid var(--table-border);
   padding: 0.55rem 0.8rem;
-  text-align: left;
+  text-align: center !important;
   font-size: 0.67rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -1865,7 +1865,7 @@ html.dark .section-subtotal {
 }
 
 .summary-table th:not(:last-child) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.summary-table th:last-child { text-align: right; padding-right: 0.875rem; }
+.summary-table th:last-child { text-align: center !important; }
 
 html.dark .summary-table th {
   background: var(--table-header-bg);
@@ -2611,4 +2611,14 @@ html.dark .top-volume-card-next {
   transform: translate(-50%, 120px) !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+/* 모든 테이블 영역 헤더(th) 중앙정렬 */
+th,
+.data-table th,
+.pension-table th,
+.summary-table th,
+.card-payments-compact-table th,
+.pension-mobile-table th {
+  text-align: center !important;
 }

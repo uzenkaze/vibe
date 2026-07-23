@@ -289,8 +289,8 @@ export default function InstallmentPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>내용 (카드)</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>남은 잔액</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>내용 (카드)</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>남은 잔액</th>
               </tr>
             </thead>
             <tbody>
@@ -335,8 +335,8 @@ export default function InstallmentPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>내용 (카드)</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>원금+수수료</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>내용 (카드)</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>원금+수수료</th>
               </tr>
             </thead>
             <tbody>
@@ -390,8 +390,8 @@ export default function InstallmentPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
-                <th style={{ textAlign: 'left', padding: '4px' }}>내용 (카드)</th>
-                <th style={{ textAlign: 'right', padding: '4px' }}>예상 납부액</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>내용 (카드)</th>
+                <th style={{ textAlign: 'center', padding: '4px' }}>예상 납부액</th>
               </tr>
             </thead>
             <tbody>
@@ -667,16 +667,16 @@ export default function InstallmentPage() {
         <table className="data-table" style={{ minWidth: 1000 }}>
           <thead>
             <tr>
-              <th style={{ width: 140 }}>사용일</th>
-              <th style={{ width: 110 }}>카드</th>
-              <th>사용처</th>
-              <th style={{ width: 130, textAlign: 'right' }}>총금액</th>
+              <th style={{ width: 140, textAlign: 'center' }}>사용일</th>
+              <th style={{ width: 110, textAlign: 'center' }}>카드</th>
+              <th style={{ textAlign: 'center' }}>사용처</th>
+              <th style={{ width: 130, textAlign: 'center' }}>총금액</th>
               <th style={{ width: 90, textAlign: 'center' }}>이율(%)</th>
               <th style={{ width: 110, textAlign: 'center' }}>회차</th>
-              <th style={{ width: 110, textAlign: 'right' }}>원금</th>
-              <th style={{ width: 110, textAlign: 'right' }}>수수료</th>
-              <th style={{ width: 120, textAlign: 'right' }}>원금+수수료</th>
-              <th style={{ width: 120, textAlign: 'right' }}>잔액</th>
+              <th style={{ width: 110, textAlign: 'center' }}>원금</th>
+              <th style={{ width: 110, textAlign: 'center' }}>수수료</th>
+              <th style={{ width: 120, textAlign: 'center' }}>원금+수수료</th>
+              <th style={{ width: 120, textAlign: 'center' }}>잔액</th>
               <th style={{ width: 80, textAlign: 'center' }}>종료</th>
               <th style={{ width: 90, textAlign: 'center' }}>관리</th>
             </tr>

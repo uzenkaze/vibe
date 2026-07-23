@@ -80,11 +80,11 @@ function DataSection({ title, sectionKey, columns, accentColor = 'var(--coral)',
           <thead>
             <tr>
               {columns.map(col => (
-                <th key={col.key} className={(col.key === 'content' || col.key === 'desc') ? 'col-hide-mobile' : ''} style={{ textAlign: col.right ? 'right' : 'left', width: col.width }}>
+                <th key={col.key} className={(col.key === 'content' || col.key === 'desc') ? 'col-hide-mobile' : ''} style={{ textAlign: 'center', width: col.width }}>
                   {col.label}
                 </th>
               ))}
-              <th style={{ width: 60, textAlign: 'right' }}>관리</th>
+              <th style={{ width: 60, textAlign: 'center' }}>관리</th>
             </tr>
           </thead>
           <tbody>

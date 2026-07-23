@@ -985,11 +985,11 @@ export default function CardPaymentsPage() {
             <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '100%' }}>
               <thead>
                 <tr>
-                  <th style={{ width: 24, padding: '6px 2px', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}></th>
+                  <th style={{ width: 24, padding: '6px 2px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}></th>
                   <th style={{ width: 65, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>입금여부</th>
                   <th style={{ width: 90, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>납부일</th>
-                  <th style={{ padding: '6px 6px', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>항목</th>
-                  <th style={{ width: 105, padding: '6px 4px', textAlign: 'right', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액(원)</th>
+                  <th style={{ padding: '6px 6px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>항목</th>
+                  <th style={{ width: 105, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액(원)</th>
                   <th style={{ width: 95, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>작업</th>
                 </tr>
               </thead>
@@ -1128,9 +1128,9 @@ export default function CardPaymentsPage() {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th style={{ backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>상세 항목명</th>
-                    <th style={{ width: 180, backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>내용</th>
-                    <th style={{ width: 180, textAlign: 'right', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액 (원)</th>
+                    <th style={{ textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>상세 항목명</th>
+                    <th style={{ width: 180, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>내용</th>
+                    <th style={{ width: 180, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>금액 (원)</th>
                     <th style={{ width: 80, textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>작업</th>
                   </tr>
                 </thead>
