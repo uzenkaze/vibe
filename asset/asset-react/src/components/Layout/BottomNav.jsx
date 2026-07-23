@@ -82,11 +82,12 @@ export default function BottomNav() {
         return;
       }
 
-      // 위로 스크롤 시 숨김, 아래로 스크롤 시 표시
-      if (currentScrollY < lastScrollY.current - 4) {
-        setVisible(false); // 위로 올리면 숨김
-      } else if (currentScrollY > lastScrollY.current + 4) {
-        setVisible(true);  // 아래로 내리면 표시
+      // 위로 스크롤(currentScrollY가 감소) → 표시
+      // 아래로 스크롤(currentScrollY가 증가) → 숨김
+      if (currentScrollY < lastScrollY.current - 8) {
+        setVisible(true);  // 위로 올리면 표시
+      } else if (currentScrollY > lastScrollY.current + 8) {
+        setVisible(false); // 아래로 내리면 숨김
       }
 
       lastScrollY.current = currentScrollY;
