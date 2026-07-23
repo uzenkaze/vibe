@@ -387,7 +387,7 @@ export default function InstallmentPage() {
       <CardManagementSection />
 
       {/* 카드 할부 상세 관리 테이블 */}
-      <div className="section-card" style={{ marginBottom: '1.5rem', minHeight: '80vh' }}>
+      <div className="section-card" style={{ marginBottom: '1.5rem' }}>
         <div className="section-card-header">
           <div className="section-card-title">
             <span className="section-dot" style={{ background: '#5B6BF8' }} />
@@ -403,7 +403,7 @@ export default function InstallmentPage() {
           <button className="btn btn-dark" onClick={handleAdd}>+ 할부 추가</button>
         </div>
 
-      <div className="desktop-installment-table" style={{ padding: '0 1.5rem 1.5rem', overflowX: 'auto' }}>
+      <div className="desktop-installment-table" style={{ padding: '1rem 1.5rem 1.25rem', overflowX: 'auto' }}>
         <table className="data-table" style={{ minWidth: 1000 }}>
           <thead>
             <tr>
