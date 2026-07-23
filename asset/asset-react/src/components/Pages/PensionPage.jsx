@@ -91,10 +91,11 @@ export default function PensionPage() {
       const pct = totalEvaluation > 0 ? Math.round((evalAmt / totalEvaluation) * 100) : 0;
       let color = '#3b82f6';
       if (type === 'ETF') color = '#8b5cf6';
+      else if (type === 'TDF') color = '#ec4899';
       else if (type === '펀드') color = '#06b6d4';
       else if (type === '예금') color = '#10b981';
       else if (type === '채권') color = '#f59e0b';
-      else if (type === '주식') color = '#ec4899';
+      else if (type === '주식') color = '#6366f1';
       return { type, evalAmt, pct, color };
     });
 
@@ -587,18 +588,18 @@ export default function PensionPage() {
               </button>
             </div>
 
-            <div className="card-payments-table-container" style={{ padding: '0 0.75rem 1.25rem', overflowX: 'auto' }}>
-              <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '720px' }}>
+            <div className="card-payments-table-container" style={{ padding: '0 0.5rem 1.25rem', overflowX: 'auto' }}>
+              <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '680px' }}>
                 <thead>
                   <tr>
-                    <th style={{ width: 140, textAlign: 'left' }}>상품명</th>
-                    <th style={{ width: 85, textAlign: 'center' }}>유형</th>
-                    <th style={{ width: 110, textAlign: 'right' }}>납입원금(원)</th>
-                    <th style={{ width: 100, textAlign: 'right' }}>평가손익(원)</th>
-                    <th style={{ width: 85, textAlign: 'right' }}>수익률(%)</th>
-                    <th style={{ width: 80, textAlign: 'right' }}>보유좌수</th>
-                    <th style={{ width: 95, textAlign: 'center' }}>신규일</th>
-                    <th style={{ width: 60, textAlign: 'center' }}>작업</th>
+                    <th style={{ minWidth: 200, textAlign: 'left' }}>상품명</th>
+                    <th style={{ width: 75, textAlign: 'center' }}>유형</th>
+                    <th style={{ width: 95, textAlign: 'right' }}>납입원금</th>
+                    <th style={{ width: 90, textAlign: 'right' }}>평가손익</th>
+                    <th style={{ width: 75, textAlign: 'right' }}>수익률</th>
+                    <th style={{ width: 65, textAlign: 'right' }}>보유좌수</th>
+                    <th style={{ width: 75, textAlign: 'center' }}>신규일</th>
+                    <th style={{ width: 45, textAlign: 'center' }}>작업</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -613,25 +614,26 @@ export default function PensionPage() {
                       const isPositive = (Number(prod.profit) || 0) >= 0;
                       return (
                         <tr key={prod.id}>
-                          {/* 상품명 */}
-                          <td>
+                          {/* 상품명 (모두 표출되도록 가폭 확장) */}
+                          <td style={{ minWidth: 200 }}>
                             <input
                               type="text"
                               value={prod.name || ''}
-                              placeholder="상품명 입력 (예: S&P500)"
+                              placeholder="상품명 (예: KODEX 미국S&P500TR)"
                               onChange={(e) => handleUpdateRetirementProduct(prod.id, 'name', e.target.value)}
-                              style={{ fontWeight: 700 }}
+                              style={{ fontWeight: 800, width: '100%', padding: '0.35rem 0.4rem' }}
                             />
                           </td>
 
-                          {/* 유형 */}
-                          <td>
+                          {/* 유형 (TDF 옵션 탑재) */}
+                          <td style={{ width: 75, padding: '0.35rem 0.2rem' }}>
                             <select
                               value={prod.type || 'ETF'}
                               onChange={(e) => handleUpdateRetirementProduct(prod.id, 'type', e.target.value)}
-                              style={{ textAlign: 'center', fontWeight: 700 }}
+                              style={{ textAlign: 'center', fontWeight: 700, padding: '0.3rem 0.2rem', fontSize: '0.78rem' }}
                             >
                               <option value="ETF">ETF</option>
+                              <option value="TDF">TDF</option>
                               <option value="펀드">펀드</option>
                               <option value="예금">예금</option>
                               <option value="채권">채권</option>
@@ -641,58 +643,60 @@ export default function PensionPage() {
                           </td>
 
                           {/* 납입원금 */}
-                          <td className="amount-cell">
+                          <td className="amount-cell" style={{ width: 95, padding: '0.35rem 0.2rem' }}>
                             <NumberInput
                               value={prod.principal || 0}
                               onChange={(val) => handleUpdateRetirementProduct(prod.id, 'principal', val)}
-                              style={{ textAlign: 'right', fontWeight: 700 }}
+                              style={{ textAlign: 'right', fontWeight: 700, fontSize: '0.82rem', padding: '0.3rem 0.2rem' }}
                             />
                           </td>
 
                           {/* 평가손익 */}
-                          <td className="amount-cell">
+                          <td className="amount-cell" style={{ width: 90, padding: '0.35rem 0.2rem' }}>
                             <NumberInput
                               value={prod.profit || 0}
                               onChange={(val) => handleUpdateRetirementProduct(prod.id, 'profit', val)}
                               style={{
                                 textAlign: 'right',
                                 fontWeight: 800,
+                                fontSize: '0.82rem',
+                                padding: '0.3rem 0.2rem',
                                 color: isPositive ? '#10b981' : '#ef4444'
                               }}
                             />
                           </td>
 
                           {/* 수익률 (%) */}
-                          <td style={{ textAlign: 'right', fontWeight: 800, color: isPositive ? '#10b981' : '#ef4444', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                            {isPositive ? '+' : ''}{(Number(prod.returnRate) || 0).toFixed(2)}%
+                          <td style={{ width: 75, textAlign: 'right', fontWeight: 800, fontSize: '0.78rem', color: isPositive ? '#10b981' : '#ef4444', fontFamily: "'Plus Jakarta Sans', sans-serif", padding: '0.35rem 0.2rem' }}>
+                            {isPositive ? '+' : ''}{(Number(prod.returnRate) || 0).toFixed(1)}%
                           </td>
 
                           {/* 보유좌수 */}
-                          <td style={{ textAlign: 'right' }}>
+                          <td style={{ width: 65, textAlign: 'right', padding: '0.35rem 0.2rem' }}>
                             <NumberInput
                               value={prod.quantity || 0}
                               onChange={(val) => handleUpdateRetirementProduct(prod.id, 'quantity', val)}
-                              style={{ textAlign: 'right', fontWeight: 600 }}
+                              style={{ textAlign: 'right', fontWeight: 600, fontSize: '0.8rem', padding: '0.3rem 0.2rem' }}
                             />
                           </td>
 
                           {/* 신규일 */}
-                          <td>
+                          <td style={{ width: 75, padding: '0.35rem 0.2rem' }}>
                             <input
                               type="text"
                               value={prod.startDate || ''}
                               placeholder="2026.01.01"
                               onChange={(e) => handleUpdateRetirementProduct(prod.id, 'startDate', e.target.value)}
-                              style={{ textAlign: 'center', fontSize: '0.75rem' }}
+                              style={{ textAlign: 'center', fontSize: '0.72rem', padding: '0.3rem 0.2rem' }}
                             />
                           </td>
 
                           {/* 삭제 */}
-                          <td style={{ textAlign: 'center' }}>
+                          <td style={{ width: 45, textAlign: 'center', padding: '0.35rem 0.2rem' }}>
                             <button
                               className="btn btn-sm"
                               onClick={() => handleDeleteRetirementProduct(prod.id)}
-                              style={{ padding: '2px 6px', fontSize: '0.7rem', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', background: 'transparent' }}
+                              style={{ padding: '2px 4px', fontSize: '0.68rem', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', background: 'transparent' }}
                             >
                               삭제
                             </button>
