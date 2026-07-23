@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 import NumberInput from '../UI/NumberInput';
@@ -7,6 +7,16 @@ export default function CardMonthlySummarySection() {
   const { getCurrentSections, persistSections, year, month } = useApp();
   const sections = getCurrentSections();
   const cardMonthlySummaries = sections.cardMonthlySummaries || [];
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleAddCardSummary = () => {
     const newItem = {
@@ -208,14 +218,14 @@ export default function CardMonthlySummarySection() {
               <th style={{ width: '110px', textAlign: 'center' }}>결제일</th>
               <th style={{ textAlign: 'center', width: '160px' }}>이달 결제액</th>
               <th style={{ textAlign: 'center', width: '160px' }}>다음달 결제액</th>
-              <th style={{ textAlign: 'center' }}>비고</th>
+              <th className="hide-on-mobile" style={{ textAlign: 'center' }}>비고</th>
               <th style={{ width: '80px', textAlign: 'center' }}>작업</th>
             </tr>
           </thead>
           <tbody>
             {cardMonthlySummaries.length === 0 ? (
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+                <td colSpan={isMobile ? 5 : 6} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
                   <div className="desktop-only-text">
                     등록된 카드별 결제금액 내역이 없습니다.<br />
                     [+ 카드 결제금액 추가] 버튼을 클릭해 카드를 입력해보세요.
@@ -292,7 +302,7 @@ export default function CardMonthlySummarySection() {
                       style={{ textAlign: 'right', fontWeight: 'bold', color: 'var(--orange)' }}
                     />
                   </td>
-                  <td>
+                  <td className="hide-on-mobile">
                     <input
                       type="text"
                       value={item.note || ''}

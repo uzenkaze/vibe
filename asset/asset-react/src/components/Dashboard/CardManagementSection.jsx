@@ -214,7 +214,7 @@ export default function CardManagementSection() {
       <div className="section-card-header" style={{ marginBottom: '1rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border)' }}>
         <div className="section-card-title">
           <span className="section-dot" style={{ background: '#3b82f6' }} />
-          내 카드 보유 현황 & 지난달 대비 사용 비교
+          카드별 사용 금액
           <span style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
             fontWeight: 600, letterSpacing: '0.05em',
@@ -340,7 +340,7 @@ export default function CardManagementSection() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            📊 카드별 결제금액 비교 차트 ({prevMonthVal}월 vs {month}월)
+            📊 전월대비 ({prevMonthVal}월 vs {month}월)
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.68rem', fontWeight: 700 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#10b981' }}>

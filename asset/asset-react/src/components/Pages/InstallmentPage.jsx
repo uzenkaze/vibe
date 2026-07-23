@@ -391,7 +391,7 @@ export default function InstallmentPage() {
         <div className="section-card-header">
           <div className="section-card-title">
             <span className="section-dot" style={{ background: '#5B6BF8' }} />
-            카드 할부 상세
+            카드 할부
             <span style={{
               fontSize: '0.65rem', color: 'var(--text-muted)',
               fontWeight: 600, letterSpacing: '0.05em',

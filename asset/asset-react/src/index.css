@@ -2261,6 +2261,47 @@ html.dark .custom-dropdown-menu {
 
   .pension-info-grid { gap: 0.375rem; }
   .pension-info-card { padding: 0.55rem 0.38rem; }
+
+  /* 모바일 결제금액의 top-volume-card UI 개선 */
+  .top-volume-card {
+    padding: 0.75rem 0.85rem !important;
+    border-radius: var(--radius-md) !important;
+  }
+  .top-volume-card div[style*="width: 34"] {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 8px !important;
+  }
+  .top-volume-card div[style*="width: 34"] svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  .top-volume-card div[style*="fontSize: 0.72rem"] {
+    font-size: 0.62rem !important;
+  }
+  .top-volume-card div[style*="fontSize: 0.88rem"] {
+    font-size: 0.78rem !important;
+  }
+  .top-volume-card span[style*="fontSize: 0.68rem"] {
+    font-size: 0.58rem !important;
+    padding: 2px 6px !important;
+  }
+  .top-volume-card div[style*="clamp(1.5rem"] {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+  .top-volume-card div[style*="clamp(1.5rem"] span {
+    font-size: 0.75rem !important;
+  }
+  .top-volume-card div[style*="borderTop: 1px solid"] {
+    font-size: 0.65rem !important;
+    padding-top: 0.45rem !important;
+  }
+
+  /* 비고 열 모바일 숨김 */
+  .hide-on-mobile {
+    display: none !important;
+  }
 }
 
 @media (max-width: 420px) {
