@@ -918,15 +918,167 @@
   .topGrid { grid-template-columns: 1fr; gap: 16px; }
   .midGrid { grid-template-columns: 1fr; gap: 16px; }
   .statGrid { grid-template-columns: repeat(2, 1fr); }
-  .specGrid { grid-template-columns: 1fr 1fr; }
   .repairList { grid-template-columns: 1fr; }
   .consumablesList { grid-template-columns: 1fr; }
-  .card { padding: 18px; border-radius: 20px; }
-  .carNickname { font-size: 1.5rem; }
-  .profileCarImageWrap { width: 170px; height: 95px; }
-  .realPlateBox { padding: 3px 10px; }
-  .plateText { font-size: 1.1rem; }
+  
+  /* 카드 공통 콤팩트 축소 */
+  .card { 
+    padding: 12px 14px !important; 
+    border-radius: 18px !important; 
+  }
+  
+  /* 내 차량 히어로 카드 콤팩트화 */
+  .heroProfileCard {
+    min-height: 150px !important;
+    padding: 12px 14px !important;
+  }
+  
+  .carNickname { 
+    font-size: 1.3rem !important; 
+  }
+  
+  .editIconBtn {
+    font-size: 0.95rem !important;
+  }
+  
+  /* 번호판 슬림 콤팩트화 */
+  .realPlateBox { 
+    padding: 2px 8px !important; 
+    gap: 5px !important; 
+    border-radius: 6px !important;
+    border-width: 1px !important;
+  }
+  
+  .plateText { 
+    font-size: 0.9rem !important; 
+    letter-spacing: 1.2px !important;
+  }
+  
+  .plateScrew {
+    width: 4px !important;
+    height: 4px !important;
+  }
+  
+  /* 차량 이미지 100% 한눈에 보임 처리 */
+  .profileCarImageWrap { 
+    width: 140px !important; 
+    height: 85px !important; 
+    margin-top: -15px !important;
+    margin-bottom: -5px !important;
+  }
+  
+  .profileCarImage {
+    object-fit: contain !important;
+    object-position: center right !important;
+  }
+  
+  /* 모바일 값만 표시하는 스펙 카드 콤팩트 스타일 */
+  .carSpecWidgetCardMobile {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    letter-spacing: -0.015em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    margin-bottom: 2px;
+  }
+
+  /* 차량 정보 스펙 그리드 짤림 방지 */
+  .specGrid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  
+  .specCard {
+    padding: 10px 10px !important;
+    gap: 8px !important;
+    border-radius: 16px !important;
+    align-items: center !important;
+    min-height: 0 !important;
+  }
+
+  .specCardIcon {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.9rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .specCardIcon svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .specCardLabel {
+    font-size: 0.64rem !important;
+    font-weight: 600 !important;
+  }
+
+  .specCardVal {
+    font-size: 0.8rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+  }
+
+  /* 소모품 게이지 콤팩트 복구 */
+  .repairSummaryItem { padding: 9px 10px !important; gap: 4px !important; }
+  .repairSummaryLeft { gap: 5px !important; flex: 1.6 !important; }
+  .repairSummaryRight { gap: 3px !important; flex: 1 !important; }
+  .repairSummaryName { font-size: 0.8rem !important; font-weight: 800 !important; }
+  .yellowTickGaugeWrap {
+    padding: 2px 3px !important;
+    gap: 1px !important;
+    border-radius: 4px !important;
+  }
+  .yellowTickItem {
+    width: 1.2px !important;
+    height: 10px !important;
+  }
+  .repairSummaryHealth { font-size: 0.72rem !important; min-width: 24px !important; }
+  
   .newRepairBtn { padding: 16px; font-size: 0.98rem; }
+}
+
+/* ── 초소형 모바일 (≤ 480px) ── */
+@media (max-width: 480px) {
+  .specGrid {
+    gap: 6px !important;
+  }
+  .specCard {
+    padding: 8px 8px !important;
+    gap: 6px !important;
+    border-radius: 12px !important;
+  }
+  .specCardIcon {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .specCardIcon svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  .specCardLabel {
+    font-size: 0.58rem !important;
+  }
+  .specCardVal {
+    font-size: 0.74rem !important;
+  }
+
+  .repairSummaryItem { padding: 8px 8px !important; gap: 3px !important; }
+  .repairSummaryLeft { flex: 1.8 !important; }
+  .repairSummaryRight { flex: 0.9 !important; }
+  .repairSummaryName { font-size: 0.75rem !important; }
+  .yellowTickGaugeWrap { padding: 1.5px 2px !important; gap: 0.8px !important; }
+  .yellowTickItem { width: 1px !important; height: 9px !important; }
 }
 
 /* ── 태블릿 (769px ~ 1024px) ── */
