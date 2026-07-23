@@ -70,9 +70,9 @@ export default function AssetAnalyticsChart() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
         
         {/* 1. 포트폴리오 자산 비중 도넛 차트 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', paddingRight: '1rem', borderRight: dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #f1f5f9' }}>
-          <div style={{ position: 'relative', width: 110, height: 110, flexShrink: 0 }}>
-            <svg width="110" height="110" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', overflow: 'visible' }}>
+        <div className="asset-portfolio-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '0.75rem', borderRight: dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #f1f5f9' }}>
+          <div className="donut-chart-container" style={{ position: 'relative', width: 110, height: 110, flexShrink: 0 }}>
+            <svg className="donut-chart-svg" width="110" height="110" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', overflow: 'visible' }}>
               <circle cx="50" cy="50" r="42" fill="none" stroke={dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'} strokeWidth="12" />
               {donutSvg.arcs.map((arc, i) => (
                 <circle
@@ -96,28 +96,28 @@ export default function AssetAnalyticsChart() {
               alignItems: 'center', justifyContent: 'center',
               textAlign: 'center'
             }}>
-              <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>순자산비율</span>
-              <span style={{ fontSize: '0.88rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <span className="donut-center-label" style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>순자산비율</span>
+              <span className="donut-center-val" style={{ fontSize: '0.88rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 {totals.totalAsset > 0 ? Math.round((totals.netWorth / totals.totalAsset) * 100) : 0}%
               </span>
             </div>
           </div>
 
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <div className="portfolio-legend-container" style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.4rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               자산 구성 포트폴리오
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
               {portfolioSegments.length === 0 ? (
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>등록된 자산 데이터가 없습니다.</span>
               ) : (
                 portfolioSegments.map((seg, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: seg.color, flexShrink: 0 }} />
-                      <span style={{ color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{seg.name}</span>
+                  <div key={i} className="portfolio-legend-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', minWidth: 0 }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: seg.color, flexShrink: 0 }} />
+                      <span className="portfolio-seg-name" style={{ color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{seg.name}</span>
                     </div>
-                    <span style={{ fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", flexShrink: 0, marginLeft: 8 }}>
+                    <span className="portfolio-seg-val" style={{ fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", flexShrink: 0, marginLeft: 6 }}>
                       {formatKRW(seg.amount)}원 <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem', fontWeight: 600 }}>({seg.pct}%)</span>
                     </span>
                   </div>

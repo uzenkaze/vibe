@@ -2570,6 +2570,36 @@ html.dark .top-volume-card-next {
     padding: 0.35rem 0.15rem !important;
     font-size: 0.76rem !important;
   }
+
+  /* 자산 분석 차트 110px 도넛 차트 모바일 슬림화 & 포트폴리오 비중 폰트 핏팅 */
+  .asset-portfolio-wrapper {
+    gap: 0.6rem !important;
+    padding-right: 0.25rem !important;
+    border-right: none !important;
+  }
+  .donut-chart-container {
+    width: 78px !important;
+    height: 78px !important;
+  }
+  .donut-chart-svg {
+    width: 78px !important;
+    height: 78px !important;
+  }
+  .donut-center-label {
+    font-size: 0.5rem !important;
+  }
+  .donut-center-val {
+    font-size: 0.72rem !important;
+  }
+  .portfolio-legend-row {
+    font-size: 0.7rem !important;
+  }
+  .portfolio-seg-name {
+    font-size: 0.7rem !important;
+  }
+  .portfolio-seg-val {
+    font-size: 0.7rem !important;
+  }
 }
 
 /* 모바일 bottom-nav 스크롤 트랜지션 */
