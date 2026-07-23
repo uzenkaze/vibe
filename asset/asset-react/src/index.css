@@ -994,46 +994,59 @@ html.dark .data-section.y-expense { --theme-color:#fbbf24; --theme-bg:rgba(251,1
 .data-section.debt        { --theme-color:#6366f1; --theme-bg:rgba(99,102,241,.08); --theme-border:rgba(99,102,241,.22); }
 html.dark .data-section.debt { --theme-color:#818cf8; --theme-bg:rgba(129,140,248,.12); --theme-border:rgba(129,140,248,.25); }
 
-/* ── Data Table — Multi-Asset Swap Trading History v3 Style ── */
+/* ── Data Table — Tiimi Company SaaS Asset Management Style (Dribbble 25936059) ── */
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .data-table thead {
-  background: var(--table-header-bg);
+  background: #f8fafc;
+}
+
+html.dark .data-table thead {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .data-table th {
   text-align: center;
-  font-size: 0.68rem;
-  font-weight: 800;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--table-header-text);
-  padding: 0.7rem 0.75rem;
-  border-bottom: 1px solid var(--table-border);
+  letter-spacing: 0.05em;
+  color: #64748b;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
   white-space: nowrap;
-  background: var(--table-header-bg);
+  background: #f8fafc;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.data-table th:first-child { text-align: left; }
+.data-table th:first-child { 
+  text-align: left; 
+  border-top-left-radius: 12px;
+}
+
+.data-table th:last-child {
+  border-top-right-radius: 12px;
+}
 
 html.dark .data-table th {
   color: #94a3b8;
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .data-table td {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--table-border);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
   font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  transition: background 0.15s ease;
+  font-weight: 600;
+  color: #1e293b;
+  transition: background 0.15s ease, color 0.15s ease;
   text-align: center;
 }
 
@@ -1044,34 +1057,40 @@ html.dark .data-table td {
 
 .data-table td:first-child { text-align: left; }
 
-/* Even row stripe — subtle */
-.data-table tbody tr:nth-child(even) td {
-  background: var(--table-row-even);
+.data-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
 
+.data-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* Row Hover — Tiimi SaaS Highlight */
 .data-table tbody tr:hover td {
-  background: var(--table-row-hover);
+  background: #f8fafc !important;
 }
 
 html.dark .data-table tbody tr:hover td {
-  background: rgba(99, 102, 241, 0.12) !important;
+  background: rgba(99, 102, 241, 0.09) !important;
 }
 
 .data-table input,
 .data-table select {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   outline: none;
-  font-size: 0.835rem;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
   width: 100%;
-  padding: 0.18rem 0.3rem;
+  padding: 0.35rem 0.6rem;
   font-family: inherit;
-  border-radius: 6px;
-  transition: background 0.15s, box-shadow 0.15s;
+  border-radius: 8px;
+  transition: all 0.15s ease;
 }
 
 html.dark .data-table input,
@@ -1081,20 +1100,26 @@ html.dark .data-table select {
 
 .data-table input:focus,
 .data-table select:focus {
-  background: var(--brand-soft);
-  box-shadow: 0 0 0 2px var(--brand-dim);
+  background: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
   outline: none;
 }
 
 html.dark .data-table input:focus,
 html.dark .data-table select:focus {
   background: rgba(99, 102, 241, 0.15);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
 }
 
 .data-table input[readonly] {
-  color: var(--text-muted);
+  color: #64748b;
   cursor: default;
+}
+
+html.dark .data-table input[readonly] {
+  color: #94a3b8;
 }
 
 .data-table .amount-cell {
@@ -1103,6 +1128,7 @@ html.dark .data-table select:focus {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #0f172a;
 }
 
 html.dark .data-table .amount-cell {
