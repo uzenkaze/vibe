@@ -924,34 +924,22 @@
     gap: 4px !important;
   }
   
-  .statItem {
-    padding: 6px 2px !important;
-    border-radius: 10px !important;
-    gap: 2px !important;
-  }
-  
-  .statLabel {
-    font-size: 0.45rem !important;
-    letter-spacing: -0.03em !important;
-  }
-  
-  .statNum {
-    font-size: 0.85rem !important;
-  }
-
-  /* 라이트 테마 하에서 모바일 통계 카드 크기가 뭉개지는 현상 방지 오버라이드 */
+  /* 다크 테마 및 라이트 테마 공통 모바일 콤팩트 크기 정합성 강제 적용 */
+  :global(html) .statItem,
   [data-theme="light"] .statItem {
     padding: 6px 2px !important;
     border-radius: 10px !important;
-    background: #ffffff !important;
+    gap: 2px !important;
     border-width: 1px !important;
   }
-
+  
+  :global(html) .statLabel,
   [data-theme="light"] .statLabel {
     font-size: 0.45rem !important;
     letter-spacing: -0.03em !important;
   }
-
+  
+  :global(html) .statNum,
   [data-theme="light"] .statNum {
     font-size: 0.85rem !important;
   }
@@ -1152,36 +1140,26 @@
   }
 
   /* 초소형 통계 그리드 극소형화 */
+  /* 초소형 통계 그리드 극소형화 */
   .statGrid {
     gap: 3px !important;
   }
   
-  .statItem {
-    padding: 4px 1px !important;
-    border-radius: 7px !important;
-    gap: 1px !important;
-  }
-  
-  .statLabel {
-    font-size: 0.42rem !important;
-  }
-  
-  .statNum {
-    font-size: 0.72rem !important;
-  }
-
-  /* 라이트 테마 하에서 초소형 모바일 통계 카드 크기 대응 오버라이드 */
+  /* 다크 테마 및 라이트 테마 공통 초소형 모바일 콤팩트 크기 정합성 강제 적용 */
+  :global(html) .statItem,
   [data-theme="light"] .statItem {
     padding: 4px 1px !important;
     border-radius: 7px !important;
-    background: #ffffff !important;
+    gap: 1px !important;
     border-width: 1px !important;
   }
-
+  
+  :global(html) .statLabel,
   [data-theme="light"] .statLabel {
     font-size: 0.42rem !important;
   }
-
+  
+  :global(html) .statNum,
   [data-theme="light"] .statNum {
     font-size: 0.72rem !important;
   }
@@ -1810,5 +1788,5 @@
   color: #2563eb !important;
 }
 
-/* cache busting index css hash update: 2026-07-24-1028 */
+/* cache busting index css hash update: 2026-07-24-1032 */
 
