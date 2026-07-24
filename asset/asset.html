@@ -4766,21 +4766,7 @@
                 if (remainingBalance < 0) remainingBalance = 0;
             }
 
-            if (item.rate > 0) {
-                if (item.date) {
-                    const pDate = new Date(item.date);
-                    let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
-                    let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 1), 14);
-                    let prevBillingDate = item.currentMonth === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 2), 14);
-                    const diffTime = Math.abs(currentBillingDate - prevBillingDate);
-                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                    item.monthlyFee = Math.floor(remainingBalance * (item.rate / 100) * (diffDays / 365));
-                } else {
-                    item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
-                }
-            } else {
-                item.monthlyFee = 0;
-            }
+            item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
 
             if (item.date) {
                 const p = item.date.split(/[-./ ]/);
@@ -4822,7 +4808,9 @@
             const item = state.sections[s].find(i => i.id === id);
             if (!item) return;
             if (['amount', 'remAmount', 'totalMonths', 'currentMonth', 'monthlyFee', 'rate'].includes(f)) {
-                item[f] = parseFloat(String(v).replace(/,/g, '')) || 0;
+                let parsedVal = parseFloat(String(v).replace(/,/g, '')) || 0;
+                if (f === 'rate') parsedVal = Math.round(parsedVal * 100) / 100;
+                item[f] = parsedVal;
             } else { item[f] = v; }
 
             if (s === 'installment') {

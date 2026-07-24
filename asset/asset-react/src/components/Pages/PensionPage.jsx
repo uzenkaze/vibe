@@ -797,8 +797,10 @@ export default function PensionPage() {
                               className="btn btn-sm"
                               onClick={() => handleDeleteRetirementProduct(prod.id)}
                               style={{ padding: '2px 4px', fontSize: '0.68rem', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', background: 'transparent' }}
+                              title="삭제"
                             >
-                              삭제
+                              <span className="desktop-only-text">삭제</span>
+                              <span className="mobile-only-text" style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>×</span>
                             </button>
                           </td>
                         </tr>

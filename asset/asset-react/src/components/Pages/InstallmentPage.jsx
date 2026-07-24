@@ -37,22 +37,8 @@ const calculateInstallment = (item) => {
       if (remainingBalance < 0) remainingBalance = 0;
     }
 
-    // 이율이 0보다 큰 경우 수수료 자동 계산
-    if (rate > 0) {
-      if (item.date) {
-        const pDate = new Date(item.date);
-        let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
-        let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (currentMonth - 1), 14);
-        let prevBillingDate = currentMonth === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (currentMonth - 2), 14);
-        const diffTime = Math.abs(currentBillingDate - prevBillingDate);
-        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-        monthlyFee = Math.floor(remainingBalance * (rate / 100) * (diffDays / 365));
-      } else {
-        monthlyFee = Math.floor((remainingBalance * rate / 100) / 12);
-      }
-    } else {
-      monthlyFee = Number(item.monthlyFee) || 0;
-    }
+    // 이율 입력값에 따라 수수료 자동 계산 (월할 계산: 잔액 * 연이율% / 12)
+    monthlyFee = Math.floor((remainingBalance * rate / 100) / 12);
 
     remAmount = Math.max(0, ((totalMonths - currentMonth) * monthlyPrincipal) - (item.repayStatus === 'partial' ? parseFloat(item.repaidAmount) || 0 : 0));
   } else {
@@ -123,7 +109,7 @@ const calculateInstallmentWithoutFeeUpdate = (item) => {
 };
 
 export default function InstallmentPage() {
-  const { getCurrentSections, persistSections, year, month } = useApp();
+  const { getCurrentSections, persistSections, year, month, dark } = useApp();
   const [activeDetailId, setActiveDetailId] = useState(null);
 
   // 모달 상태값 관리
@@ -356,16 +342,7 @@ export default function InstallmentPage() {
         if (remaining < 0) remaining = 0;
       }
 
-      let monthlyFee = 0;
-      if (rate > 0) {
-        let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (i - 1), 14);
-        let prevBillingDate = i === 1 ? baseDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (i - 2), 14);
-        const diffTime = Math.abs(currentBillingDate - prevBillingDate);
-        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-        monthlyFee = Math.floor(remaining * (rate / 100) * (diffDays / 365));
-      } else {
-        monthlyFee = Number(activeDetailItem.monthlyFee) || 0;
-      }
+      let monthlyFee = Math.floor((remaining * rate / 100) / 12);
 
       totalFee += monthlyFee;
 
@@ -403,22 +380,22 @@ export default function InstallmentPage() {
           <button className="btn btn-dark" onClick={handleAdd}>+ 할부 추가</button>
         </div>
 
-      <div className="desktop-installment-table" style={{ padding: '1rem 1.5rem 1.25rem', overflowX: 'auto' }}>
-        <table className="data-table" style={{ minWidth: 1000 }}>
+      <div className="card-payments-table-container" style={{ padding: '0 0.75rem 1.5rem', overflowX: 'auto' }}>
+        <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '100%' }}>
           <thead>
             <tr>
-              <th style={{ width: 140, textAlign: 'center' }}>사용일</th>
-              <th style={{ width: 110, textAlign: 'center' }}>카드</th>
-              <th style={{ textAlign: 'center' }}>사용처</th>
-              <th style={{ width: 130, textAlign: 'center' }}>총금액</th>
-              <th style={{ width: 90, textAlign: 'center' }}>이율(%)</th>
-              <th style={{ width: 110, textAlign: 'center' }}>회차</th>
-              <th style={{ width: 110, textAlign: 'center' }}>원금</th>
-              <th style={{ width: 110, textAlign: 'center' }}>수수료</th>
-              <th style={{ width: 120, textAlign: 'center' }}>원금+수수료</th>
-              <th style={{ width: 120, textAlign: 'center' }}>잔액</th>
-              <th style={{ width: 80, textAlign: 'center' }}>종료</th>
-              <th style={{ width: 90, textAlign: 'center' }}>관리</th>
+              <th style={{ width: 110, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>사용일</th>
+              <th style={{ width: 75, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>카드</th>
+              <th style={{ padding: '6px 6px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>사용처</th>
+              <th style={{ width: 100, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>총금액</th>
+              <th style={{ width: 65, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>이율(%)</th>
+              <th style={{ width: 80, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>회차</th>
+              <th style={{ width: 90, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>원금</th>
+              <th style={{ width: 85, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>수수료</th>
+              <th style={{ width: 95, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>원금+수수료</th>
+              <th style={{ width: 95, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>잔액</th>
+              <th style={{ width: 60, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>종료</th>
+              <th style={{ width: 75, padding: '6px 4px', textAlign: 'center', backgroundColor: dark ? 'rgba(255, 255, 255, 0.09)' : 'rgba(0, 0, 0, 0.05)' }}>관리</th>
             </tr>
           </thead>
           <tbody>
@@ -485,6 +462,7 @@ export default function InstallmentPage() {
                       value={r.rate || 0} 
                       onChange={(val) => handleFieldChange(r.id, 'rate', val)} 
                       style={{ textAlign: 'center' }}
+                      allowDecimal={true}
                     />
                   </td>
                   <td>
@@ -549,8 +527,10 @@ export default function InstallmentPage() {
                         className="btn btn-ghost btn-sm" 
                         style={{ padding: '4px 8px', color: 'var(--coral)' }} 
                         onClick={() => handleDelete(r.id)}
+                        title="삭제"
                       >
-                        삭제
+                        <span className="desktop-only-text">삭제</span>
+                        <span className="mobile-only-text" style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>×</span>
                       </button>
                     </div>
                   </td>
@@ -666,8 +646,10 @@ export default function InstallmentPage() {
                     className="btn btn-dark btn-xs"
                     style={{ fontSize: '0.7rem', padding: '3px 8px', color: 'var(--coral)' }}
                     onClick={() => handleDelete(r.id)}
+                    title="삭제"
                   >
-                    삭제
+                    <span className="desktop-only-text">삭제</span>
+                    <span className="mobile-only-text" style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>×</span>
                   </button>
                 </div>
               </div>

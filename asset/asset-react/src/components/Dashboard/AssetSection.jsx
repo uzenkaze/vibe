@@ -38,7 +38,7 @@ function EditableRow({ row, sectionKey, columns, onUpdate, onDelete, onHoverDeta
         </td>
       ))}
       <td>
-        <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'center', alignItems: 'center' }}>
           {onHoverDetail && (
             <button
               className="btn btn-ghost btn-icon btn-sm"
@@ -50,10 +50,9 @@ function EditableRow({ row, sectionKey, columns, onUpdate, onDelete, onHoverDeta
             </button>
           )}
           <button
-            className="btn btn-danger btn-icon btn-sm"
+            className="table-delete-btn"
             onClick={() => onDelete(sectionKey, row.id)}
             title="삭제"
-            style={{ width: 26, height: 26 }}
           >
             ×
           </button>
@@ -142,38 +141,38 @@ function DataSection({ title, sectionKey, columns, showSummaryModal, detailModal
 /* ===================== 자산·수입 메인 섹션 ===================== */
 export default function AssetSection({ onSummary }) {
   const CASH_COLS = [
-    { key: 'category', label: '분류', width: 90, placeholder: '예금/주식' },
-    { key: 'content', label: '내용', placeholder: '계좌명' },
+    { key: 'category', label: '분류', width: 135, placeholder: '예금/주식' },
+    { key: 'content', label: '내용', width: 200, placeholder: '계좌명' },
     { key: 'amount', label: '금액', type: 'number', right: true, width: 140, format: formatKRW, placeholder: '0' },
-    { key: 'desc', label: '비고', placeholder: '' },
+    { key: 'desc', label: '비고', width: 160, placeholder: '' },
   ];
 
   const NON_CASH_COLS = [
-    { key: 'category', label: '분류', width: 90 },
-    { key: 'content', label: '내용' },
+    { key: 'category', label: '분류', width: 135 },
+    { key: 'content', label: '내용', width: 200 },
     { key: 'amount', label: '금액', type: 'number', right: true, width: 140, format: formatKRW },
-    { key: 'desc', label: '비고' },
+    { key: 'desc', label: '비고', width: 160 },
   ];
 
   const INCOME_COLS = [
-    { key: 'category', label: '분류', width: 90 },
-    { key: 'content', label: '내용' },
+    { key: 'category', label: '분류', width: 135 },
+    { key: 'content', label: '내용', width: 200 },
     { key: 'amount', label: '금액', type: 'number', right: true, width: 140, format: formatKRW },
-    { key: 'desc', label: '비고' },
+    { key: 'desc', label: '비고', width: 160 },
   ];
 
   const REALESTATE_COLS = [
-    { key: 'category', label: '분류', width: 90 },
-    { key: 'content', label: '내용' },
-    { key: 'amount', label: '평가금액', type: 'number', right: true, width: 160, format: formatKRW },
-    { key: 'desc', label: '비고' },
+    { key: 'category', label: '분류', width: 135 },
+    { key: 'content', label: '내용', width: 200 },
+    { key: 'amount', label: '평가금액', type: 'number', right: true, width: 150, format: formatKRW },
+    { key: 'desc', label: '비고', width: 160 },
   ];
 
   const RETIREMENT_COLS = [
-    { key: 'category', label: '종류', width: 90 },
-    { key: 'content', label: '내용' },
-    { key: 'amount', label: '금액', type: 'number', right: true, width: 160, format: formatKRW },
-    { key: 'desc', label: '비고' },
+    { key: 'category', label: '종류', width: 135 },
+    { key: 'content', label: '내용', width: 200 },
+    { key: 'amount', label: '금액', type: 'number', right: true, width: 150, format: formatKRW },
+    { key: 'desc', label: '비고', width: 160 },
   ];
 
   return (

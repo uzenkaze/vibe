@@ -97,7 +97,7 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
             <path d="M12 2V22" strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.6" />
           </svg>
         </div>
-        <div>
+        <div className="sidebar-logo-text-wrapper">
           <div className="sidebar-logo-text">AssetOS</div>
           <div className="sidebar-logo-sub">Wealth Manager</div>
         </div>
@@ -113,9 +113,10 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
             key={item.id}
             className={`nav-item${navSection === item.id ? ' active' : ''}`}
             onClick={() => { setNavSection(item.id); onMenuClick && onMenuClick(); }}
+            title={item.label}
           >
             <span className="nav-icon">{item.icon}</span>
-            {item.label}
+            <span className="nav-item-label">{item.label}</span>
           </button>
         ))}
       </nav>
@@ -126,6 +127,7 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onSaveSync && onSaveSync(); onMenuClick && onMenuClick(); }}
+          title="저장 및 동기화"
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -134,24 +136,26 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
               <polyline points="7 3 7 8 15 8" />
             </svg>
           </span>
-          저장 및 동기화
+          <span className="nav-item-label">저장 및 동기화</span>
         </button>
 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onGithubModal && onGithubModal(); onMenuClick && onMenuClick(); }}
+          title="GitHub 동기화"
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
             </svg>
           </span>
-          GitHub 동기화
+          <span className="nav-item-label">GitHub 동기화</span>
         </button>
 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onDataModal && onDataModal(); onMenuClick && onMenuClick(); }}
+          title="데이터 관리"
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -160,12 +164,13 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
               <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
             </svg>
           </span>
-          데이터 관리
+          <span className="nav-item-label">데이터 관리</span>
         </button>
 
         <button
           className="nav-item mobile-only-btn"
           onClick={() => { onManual && onManual(); onMenuClick && onMenuClick(); }}
+          title="사용 매뉴얼"
         >
           <span className="nav-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -174,11 +179,11 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
           </span>
-          사용 매뉴얼
+          <span className="nav-item-label">사용 매뉴얼</span>
         </button>
 
         {/* Theme toggle */}
-        <button className="nav-item" onClick={toggleTheme}>
+        <button className="nav-item" onClick={toggleTheme} title={dark ? '라이트 모드' : '다크 모드'}>
           <span className="nav-icon">
             {dark ? (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -194,21 +199,21 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
               </svg>
             )}
           </span>
-          {dark ? '라이트 모드' : '다크 모드'}
+          <span className="nav-item-label">{dark ? '라이트 모드' : '다크 모드'}</span>
         </button>
 
         {/* Divider + User */}
         <div className="sidebar-divider" />
         <div className="sidebar-user">
           <div className="user-avatar">{initials}</div>
-          <div>
+          <div className="sidebar-user-info">
             <div className="user-name">{session.userName || '사용자'}</div>
             <div className="user-role">{session.isAdmin ? '관리자' : '일반 사용자'}</div>
           </div>
         </div>
 
         {/* Logout */}
-        <button className="nav-item" onClick={logout} style={{ color: 'var(--coral)', opacity: 0.75 }}>
+        <button className="nav-item" onClick={logout} style={{ color: 'var(--coral)', opacity: 0.75 }} title="로그아웃">
           <span className="nav-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -216,7 +221,7 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
           </span>
-          로그아웃
+          <span className="nav-item-label">로그아웃</span>
         </button>
       </div>
     </aside>

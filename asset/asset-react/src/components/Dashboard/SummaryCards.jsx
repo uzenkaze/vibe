@@ -2,42 +2,28 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
-function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, tooltipContent, compareDiff, compareRate, hasPrev }) {
-  const [isOpen, setIsOpen] = useState(false);
+function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, compareDiff, compareRate, hasPrev, isOpen, onSelectCard, onClose }) {
   const cardRef = useRef(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleOutsideClick = (e) => {
-      if (cardRef.current && !cardRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    // 약간의 딜레이를 주어 현재 클릭 이벤트 전파와 겹치지 않게 함
-    const timer = setTimeout(() => {
-      document.addEventListener('click', handleOutsideClick);
-    }, 0);
-
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener('click', handleOutsideClick);
-    };
-  }, [isOpen]);
-
   const handleMouseEnter = () => {
-    // PC 호버 지원
-    setIsOpen(true);
+    if (window.innerWidth > 768) {
+      onSelectCard(label);
+    }
   };
 
   const handleMouseLeave = () => {
-    setIsOpen(false);
+    if (window.innerWidth > 768) {
+      onClose();
+    }
   };
 
   const handleToggleClick = (e) => {
     e.stopPropagation();
-    setIsOpen(prev => !prev);
+    if (isOpen) {
+      onClose();
+    } else {
+      onSelectCard(label);
+    }
   };
 
   const { dark } = useApp();
@@ -116,35 +102,43 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
           </div>
         )}
       </div>
+    </div>
+  );
+}
 
-      {isOpen && tooltipContent && (
-        <div 
-          onClick={(e) => e.stopPropagation()} // 툴팁 영역 클릭 시 레이어가 닫히지 않도록 방지
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 10px)',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '16px',
-            padding: '0.875rem',
-            boxShadow: 'var(--shadow-md)',
-            zIndex: 1000,
-            minWidth: '240px',
-            color: 'var(--text-primary)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-          }}
-        >
-          {tooltipContent}
+function SummaryModal({ label, content, onClose }) {
+  if (!content) return null;
+
+  return (
+    <div 
+      className="summary-modal-overlay"
+      onClick={onClose}
+    >
+      <div 
+        className="summary-modal-content"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="summary-modal-header">
+          <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>
+            📊 {label} 세부 내역
+          </span>
+          <button 
+            className="summary-modal-close"
+            onClick={onClose}
+          >
+            ✕
+          </button>
         </div>
-      )}
+        <div className="summary-modal-body">
+          {content}
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function SummaryCards() {
+  const [activeCardLabel, setActiveCardLabel] = useState(null);
   const { getCurrentSections, year, month, yearData } = useApp();
   const sections = getCurrentSections();
 
@@ -434,11 +428,29 @@ export default function SummaryCards() {
     },
   ];
 
+  const activeCard = cards.find(c => c.label === activeCardLabel);
+
   return (
-    <div className="summary-grid">
-      {cards.map((card, i) => (
-        <SummaryCard key={i} {...card} />
-      ))}
-    </div>
+    <>
+      <div className="summary-grid">
+        {cards.map((card, i) => (
+          <SummaryCard 
+            key={i} 
+            {...card} 
+            isOpen={activeCardLabel === card.label}
+            onSelectCard={(lbl) => setActiveCardLabel(lbl)}
+            onClose={() => setActiveCardLabel(null)}
+          />
+        ))}
+      </div>
+
+      {activeCard && (
+        <SummaryModal 
+          label={activeCard.label}
+          content={activeCard.tooltipContent}
+          onClose={() => setActiveCardLabel(null)}
+        />
+      )}
+    </>
   );
 }

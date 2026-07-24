@@ -105,8 +105,8 @@ export default function BottomNav() {
           className={`bottom-nav-item${navSection === item.id ? ' active' : ''}`}
           onClick={() => setNavSection(item.id)}
         >
-          {item.icon}
-          {item.label}
+          <span className="bottom-nav-icon">{item.icon}</span>
+          <span className="bottom-nav-label">{item.label}</span>
         </button>
       ))}
     </nav>

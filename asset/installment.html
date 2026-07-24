@@ -1774,7 +1774,9 @@
                         // Skip calculateInstallment for manual fee to preserve it
                     }
                 } else if (['amount', 'rate', 'totalMonths', 'currentMonth'].includes(field)) {
-                    item[field] = parseFloat(String(value).replace(/,/g, '')) || 0;
+                    let parsedVal = parseFloat(String(value).replace(/,/g, '')) || 0;
+                    if (field === 'rate') parsedVal = Math.round(parsedVal * 100) / 100;
+                    item[field] = parsedVal;
                     calculateInstallment(item);
                 } else {
                     item[field] = value;
@@ -1807,19 +1809,7 @@
                     if (remainingBalance < 0) remainingBalance = 0;
                 }
 
-                if (item.rate > 0) {
-                    if (item.date) {
-                        const pDate = new Date(item.date);
-                        let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
-                        let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 1), 14);
-                        let prevBillingDate = item.currentMonth === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (item.currentMonth - 2), 14);
-                        const diffTime = Math.abs(currentBillingDate - prevBillingDate);
-                        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                        item.monthlyFee = Math.floor(remainingBalance * (item.rate / 100) * (diffDays / 365));
-                    } else {
-                        item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
-                    }
-                }
+                item.monthlyFee = Math.floor((remainingBalance * item.rate / 100) / 12);
 
                 if (item.date) {
                     const p = item.date.split(/[-./ ]/);
@@ -1955,19 +1945,7 @@
                                 if (remainingBalanceNext < 0) remainingBalanceNext = 0;
                             }
 
-                            if (item.rate > 0) {
-                                if (item.date) {
-                                    const pDate = new Date(item.date);
-                                    let firstBillingDate = new Date(pDate.getFullYear(), pDate.getMonth() + 1, 14);
-                                    let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (nextMonthNum - 1), 14);
-                                    let prevBillingDate = nextMonthNum === 1 ? pDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (nextMonthNum - 2), 14);
-                                    const diffTime = Math.abs(currentBillingDate - prevBillingDate);
-                                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                                    nextMonthlyFee = Math.floor(remainingBalanceNext * (item.rate / 100) * (diffDays / 365));
-                                } else {
-                                    nextMonthlyFee = Math.floor((remainingBalanceNext * item.rate / 100) / 12);
-                                }
-                            }
+                                nextMonthlyFee = Math.floor((remainingBalanceNext * item.rate / 100) / 12);
                         }
                         nextMonthTotal += (parseFloat(item.monthlyPrincipal) || 0) + nextMonthlyFee;
                     }
@@ -2029,16 +2007,7 @@
                         if (remaining < 0) remaining = 0;
                     }
 
-                    let monthlyFee = 0;
-                    if (rate > 0) {
-                        let currentBillingDate = new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (i - 1), 14);
-                        let prevBillingDate = i === 1 ? baseDate : new Date(firstBillingDate.getFullYear(), firstBillingDate.getMonth() + (i - 2), 14);
-                        const diffTime = Math.abs(currentBillingDate - prevBillingDate);
-                        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-                        monthlyFee = Math.floor(remaining * (rate / 100) * (diffDays / 365));
-                    } else {
-                        monthlyFee = parseFloat(item.monthlyFee || 0);
-                    }
+                    let monthlyFee = Math.floor((remaining * rate / 100) / 12);
                     
                     totalFee += monthlyFee;
 

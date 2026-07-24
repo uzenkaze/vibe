@@ -92,10 +92,10 @@ export function AppProvider({ children }) {
   }, []);
 
   // --- Toast ---
-  const showToast = useCallback((message, type = 'success') => {
+  const showToast = useCallback((message, type = 'success', showGitIcon = false) => {
     setToasts(prev => {
       if (prev.length > 0) {
-        const updatedToast = { ...prev[0], message, type };
+        const updatedToast = { ...prev[0], message, type, showGitIcon };
         setActiveToastTimeout(oldTimeout => {
           if (oldTimeout) clearTimeout(oldTimeout);
           return setTimeout(() => {
@@ -106,7 +106,7 @@ export function AppProvider({ children }) {
       }
 
       const id = genId();
-      const newToast = { id, message, type };
+      const newToast = { id, message, type, showGitIcon };
       setActiveToastTimeout(oldTimeout => {
         if (oldTimeout) clearTimeout(oldTimeout);
         return setTimeout(() => {

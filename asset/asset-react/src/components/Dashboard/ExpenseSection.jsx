@@ -31,7 +31,7 @@ function EditableRow({ row, sectionKey, columns, onUpdate, onDelete, onDetail })
         </td>
       ))}
       <td>
-        <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'center', alignItems: 'center' }}>
           {onDetail && (
             <button
               className="btn btn-ghost btn-icon btn-sm"
@@ -41,10 +41,9 @@ function EditableRow({ row, sectionKey, columns, onUpdate, onDelete, onDetail })
             >⋯</button>
           )}
           <button
-            className="btn btn-danger btn-icon btn-sm"
+            className="table-delete-btn"
             onClick={() => onDelete(sectionKey, row.id)}
             title="삭제"
-            style={{ width: 26, height: 26 }}
           >×</button>
         </div>
       </td>
@@ -119,23 +118,23 @@ function DataSection({ title, sectionKey, columns, accentColor = 'var(--coral)',
 /* ===================== 부채·지출 메인 섹션 ===================== */
 export default function ExpenseSection({ onSummary, onExpenseDetail, onExpenseChart }) {
   const DEBT_COLS = [
-    { key: 'category', label: '분류', width: 90 },
-    { key: 'content', label: '내용' },
+    { key: 'category', label: '분류', width: 135 },
+    { key: 'content', label: '내용', width: 200 },
     { key: 'amount', label: '원금', type: 'number', right: true, width: 130, format: formatKRW },
     { key: 'rate', label: '이율(%)', type: 'number', right: true, width: 80 },
     { key: 'remAmount', label: '잔여금', type: 'number', right: true, width: 130, format: formatKRW },
   ];
 
   const VEXP_COLS = [
-    { key: 'category', label: '분류', width: 90 },
-    { key: 'amount', label: '금액', type: 'number', right: true, width: 130, format: formatKRW },
-    { key: 'desc', label: '비고' },
+    { key: 'category', label: '분류', width: 135 },
+    { key: 'amount', label: '금액', type: 'number', right: true, width: 140, format: formatKRW },
+    { key: 'desc', label: '비고', width: 220 },
   ];
 
   const FEXP_COLS = [
-    { key: 'category', label: '분류', width: 90 },
-    { key: 'amount', label: '금액', type: 'number', right: true, width: 130, format: formatKRW },
-    { key: 'desc', label: '비고' },
+    { key: 'category', label: '분류', width: 135 },
+    { key: 'amount', label: '금액', type: 'number', right: true, width: 140, format: formatKRW },
+    { key: 'desc', label: '비고', width: 220 },
   ];
 
   return (

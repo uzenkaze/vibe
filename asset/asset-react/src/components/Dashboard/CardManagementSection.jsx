@@ -10,7 +10,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #5b5446 0%, #2f2a21 100%)',
     accentColor: '#ffbc00',
     textColor: '#ffffff',
-    logoText: 'KB Kookmin Card'
+    logoText: 'KB'
   },
   SHINHAN: {
     name: '신한카드',
@@ -18,7 +18,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #0046ff 0%, #002380 100%)',
     accentColor: '#60a5fa',
     textColor: '#ffffff',
-    logoText: 'Shinhan Card'
+    logoText: 'Shinhan'
   },
   HYUNDAI: {
     name: '현대카드',
@@ -26,7 +26,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #18181b 0%, #27272a 100%)',
     accentColor: '#e4e4e7',
     textColor: '#ffffff',
-    logoText: 'HYUNDAI CARD'
+    logoText: 'HYUNDAI'
   },
   SAMSUNG: {
     name: '삼성카드',
@@ -34,7 +34,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #0b2545 0%, #134074 100%)',
     accentColor: '#38bdf8',
     textColor: '#ffffff',
-    logoText: 'SAMSUNG CARD'
+    logoText: 'SAMSUNG'
   },
   LOTTE: {
     name: '롯데카드',
@@ -42,7 +42,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #991b1b 0%, #450a0a 100%)',
     accentColor: '#fca5a5',
     textColor: '#ffffff',
-    logoText: 'LOTTE CARD'
+    logoText: 'LOTTE'
   },
   WOORI: {
     name: '우리카드',
@@ -50,7 +50,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
     accentColor: '#7dd3fc',
     textColor: '#ffffff',
-    logoText: 'WOORI CARD'
+    logoText: 'WOORI'
   },
   NH: {
     name: 'NH농협카드',
@@ -58,7 +58,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #15803d 0%, #14532d 100%)',
     accentColor: '#86efac',
     textColor: '#ffffff',
-    logoText: 'NH NongHyup'
+    logoText: 'NH'
   },
   HANA: {
     name: '하나카드',
@@ -66,7 +66,7 @@ export const CARD_BRANDS = {
     bg: 'linear-gradient(135deg, #0d9488 0%, #115e59 100%)',
     accentColor: '#5eead4',
     textColor: '#ffffff',
-    logoText: 'Hana Card'
+    logoText: 'Hana'
   },
   KAKAO: {
     name: '카카오뱅크',
@@ -212,8 +212,19 @@ export default function CardManagementSection() {
     <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem' }}>
       {/* 헤더 */}
       <div className="section-card-header" style={{ marginBottom: '1rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border)' }}>
-        <div className="section-card-title">
-          <span className="section-dot" style={{ background: '#3b82f6' }} />
+        <div className="section-card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{
+            width: 26, height: 26, borderRadius: '7px',
+            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%)',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            color: '#3b82f6',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            flexShrink: 0
+          }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+          </div>
           카드별 사용 금액
           <span style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
@@ -248,14 +259,14 @@ export default function CardManagementSection() {
               key={card.id}
               style={{
                 position: 'relative',
-                height: '132px',
+                height: '140px',
                 borderRadius: '12px',
                 background: brand.bg,
                 color: brand.textColor,
-                padding: '0.75rem 0.9rem',
+                padding: '0.85rem 0.95rem',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 boxShadow: '0 8px 20px -4px rgba(0, 0, 0, 0.2)',
                 overflow: 'hidden',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -300,22 +311,25 @@ export default function CardManagementSection() {
                 </span>
               </div>
 
-              {/* 카드 하단 명칭 및 이달 결제금액 */}
-              <div style={{ zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              {/* 카드 하단 결제금액 및 전월대비 변동 */}
+              <div style={{ zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%' }}>
                 <div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
-                    {card.name}
-                  </div>
-                  <div style={{ fontSize: '0.6rem', opacity: 0.8, marginTop: '1px' }}>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.8, fontWeight: 700 }}>
                     {month}월 결제금액
                   </div>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '1rem', fontWeight: 900, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    {formatKRW(thisAmt)}원
+                  <div style={{ 
+                    fontSize: '0.95rem', 
+                    fontWeight: 900, 
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    whiteSpace: 'nowrap',
+                    lineHeight: 1.1
+                  }}>
+                    {formatKRW(thisAmt)}<span style={{ fontSize: '0.75rem', fontWeight: 700, marginLeft: '2px' }}>원</span>
                   </div>
-                  <div style={{ fontSize: '0.62rem', fontWeight: 700, marginTop: '1px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '2px' }}>
+                  <div style={{ fontSize: '0.6rem', fontWeight: 700, marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '2px', whiteSpace: 'nowrap' }}>
                     {diff > 0 ? (
                       <span style={{ color: brand.textColor === '#1e293b' ? '#dc2626' : '#f87171' }}>▲ {formatKRW(diff)}</span>
                     ) : diff < 0 ? (
@@ -340,15 +354,7 @@ export default function CardManagementSection() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            📊 전월대비 ({prevMonthVal}월 vs {month}월)
-          </div>
-          <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.68rem', fontWeight: 700 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#10b981' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} /> {month}월 (이번달)
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#ef4444' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} /> {prevMonthVal}월 (전월)
-            </span>
+            📊 전월대비
           </div>
         </div>
 

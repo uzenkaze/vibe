@@ -54,7 +54,11 @@ function InstallmentStatCard({ label, value, color, accent, bgGradient, icon, to
       <div 
         className="installment-stat-value num" 
         style={{ 
-          color: bgGradient ? '#ffffff' : color 
+          color: bgGradient ? '#ffffff' : color,
+          textAlign: 'right',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'baseline'
         }}
       >
         {formatKRW(value)}
@@ -276,7 +280,19 @@ export default function InstallmentOverview() {
     <div className="section-card installment-overview-card" style={{ marginBottom: '1.5rem' }}>
       <div className="section-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="section-card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span className="section-dot" style={{ background: '#5B6BF8' }} />
+          <div style={{
+            width: 26, height: 26, borderRadius: '7px',
+            background: 'linear-gradient(135deg, rgba(91, 107, 248, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            color: '#5B6BF8',
+            border: '1px solid rgba(91, 107, 248, 0.3)',
+            flexShrink: 0
+          }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+          </div>
           카드 현황
           <span className="col-hide-mobile" style={{
             fontSize: '0.65rem', color: 'var(--text-muted)',
@@ -304,7 +320,7 @@ export default function InstallmentOverview() {
               ? '0 0 10px rgba(46, 230, 111, 0.1)' 
               : '0 0 10px rgba(255, 0, 127, 0.1)',
           }} title={`전월 카드사용 지출 대비 ${compareData.cardDiff > 0 ? '증가' : '감소'}`}>
-            <span>카드지출 전월대비</span>
+            <span>전월대비</span>
             <span>{compareData.cardDiff > 0 ? '▲' : '▼'}</span>
             <span>{Math.abs(compareData.cardRate).toFixed(1)}%</span>
             <span style={{ opacity: 0.7, fontWeight: 600, marginLeft: '3px' }}>

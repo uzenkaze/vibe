@@ -15,6 +15,7 @@ const PAGE_TITLES = {
 function CustomDropdown({ value, onChange, options, suffix = '' }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -25,6 +26,18 @@ function CustomDropdown({ value, onChange, options, suffix = '' }) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isOpen && menuRef.current) {
+      const activeItem = menuRef.current.querySelector('.custom-dropdown-item.active');
+      if (activeItem) {
+        const containerHeight = menuRef.current.clientHeight;
+        const itemTop = activeItem.offsetTop;
+        const itemHeight = activeItem.clientHeight;
+        menuRef.current.scrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+      }
+    }
+  }, [isOpen]);
 
   return (
     <div className="custom-dropdown-container" ref={dropdownRef}>
@@ -54,7 +67,7 @@ function CustomDropdown({ value, onChange, options, suffix = '' }) {
       </button>
 
       {isOpen && (
-        <div className="custom-dropdown-menu">
+        <div className="custom-dropdown-menu" ref={menuRef}>
           {options.map(opt => {
             const optVal = typeof opt === 'object' ? opt.value : opt;
             const optLabel = typeof opt === 'object' ? opt.label : opt;
@@ -81,7 +94,7 @@ function CustomDropdown({ value, onChange, options, suffix = '' }) {
 }
 
 export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual, onGithubModal }) {
-  const { year, setYear, month, setMonth, dark, toggleTheme, navSection, isGithubConnected } = useApp();
+  const { year, setYear, month, setMonth, dark, toggleTheme, navSection, setNavSection, isGithubConnected } = useApp();
   const years = getYearList();
   const months = getMonthList();
 
@@ -92,14 +105,6 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
   return (
     <div className="topbar">
       <div className="topbar-left">
-        {/* Hamburger (mobile) */}
-        <button className="topbar-btn hamburger-btn" onClick={onHamburger} id="hamburger-btn" aria-label="메뉴">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
 
         {/* Mobile Header Logo (Icon Only for compact view) */}
         <div className="mobile-header-logo" onClick={handleMobileLogoClick} title="대시보드로 이동">

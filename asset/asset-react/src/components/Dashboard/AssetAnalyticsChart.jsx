@@ -37,92 +37,164 @@ export default function AssetAnalyticsChart() {
     };
   }, [sections]);
 
-  // 자산 포트폴리오 비중 (%)
+  // 자산 포트폴리오 비중 (%) - 첨부 이미지의 5색상 파레트 매칭
   const portfolioSegments = useMemo(() => {
-    const total = totals.totalAsset || 1;
-    return [
-      { name: '현금자산', amount: totals.cash, color: '#3b82f6', pct: Math.round((totals.cash / total) * 100) },
-      { name: '금융/비현금', amount: totals.nonCash, color: '#8b5cf6', pct: Math.round((totals.nonCash / total) * 100) },
-      { name: '부동산', amount: totals.realEstate, color: '#f97316', pct: Math.round((totals.realEstate / total) * 100) },
-      { name: '연금자산', amount: totals.retirement, color: '#a855f7', pct: Math.round((totals.retirement / total) * 100) },
-    ].filter(s => s.pct > 0 || s.amount > 0);
+    const total = totals.totalAsset || 0;
+    
+    const items = [
+      { id: 'realEstate', name: '부동산', amount: totals.realEstate, color: '#f59e0b', displayColor: '#f59e0b' },
+      { id: 'nonCash', name: '금융/비현금', amount: totals.nonCash, color: '#3b82f6', displayColor: '#3b82f6' },
+      { id: 'cash', name: '현금자산', amount: totals.cash, color: '#2dd4bf', displayColor: '#2dd4bf' },
+      { id: 'retirement', name: '연금자산', amount: totals.retirement, color: '#f472b6', displayColor: '#f472b6' },
+      { id: 'debt', name: '기타/부채', amount: totals.debt, color: 'url(#striped-pattern)', displayColor: '#cbd5e1' },
+    ];
+
+    if (total > 0) {
+      const filtered = items.filter(item => item.amount > 0);
+      const activeTotal = filtered.reduce((sum, item) => sum + item.amount, 0) || 1;
+      return filtered.map(item => ({
+        ...item,
+        pct: Math.round((item.amount / activeTotal) * 100)
+      }));
+    } else {
+      // 등록된 데이터가 없을 경우 첨부 이미지와 동일한 5종 샘플 비중 노출
+      return [
+        { id: 'realEstate', name: '부동산', amount: 30000000, color: '#f59e0b', displayColor: '#f59e0b', pct: 30 },
+        { id: 'nonCash', name: '금융/비현금', amount: 23000000, color: '#3b82f6', displayColor: '#3b82f6', pct: 23 },
+        { id: 'cash', name: '현금자산', amount: 18000000, color: '#2dd4bf', displayColor: '#2dd4bf', pct: 18 },
+        { id: 'retirement', name: '연금자산', amount: 17000000, color: '#f472b6', displayColor: '#f472b6', pct: 17 },
+        { id: 'debt', name: '기타/부채', amount: 13000000, color: 'url(#striped-pattern)', displayColor: '#cbd5e1', pct: 13 },
+      ];
+    }
   }, [totals]);
 
-  // 도넛 차트 SVG 파라미터 계산
-  const donutSvg = useMemo(() => {
-    let accumulatedAngle = 0;
-    const radius = 42;
-    const circumference = 2 * Math.PI * radius;
+  // 첨부 이미지 스타일의 둥근 모서리 & 조각별 간격 도넛 호(Arc) 및 백색 뱃지 좌표 계산
+  const donutArcs = useMemo(() => {
+    const cx = 100;
+    const cy = 100;
+    const rMid = 68;
+    const strokeWidth = 30;
+    const padAngle = 0.12; // 각 도넛 조각 사이 간격 (약 7도)
+    let startAngle = -Math.PI / 2; // 12시 방향 시작
 
-    const arcs = portfolioSegments.map((seg) => {
-      const pct = (seg.amount / (totals.totalAsset || 1));
-      const strokeDasharray = `${pct * circumference} ${circumference}`;
-      const strokeDashoffset = -accumulatedAngle * circumference;
-      accumulatedAngle += pct;
-      return { ...seg, strokeDasharray, strokeDashoffset };
+    const totalPct = portfolioSegments.reduce((sum, s) => sum + (s.pct || 0), 0) || 100;
+
+    return portfolioSegments.map((seg) => {
+      const pctFrac = (seg.pct || 0) / totalPct;
+      const angleSpan = pctFrac * 2 * Math.PI;
+
+      const segStart = startAngle;
+      const segEnd = startAngle + angleSpan;
+      startAngle = segEnd;
+
+      const arcStart = segStart + padAngle / 2;
+      const arcEnd = segEnd - padAngle / 2;
+      const safeArcEnd = arcEnd <= arcStart ? arcStart + 0.01 : arcEnd;
+
+      const x1 = cx + rMid * Math.cos(arcStart);
+      const y1 = cy + rMid * Math.sin(arcStart);
+      const x2 = cx + rMid * Math.cos(safeArcEnd);
+      const y2 = cy + rMid * Math.sin(safeArcEnd);
+
+      const largeArc = (safeArcEnd - arcStart) > Math.PI ? 1 : 0;
+      const pathD = `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${rMid} ${rMid} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+
+      const midAngle = (arcStart + safeArcEnd) / 2;
+      const badgeX = cx + rMid * Math.cos(midAngle);
+      const badgeY = cy + rMid * Math.sin(midAngle);
+
+      return {
+        ...seg,
+        pathD,
+        badgeX,
+        badgeY,
+        strokeWidth
+      };
     });
-
-    return { arcs, circumference };
-  }, [portfolioSegments, totals.totalAsset]);
+  }, [portfolioSegments]);
 
   return (
     <div className="section-card asset-analytics-card" style={{ marginBottom: '1.5rem', padding: '1.25rem 1.5rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
         
-        {/* 1. 포트폴리오 자산 비중 도넛 차트 */}
-        <div className="asset-portfolio-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '0.75rem', borderRight: dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #f1f5f9' }}>
-          <div className="donut-chart-container" style={{ position: 'relative', width: 110, height: 110, flexShrink: 0 }}>
-            <svg className="donut-chart-svg" width="110" height="110" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', overflow: 'visible' }}>
-              <circle cx="50" cy="50" r="42" fill="none" stroke={dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'} strokeWidth="12" />
-              {donutSvg.arcs.map((arc, i) => (
-                <circle
+        {/* 1. 이미지 형태의 도넛 차트 & 범주 */}
+        <div className="asset-portfolio-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', paddingRight: '0.75rem', borderRight: dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #f1f5f9' }}>
+          
+          {/* 도넛 차트 SVG 영역 */}
+          <div className="donut-chart-container">
+            <svg viewBox="0 0 200 200" style={{ overflow: 'visible' }}>
+              <defs>
+                {/* 빗금 패턴 서식 */}
+                <pattern id="striped-pattern" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                  <rect width="8" height="8" fill="#f8fafc" />
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#cbd5e1" strokeWidth="4" />
+                </pattern>
+                {/* 퍼센티지 뱃지 쉐도우 */}
+                <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#000000" floodOpacity="0.15" />
+                </filter>
+              </defs>
+
+              {/* 도넛 곡선 조각들 (둥근 끝처리 & 간격) */}
+              {donutArcs.map((arc, i) => (
+                <path
                   key={i}
-                  cx="50"
-                  cy="50"
-                  r="42"
+                  d={arc.pathD}
                   fill="none"
                   stroke={arc.color}
-                  strokeWidth="12"
-                  strokeDasharray={arc.strokeDasharray}
-                  strokeDashoffset={arc.strokeDashoffset}
+                  strokeWidth={arc.strokeWidth}
                   strokeLinecap="round"
-                  style={{ transition: 'all 0.6s ease' }}
+                  style={{ transition: 'all 0.4s ease' }}
                 />
               ))}
+
+              {/* 이미지와 동일한 조각 내부의 백색 퍼센티지 뱃지 알약(Pill) */}
+              {donutArcs.map((arc, i) => (
+                <g key={`badge-${i}`} transform={`translate(${arc.badgeX.toFixed(2)}, ${arc.badgeY.toFixed(2)})`} filter="url(#badge-shadow)">
+                  <rect
+                    x="-18"
+                    y="-9.5"
+                    width="36"
+                    height="19"
+                    rx="9.5"
+                    ry="9.5"
+                    fill="#ffffff"
+                    stroke="rgba(0,0,0,0.06)"
+                    strokeWidth="0.8"
+                  />
+                  <text
+                    x="0"
+                    y="3.5"
+                    textAnchor="middle"
+                    fill="#0f172a"
+                    fontSize="10.5"
+                    fontWeight="800"
+                    fontFamily="'Plus Jakarta Sans', sans-serif"
+                  >
+                    {`${arc.pct}%`}
+                  </text>
+                </g>
+              ))}
             </svg>
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              textAlign: 'center'
-            }}>
-              <span className="donut-center-label" style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>순자산비율</span>
-              <span className="donut-center-val" style={{ fontSize: '0.88rem', fontWeight: 900, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                {totals.totalAsset > 0 ? Math.round((totals.netWorth / totals.totalAsset) * 100) : 0}%
-              </span>
-            </div>
           </div>
 
+          {/* 범례 영역 */}
           <div className="portfolio-legend-container" style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.4rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               자산 구성 포트폴리오
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              {portfolioSegments.length === 0 ? (
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>등록된 자산 데이터가 없습니다.</span>
-              ) : (
-                portfolioSegments.map((seg, i) => (
-                  <div key={i} className="portfolio-legend-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', minWidth: 0 }}>
-                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: seg.color, flexShrink: 0 }} />
-                      <span className="portfolio-seg-name" style={{ color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{seg.name}</span>
-                    </div>
-                    <span className="portfolio-seg-val" style={{ fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", flexShrink: 0, marginLeft: 6 }}>
-                      {formatKRW(seg.amount)}원 <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem', fontWeight: 600 }}>({seg.pct}%)</span>
-                    </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              {portfolioSegments.map((seg, i) => (
+                <div key={i} className="portfolio-legend-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: seg.displayColor, flexShrink: 0 }} />
+                    <span className="portfolio-seg-name" style={{ color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{seg.name}</span>
                   </div>
-                ))
-              )}
+                  <span className="portfolio-seg-val" style={{ fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", flexShrink: 0, marginLeft: 6 }}>
+                    {formatKRW(seg.amount)}원 <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem', fontWeight: 600 }}>({seg.pct}%)</span>
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

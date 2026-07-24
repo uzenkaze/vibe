@@ -65,15 +65,13 @@ function Dashboard() {
       showToast('상세 내역을 서버에 저장 중...', 'info');
       const res = await persistSections(patchedSections, true);
       if (res && res.success) {
-        if (res.target === 'github') {
-          showToast('✅ 상세 내역이 로컬 및 GitHub 서버에 성공적으로 저장되었습니다.', 'success');
+        if (res.target === 'github' || res.target === 'server') {
+          showToast('저장되었습니다.', 'success', true);
         } else if (res.target === 'local_only_sync_fail') {
           const errMsg = res.error ? ` 사유: ${res.error}` : '';
           showToast(`⚠️ 상세 내역 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
-        } else if (res.target === 'server') {
-          showToast('✅ 상세 내역이 로컬 및 서버 백엔드에 저장되었습니다.', 'success');
         } else {
-          showToast('✅ 상세 내역이 저장되었습니다.', 'success');
+          showToast('저장되었습니다.', 'success', true);
         }
       } else {
         showToast('저장 중 오류가 발생했습니다.', 'danger');
@@ -92,13 +90,11 @@ function Dashboard() {
     showToast('저장 및 동기화 진행 중...', 'info');
     const res = await persistSections(sections, true);
     if (res && res.success) {
-      if (res.target === 'github') {
-        showToast('✅ 로컬 및 GitHub 서버에 성공적으로 동기화 저장되었습니다.', 'success');
+      if (res.target === 'github' || res.target === 'server') {
+        showToast('저장되었습니다.', 'success', true);
       } else if (res.target === 'local_only_sync_fail') {
         const errMsg = res.error ? ` 사유: ${res.error}` : '';
         showToast(`⚠️ 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
-      } else if (res.target === 'server') {
-        showToast('✅ 로컬 및 서버 백엔드에 안전하게 저장되었습니다.', 'success');
       } else {
         showToast('ℹ️ 로컬 브라우저 저장소에만 저장되었습니다. (GitHub 서버 연동 필요)', 'info');
       }

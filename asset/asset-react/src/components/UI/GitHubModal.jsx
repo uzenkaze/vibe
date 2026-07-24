@@ -76,7 +76,7 @@ export default function GitHubModal({ onClose }) {
       const yearKey = `assetData_${year}`;
       const success = await syncWithGitHub('upload', yearKey, JSON.stringify(data));
       if (success) {
-        showToast('GitHub에 데이터를 성공적으로 저장했습니다.', 'success');
+        showToast('저장되었습니다.', 'success', true);
         onClose();
       }
     } catch (e) {

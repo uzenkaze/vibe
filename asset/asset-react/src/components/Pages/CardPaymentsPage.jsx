@@ -1230,8 +1230,10 @@ export default function CardPaymentsPage() {
                             className="btn btn-ghost btn-sm" 
                             style={{ padding: '4px 8px', color: 'var(--coral)' }} 
                             onClick={() => handleDeletePayment(p.id)}
+                            title="삭제"
                           >
-                            삭제
+                            <span className="desktop-only-text">삭제</span>
+                            <span className="mobile-only-text" style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>×</span>
                           </button>
                         </div>
                       </td>
@@ -1305,8 +1307,10 @@ export default function CardPaymentsPage() {
                             className="btn btn-ghost btn-sm"
                             style={{ color: 'var(--coral)' }}
                             onClick={() => handleDeleteDetailRow(idx)}
+                            title="삭제"
                           >
-                            삭제
+                            <span className="desktop-only-text">삭제</span>
+                            <span className="mobile-only-text" style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>×</span>
                           </button>
                         </td>
                       </tr>

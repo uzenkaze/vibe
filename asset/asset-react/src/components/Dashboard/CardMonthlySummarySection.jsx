@@ -66,7 +66,7 @@ export default function CardMonthlySummarySection() {
   }, [cardMonthlySummaries]);
 
   return (
-    <div className="section-card" style={{ marginTop: '2rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
+    <div className="section-card card-monthly-summary-card">
       {/* 헤더 타이틀 및 추가 버튼 */}
       <div style={{
         display: 'flex',
@@ -90,13 +90,6 @@ export default function CardMonthlySummarySection() {
             ({year}년 {month}월 기준)
           </span>
         </div>
-        <button 
-          className="btn btn-dark btn-sm" 
-          onClick={handleAddCardSummary}
-          style={{ padding: '6px 14px', fontSize: '0.8rem' }}
-        >
-          + 카드 결제금액 추가
-        </button>
       </div>
 
       {/* 요약 현황 카드 (Dribbble 16586448 Top Volume in Market Style) */}
@@ -130,12 +123,6 @@ export default function CardMonthlySummarySection() {
                 </div>
               </div>
             </div>
-            <span style={{
-              fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '20px',
-              background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)'
-            }}>
-              VOL 100%
-            </span>
           </div>
 
           <div style={{
@@ -145,7 +132,8 @@ export default function CardMonthlySummarySection() {
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             letterSpacing: '-0.03em',
             marginBottom: '0.6rem',
-            lineHeight: 1.1
+            lineHeight: 1.1,
+            textAlign: 'right'
           }}>
             {formatKRW(totalCurrentMonthUsage)} <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
           </div>
@@ -181,12 +169,6 @@ export default function CardMonthlySummarySection() {
                 </div>
               </div>
             </div>
-            <span style={{
-              fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '20px',
-              background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)'
-            }}>
-              ESTIMATE
-            </span>
           </div>
 
           <div style={{
@@ -196,7 +178,8 @@ export default function CardMonthlySummarySection() {
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             letterSpacing: '-0.03em',
             marginBottom: '0.6rem',
-            lineHeight: 1.1
+            lineHeight: 1.1,
+            textAlign: 'right'
           }}>
             {formatKRW(totalNextMonthPayment)} <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
           </div>
@@ -209,17 +192,30 @@ export default function CardMonthlySummarySection() {
         </div>
       </div>
 
+      {/* 하단 data-table 상단 바 (우측 상단 결제금액 추가 버튼) */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+          카드별 결제금액 상세
+        </div>
+        <button 
+          className="btn btn-teal btn-sm" 
+          onClick={handleAddCardSummary}
+        >
+          + 결제금액 추가
+        </button>
+      </div>
+
       {/* 인라인 입력/수정/삭제 테이블 */}
       <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--card-border)' }}>
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ width: '150px', textAlign: 'center' }}>카드</th>
-              <th style={{ width: '110px', textAlign: 'center' }}>결제일</th>
-              <th style={{ textAlign: 'center', width: '160px' }}>이달 결제액</th>
-              <th style={{ textAlign: 'center', width: '160px' }}>다음달 결제액</th>
+              <th style={{ width: '140px', textAlign: 'center' }}>카드</th>
+              <th style={{ width: '75px', textAlign: 'center' }}>결제일</th>
+              <th style={{ textAlign: 'right', width: '120px' }}>이달 결제액</th>
+              <th style={{ textAlign: 'right', width: '120px' }}>다음달 결제액</th>
               <th className="hide-on-mobile" style={{ textAlign: 'center' }}>비고</th>
-              <th style={{ width: '80px', textAlign: 'center' }}>작업</th>
+              <th style={{ width: '50px', textAlign: 'center' }}>작업</th>
             </tr>
           </thead>
           <tbody>
@@ -228,7 +224,7 @@ export default function CardMonthlySummarySection() {
                 <td colSpan={isMobile ? 5 : 6} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
                   <div className="desktop-only-text">
                     등록된 카드별 결제금액 내역이 없습니다.<br />
-                    [+ 카드 결제금액 추가] 버튼을 클릭해 카드를 입력해보세요.
+                    [+ 결제금액 추가] 버튼을 클릭해 카드를 입력해보세요.
                   </div>
                   <div className="mobile-only-text">
                     등록된 카드별 결제금액 내역이 없습니다.
@@ -272,7 +268,7 @@ export default function CardMonthlySummarySection() {
                       onChange={(e) => handleCardSummaryChange(item.id, 'payDate', e.target.value)}
                       style={{
                         fontWeight: 600,
-                        padding: '6px 8px',
+                        padding: '6px 4px',
                         borderRadius: '6px',
                         border: '1px solid var(--card-border)',
                         background: 'var(--card)',
@@ -310,14 +306,16 @@ export default function CardMonthlySummarySection() {
                       onChange={(e) => handleCardSummaryChange(item.id, 'note', e.target.value)}
                     />
                   </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      style={{ color: 'var(--coral)', padding: '4px 8px' }}
-                      onClick={() => handleDeleteCardSummary(item.id)}
-                    >
-                      삭제
-                    </button>
+                  <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: '2px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <button
+                        className="table-delete-btn"
+                        onClick={() => handleDeleteCardSummary(item.id)}
+                        title="삭제"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
