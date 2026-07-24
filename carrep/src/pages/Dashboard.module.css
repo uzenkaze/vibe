@@ -918,28 +918,27 @@
   .topGrid { grid-template-columns: 1fr; gap: 16px; }
   .midGrid { grid-template-columns: 1fr; gap: 16px; }
   
-  /* statGrid 요약 통계 카드 0.6배 축소 및 4열 일렬 정렬 */
-  .statGrid { 
-    grid-template-columns: repeat(4, 1fr) !important; 
-    gap: 4px !important; 
+  /* 통계 그리드 영역 0.6배 축소 및 4열 일렬 배치 */
+  .statGrid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
   }
   
   .statItem {
-    padding: 6px 2px !important;
+    padding: 7px 2px !important;
     border-radius: 10px !important;
     gap: 2px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
   }
   
   .statLabel {
-    font-size: 0.52rem !important;
+    font-size: 0.45rem !important;
     letter-spacing: -0.03em !important;
   }
   
   .statNum {
-    font-size: 0.88rem !important;
+    font-size: 0.85rem !important;
   }
-
+  
   .repairList { grid-template-columns: 1fr; }
   .consumablesList { grid-template-columns: 1fr; }
   
@@ -1084,25 +1083,6 @@
 
 /* ── 초소형 모바일 (≤ 480px) ── */
 @media (max-width: 480px) {
-  /* 초소형 모바일 statGrid 극소형 축소 */
-  .statGrid { 
-    gap: 3px !important; 
-  }
-  
-  .statItem {
-    padding: 4px 1px !important;
-    border-radius: 8px !important;
-    gap: 1px !important;
-  }
-  
-  .statLabel {
-    font-size: 0.46rem !important;
-  }
-  
-  .statNum {
-    font-size: 0.76rem !important;
-  }
-
   .specGrid {
     gap: 6px !important;
   }
@@ -1152,6 +1132,25 @@
     padding: 1.5px 4px !important;
     font-size: 9px !important;
     border-radius: 8px !important;
+  }
+
+  /* 초소형 통계 그리드 극소형화 */
+  .statGrid {
+    gap: 3px !important;
+  }
+  
+  .statItem {
+    padding: 5px 1px !important;
+    border-radius: 7px !important;
+    gap: 1px !important;
+  }
+  
+  .statLabel {
+    font-size: 0.42rem !important;
+  }
+  
+  .statNum {
+    font-size: 0.72rem !important;
   }
 
   .repairSummaryItem { padding: 8px 8px !important; gap: 3px !important; }
@@ -1778,5 +1777,5 @@
   color: #2563eb !important;
 }
 
-/* cache busting index css hash update: 2026-07-24-0901 */
+/* cache busting index css hash update: 2026-07-24-0904 */
 
