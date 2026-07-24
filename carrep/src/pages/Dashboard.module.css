@@ -925,7 +925,7 @@
   }
   
   .statItem {
-    padding: 7px 2px !important;
+    padding: 6px 2px !important;
     border-radius: 10px !important;
     gap: 2px !important;
   }
@@ -936,6 +936,23 @@
   }
   
   .statNum {
+    font-size: 0.85rem !important;
+  }
+
+  /* 라이트 테마 하에서 모바일 통계 카드 크기가 뭉개지는 현상 방지 오버라이드 */
+  [data-theme="light"] .statItem {
+    padding: 6px 2px !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    border-width: 1px !important;
+  }
+
+  [data-theme="light"] .statLabel {
+    font-size: 0.45rem !important;
+    letter-spacing: -0.03em !important;
+  }
+
+  [data-theme="light"] .statNum {
     font-size: 0.85rem !important;
   }
   
@@ -1140,7 +1157,7 @@
   }
   
   .statItem {
-    padding: 5px 1px !important;
+    padding: 4px 1px !important;
     border-radius: 7px !important;
     gap: 1px !important;
   }
@@ -1150,6 +1167,22 @@
   }
   
   .statNum {
+    font-size: 0.72rem !important;
+  }
+
+  /* 라이트 테마 하에서 초소형 모바일 통계 카드 크기 대응 오버라이드 */
+  [data-theme="light"] .statItem {
+    padding: 4px 1px !important;
+    border-radius: 7px !important;
+    background: #ffffff !important;
+    border-width: 1px !important;
+  }
+
+  [data-theme="light"] .statLabel {
+    font-size: 0.42rem !important;
+  }
+
+  [data-theme="light"] .statNum {
     font-size: 0.72rem !important;
   }
 
@@ -1777,5 +1810,5 @@
   color: #2563eb !important;
 }
 
-/* cache busting index css hash update: 2026-07-24-0904 */
+/* cache busting index css hash update: 2026-07-24-0925 */
 
