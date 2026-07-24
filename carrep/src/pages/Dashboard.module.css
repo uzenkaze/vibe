@@ -918,16 +918,20 @@
   .topGrid { grid-template-columns: 1fr; gap: 16px; }
   .midGrid { grid-template-columns: 1fr; gap: 16px; }
   
-  /* 통계 그리드 영역 0.6배 축소 및 4열 일렬 배치 */
+  /* 통계 그리드 영역 0.6배 축소 및 4열 일렬 배치 (너비 제한 추가) */
   .statGrid {
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 4px !important;
+    max-width: 320px !important;
+    margin: 0 auto 10px auto !important;
   }
   
   .statItem {
-    padding: 6px 2px !important;
+    padding: 4px 2px !important;
     border-radius: 10px !important;
-    gap: 2px !important;
+    gap: 1px !important;
+    height: 48px !important;
+    justify-content: center !important;
   }
   
   .statLabel {
@@ -941,10 +945,12 @@
 
   /* 라이트 테마 하에서 모바일 통계 카드 크기가 뭉개지는 현상 방지 오버라이드 */
   [data-theme="light"] .statItem {
-    padding: 6px 2px !important;
+    padding: 4px 2px !important;
     border-radius: 10px !important;
     background: #ffffff !important;
     border-width: 1px !important;
+    height: 48px !important;
+    justify-content: center !important;
   }
 
   [data-theme="light"] .statLabel {
@@ -1154,12 +1160,16 @@
   /* 초소형 통계 그리드 극소형화 */
   .statGrid {
     gap: 3px !important;
+    max-width: 280px !important;
+    margin: 0 auto 6px auto !important;
   }
   
   .statItem {
-    padding: 4px 1px !important;
+    padding: 2px 1px !important;
     border-radius: 7px !important;
-    gap: 1px !important;
+    gap: 0.5px !important;
+    height: 40px !important;
+    justify-content: center !important;
   }
   
   .statLabel {
@@ -1172,10 +1182,12 @@
 
   /* 라이트 테마 하에서 초소형 모바일 통계 카드 크기 대응 오버라이드 */
   [data-theme="light"] .statItem {
-    padding: 4px 1px !important;
+    padding: 2px 1px !important;
     border-radius: 7px !important;
     background: #ffffff !important;
     border-width: 1px !important;
+    height: 40px !important;
+    justify-content: center !important;
   }
 
   [data-theme="light"] .statLabel {
@@ -1810,5 +1822,5 @@
   color: #2563eb !important;
 }
 
-/* cache busting index css hash update: 2026-07-24-0925 */
+/* cache busting index css hash update: 2026-07-24-0939 */
 
