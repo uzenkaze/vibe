@@ -1,0 +1,72 @@
+[
+  {
+    "id": "group-1776149215288-0",
+    "name": "ESM",
+    "x": 1793,
+    "y": 513,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-1",
+    "name": "ESI",
+    "x": 415,
+    "y": 548,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-2",
+    "name": "TEC",
+    "x": 1693,
+    "y": 1526,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-3",
+    "name": "CCE",
+    "x": 1002,
+    "y": 1526,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-4",
+    "name": "미지정",
+    "x": 1545,
+    "y": 115,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-5",
+    "name": "GSS",
+    "x": 237,
+    "y": 1507,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-6",
+    "name": "본사",
+    "x": 178,
+    "y": 119,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-7",
+    "name": "Sales",
+    "x": 476,
+    "y": 116,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-8",
+    "name": "BSG",
+    "x": 1225,
+    "y": 108,
+    "parentId": null
+  },
+  {
+    "id": "group-1776149215288-9",
+    "name": "USG",
+    "x": 764,
+    "y": 117,
+    "parentId": null
+  }
+]
