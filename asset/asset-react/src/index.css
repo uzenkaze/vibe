@@ -2808,6 +2808,44 @@ html.dark .btn-simple-outline:hover {
   transform: scale(1.08) !important;
 }
 
+/* PC 전용 카드 호버 팝오버 스타일 */
+.pc-card-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-raised, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.85rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  min-width: 250px;
+  max-width: 320px;
+  color: var(--text-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  pointer-events: auto;
+}
+
+.pc-card-popover table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.pc-card-popover th,
+.pc-card-popover td {
+  padding: 4px 5px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .pc-card-popover {
+    display: none !important;
+  }
+}
+
 /* 요약 카드 (월수입, 총지출, 월손익, 순자산) 상단배치 독립 모달 레이어 */
 .summary-modal-overlay {
   position: fixed !important;

@@ -1114,7 +1114,7 @@ export default function CardPaymentsPage() {
         </div>
 
         <div style={{ animation: 'tabFadeIn 0.2s ease', marginTop: '1.5rem' }}>
-          <div className="card-payments-table-container" style={{ padding: '0 0.75rem 1.5rem', overflowX: 'auto' }}>
+          <div className="card-payments-table-container" style={{ padding: '1.5rem 0.75rem 1.5rem', overflowX: 'auto' }}>
             <table className="data-table card-payments-compact-table" style={{ width: '100%', minWidth: '100%' }}>
               <thead>
                 <tr>

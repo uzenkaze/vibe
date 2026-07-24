@@ -2,28 +2,25 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
-function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, compareDiff, compareRate, hasPrev, isOpen, onSelectCard, onClose }) {
+function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, tooltipContent, compareDiff, compareRate, hasPrev, isOpen, onSelectCard, onClose }) {
+  const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef(null);
 
   const handleMouseEnter = () => {
     if (window.innerWidth > 768) {
-      onSelectCard(label);
+      setIsHovered(true);
     }
   };
 
   const handleMouseLeave = () => {
     if (window.innerWidth > 768) {
-      onClose();
+      setIsHovered(false);
     }
   };
 
   const handleToggleClick = (e) => {
     e.stopPropagation();
-    if (isOpen) {
-      onClose();
-    } else {
-      onSelectCard(label);
-    }
+    onSelectCard(label);
   };
 
   const { dark } = useApp();
@@ -51,7 +48,7 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, com
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleToggleClick}
-      style={{ zIndex: isOpen ? 100 : 1, position: 'relative', cursor: 'pointer' }}
+      style={{ zIndex: isHovered || isOpen ? 100 : 1, position: 'relative', cursor: 'pointer' }}
     >
       <div className="summary-card-inner">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.65rem' }}>
@@ -102,6 +99,21 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, com
           </div>
         )}
       </div>
+
+      {/* PC 전용 호버 팝오버 툴팁 */}
+      {isHovered && tooltipContent && (
+        <div 
+          className="pc-card-popover"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div style={{ fontSize: '0.8rem', fontWeight: 800, marginBottom: '0.45rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '0.35rem' }}>
+            📊 {label} 세부 내역
+          </div>
+          {tooltipContent}
+        </div>
+      )}
     </div>
   );
 }

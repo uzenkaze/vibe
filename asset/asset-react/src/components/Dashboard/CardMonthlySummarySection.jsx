@@ -119,7 +119,7 @@ export default function CardMonthlySummarySection() {
                   Current Billing
                 </div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                  이달 결제금액
+                  이번달
                 </div>
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function CardMonthlySummarySection() {
                   Next Expected
                 </div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                  다음달 결제금액
+                  다음달
                 </div>
               </div>
             </div>

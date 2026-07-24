@@ -181,7 +181,7 @@ export default function AssetAnalyticsChart() {
           {/* 범례 영역 */}
           <div className="portfolio-legend-container" style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              자산 구성 포트폴리오
+              자산 구성
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               {portfolioSegments.map((seg, i) => (
