@@ -100,14 +100,8 @@ foreach ($folder in $staticFolders) {
             Write-Host "> livetv-app 원본 정적 소스 직접 복사 중..." -ForegroundColor Cyan
             New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
             
-            # youtube.html 및 ytmusic.html, index.html 복사 후 캐시 버스터 실시간 주입 (모바일 웹뷰 캐싱 철저 방어)
-            $timestamp = Get-Date -Format "yyyyMMddHHmmss"
-
-            Write-Host "> livetv UTF-8 copy (Node)..." -ForegroundColor Cyan
-            $env:CACHE_BUST = $timestamp
-            node "$PSScriptRoot/scripts/deploy-livetv-utf8.js"
-            if ($LASTEXITCODE -ne 0) { throw "livetv UTF-8 copy failed" }
-            Write-Host "> livetv 복사 및 캐시 버스터 주입 완료 (v=$timestamp)" -ForegroundColor Green
+            Copy-Item -Path "$folder/*" -Destination "$deployDir/$targetFolder" -Recurse -Force -Exclude "node_modules", ".git", ".vscode"
+            Write-Host "> livetv 원본 복사 완료" -ForegroundColor Green
         } elseif ($folder -eq "vibe-hybrid-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {
