@@ -1,0 +1,260 @@
+﻿.overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9000;
+  background: rgba(0,0,0,0.65);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(10px);
+  padding: 16px;
+}
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  width: 100%; max-width: 460px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  max-height: 90vh; overflow-y: auto;
+}
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.headerLeft { display: flex; align-items: center; gap: 12px; }
+.headerIcon { font-size: 1.8rem; }
+.title { font-size: 1.05rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
+.subtitle { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; }
+.closeBtn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--bg-btn-secondary);
+  color: var(--text-muted); font-size: 0.95rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.closeBtn:hover { background: var(--border); color: var(--text-main); }
+
+.progressSection {
+  padding: 16px 24px 0;
+}
+.expiredLabel { color: var(--accent-red); font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; }
+.remainLabel { font-size: 0.88rem; color: var(--text-sub); margin-bottom: 8px; }
+.progressBar {
+  width: 100%; height: 6px;
+  background: var(--bg-input); border-radius: 3px; overflow: hidden;
+}
+.progressFill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+
+.body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 7px; }
+.label { font-size: 0.76rem; font-weight: 600; color: var(--text-muted); }
+.req { color: var(--accent-red); }
+.input, .select, .textarea {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 11px 14px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+.input:focus, .select:focus, .textarea:focus {
+  border-color: #4b5563;
+  background: var(--bg-input-hover);
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.1);
+}
+.select option { background: var(--bg-card); color: var(--text-main); }
+.textarea { resize: none; }
+
+.footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 18px 24px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+}
+.btnGhost {
+  padding: 12px 22px; border-radius: 16px;
+  border: 1px solid var(--border); background: var(--bg-btn-secondary);
+  color: var(--text-sub); font-weight: 700; font-size: 0.9rem;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.btnGhost:hover { background: var(--bg-btn-secondary-hover); color: var(--text-main); }
+.btnPrimary {
+  padding: 12px 24px; border-radius: 16px;
+  border: none; background: var(--bg-btn-primary);
+  color: var(--text-btn-primary); font-weight: 800; font-size: 0.9rem;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.btnPrimary:hover { background: var(--bg-btn-primary-hover); transform: translateY(-1px); }
+
+@media (max-width: 480px) {
+  .row { grid-template-columns: 1fr; }
+}
+
+/* ── Showroom Cars Sell Center Dashboard Light Mode Enhancements ── */
+[data-theme="light"] .modal {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="light"] .header {
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1d4ed8;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ===== Car Rent AI Assistant Dashboard Light Mode Specific Enhancements ===== */
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border: 1px solid #eef0f5 !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12) !important;
+}
+
+[data-theme="light"] .header {
+  border-bottom: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc !important;
+  border: 1px solid #eef0f5 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #0f172a !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18) !important;
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1e293b !important;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* ── Car Rent AI Assistant Dashboard Light Mode Overhaul ── */
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border: 1px solid #e9ecef !important;
+  border-radius: 28px !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1) !important;
+}
+
+[data-theme="light"] .header {
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08) !important;
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #e9ecef !important;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-radius: 24px !important;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.2) !important;
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1e293b !important;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}

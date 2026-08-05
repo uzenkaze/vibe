@@ -1,0 +1,415 @@
+/* ── FuelPage.module.css ── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 72px);
+  background: var(--bg-main);
+  padding-bottom: 90px;
+}
+
+/* ── 페이지 헤더 ── */
+.pageHeader {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.pageHeaderInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px 12px;
+}
+
+.pageTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pageTitle {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text-main);
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.pageSubtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ── 탭 바 ── */
+.tabBar {
+  display: flex;
+  padding: 0 16px;
+  gap: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text-main);
+}
+
+.tabActive {
+  color: var(--accent-blue);
+  border-bottom-color: var(--accent-blue);
+}
+
+/* ── 탭 콘텐츠 영역 ── */
+.tabContent {
+  flex: 1;
+  padding: 16px;
+}
+
+.recordContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── 폼 카드 ── */
+.formCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.formTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.input, .select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-size: 0.88rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus, .select:focus {
+  border-color: var(--accent-blue);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btnSubmit {
+  padding: 10px 24px;
+  border-radius: 12px;
+  background: var(--bg-btn-primary);
+  color: var(--text-btn-primary);
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btnSubmit:hover {
+  opacity: 0.9;
+}
+
+.btnCancel {
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ── 히스토리 섹션 ── */
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historyCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.2s;
+}
+
+.historyCard:hover {
+  border-color: var(--accent-blue);
+}
+
+.historyTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.historyStation {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-right: 8px;
+}
+
+.historyFuelType {
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.historyDate {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.historyMain {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.historyAmount {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+.historyDetails {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 6px;
+}
+
+.historyActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.btnEdit, .btnDelete {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+}
+
+.btnEdit { color: var(--text-sub); }
+.btnDelete { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+
+/* ── 리포트 탭 ── */
+.reportWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reportStatRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.reportStat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.reportStatLabel {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.reportStatVal {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--accent-blue);
+}
+
+.chartWrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chartEmpty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.chartSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chartSummaryTitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.chartSummaryVal {
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.chartSummaryMeta {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+
+.chartCurrentVal {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.reportToggle {
+  display: flex;
+  gap: 8px;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggleActive {
+  background: var(--accent-blue) !important;
+  color: #ffffff !important;
+  border-color: var(--accent-blue) !important;
+}
+
+/* ── 라이트 모드 대응 ── */
+[data-theme="light"] .pageHeader,
+[data-theme="light"] .formCard,
+[data-theme="light"] .historyCard,
+[data-theme="light"] .reportStat,
+[data-theme="light"] .chartWrap,
+[data-theme="light"] .emptyState {
+  background: #ffffff;
+}
+
+[data-theme="light"] .btnSubmit {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+}

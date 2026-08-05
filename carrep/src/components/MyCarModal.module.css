@@ -1,0 +1,349 @@
+﻿.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.2s ease-out;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  max-height: 90vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.closeBtn {
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.closeBtn:hover {
+  background: var(--border);
+  color: var(--text-main);
+}
+
+.body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+.desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: -0.01em;
+}
+
+.req {
+  color: var(--accent-red);
+  margin-left: 2px;
+}
+
+/* Nocra AI UI Style Inputs & Comboboxes */
+.input, .select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 11px 14px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.input:focus, .select:focus {
+  outline: none;
+  border-color: #4b5563;
+  background: var(--bg-input-hover);
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.1);
+}
+
+.select option {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 24px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+/* Nocra AI Primary Light Button */
+.btnPrimary {
+  background: var(--bg-btn-primary);
+  color: var(--text-btn-primary);
+}
+
+.btnPrimary:hover {
+  background: var(--bg-btn-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
+}
+
+/* Nocra AI Secondary Dark Button */
+.btnGhost {
+  background: var(--bg-btn-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+}
+
+.btnGhost:hover {
+  background: var(--bg-btn-secondary-hover);
+  color: var(--text-main);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+  .modal { border-radius: 20px; }
+}
+
+/* ── Showroom Cars Sell Center Dashboard Light Mode Enhancements ── */
+[data-theme="light"] .modal {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="light"] .header {
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1d4ed8;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ===== Car Rent AI Assistant Dashboard Light Mode Specific Enhancements ===== */
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border: 1px solid #eef0f5 !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12) !important;
+}
+
+[data-theme="light"] .header {
+  border-bottom: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc !important;
+  border: 1px solid #eef0f5 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #0f172a !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #eef0f5 !important;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18) !important;
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1e293b !important;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* ── Car Rent AI Assistant Dashboard Light Mode Overhaul ── */
+[data-theme="light"] .modal {
+  background: #ffffff !important;
+  border: 1px solid #e9ecef !important;
+  border-radius: 28px !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1) !important;
+}
+
+[data-theme="light"] .header {
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select,
+[data-theme="light"] .textarea {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus,
+[data-theme="light"] .textarea:focus {
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08) !important;
+}
+
+[data-theme="light"] .footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #e9ecef !important;
+}
+
+[data-theme="light"] .btnPrimary {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-radius: 24px !important;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.2) !important;
+}
+
+[data-theme="light"] .btnPrimary:hover {
+  background: #1e293b !important;
+}
+
+[data-theme="light"] .btnGhost {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .btnGhost:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}

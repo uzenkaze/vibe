@@ -1,0 +1,68 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies and build learn project
+        continue-on-error: true
+        run: |
+          cd learn
+          npm install
+          npm run build
+      
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p deploy_out
+          # Copy root files
+          cp index.html deploy_out/
+          # Copy static folders (asset is always deployed)
+          cp -r asset deploy_out/
+          cp -r task deploy_out/
+          cp -r hobby deploy_out/ 2>/dev/null || true
+          # Copy learn dist (pre-built or just built)
+          if [ -d "learn/dist" ]; then
+            mkdir -p deploy_out/learn
+            cp -r learn/dist/* deploy_out/learn/
+          fi
+          # Copy other apps if they have dist folders
+          if [ -d "livetv-app/dist" ]; then cp -r livetv-app/dist deploy_out/livetv-app; fi
+          if [ -d "vibe-hybrid-app/dist" ]; then cp -r vibe-hybrid-app/dist deploy_out/vibe-hybrid-app; fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './deploy_out'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
