@@ -46,13 +46,16 @@ export function AppProvider({ children }) {
 
   // GitHub connection status
   const [isGithubConnected, setIsGithubConnected] = useState(false);
+  const [githubSyncStatus, setGithubSyncStatus] = useState('disconnected'); // 'connected' | 'error' | 'disconnected'
 
   const checkGithubConnection = useCallback(async () => {
     try {
       const connected = await testGithubConnection();
       setIsGithubConnected(connected);
+      setGithubSyncStatus(prev => prev === 'error' ? 'error' : (connected ? 'connected' : 'disconnected'));
     } catch {
       setIsGithubConnected(false);
+      setGithubSyncStatus(prev => prev === 'error' ? 'error' : 'disconnected');
     }
   }, []);
 
@@ -269,12 +272,15 @@ export function AppProvider({ children }) {
               JSON.stringify(plainYd)
             );
             if (syncSuccess) {
+              setGithubSyncStatus('connected');
               return { success: true, target: 'github' };
             } else {
+              setGithubSyncStatus('error');
               return { success: true, target: 'local_only_sync_fail', error: '동기화 응답 실패' };
             }
           } catch (syncErr) {
             console.error('[AppContext] GitHub Sync failed:', syncErr);
+            setGithubSyncStatus('error');
             return { success: true, target: 'local_only_sync_fail', error: syncErr.message || String(syncErr) };
           }
         }
@@ -624,6 +630,7 @@ export function AppProvider({ children }) {
       login, logout,
       accounts, saveAccountsAndUpdate,
       isGithubConnected, checkGithubConnection,
+      githubSyncStatus, setGithubSyncStatus,
       getPrevMonthCompareData,
     }}>
       {children}

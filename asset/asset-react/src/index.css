@@ -4581,4 +4581,32 @@ input[type="date"].ins-input {
   }
 }
 
+/* --- GitHub Sync Error Red Blink Animation --- */
+@keyframes githubErrorPulse {
+  0% {
+    color: #ff4d4f;
+    border-color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.15);
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.7);
+  }
+  50% {
+    color: #ffffff;
+    border-color: #ff4d4f;
+    background: #ff4d4f;
+    box-shadow: 0 0 12px 4px rgba(255, 77, 79, 0.8);
+  }
+  100% {
+    color: #ff4d4f;
+    border-color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.15);
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.7);
+  }
+}
+
+.topbar-btn.github-sync-btn.sync-error-blink {
+  animation: githubErrorPulse 1.2s infinite ease-in-out !important;
+  color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+}
+
 
