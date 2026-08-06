@@ -6,8 +6,8 @@ export default function GitHubModal({ onClose }) {
   const { showToast, yearData, year, loadYearData, checkGithubConnection } = useApp();
   
   const [token, setToken] = useState('');
-  const [repo, setRepo] = useState('');
-  const [branch, setBranch] = useState('main');
+  const [repo, setRepo] = useState('uzenkaze/vibe');
+  const [branch, setBranch] = useState('master');
   const [autoSync, setAutoSync] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -15,8 +15,8 @@ export default function GitHubModal({ onClose }) {
   useEffect(() => {
     const config = getGithubConfig();
     setToken(config.token || '');
-    setRepo(config.repo || '');
-    setBranch(config.branch || 'main');
+    setRepo(config.repo || 'uzenkaze/vibe');
+    setBranch(config.branch || 'master');
     setAutoSync(!!config.autoSync);
   }, []);
 
@@ -135,7 +135,7 @@ export default function GitHubModal({ onClose }) {
                 style={{ minHeight: 'auto', margin: 0 }}
                 value={repo}
                 onChange={e => setRepo(e.target.value)}
-                placeholder="username/repository"
+                placeholder="uzenkaze/vibe"
               />
             </div>
 
@@ -147,7 +147,7 @@ export default function GitHubModal({ onClose }) {
                 style={{ minHeight: 'auto', margin: 0 }}
                 value={branch}
                 onChange={e => setBranch(e.target.value)}
-                placeholder="main"
+                placeholder="master"
               />
             </div>
 

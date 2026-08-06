@@ -5,24 +5,24 @@
 export function getGithubConfig() {
   try {
     const raw = localStorage.getItem('assetGitHubConfig');
-    if (!raw) return { token: '', repo: '', branch: 'main', autoSync: false };
+    if (!raw) return { token: '', repo: 'uzenkaze/vibe', branch: 'master', autoSync: false };
     const parsed = JSON.parse(raw);
     return {
       token: (parsed.token || '').trim(),
-      repo: (parsed.repo || '').trim(),
-      branch: (parsed.branch || 'main').trim(),
+      repo: (parsed.repo || 'uzenkaze/vibe').trim(),
+      branch: (parsed.branch || 'master').trim(),
       autoSync: !!parsed.autoSync
     };
   } catch {
-    return { token: '', repo: '', branch: 'main', autoSync: false };
+    return { token: '', repo: 'uzenkaze/vibe', branch: 'master', autoSync: false };
   }
 }
 
 export function saveGithubConfig(config) {
   const trimmed = {
     token: (config.token || '').trim(),
-    repo: (config.repo || '').trim(),
-    branch: (config.branch || 'main').trim(),
+    repo: (config.repo || 'uzenkaze/vibe').trim(),
+    branch: (config.branch || 'master').trim(),
     autoSync: !!config.autoSync
   };
   localStorage.setItem('assetGitHubConfig', JSON.stringify(trimmed));
