@@ -71,11 +71,8 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
           const getUrlWithCacheBuster = `${getUrl}&t=${timestamp}`;
           
           const checkRes = await fetch(getUrlWithCacheBuster, {
-            headers: {
-              ...headers,
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              'Pragma': 'no-cache'
-            }
+            headers,
+            cache: 'no-store'
           });
           if (checkRes.ok) {
             const checkJson = await checkRes.json();
