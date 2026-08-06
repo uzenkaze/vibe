@@ -486,7 +486,8 @@ export default function CardPaymentsPage() {
   const cardBreakdown = useMemo(() => {
     return cardMonthlySummaries.map(item => ({
       card: item.cardName || '카드',
-      amount: Number(item.currentMonthTotal) || 0
+      amount: Number(item.currentMonthTotal) || 0,
+      isPaid: !!item.isPaid || !!item.isPrepaid
     })).filter(item => item.amount > 0);
   }, [cardMonthlySummaries]);
 

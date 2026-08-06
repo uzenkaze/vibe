@@ -25,7 +25,8 @@ export default function IncomeExpenseSectionCard() {
   const cardBreakdown = useMemo(() => {
     return cardMonthlySummaries.map(item => ({
       card: item.cardName || '카드',
-      amount: Number(item.currentMonthTotal) || 0
+      amount: Number(item.currentMonthTotal) || 0,
+      isPaid: !!item.isPaid || !!item.isPrepaid
     })).filter(item => item.amount > 0);
   }, [cardMonthlySummaries]);
 
@@ -376,9 +377,16 @@ export default function IncomeExpenseSectionCard() {
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', padding: '6px 0' }}>이번 달 카드 결제 내역이 없습니다.</div>
                 ) : (
                   cardBreakdown.map((b, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1rem', width: '100%', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontWeight: 600 }}>💳 {b.card}</span>
-                      <span style={{ fontWeight: 800, color: '#3b82f6' }}>{formatKRW(b.amount)}원</span>
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', gap: '1rem', width: '100%', whiteSpace: 'nowrap', opacity: b.isPaid ? 0.55 : 1 }}>
+                      <span style={{ fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: b.isPaid ? 'line-through' : 'none' }}>
+                        💳 {b.card}
+                        {b.isPaid && (
+                          <span style={{ fontSize: '0.65rem', padding: '1px 5px', borderRadius: '4px', background: 'var(--teal-dim)', color: 'var(--teal)', fontWeight: 800, textDecoration: 'none' }}>
+                            선결제
+                          </span>
+                        )}
+                      </span>
+                      <span style={{ fontWeight: 800, color: b.isPaid ? 'var(--text-muted)' : '#3b82f6', textDecoration: b.isPaid ? 'line-through' : 'none', fontFamily: "'Plus Jakarta Sans', monospace" }}>{formatKRW(b.amount)}원</span>
                     </div>
                   ))
                 )}
