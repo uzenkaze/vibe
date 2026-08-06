@@ -161,6 +161,9 @@ Write-Host "> vibe_*.png 및 *.apk 파일 복사 중..."
 Get-ChildItem -Path . -Filter vibe_*.png | Copy-Item -Destination $deployDir
 Get-ChildItem -Path . -Filter *.apk | Copy-Item -Destination $deployDir
 
+# 하위 디렉토리 내 .git 폴더 완벽 제거 (Git Submodule 및 누락 방지 - RULE 9 STEP 3 준수)
+Get-ChildItem -Path $deployDir -Recurse -Filter ".git" -Hidden -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
+
 # 6. GitHub Pages 배포
 Write-Host "> GitHub Pages 업로드 중 (gh-pages 브랜치)..." -ForegroundColor Green
 Set-Location $deployDir
