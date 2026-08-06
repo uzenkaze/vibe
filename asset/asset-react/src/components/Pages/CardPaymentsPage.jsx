@@ -562,7 +562,7 @@ export default function CardPaymentsPage() {
               textTransform: 'uppercase', 
               marginLeft: 6
             }}>
-              CYBERNETIC ARC TREND MAP
+              PAYMENT TREND ANALYTICS
             </span>
           </div>
         </div>
