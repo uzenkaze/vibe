@@ -39,7 +39,7 @@ export default function PensionPage() {
     });
   }, [getCurrentPension, year, month]);
 
-  // --- 국민연금 출생일 기준 65세 수령 개시 동적 연산 ---
+  // --- 국민연금 출생일 기준 65세 수령 개시 동적 연산 (만 65세 도달 익월 수령 개시) ---
   const pensionAgeCalc = useMemo(() => {
     const rawBirth = formData.birthDate || '1974.02';
     const match = String(rawBirth).match(/(\d{4})[.]?(\d{1,2})/);
@@ -49,8 +49,13 @@ export default function PensionPage() {
       birthM = parseInt(match[2], 10);
     }
 
-    const startAge65Y = birthY + 65;
-    const startAge65M = birthM;
+    // 만 65세 도달 다음 달(익월)부터 수령 개시 (예: 1974.02 출생 -> 2039년 3월부터 65세 수령 개시)
+    let startAge65M = birthM + 1;
+    let startAge65Y = birthY + 65;
+    if (startAge65M > 12) {
+      startAge65M = 1;
+      startAge65Y += 1;
+    }
     const startDateStr = `${startAge65Y}년 ${String(startAge65M).padStart(2, '0')}월`;
 
     const curY = 2026;
