@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
 export default function IncomeExpenseSectionCard() {
-  const { getCurrentSections } = useApp();
+  const { getCurrentSections, month } = useApp();
   const sections = getCurrentSections();
 
   const incomeList = sections.income || [];
@@ -494,8 +494,8 @@ export default function IncomeExpenseSectionCard() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', fontSize: '0.78rem', fontWeight: 800, gap: '0.5rem' }}>
           {/* 모바일/데스크톱 문구 분기 */}
           <span style={{ color: 'var(--text-secondary)', flexShrink: 0 }}>
-            <span className="desktop-only-text">수입 대비 지출 비율</span>
-            <span className="mobile-only-text">수입대비 지출</span>
+            <span className="desktop-only-text">{parseInt(month, 10)}월 수입 대비 지출 비율</span>
+            <span className="mobile-only-text">{parseInt(month, 10)}월 수입대비 지출</span>
           </span>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
