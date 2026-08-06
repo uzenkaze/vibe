@@ -5049,7 +5049,7 @@
       "remarks": "최초 관리자"
     }
   ],
-  "updatedAt": 1785974752991,
+  "updatedAt": 1785974958784,
   "insurance": {
     "policies": [
       {
@@ -5101,98 +5101,6 @@
             "name": "질병/재해 1~5종 수술비",
             "amount": 5000000,
             "note": "종별 차등 지급"
-          }
-        ]
-      },
-      {
-        "id": "ins_2",
-        "insuranceName": "마이헬스파트너 종합보험",
-        "insurer": "삼성화재",
-        "insuranceType": "건강보험",
-        "mainCoverageAmount": 30000000,
-        "policyNo": "SS-2022-88901",
-        "contractDate": "2022-03-10",
-        "insured": "홍길동",
-        "birthYear": "1974-05-15",
-        "feature": "뇌혈관 및 허혈성 심장질환 진단 수술 집중 보장",
-        "premium": 85000,
-        "payCycle": "월납",
-        "renewalType": "비갱신형",
-        "payStart": "2022-03-10",
-        "payEnd": "2042-03-10",
-        "coverYears": "100",
-        "coverStart": "48",
-        "coverEnd": "100",
-        "coverages": [
-          {
-            "category": "진단",
-            "name": "일반암 진단비",
-            "amount": 50000000,
-            "note": "최초 1회한 보장"
-          },
-          {
-            "category": "진단",
-            "name": "뇌혈관질환 진단비",
-            "amount": 20000000,
-            "note": "뇌경색/뇌출혈 포함"
-          },
-          {
-            "category": "진단",
-            "name": "허혈성심장질환 진단비",
-            "amount": 20000000,
-            "note": "협심증/심근경색 포함"
-          },
-          {
-            "category": "수술",
-            "name": "질병 수술비",
-            "amount": 1000000,
-            "note": "수술 1회당"
-          },
-          {
-            "category": "수술",
-            "name": "상해 수술비",
-            "amount": 1000000,
-            "note": "수술 1회당"
-          }
-        ]
-      },
-      {
-        "id": "ins_3",
-        "insuranceName": "메리츠 실손의료비보험",
-        "insurer": "메리츠화재",
-        "insuranceType": "실손보험",
-        "mainCoverageAmount": 50000000,
-        "policyNo": "MZ-2020-55412",
-        "contractDate": "2020-01-20",
-        "insured": "홍길동",
-        "birthYear": "1974-05-15",
-        "feature": "입원/통원 의료비 실손 보장 및 3대 비급여 보장",
-        "premium": 42000,
-        "payCycle": "월납",
-        "renewalType": "갱신형",
-        "payStart": "2020-01-20",
-        "payEnd": "2100-01-20",
-        "coverYears": "100",
-        "coverStart": "46",
-        "coverEnd": "100",
-        "coverages": [
-          {
-            "category": "입원",
-            "name": "상해/질병 급여 통원/입원",
-            "amount": 50000000,
-            "note": "자기부담 20% 공제"
-          },
-          {
-            "category": "통원",
-            "name": "상해/질병 비급여 통원/입원",
-            "amount": 50000000,
-            "note": "자기부담 30% 공제"
-          },
-          {
-            "category": "통원",
-            "name": "3대 비급여 (도수치료/체외충격파)",
-            "amount": 3500000,
-            "note": "연간 350만원/50회 한도"
           }
         ]
       },
