@@ -96,12 +96,17 @@ foreach ($folder in $staticFolders) {
             New-Item -ItemType Directory -Path "$deployDir/hobby" -Force | Out-Null
             Copy-Item -Path "$folder/www/*" -Destination "$deployDir/hobby" -Recurse -Force
         } elseif ($folder -eq "livetv-app") {
-            # livetv-app은 빌드(dist)를 타지 않고 원본 정적 파일을 직접 복사하여 배포
-            Write-Host "> livetv-app 원본 정적 소스 직접 복사 중..." -ForegroundColor Cyan
+            # livetv-app은 dist/ 빌드 산출물을 복사하여 배포 (hls.min.js 등 누락 방지)
+            Write-Host "> livetv-app dist 빌드 결과물 복사 중..." -ForegroundColor Cyan
             New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
-            
-            Copy-Item -Path "$folder/*" -Destination "$deployDir/$targetFolder" -Recurse -Force -Exclude "node_modules", ".git", ".vscode"
-            Write-Host "> livetv 원본 복사 완료" -ForegroundColor Green
+            if (Test-Path "$folder/dist") {
+                Copy-Item -Path "$folder/dist/*" -Destination "$deployDir/$targetFolder" -Recurse -Force
+                Write-Host "> livetv dist 복사 완료 (hls.min.js 포함)" -ForegroundColor Green
+            } else {
+                # dist 없으면 루트 정적 파일만 복사 (node_modules, .git, android 등 제외)
+                Get-ChildItem -Path $folder -Exclude "node_modules",".git",".vscode","android","temp-deploy" | Copy-Item -Destination "$deployDir/$targetFolder" -Recurse -Force
+                Write-Host "> livetv 루트 복사 완료" -ForegroundColor Green
+            }
         } elseif ($folder -eq "vibe-hybrid-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {
@@ -148,6 +153,8 @@ if (Test-Path "404.html") {
     Write-Host "> 404.html 복사 중..."
     Copy-Item "404.html" $deployDir 
 }
+# .nojekyll 파일 생성 (Jekyll 처리 방지)
+New-Item -ItemType File -Path "$deployDir/.nojekyll" -Force | Out-Null
 if (Test-Path "livetv-favicon.png") { Copy-Item "livetv-favicon.png" $deployDir }
 # 포털 메인 카드 이미지 파일(vibe_*.png) 및 모바일 APK 파일 복사
 Write-Host "> vibe_*.png 및 *.apk 파일 복사 중..."
