@@ -227,7 +227,7 @@ export default function IncomeExpenseSectionCard() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800 }}>수입</span>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800 }}>수입 내역</span>
                 <button onClick={() => setIsIncomeHovered(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>✕</button>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '150px', overflowY: 'auto' }}>
@@ -369,7 +369,7 @@ export default function IncomeExpenseSectionCard() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800 }}>카드별 사용 금액</span>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800 }}>카드별 결제 내역</span>
                 <button onClick={() => setIsCardHovered(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>✕</button>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '150px', overflowY: 'auto' }}>
@@ -469,7 +469,7 @@ export default function IncomeExpenseSectionCard() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800 }}>현금 지출</span>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800 }}>현금 지출 내역</span>
                 <button onClick={() => setIsExpenseHovered(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>✕</button>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '150px', overflowY: 'auto' }}>

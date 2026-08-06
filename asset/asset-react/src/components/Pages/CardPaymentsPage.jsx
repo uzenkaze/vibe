@@ -1009,7 +1009,7 @@ export default function CardPaymentsPage() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div style={{ fontSize: '0.8rem', color: 'var(--teal)', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
-                        수입 상세 내역
+                        수입 내역
                       </div>
                       <div className="summary-detail-modal-list">
                         {(sections.income || []).length === 0 ? (
@@ -1114,7 +1114,7 @@ export default function CardPaymentsPage() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div style={{ fontSize: '0.8rem', color: '#ff8a00', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
-                        현금 납부 지출 상세 (전체)
+                        현금 지출 내역
                       </div>
                       <div className="summary-detail-modal-list">
                         {cardPayments.length === 0 ? (
@@ -1220,7 +1220,7 @@ export default function CardPaymentsPage() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div style={{ fontSize: '0.8rem', color: '#3b82f6', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
-                        이달 카드별 결제 내역 (전체)
+                        카드별 결제 내역
                       </div>
                       <div className="summary-detail-modal-list">
                         {cardBreakdown.length === 0 ? (
@@ -2009,7 +2009,7 @@ export default function CardPaymentsPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.65rem', marginBottom: '0.85rem' }}>
                   <div style={{ fontSize: '0.88rem', color: 'var(--teal)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--teal)', display: 'inline-block' }} />
-                    수입 상세 내역
+                    수입 내역
                   </div>
                   <button
                     type="button"
@@ -2078,7 +2078,7 @@ export default function CardPaymentsPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.65rem', marginBottom: '0.85rem' }}>
                   <div style={{ fontSize: '0.88rem', color: '#ff8a00', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff8a00', display: 'inline-block' }} />
-                    현금 납부 지출 상세 (전체)
+                    현금 지출 내역
                   </div>
                   <button
                     type="button"
@@ -2147,7 +2147,7 @@ export default function CardPaymentsPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.65rem', marginBottom: '0.85rem' }}>
                   <div style={{ fontSize: '0.88rem', color: '#3b82f6', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', display: 'inline-block' }} />
-                    이달 카드별 결제 내역 (전체)
+                    카드별 결제 내역
                   </div>
                   <button
                     type="button"
