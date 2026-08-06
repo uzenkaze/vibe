@@ -97,12 +97,16 @@ function Dashboard() {
     if (res && res.success) {
       if (res.target === 'github' || res.target === 'server') {
         triggerSaveSuccessBlink();
-        showToast('저장되었습니다.', 'success', true);
+        showToast('🔑 GitHub 서버 동기화 저장 완료!', 'success', true);
+      } else if (res.target === 'no_github_token') {
+        setGithubModal(true);
+        showToast('⚠️ GitHub 토큰이 설정되지 않아 서버 동기화에 실패했습니다. 토큰을 입력해주세요.', 'warning');
       } else if (res.target === 'local_only_sync_fail') {
         const errMsg = res.error ? ` 사유: ${res.error}` : '';
         showToast(`⚠️ 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
       } else {
-        showToast('ℹ️ 로컬 브라우저 저장소에만 저장되었습니다. (GitHub 서버 연동 필요)', 'info');
+        setGithubModal(true);
+        showToast('⚠️ 타 기기 동기화를 위해 GitHub 토큰 설정을 진행해 주세요.', 'warning');
       }
     } else {
       showToast('저장 중 오류가 발생했습니다.', 'danger');

@@ -269,7 +269,7 @@ export function AppProvider({ children }) {
         // 3-1. 로컬 서버 API 저장 시도 (plainYd 원본 전달)
         const apiSaved = await saveData(year, plainYd);
 
-        // 3-2. GitHub PAT 설정이 있으면 GitHub에도 동기화
+        // 3-2. GitHub 동기화 필수 수행
         const ghConfig = getGithubConfig();
         if (ghConfig.token && ghConfig.repo) {
           try {
@@ -291,6 +291,9 @@ export function AppProvider({ children }) {
             setGithubSyncStatus('error');
             return { success: true, target: 'local_only_sync_fail', error: syncErr.message || String(syncErr) };
           }
+        } else {
+          setGithubSyncStatus('error');
+          return { success: true, target: 'no_github_token', error: 'GitHub 토큰이 설정되어 있지 않습니다.' };
         }
 
         // 3-3. GitHub 미설정 → 서버 API 저장 결과 반환
