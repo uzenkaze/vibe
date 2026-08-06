@@ -33,7 +33,7 @@ import CalculatorModal from './components/UI/CalculatorModal';
 import PullToRefresh from './components/UI/PullToRefresh';
 
 function Dashboard() {
-  const { navSection, showToast, persistSections, getCurrentSections, updateRow } = useApp();
+  const { navSection, showToast, persistSections, getCurrentSections, updateRow, triggerSaveSuccessBlink } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [summaryModal, setSummaryModal] = useState(null); // 'assets' | 'expenses' | null
   const [dataModal, setDataModal] = useState(false);
@@ -96,6 +96,7 @@ function Dashboard() {
     const res = await persistSections(sections, true);
     if (res && res.success) {
       if (res.target === 'github' || res.target === 'server') {
+        triggerSaveSuccessBlink();
         showToast('저장되었습니다.', 'success', true);
       } else if (res.target === 'local_only_sync_fail') {
         const errMsg = res.error ? ` 사유: ${res.error}` : '';

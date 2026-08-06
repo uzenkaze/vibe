@@ -47,6 +47,14 @@ export function AppProvider({ children }) {
   // GitHub connection status
   const [isGithubConnected, setIsGithubConnected] = useState(false);
   const [githubSyncStatus, setGithubSyncStatus] = useState('disconnected'); // 'connected' | 'error' | 'disconnected'
+  const [isSaveSuccessBlink, setIsSaveSuccessBlink] = useState(false);
+
+  const triggerSaveSuccessBlink = useCallback(() => {
+    setIsSaveSuccessBlink(true);
+    setTimeout(() => {
+      setIsSaveSuccessBlink(false);
+    }, 1400);
+  }, []);
 
   const checkGithubConnection = useCallback(async () => {
     try {
@@ -631,6 +639,7 @@ export function AppProvider({ children }) {
       accounts, saveAccountsAndUpdate,
       isGithubConnected, checkGithubConnection,
       githubSyncStatus, setGithubSyncStatus,
+      isSaveSuccessBlink, triggerSaveSuccessBlink,
       getPrevMonthCompareData,
     }}>
       {children}
