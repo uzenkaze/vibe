@@ -695,7 +695,7 @@ export default function CardPaymentsPage() {
                       <text 
                         x={paddingLeft - 10} y={y + 4} 
                         textAnchor="end" 
-                        fill={dark ? "rgba(255, 255, 255, 0.45)" : "var(--text-muted)"} 
+                        fill={dark ? "rgba(255, 255, 255, 0.45)" : "#000000"} 
                         fontSize="10" 
                         fontWeight="700" 
                         fontFamily="'Plus Jakarta Sans', monospace"
@@ -717,7 +717,7 @@ export default function CardPaymentsPage() {
                     <text 
                       x={x} y={paddingTop + chartH + 22} 
                       textAnchor="middle" 
-                      fill={month === (i + 1) ? "#00f2fe" : (dark ? "rgba(255, 255, 255, 0.6)" : "var(--text-secondary)")} 
+                      fill={dark ? (month === (i + 1) ? "#00f2fe" : "rgba(255, 255, 255, 0.6)") : "#000000"} 
                       fontSize={month === (i + 1) ? "12" : "11"} 
                       fontWeight={month === (i + 1) ? "900" : "700"}
                       fontFamily="'Plus Jakarta Sans', sans-serif"
@@ -839,15 +839,15 @@ export default function CardPaymentsPage() {
                             boxShadow: '0 14px 35px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 242, 254, 0.3)',
                             backdropFilter: 'blur(20px)',
                             WebkitBackdropFilter: 'blur(20px)',
-                            color: 'var(--text-primary)',
+                            color: dark ? '#ffffff' : '#000000',
                             animation: 'chartTooltipFadeIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
                             transformOrigin: 'top center'
                           }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
-                              <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#00f2fe' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 900, color: dark ? '#00f2fe' : '#000000' }}>
                                 📊 {hoveredPoint.month} 내역
                               </span>
-                              <span style={{ fontSize: '0.65rem', background: 'rgba(0, 242, 254, 0.15)', color: '#00f2fe', padding: '1px 6px', borderRadius: '99px', fontWeight: 800 }}>
+                              <span style={{ fontSize: '0.65rem', background: dark ? 'rgba(0, 242, 254, 0.15)' : 'rgba(0, 0, 0, 0.08)', color: dark ? '#00f2fe' : '#000000', padding: '1px 6px', borderRadius: '99px', fontWeight: 800 }}>
                                 {hoveredPoint.total > 0 ? formatKRW(hoveredPoint.total) + '원' : '0원'}
                               </span>
                             </div>
