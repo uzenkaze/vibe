@@ -1,5 +1,23 @@
 [
   {
+    "id": "1786068778941",
+    "title": "[BO,MC,PC]Reuse 중고폰 온라인 판매 도입에 따른 개발 요청의 건 - 결함수정",
+    "receive_date": "2026-08-07",
+    "status": "progress",
+    "work_no": "44759",
+    "task_no": "61834",
+    "product_no": "",
+    "task_content": "결함수정 후 운영배포",
+    "dev_deploy_date": "2026-08-10",
+    "deploy_date": "2026-08-11",
+    "pub_content": "",
+    "remarks": "",
+    "start_date": "2026-08-07",
+    "end_date": "2026-08-07",
+    "reference": "",
+    "updated_at": "2026-08-07T02:12:58.941Z"
+  },
+  {
     "id": "1785194012794",
     "title": "[MC,PC][쓰던 가전 현금보상 신청하기] 미클릭 후 장바구니 시 alert 문구 변경",
     "receive_date": "2026-07-28",
