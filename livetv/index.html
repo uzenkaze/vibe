@@ -3,6 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <!-- 시스템 진단 로그 수집기 -->
   <script>
     (function() {
@@ -304,15 +307,15 @@
 
     <!-- Header -->
     <header class="glass-nav h-16 flex items-center justify-between px-6 z-50 flex-shrink-0 border-b border-white/10 bg-zinc-950/40 backdrop-blur-md">
-      <!-- PlayTime Logo & Title -->
-      <a href="index.html" class="flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity">
-        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-teal-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-[#98FFD9] via-emerald-500 to-teal-600 border border-white/20">
-          <div class="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
-          <svg class="relative z-10 ml-0.5" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round">
-            <polygon points="6 3 20 12 6 21 6 3" fill="white" />
+      <!-- PlayTime Logo & Title (Melon Style) -->
+      <a href="index.html" class="flex items-center gap-2 group/logo cursor-pointer hover:opacity-90 transition-opacity">
+        <div class="relative w-7 h-7 rounded-[9px] flex items-center justify-center shadow-lg shadow-[#00C73C]/35 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-[#00F04B] via-[#00C73C] to-[#009E2F] border border-white/30">
+          <div class="absolute inset-0 bg-gradient-to-tr from-white/20 via-transparent to-black/10"></div>
+          <svg class="relative z-10 w-4 h-4 filter drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.3)]" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 19.5V11C4.5 8.51472 6.51472 6.5 9 6.5C11.4853 6.5 13.5 8.51472 13.5 11V19.5M13.5 19.5V11C13.5 8.51472 15.5147 6.5 18 6.5C20.4853 6.5 22.5 8.51472 22.5 11V19.5" stroke="white" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#98FFD9]/80 to-emerald-100 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
+        <span class="text-white font-black text-base tracking-tight drop-shadow-md">Play<span class="text-[#00E646]">Time</span></span>
       </a>
 
       <!-- 우측 상단: 시계 + 배터리 -->
@@ -785,7 +788,7 @@
       }
     });
   </script>
-  <script type="module" src="./src/main.js?v=20260803095336"></script>
+  <script type="module" src="./src/main.js?v=20260811084630"></script>
 </body>
 
 </html>

@@ -952,19 +952,13 @@ async function playChannel(ch, urlIdx = 0, startTime = 0) {
                           window.location.protocol === 'capacitor:';
       const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && !isCapacitor;
       
-      let api = 'https://api.jtbc.co.kr/v1/onair';
-      if (isLocal) {
-        api = '/jtbc-proxy/v1/onair';
-      }
-      
       debugLog(`JTBC API 호출 시도...`);
       let res;
       try {
-        res = await smartFetch(api);
-      } catch (err) {
-        debugLog(`기본 API 실패. 자체 서버리스 프록시 우회 시도...`);
         const proxyBase = getProxyBaseUrl();
-        res = await smartFetch(`${proxyBase}/api/jtbc`, { timeout: 3000 });
+        res = await smartFetch(`${proxyBase}/api/jtbc`, { timeout: 5000 });
+      } catch (err) {
+        res = await smartFetch('https://api.jtbc.co.kr/v1/onair', { timeout: 4000 });
       }
       const data = await res.json();
       const apiUrl = data.sources?.HLS?.HD?.file;
