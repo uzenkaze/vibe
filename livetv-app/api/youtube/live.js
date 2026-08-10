@@ -138,12 +138,12 @@ async function getYoutubeLiveVideoIdFallback(handle, channelId) {
 }
 
 const PRIORITY_LIVE_IDS = {
-  'UChlgI3UHCOnwUGzWzbJ3H5w': 'KpqUNcP9968', // YTN (7월 2일 최신화)
-  'UCTHCOPwqNfZ0uiKOvFyhGwg': '-7GBocwrFkk', // 연합뉴스TV (7월 2일 최신화)
-  'UCsU-I-vHLiaMfV_ceaYz5rQ': 'eEulvqfma-4',  // JTBC (7월 2일 최신화)
-  'UCWlV3Lz_55UaX4JsMj-z__Q': 'Mxe8Csgr-04',  // TV조선 (7월 2일 최신화)
-  'UCfq4V1DAuaojnr2ryvWNysw': 'eDgVLPEneuc',  // 채널A (7월 2일 최신화)
-  'UCG9aFJTZ-lMCHAiO1KJsirg': 'hczsD8uvX1Q',  // MBN (7월 2일 최신화)
+  'UChlgI3UHCOnwUGzWzbJ3H5w': 'Vt-V9-v6bps', // YTN (2026-08-11 최신화)
+  'UCTHCOPwqNfZ0uiKOvFyhGwg': '90RSZoMwxVw', // 연합뉴스TV (2026-08-11 최신화)
+  'UCsU-I-vHLiaMfV_ceaYz5rQ': '8Kb0fdCInbY',  // JTBC (2026-08-11 최신화)
+  'UCWlV3Lz_55UaX4JsMj-z__Q': 'vv5ep2Ms4QQ',  // TV조선 (2026-08-11 최신화)
+  'UCfq4V1DAuaojnr2ryvWNysw': 'FbujAGe6EPg',  // 채널A (2026-08-11 최신화)
+  'UCG9aFJTZ-lMCHAiO1KJsirg': '2hZeJjpRFb0',  // MBN (2026-08-11 최신화)
   'UCnfwIKyFYRuqZzzKBDt6JOA': 's9xL1DpBsfQ',  // 매일경제TV
   'UCaQREsefLy-W8ruWcJ7IDtg': 'lb1oB2feqkQ',  // MTN 머니투데이
   'UC-VbFgagk6GJGDJgRQIMpZw': 'qJ9ihwW18hU',   // MBC every1
@@ -290,18 +290,12 @@ async function getYoutubeLiveVideoId(handle, channelId) {
     }
   }
 
-  // 2순위: 실시간 검출 실패 시 정규 실시간 뉴스 고정 비디오 ID 우선 검증 폴백
+  // 2순위: Invidious 실시간 검출 실패 시 PRIORITY_LIVE_IDS를 즉시 반환 (verifyVideoIsLive 검증 생략으로 빠른 응답)
   if (channelId && PRIORITY_LIVE_IDS[channelId]) {
     const priorityId = PRIORITY_LIVE_IDS[channelId];
-    console.log(`[YT Live Scraper] Checking priority live ID for ${handle} (${channelId}): ${priorityId}`);
-    const check = await verifyVideoIsLive(priorityId);
-    if (check.isLive) {
-      console.log(`[YT Live Scraper] Priority live ID ${priorityId} is ACTIVE. Returning immediately.`);
-      ytLiveCache.set(cacheKey, { videoId: priorityId, timestamp: Date.now() });
-      return priorityId;
-    } else {
-      console.warn(`[YT Live Scraper] Priority live ID ${priorityId} is OFFLINE. Proceeding to normal scrape.`);
-    }
+    console.log(`[YT Live Scraper] Invidious failed. Returning PRIORITY_LIVE_ID immediately for ${handle}: ${priorityId}`);
+    ytLiveCache.set(cacheKey, { videoId: priorityId, timestamp: Date.now() });
+    return priorityId;
   }
 
   let videoId = null;
