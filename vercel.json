@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "buildCommand": "node build_dist.js",
+  "outputDirectory": "deploy_dist"
+}

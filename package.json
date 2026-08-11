@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "node server.js",
+    "build": "node build_dist.js",
+    "deploy-all": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "prisma": "^6.19.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3"
+  }
+}
