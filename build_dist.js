@@ -83,6 +83,11 @@ rootFiles.forEach(file => {
   }
 });
 
+// Ensure livetv-app/index.html also points to home.html if Vercel serves livetv-app root
+if (fs.existsSync(path.join(rootDir, 'livetv-app'))) {
+  fs.copyFileSync(path.join(rootDir, 'home.html'), path.join(rootDir, 'livetv-app', 'index.html'));
+}
+
 // Copy API folder to deploy_dist if serverless needed or Vercel handles root api
 if (fs.existsSync(path.join(rootDir, 'livetv-app', 'api'))) {
   copyRecursiveSync(path.join(rootDir, 'livetv-app', 'api'), path.join(deployDir, 'api'));

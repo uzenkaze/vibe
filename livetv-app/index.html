@@ -1,799 +1,687 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-  <meta charset="UTF-8" />
-  <!-- 시스템 진단 로그 수집기 -->
-  <script>
-    (function() {
-      window.__LOGS__ = [];
-      try {
-        var cached = localStorage.getItem('playtime_debug_logs');
-        if (cached) window.__LOGS__ = JSON.parse(cached).slice(-80);
-      } catch(e) {}
-
-      function addLog(type, msg) {
-        var time = new Date().toLocaleTimeString();
-        var logEntry = "[" + time + "] [" + type + "] " + msg;
-        window.__LOGS__.push(logEntry);
-        if (window.__LOGS__.length > 150) window.__LOGS__.shift();
-        try {
-          localStorage.setItem('playtime_debug_logs', JSON.stringify(window.__LOGS__));
-        } catch(e) {}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIBE Main</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
         
-        var el = document.getElementById('debug-log-content');
-        if (el) {
-          var div = document.createElement('div');
-          div.className = 'py-0.5 border-b border-white/5 text-[10px] text-gray-300 font-mono break-all';
-          div.textContent = logEntry;
-          el.appendChild(div);
-          el.scrollTop = el.scrollHeight;
+        :root {
+            --bg-color: #0c0a0f;
+            --accent-color: #bef264;
+            --accent-purple: #c084fc;
+            --accent-cyan: #22d3ee;
+            --accent-rose: #fb7185;
+            --accent-blue: #38bdf8;
+            --text-color: #ffffff;
         }
-      }
 
-      window.__addLog = addLog;
-
-      var originalLog = console.log;
-      var originalWarn = console.warn;
-      var originalError = console.error;
-
-      console.log = function() {
-        var args = Array.prototype.slice.call(arguments);
-        originalLog.apply(console, args);
-        addLog('LOG', args.join(' '));
-      };
-      console.warn = function() {
-        var args = Array.prototype.slice.call(arguments);
-        originalWarn.apply(console, args);
-        addLog('WARN', args.join(' '));
-      };
-      console.error = function() {
-        var args = Array.prototype.slice.call(arguments);
-        originalError.apply(console, args);
-        addLog('ERROR', args.join(' '));
-      };
-
-      window.onerror = function(message, source, lineno, colno, error) {
-        var msg = message + " at " + (source || 'unknown') + ":" + lineno + ":" + colno;
-        addLog('CRITICAL', msg);
-        return false;
-      };
-
-      window.onunhandledrejection = function(event) {
-        addLog('REJECTION', event.reason ? String(event.reason) : 'Promise rejected');
-      };
-    })();
-  </script>
-  <!-- TV/빔프로젝터: initial-scale을 고정하지 않고 device-width 기준으로 설정 -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <!-- TV 환경 감지 스크립트: DOM 생성 전에 실행하여 클래스 적용 -->
-  <script>
-    (function() {
-      var w = window.screen ? window.screen.width : window.innerWidth;
-      var h = window.screen ? window.screen.height : window.innerHeight;
-      var ua = navigator.userAgent || '';
-      
-      // 모바일 디바이스 여부 강력히 판단 (터치 장치 및 모바일 UA)
-      var isMobileUA = /Mobile|Android.*Mobile|iPhone|iPod|IEMobile|BlackBerry|Opera Mini/i.test(ua);
-      var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      
-      // 명확한 TV 기기 키워드 탐색
-      var hasTVKeyword = /Android TV|SmartTV|SMART-TV|HbbTV|Tizen|WebOS|VIDAA|Vizio|Roku|Fire TV|TV Build|television/i.test(ua);
-      
-      // TV/빔프로젝터 감지 조건:
-      // 모바일 UA가 아니며 터치 기기가 아님을 기본 전제로 하고, TV 키워드가 있거나 대화면 데스크톱 스타일이어야 함.
-      var isTV = false;
-      
-      if (hasTVKeyword) {
-        isTV = true;
-      } else if (!isMobileUA && !isTouchDevice) {
-        // 모바일/터치 기기가 아닌 순수 대화면 스마트TV / 빔프로젝터 환경 타겟
-        isTV = (
-          w >= 1280 ||
-          (typeof window.matchMedia === 'function' && window.matchMedia('(device-width: 1920px)').matches) ||
-          (w > 0 && h > 0 && Math.max(w, h) >= 1280)
-        );
-      }
-      
-      // Z플립, 갤럭시 울트라 등 고해상도 스마트폰인 경우 절대 TV 모드로 오동작하지 않도록 완벽히 방어 차단
-      if (isMobileUA || isTouchDevice) {
-        isTV = false;
-      }
-      
-      // TV 감지 시 html 태그에 클래스 추가하여 CSS에서 활용
-      if (isTV) {
-        document.documentElement.classList.add('tv-mode');
-        // CSS 뷰포트를 1024px 이상으로 강제 인식하게 만들기
-        // (Tailwind의 lg: 브레이크포인트 활성화)
-        var meta = document.querySelector('meta[name=viewport]');
-        if (meta) {
-          // TV 실제 해상도에 맞게 width를 지정
-          meta.content = 'width=' + Math.max(w, 1280) + ', initial-scale=1.0, user-scalable=no';
+        body {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
-      }
-      window.__IS_TV__ = isTV;
-    })();
-  </script>
-  <!-- 강력한 모바일 브라우저 캐시 무효화 (Cache-Busting) 적용 -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <link rel="icon" type="image/png" href="./favicon.png" />
-  <!-- 모바일 홈 화면 추가 및 즐겨찾기 북마크 타이틀 지정 -->
-  <meta name="apple-mobile-web-app-title" content="PlayTime" />
-  <meta name="application-name" content="PlayTime" />
-  <link rel="manifest" href="./manifest.json" />
-  <title>PlayTime</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="./hls.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #000;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
 
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
+        /* Showcase Area */
+        .showcase-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0px; /* Overlapping cards */
+            padding: 80px 20px;
+            width: 100%;
+            max-width: 1400px;
+            position: relative;
+        }
 
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+        /* Phone Device Bezel */
+        .device-card {
+            width: 280px;
+            height: 570px;
+            background: #09090b;
+            border-radius: 46px;
+            padding: 8px; /* Frame bezel size */
+            position: relative;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+            border: 6px solid #e2e8f0; /* Ultra clean white/silver metal phone frame */
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
 
-    .glass-nav {
-      background: rgba(12, 12, 18, 0.8);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: calc(env(safe-area-inset-top, 0px) - 2px) !important;
-      padding-bottom: 10px !important;
-      height: calc(4rem + env(safe-area-inset-top)) !important;
-    }
+        /* 3D Stack Layering */
+        .device-card:nth-child(1) { transform: scale(1.04) rotate(-3deg); z-index: 10; margin-right: -25px; }
+        .device-card:nth-child(2) { transform: scale(0.99) rotate(1deg); z-index: 8; margin-right: -25px; margin-top: 30px; }
+        .device-card:nth-child(3) { transform: scale(0.94) rotate(-2deg); z-index: 6; margin-right: -25px; margin-top: 60px; }
+        .device-card:nth-child(4) { transform: scale(0.89) rotate(2deg); z-index: 4; margin-right: -25px; margin-top: 90px; }
+        .device-card:nth-child(5) { transform: scale(0.84) rotate(-1deg); z-index: 4; margin-right: -25px; margin-top: 120px; }
+        .device-card:nth-child(6) { transform: scale(0.79) rotate(1.5deg); z-index: 2; margin-top: 150px; }
 
-    @media (max-width: 1023px) {
-      .glass-nav {
-        padding-top: calc(env(safe-area-inset-top, 0px) + 18px) !important;
-        padding-bottom: 10px !important;
-        height: calc(4.5rem + env(safe-area-inset-top)) !important;
-      }
-    }
+        .device-card:hover {
+            transform: translateY(-45px) scale(1.16) rotate(0deg) !important;
+            z-index: 100;
+            border-color: var(--accent-color);
+            box-shadow: 0 40px 90px rgba(190, 242, 100, 0.28), 0 0 35px rgba(190, 242, 100, 0.18);
+        }
 
-    /* 모바일 플레이어 영역 고정 스타일 */
-    .mobile-player-fixed {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      width: 100%;
-      background: #000;
-    }
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 38px;
+            background-color: #0c0a0f;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .cat-tab {
-      white-space: nowrap;
-      px: 1rem;
-      py: 0.5rem;
-      border-radius: 9999px;
-      font-size: 0.875rem;
-      transition: all 0.2s;
-      background: rgba(255, 255, 255, 0.05);
-      color: #9ca3af;
-      margin-right: 8px;
-      flex-shrink: 0;
-    }
+        /* iOS Dynamic Island Notch */
+        .dynamic-island {
+            position: absolute;
+            top: 11px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85px;
+            height: 22px;
+            background: #000;
+            border-radius: 20px;
+            z-index: 100;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.15);
+        }
 
-    .cat-tab.active {
-      background: #fff;
-      color: #000;
-      font-weight: 600;
-    }
+        /* iOS Home Bar */
+        .home-bar {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95px;
+            height: 4px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 10px;
+            z-index: 100;
+        }
 
-    /* 태블릿/폴더블/대화면 모바일 대응 반응형 CSS */
-    @media (min-width: 640px) and (max-width: 1023px) {
-      #channel-grid-mobile {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
-        gap: 12px !important;
-        padding: 16px !important;
-      }
-      #mobile-player-wrapper {
-        max-height: 45vh !important;
-      }
-    }
+        /* Glassmorphism Overlays */
+        .glass-panel {
+            background: rgba(10, 10, 15, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
 
-    /* 스마트폰 가로 모드 및 스마트TV 최적화 */
-    @media (max-width: 1023px) and (orientation: landscape) {
-      .mobile-player-fixed {
-        position: relative !important;
-      }
-      #mobile-player-wrapper {
-        height: calc(100dvh - 64px) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        background-color: #000 !important;
-      }
-      #mobile-player-wrapper > div {
-        aspect-ratio: 16/9 !important;
-        height: 100% !important;
-        width: auto !important;
-        max-width: 100vw !important;
-      }
-    }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-    /* 모바일 전체화면(전체보기) 시 디바이스 해상도에 맞춰 100% 비율(contain) 렌더링 */
-    .mobile-player-fixed:fullscreen,
-    .mobile-player-fixed:-webkit-full-screen {
-      width: 100vw !important;
-      height: 100vh !important;
-      max-width: 100vw !important;
-      max-height: 100vh !important;
-      background-color: #000 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-    }
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
 
-    .mobile-player-fixed:fullscreen video,
-    .mobile-player-fixed:-webkit-full-screen video {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 100vw !important;
-      max-height: 100vh !important;
-      object-fit: contain !important;
-    }
+        /* Custom glow text */
+        .glow-text-cyan { text-shadow: 0 0 10px rgba(34, 211, 238, 0.4); }
+        .glow-text-purple { text-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
+        .glow-text-rose { text-shadow: 0 0 10px rgba(251, 113, 133, 0.4); }
 
-    .mobile-player-fixed:fullscreen iframe,
-    .mobile-player-fixed:-webkit-full-screen iframe {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 100vw !important;
-      max-height: 100vh !important;
-    }
 
-    /* ============================================================
-       TV / 빔프로젝터 / 데스크톱 전용 레이아웃
-    ============================================================ */
-    html.tv-mode body {
-      overflow: hidden;
-    }
 
-    html.tv-mode #app-container .lg\:hidden {
-      display: none !important;
-    }
-    html.tv-mode #app-container .hidden.lg\:flex {
-      display: flex !important;
-    }
-    html.tv-mode #app-container .hidden.lg\:block {
-      display: block !important;
-    }
-
-    html.tv-mode .channel-card {
-      width: 11rem !important;
-    }
-    html.tv-mode .channel-row {
-      gap: 16px !important;
-      padding: 0 20px 20px !important;
-    }
-    html.tv-mode #video-container {
-      height: 55dvh !important;
-      max-height: 55dvh !important;
-    }
-    html.tv-mode #channel-grid,
-    html.tv-mode #channel-grid-mobile {
-      padding: 16px 20px 80px !important;
-    }
-
-    html.tv-mode .absolute.bottom-0 {
-      height: 3.5rem !important;
-    }
-    html.tv-mode .absolute.bottom-0 span {
-      font-size: 11px !important;
-    }
-
-    html.tv-mode #app-container {
-      max-width: 100vw !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
-  </style>
-  <script src="capacitor.js"></script>
+        @media (max-width: 1024px) {
+            body {
+                justify-content: flex-start;
+                padding-top: 40px;
+            }
+            .showcase-area { 
+                flex-direction: row; 
+                gap: 20px; 
+                overflow-x: auto; 
+                padding: 40px 25px;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: none;
+                justify-content: flex-start;
+            }
+            .showcase-area::-webkit-scrollbar {
+                display: none;
+            }
+            .device-card { 
+                margin: 0 !important; 
+                transform: none !important; 
+                flex-shrink: 0;
+                width: 275px;
+                scroll-snap-align: center;
+            }
+            .device-card:hover {
+                transform: translateY(-15px) scale(1.04) !important;
+            }
+        }
+    </style>
 </head>
-
-<body class="h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-[#071112] p-0" style="background-image: radial-gradient(circle at 50% 0%, rgba(20, 55, 57, 0.4), transparent 70%);">
-
-  <!-- Main Portal Device Container -->
-  <div id="app-container" class="relative w-full h-[100dvh] lg:max-w-[88.88vh] bg-[#071112] rounded-none border-none lg:border-x lg:border-white/5 flex flex-col overflow-hidden mx-auto z-0" style="background-image: radial-gradient(circle at 50% 100%, rgba(255, 130, 62, 0.06), transparent 60%), radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 100% 100%, 20px 20px;">
-    
-    <!-- Subtle Teal Glow -->
-    <div class="absolute top-[-150px] left-1/2 transform -translate-x-1/2 w-[120vw] max-w-[800px] h-[400px] bg-teal-500/8 blur-[140px] rounded-full pointer-events-none -z-10"></div>
-
-    <!-- Header -->
-    <header class="glass-nav h-16 flex items-center justify-between px-6 z-50 flex-shrink-0 border-b border-white/10 bg-zinc-950/40 backdrop-blur-md">
-      <!-- PlayTime Logo & Title -->
-      <a href="index.html" class="flex items-center gap-1.5 group/logo cursor-pointer hover:opacity-90 transition-opacity">
-        <div class="relative w-6 h-6 rounded-[7px] flex items-center justify-center shadow-lg shadow-teal-500/30 group-hover/logo:scale-105 group-hover/logo:rotate-3 transition-all duration-300 overflow-hidden bg-gradient-to-br from-[#98FFD9] via-emerald-500 to-teal-600 border border-white/20">
-          <div class="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
-          <svg class="relative z-10 ml-0.5" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round">
-            <polygon points="6 3 20 12 6 21 6 3" fill="white" />
-          </svg>
-        </div>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#98FFD9]/80 to-emerald-100 font-extrabold text-base tracking-tight drop-shadow-md">PlayTime</span>
-      </a>
-
-      <!-- 우측 상단: 시계 + 배터리 -->
-      <div id="header-status-container" class="flex items-center gap-2">
-        <!-- 시계 -->
-        <div id="header-clock" style="
-          font-size: 15px;
-          font-weight: 700;
-          letter-spacing: 0.04em;
-          color: rgba(255,255,255,0.88);
-          font-variant-numeric: tabular-nums;
-          min-width: 38px;
-          text-align: right;
-        "></div>
-        <!-- 배터리 -->
-        <div id="header-battery" style="display:flex;align-items:center;gap:3px;">
-          <div style="position:relative;width:22px;height:11px;">
-            <div id="battery-body" style="
-              position:absolute;left:0;top:0;
-              width:19px;height:11px;
-              border:1.5px solid rgba(255,255,255,0.55);
-              border-radius:2.5px;
-              overflow:hidden;
-            ">
-              <div id="battery-fill" style="
-                position:absolute;left:0;top:0;bottom:0;
-                width:100%;
-                background:rgba(74,222,128,0.9);
-                border-radius:1.5px;
-                transition:width 0.5s, background 0.5s;
-              "></div>
-            </div>
-            <div style="
-              position:absolute;right:0;top:50%;transform:translateY(-50%);
-              width:2.5px;height:5px;
-              background:rgba(255,255,255,0.45);
-              border-radius:0 1px 1px 0;
-            "></div>
-          </div>
-          <!-- 충전 중일 때만 표시 -->
-          <svg id="battery-charging" width="9" height="12" viewBox="0 0 24 24" fill="#facc15" style="display:none">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-          </svg>
-        </div>
-      </div>
-    </header>
-
-    <div class="flex-1 flex flex-col overflow-hidden">
-
-      <!-- Main Content -->
-      <main class="flex-1 flex flex-col bg-transparent relative overflow-hidden">
-
-      <!-- PC Player -->
-      <div id="video-container"
-        class="hidden lg:flex w-full lg:h-[50dvh] lg:max-h-[50dvh] bg-[#050508] flex-col items-center justify-center flex-shrink-0 border-b border-white/5">
-        
-        <!-- TV Bezel Frame Container (TV 외관 모서리 라운드 & 그라데이션) - 여백 없이 꽉 찬 화면으로 변경 -->
-        <div class="relative h-full aspect-video flex-shrink-0 group" id="video-bezel-frame">
-          
-          <!-- TV Stand/Bottom Decor (숨김 처리) -->
-          <div class="hidden"></div>
-
-          <!-- Inner Screen (내부 화면 영역) - 라운드 제거 및 여백 없이 꽉 차게 변경 -->
-          <div id="video-inner-screen" class="w-full h-full overflow-hidden bg-black relative">
-            <video id="main-video" class="w-full h-full object-contain hidden" playsinline></video>
-            <iframe id="youtube-iframe-pc" class="w-full h-full absolute inset-0 hidden z-30" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen></iframe>
-
-            <div id="player-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-[#071112] z-20">
-              <div
-                class="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
-                PlayGround</div>
-              <div class="mt-4 text-sm text-gray-500 font-medium tracking-widest uppercase animate-pulse">Select a channel
-              </div>
-            </div>
-
-            <!-- Custom Controls (PC) -->
-            <div id="video-controls"
-              class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center gap-8 z-40">
-              <div class="flex items-center gap-6">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  <span class="text-[10px] font-bold tracking-widest text-white/80 uppercase">Live Stream</span>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-6">
-                <!-- Volume -->
-                <div class="flex items-center gap-3 group/vol">
-                  <button id="vol-btn" class="text-white/70 hover:text-white transition-colors">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M11 5 6 9H2v6h4l5 4V5z" />
-                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
-                    </svg>
-                  </button>
-                  <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="1"
-                    class="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#98FFD9]">
-                </div>
-
-                <!-- Quality Selection (화질 선택) -->
-                <div class="relative" id="quality-select-pc-wrapper" style="display: none;">
-                  <button id="quality-btn" class="text-white/70 hover:text-white transition-colors flex items-center gap-1.5 text-[11px] font-bold bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-xl backdrop-blur-md hover:bg-white/10" title="화질 선택">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                      <circle cx="12" cy="12" r="3"/>
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </svg>
-                    <span id="quality-label">Auto</span>
-                  </button>
-                  <div id="quality-menu" class="hidden absolute bottom-10 right-0 mb-2 w-32 bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col z-[100] p-1.5 gap-1 animate-fade-in">
-                    <!-- Options dynamically loaded -->
-                  </div>
-                </div>
-
-                <!-- Picture-in-Picture (Popup Play) -->
-                <button id="pip-btn" class="text-white/70 hover:text-white transition-colors" title="팝업 플레이">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="4" width="20" height="16" rx="2" />
-                    <rect x="13" y="11" width="7" height="5" rx="1" fill="currentColor" />
-                  </svg>
-                </button>
-
-                <!-- Fullscreen -->
-                <button id="fullscreen-btn" class="text-white/70 hover:text-white transition-colors">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                      d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div id="loading-overlay"
-              class="absolute inset-0 bg-black flex flex-col items-center justify-center hidden z-50">
-              <div class="relative flex items-center justify-center">
-                <div class="absolute w-16 h-16 rounded-full border border-[#98FFD9]/30 animate-ping"></div>
-                <div class="w-12 h-12 rounded-full border-2 border-[#98FFD9] border-t-transparent animate-spin"></div>
-                <div class="absolute w-3 h-3 bg-gradient-to-tr from-[#98FFD9] to-teal-500 rounded-full shadow-lg shadow-teal-500/50"></div>
-              </div>
-              <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-emerald-100 via-white to-[#98FFD9] uppercase drop-shadow-md">연결 중...</span>
-              <span class="mt-1 text-[10px] text-zinc-500 font-bold uppercase tracking-wider animate-pulse">Live Stream Loading</span>
-            </div>
-          </div> <!-- End Inner Screen -->
-        </div> <!-- End Bezel Frame -->
-      </div>
-
-      <!-- PC Channels (Below Player) -->
-      <div class="hidden lg:flex flex-col w-full bg-transparent overflow-y-auto no-scrollbar flex-1 pb-16">
-        <div class="p-6 overflow-x-auto no-scrollbar flex items-center gap-3 border-b border-white/5 flex-shrink-0" id="category-tabs-pc"></div>
-        <div id="channel-grid" class="p-6 flex-1"></div>
-      </div>
-
-      <!-- Mobile Content -->
-      <div class="lg:hidden flex flex-col h-full bg-transparent overflow-hidden">
-        <!-- Player (Mobile) -->
-        <div class="w-full bg-[#050508] flex-shrink-0 p-0 shadow-[0_4px_30px_rgba(0,0,0,0.5)] z-10" id="mobile-player-wrapper">
-          <div class="relative w-full aspect-video flex-shrink-0 group/mob">
-            
-            <!-- TV Stand/Bottom Decor (숨김 처리) -->
-            <div class="hidden"></div>
-
-            <div class="mobile-player-fixed w-full h-full overflow-hidden bg-black relative">
-              <video id="main-video-mobile" class="w-full h-full object-contain bg-black hidden" playsinline
-                webkit-playsinline></video>
-              <iframe id="youtube-iframe-mobile" class="w-full h-full absolute inset-0 hidden z-30" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
-
-              <!-- Custom Controls (Mobile) -->
-              <div id="video-controls-mobile"
-                class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center gap-6 z-40">
-                <div class="flex items-center gap-4">
-                  <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
-                  <span class="text-[9px] font-bold text-white/80 uppercase tracking-tighter">Live</span>
-                </div>
-                <div class="flex items-center gap-4">
-                  <button id="vol-btn-mobile" class="text-white/70">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M11 5 6 9H2v6h4l5 4V5z" />
-                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
-                    </svg>
-                  </button>
-                  
-                  <!-- Quality Selection (화질 선택 Mobile) -->
-                  <div class="relative" id="quality-select-mob-wrapper" style="display: none;">
-                    <button id="quality-btn-mobile" class="text-white/70 flex items-center gap-1 text-[9px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded-lg backdrop-blur-md" title="화질 선택">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                      </svg>
-                      <span id="quality-label-mobile">Auto</span>
-                    </button>
-                    <div id="quality-menu-mobile" class="hidden absolute bottom-8 right-0 mb-2 w-28 bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col z-[100] p-1 gap-1">
-                      <!-- Options dynamically loaded -->
+<body>
+    <main class="showcase-area">
+        <!-- Asset Manager Phone -->
+        <div onclick="window.location.href='asset/'" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen relative" style="background-image: linear-gradient(to bottom, rgba(12, 10, 15, 0.4), rgba(12, 10, 15, 0.92)), url('asset/asset_character.jpg')">
+                <!-- Status Bar -->
+                <div class="flex justify-between items-center w-full px-6 pt-3 pb-1 text-[10px] font-bold text-white/90 z-50">
+                    <span>09:55</span>
+                    <div class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.58 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                        <div class="w-4.5 h-2.5 border border-white/60 rounded-[3px] p-[1px] flex items-center"><div class="h-full bg-white/90 w-[85%] rounded-[1px]"></div></div>
                     </div>
-                  </div>
-
-                  <!-- Picture-in-Picture (Popup Play) -->
-                  <button id="pip-btn-mobile" class="text-white/70" title="팝업 플레이">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="2" y="4" width="20" height="16" rx="2" />
-                      <rect x="13" y="11" width="7" height="5" rx="1" fill="currentColor" />
-                    </svg>
-                  </button>
-
-                  <button id="fullscreen-btn-mobile" class="text-white/70">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path
-                        d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-                    </svg>
-                  </button>
                 </div>
-              </div>
 
-              <div id="loading-overlay-mobile"
-                class="absolute inset-0 bg-black flex flex-col items-center justify-center hidden z-50">
-                <div class="relative flex items-center justify-center">
-                  <div class="absolute w-16 h-16 rounded-full border border-[#98FFD9]/30 animate-ping"></div>
-                  <div class="w-12 h-12 rounded-full border-2 border-[#98FFD9] border-t-transparent animate-spin"></div>
-                  <div class="absolute w-3 h-3 bg-gradient-to-tr from-[#98FFD9] to-teal-500 rounded-full shadow-lg shadow-teal-500/50"></div>
+                <!-- Custom Header -->
+                <div class="px-5 pt-3">
+                    <span class="text-[10px] uppercase tracking-wider text-lime-400 font-extrabold">FINANCIAL PORTFOLIO</span>
+                    <h2 class="text-xl font-black text-white leading-tight">My Wealth</h2>
                 </div>
-                <span class="mt-5 text-sm font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-emerald-100 via-white to-[#98FFD9] uppercase drop-shadow-md">연결 중...</span>
-                <span class="mt-1 text-[10px] text-zinc-500 font-bold uppercase tracking-wider animate-pulse">Live Stream Loading</span>
-              </div>
 
-              <div id="player-placeholder-mobile"
-                class="absolute inset-0 flex flex-col items-center justify-center bg-[#071112] z-20">
-                <div
-                  class="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
-                  PlayGround</div>
-                <div class="mt-2 text-xs text-gray-500 font-medium tracking-widest uppercase animate-pulse">Select a channel
+                <!-- Glass Credit Card Mockup -->
+                <div class="mx-4 mt-3.5 p-4 rounded-2xl glass-panel relative overflow-hidden flex flex-col justify-between h-[130px] border border-white/12 shadow-lg">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-lime-400/20 blur-xl"></div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-[9px] uppercase tracking-widest text-white/50 font-semibold">Total Balance</p>
+                            <h3 class="text-lg font-extrabold text-white tracking-tight mt-0.5">$24,580.90</h3>
+                        </div>
+                        <span class="text-xs font-bold text-lime-400">VISA</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] text-white/70">
+                        <span class="font-mono">•••• 8829</span>
+                        <span class="bg-lime-400/10 text-lime-400 px-2 py-0.5 rounded-full text-[8px] font-extrabold">Active</span>
+                    </div>
                 </div>
-              </div>
+
+                <!-- Circular Progress Ring Widget -->
+                <div class="mx-4 mt-3 p-3.5 rounded-xl glass-panel flex items-center justify-between border border-white/8">
+                    <div>
+                        <h4 class="text-xs font-bold text-white leading-none">Z Flip 6 Installment</h4>
+                        <span class="text-[9px] text-white/50">45% paid of total 24 months</span>
+                    </div>
+                    <div class="relative w-8 h-8 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-white/10" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="text-lime-400" stroke-width="3" stroke-dasharray="45, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span class="absolute text-[8px] font-black text-white leading-none">45%</span>
+                    </div>
+                </div>
+
+                <!-- Transaction List -->
+                <div class="mx-4 mt-3 flex-1 flex flex-col gap-1.5 overflow-hidden">
+                    <span class="text-[9px] font-bold text-white/40 px-1 uppercase tracking-wider">Recent Transactions</span>
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/4 border border-white/4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-lime-400/10 flex items-center justify-center text-lime-400 text-xs font-bold">💳</div>
+                            <div>
+                                <p class="text-[10px] font-bold text-white">Installment Pay</p>
+                                <p class="text-[8px] text-white/50">Hyundai Card</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-black text-white/90">- $120.00</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/4 border border-white/4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-rose-400/10 flex items-center justify-center text-rose-400 text-xs font-bold">📈</div>
+                            <div>
+                                <p class="text-[10px] font-bold text-white">Interest Yield</p>
+                                <p class="text-[8px] text-white/50">Savings Account</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-black text-lime-400">+ $14.50</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Glass navigation -->
+                <div class="absolute bottom-[32px] left-4 right-4 p-2 rounded-2xl glass-panel flex justify-between items-center text-white/70 border border-white/8 z-50">
+                    <span class="text-[10px] font-bold text-white pl-2">Asset Manager</span>
+                    <div class="w-6 h-6 rounded-lg bg-lime-400 flex items-center justify-center text-black font-extrabold text-[10px] shadow-md shadow-lime-400/25">GO</div>
+                </div>
+
+                <div class="home-bar"></div>
             </div>
-          </div>
         </div>
 
-        <!-- Category Tabs -->
-        <div class="p-4 overflow-x-auto no-scrollbar flex items-center gap-2 flex-shrink-0" id="category-tabs-mobile">
+        <!-- Task Manager Phone -->
+        <div onclick="window.location.href='task/task-manager.html'" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen relative" style="background-image: linear-gradient(135deg, rgba(30,20,60,0.85), rgba(15,10,30,0.97))">
+                <!-- Status Bar -->
+                <div class="flex justify-between items-center w-full px-6 pt-3 pb-1 text-[10px] font-bold text-white/90 z-50">
+                    <span>09:55</span>
+                    <div class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.58 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                        <div class="w-4.5 h-2.5 border border-white/60 rounded-[3px] p-[1px] flex items-center"><div class="h-full bg-white/90 w-[85%] rounded-[1px]"></div></div>
+                    </div>
+                </div>
+
+                <!-- Custom Header -->
+                <div class="px-5 pt-3 flex justify-between items-end">
+                    <div>
+                        <span class="text-[10px] uppercase tracking-wider text-purple-400 font-extrabold">EFFICIENT PLANNER</span>
+                        <h2 class="text-xl font-black text-white leading-tight">My Tasks</h2>
+                    </div>
+                    <div class="text-[9px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/20">TODAY</div>
+                </div>
+
+                <!-- Circular Progress Ring Widget -->
+                <div class="mx-4 mt-3.5 p-3.5 rounded-2xl glass-panel flex items-center gap-3 border border-white/10 relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-purple-400/20 blur-xl"></div>
+                    <div class="relative w-12 h-12 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-white/10" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="text-purple-400" stroke-width="3" stroke-dasharray="68, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span class="absolute text-xs font-black text-white leading-none">68%</span>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white leading-tight">Progress Update</h3>
+                        <p class="text-[9px] text-white/50 mt-0.5">8 of 12 tasks completed today</p>
+                    </div>
+                </div>
+
+                <!-- Custom Post-it Card Items -->
+                <div class="mx-4 mt-3 flex-1 flex flex-col gap-2 overflow-hidden">
+                    <span class="text-[9px] font-bold text-white/40 px-1 uppercase tracking-wider">Priority Memos</span>
+                    
+                    <div class="p-3 rounded-xl bg-purple-400/10 border-l-4 border-purple-400 flex flex-col gap-1 shadow-md">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[8px] uppercase tracking-wider text-purple-300 font-extrabold">📌 HIGH PRIORITY</span>
+                            <span class="text-[8px] text-white/50">10:00 AM</span>
+                        </div>
+                        <h4 class="text-[11px] font-bold text-white leading-tight">Improve Portal Interface UI</h4>
+                        <p class="text-[8px] text-white/60">Apply smartphone frame mockup with stunning animations.</p>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-yellow-400/10 border-l-4 border-yellow-400 flex flex-col gap-1 shadow-md">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[8px] uppercase tracking-wider text-yellow-300 font-extrabold">💻 IN PROGRESS</span>
+                            <span class="text-[8px] text-white/50">02:30 PM</span>
+                        </div>
+                        <h4 class="text-[11px] font-bold text-white leading-tight">Task Manager Core Integration</h4>
+                        <p class="text-[8px] text-white/60">Align UI with memo style and circular floating widgets.</p>
+                    </div>
+                </div>
+
+                <!-- Bottom Glass navigation -->
+                <div class="absolute bottom-[32px] left-4 right-4 p-2 rounded-2xl glass-panel flex justify-between items-center text-white/70 border border-white/8 z-50">
+                    <span class="text-[10px] font-bold text-white pl-2">Task Planner</span>
+                    <div class="w-6 h-6 rounded-lg bg-purple-400 flex items-center justify-center text-black font-extrabold text-[10px] shadow-md shadow-purple-400/25">GO</div>
+                </div>
+
+                <div class="home-bar"></div>
+            </div>
         </div>
 
-        <!-- Channel List -->
-        <div id="channel-grid-mobile" class="flex-1 px-0 pb-24 overflow-y-auto no-scrollbar"></div>
-      </div>
+        <!-- Learn Hub Phone -->
+        <div onclick="window.location.href='learn/'" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen relative" style="background-image: linear-gradient(135deg, rgba(10,30,50,0.88), rgba(5,15,30,0.97))">
+                <!-- Status Bar -->
+                <div class="flex justify-between items-center w-full px-6 pt-3 pb-1 text-[10px] font-bold text-white/90 z-50">
+                    <span>09:55</span>
+                    <div class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.58 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                        <div class="w-4.5 h-2.5 border border-white/60 rounded-[3px] p-[1px] flex items-center"><div class="h-full bg-white/90 w-[85%] rounded-[1px]"></div></div>
+                    </div>
+                </div>
 
+                <!-- Custom Header -->
+                <div class="px-5 pt-3">
+                    <span class="text-[10px] uppercase tracking-wider text-cyan-400 font-extrabold">KNOWLEDGE GRAPH</span>
+                    <h2 class="text-xl font-black text-white leading-tight">Learn Vault</h2>
+                </div>
+
+                <!-- Visual Node Mindmap Widget -->
+                <div class="mx-4 mt-3.5 p-4 rounded-2xl glass-panel relative h-[155px] border border-white/10 flex items-center justify-center overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-cyan-400/20 blur-xl"></div>
+                    <!-- Mindmap floating nodes visualization -->
+                    <div class="absolute w-[82px] h-[82px] rounded-full bg-cyan-500/10 border-2 border-dashed border-cyan-400/40 flex items-center justify-center z-10 animate-pulse">
+                        <span class="text-[10px] font-black text-white tracking-tighter uppercase glow-text-cyan">React</span>
+                    </div>
+                    <div class="absolute top-4 left-6 px-2.5 py-1 rounded-full bg-white/6 border border-white/8 text-[8px] font-bold text-cyan-300">Vite Hub</div>
+                    <div class="absolute bottom-4 right-6 px-2.5 py-1 rounded-full bg-white/6 border border-white/8 text-[8px] font-bold text-purple-300">TypeScript</div>
+                    <div class="absolute bottom-5 left-8 px-2.5 py-1 rounded-full bg-white/6 border border-white/8 text-[8px] font-bold text-lime-300">ABR Stream</div>
+                </div>
+
+                <!-- Learning List -->
+                <div class="mx-4 mt-3 flex-1 flex flex-col gap-1.5 overflow-hidden">
+                    <span class="text-[9px] font-bold text-white/40 px-1 uppercase tracking-wider">Concept Milestones</span>
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/4 border border-white/4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs">⚡</span>
+                            <div>
+                                <p class="text-[10px] font-bold text-white">Edge Node Styling</p>
+                                <p class="text-[8px] text-white/50">Custom colors & paths</p>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-black text-cyan-400">85% DONE</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/4 border border-white/4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs">🌀</span>
+                            <div>
+                                <p class="text-[10px] font-bold text-white">Dynamic Auto Zoom-to-fit</p>
+                                <p class="text-[8px] text-white/50">Smooth viewport panning</p>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-black text-purple-400">100% DONE</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Glass navigation -->
+                <div class="absolute bottom-[32px] left-4 right-4 p-2 rounded-2xl glass-panel flex justify-between items-center text-white/70 border border-white/8 z-50">
+                    <span class="text-[10px] font-bold text-white pl-2">Knowledge Mindmap</span>
+                    <div class="w-6 h-6 rounded-lg bg-cyan-400 flex items-center justify-center text-black font-extrabold text-[10px] shadow-md shadow-cyan-400/25">GO</div>
+                </div>
+
+                <div class="home-bar"></div>
+            </div>
+        </div>
+
+        <div onclick="window.location.href='hobby/'" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen relative" style="background-image: linear-gradient(to bottom, rgba(12, 10, 15, 0.45), rgba(12, 10, 15, 0.92)), url('hobby/music_placeholder.png')">
+                <!-- Status Bar -->
+                <div class="flex justify-between items-center w-full px-6 pt-3 pb-1 text-[10px] font-bold text-white/90 z-50">
+                    <span>09:55</span>
+                    <div class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.58 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                        <div class="w-4.5 h-2.5 border border-white/60 rounded-[3px] p-[1px] flex items-center"><div class="h-full bg-white/90 w-[85%] rounded-[1px]"></div></div>
+                    </div>
+                </div>
+
+                <!-- Custom Header -->
+                <div class="px-5 pt-3">
+                    <span class="text-[10px] uppercase tracking-wider text-rose-400 font-extrabold">CREATIVE LAB</span>
+                    <h2 class="text-xl font-black text-white leading-tight">mPlay Audio</h2>
+                </div>
+
+                <!-- Glass Record Vinyl Widget -->
+                <div class="mx-4 mt-3.5 p-4 rounded-2xl glass-panel relative h-[145px] border border-white/10 flex flex-col justify-between items-center overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-rose-400/20 blur-xl"></div>
+                    
+                    <!-- Vinyl circle with pulsing gradient -->
+                    <div class="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+                        <!-- Vinyl record itself spinning infinitely -->
+                        <div class="w-20 h-20 rounded-full bg-neutral-900 border-[3px] border-white/10 flex items-center justify-center relative shadow-lg animate-lp-spin" style="animation-duration: 6s">
+                            <!-- Inner grooves -->
+                            <div class="absolute inset-2.5 rounded-full border border-dashed border-white/10"></div>
+                            <div class="absolute inset-5 rounded-full border border-dashed border-white/5"></div>
+                            <!-- CD/Vinyl Label center -->
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center shadow-md">
+                                <div class="w-2.5 h-2.5 rounded-full bg-black border border-white/10"></div>
+                            </div>
+                        </div>
+                        <!-- Tonearm needle pointing to record -->
+                        <div class="absolute -top-1 -right-1 w-6 h-10 origin-top-right rotate-[-12deg] pointer-events-none z-30">
+                            <!-- The arm stick -->
+                            <div class="w-[3px] h-7 bg-neutral-300 rounded-full ml-auto mr-1.5 shadow-sm"></div>
+                            <!-- The head cartridge -->
+                            <div class="w-2.5 h-3 bg-neutral-400 rounded-[2px] ml-auto shadow-sm transform -rotate-12 border border-white/20"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Title and waveform container -->
+                    <div class="w-full text-center">
+                        <h4 class="text-[11px] font-bold text-white leading-none tracking-tight">Summer Sunset Drive</h4>
+                        <p class="text-[8px] text-white/50 mt-0.5">Vibe Studio Orchestra</p>
+                    </div>
+                </div>
+
+                <!-- Soundwave & Player Controls -->
+                <div class="mx-4 mt-3 flex-1 flex flex-col gap-2 overflow-hidden justify-center items-center">
+                    <!-- Animated Wave bars -->
+                    <div class="flex items-end justify-center gap-1.5 h-8 w-full px-2">
+                        <div class="wave-bar w-1 bg-rose-400 rounded-full" style="animation-delay: 0.1s"></div>
+                        <div class="wave-bar w-1 bg-rose-400 rounded-full" style="animation-delay: 0.4s"></div>
+                        <div class="wave-bar w-1 bg-amber-400 rounded-full" style="animation-delay: 0.2s"></div>
+                        <div class="wave-bar w-1 bg-rose-400 rounded-full" style="animation-delay: 0.6s"></div>
+                        <div class="wave-bar w-1 bg-amber-400 rounded-full" style="animation-delay: 0.3s"></div>
+                        <div class="wave-bar w-1 bg-rose-400 rounded-full" style="animation-delay: 0.8s"></div>
+                    </div>
+                    
+                    <!-- Mini control buttons -->
+                    <div class="flex items-center gap-4 mt-1">
+                        <span class="text-xs text-white/60 cursor-pointer">⏮</span>
+                        <div class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-extrabold cursor-pointer shadow-lg">▶</div>
+                        <span class="text-xs text-white/60 cursor-pointer">⏭</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Glass navigation -->
+                <div class="absolute bottom-[32px] left-4 right-4 p-2 rounded-2xl glass-panel flex justify-between items-center text-white/70 border border-white/8 z-50">
+                    <span class="text-[10px] font-bold text-white pl-2">Music Player</span>
+                    <div class="w-6 h-6 rounded-lg bg-rose-400 flex items-center justify-center text-black font-extrabold text-[10px] shadow-md shadow-rose-400/25">GO</div>
+                </div>
+
+                <div class="home-bar"></div>
+            </div>
+        </div>
+
+        <!-- Live TV Phone -->
+        <div onclick="window.location.href='livetv/'" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen relative" style="background-image: linear-gradient(to bottom, rgba(12, 10, 15, 0.4), rgba(12, 10, 15, 0.92)), url('livetv/src/assets/banner.png')">
+                <!-- Status Bar -->
+                <div class="flex justify-between items-center w-full px-6 pt-3 pb-1 text-[10px] font-bold text-white/90 z-50">
+                    <span>09:55</span>
+                    <div class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.58 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                        <div class="w-4.5 h-2.5 border border-white/60 rounded-[3px] p-[1px] flex items-center"><div class="h-full bg-white/90 w-[85%] rounded-[1px]"></div></div>
+                    </div>
+                </div>
+
+                <!-- Custom Header -->
+                <div class="px-5 pt-3">
+                    <span class="text-[10px] uppercase tracking-wider text-sky-400 font-extrabold">MEDIA PLAYER</span>
+                    <h2 class="text-xl font-black text-white leading-tight">Live TV</h2>
+                </div>
+
+                <!-- Video Stream Screen Widget -->
+                <div class="mx-4 mt-3.5 rounded-2xl glass-panel relative h-[140px] border border-white/10 overflow-hidden flex flex-col justify-between">
+                    <!-- Subtle infinite zooming video background -->
+                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=400&auto=format&fit=crop'); animation: zoomPanning 10s ease-in-out infinite alternate;"></div>
+                    <!-- Interlaced Video Scanning Overlay -->
+                    <div class="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] pointer-events-none opacity-40 z-10"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/35 z-10"></div>
+                    
+                    <!-- Top stats/LIVE badge -->
+                    <div class="p-2.5 flex justify-between items-center relative z-20 w-full">
+                        <div class="flex items-center gap-1.5">
+                            <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </span>
+                            <span class="bg-red-600 text-white font-black text-[7px] px-1.5 py-0.5 rounded tracking-wider uppercase">LIVE</span>
+                        </div>
+                        <span class="text-[7px] font-extrabold text-white/90 bg-black/50 px-1 py-0.5 rounded-md backdrop-blur-sm">1080p ABR</span>
+                    </div>
+
+                    <!-- Bottom ticker and playback status -->
+                    <div class="w-full relative z-20">
+                        <!-- Tiny News Ticker (Scrolling marquee) -->
+                        <div class="w-full bg-red-600/90 text-white text-[7px] font-bold py-0.5 px-2 overflow-hidden whitespace-nowrap relative flex items-center">
+                            <span class="bg-black text-[6px] font-extrabold px-1 rounded mr-1 flex-shrink-0 animate-pulse">속보</span>
+                            <div class="inline-block animate-marquee pl-[100%]">
+                                [ Live TV ] YTN News 24시간 실시간 생중계 송출 중 ••• 대한민국 대표 뉴스 채널 PlayTime Live 플레이어 탑재 완료 ••• 
+                            </div>
+                        </div>
+
+                        <!-- Player Overlay Metadata & Equalizer -->
+                        <div class="p-2 flex justify-between items-center bg-black/60 backdrop-blur-sm">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[8px] font-black text-lime-400">ON AIR</span>
+                                <span class="text-[9px] font-bold text-white">YTN News</span>
+                            </div>
+                            <!-- Mini active audio visualizer -->
+                            <div class="flex items-end gap-[2px] h-3 px-1">
+                                <div class="wave-bar w-[2px] bg-sky-400 rounded-full" style="animation-delay: 0.1s; animation-duration: 0.8s;"></div>
+                                <div class="wave-bar w-[2px] bg-sky-400 rounded-full" style="animation-delay: 0.3s; animation-duration: 1.1s;"></div>
+                                <div class="wave-bar w-[2px] bg-sky-400 rounded-full" style="animation-delay: 0.5s; animation-duration: 0.6s;"></div>
+                                <div class="wave-bar w-[2px] bg-sky-400 rounded-full" style="animation-delay: 0.2s; animation-duration: 0.9s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Channel grids -->
+                <div class="mx-4 mt-3 flex-1 flex flex-col gap-1.5 overflow-hidden">
+                    <span class="text-[9px] font-bold text-white/40 px-1 uppercase tracking-wider">Fast Channels</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="p-2 rounded-lg bg-white/4 border border-white/4 flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded bg-blue-600 text-[8px] font-black text-white flex items-center justify-center">KBS</div>
+                            <span class="text-[9px] font-bold text-white">KBS24</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-white/4 border border-white/4 flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded bg-purple-600 text-[8px] font-black text-white flex items-center justify-center">JTBC</div>
+                            <span class="text-[9px] font-bold text-white">JTBC Live</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-white/4 border border-white/4 flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded bg-amber-600 text-[8px] font-black text-white flex items-center justify-center">SBS</div>
+                            <span class="text-[9px] font-bold text-white">SBS Biz</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-white/4 border border-white/4 flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded bg-red-600 text-[8px] font-black text-white flex items-center justify-center">YTN</div>
+                            <span class="text-[9px] font-bold text-white">YTN 24</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Glass navigation -->
+                <div class="absolute bottom-[32px] left-4 right-4 p-2 rounded-2xl glass-panel flex justify-between items-center text-white/70 border border-white/8 z-50">
+                    <span class="text-[10px] font-bold text-white pl-2">Streaming Portal</span>
+                    <div class="w-6 h-6 rounded-lg bg-sky-400 flex items-center justify-center text-black font-extrabold text-[10px] shadow-md shadow-sky-400/25">GO</div>
+                </div>
+
+                <div class="home-bar"></div>
+            </div>
+        </div>
+
+        <!-- CarRep App Card -->
+        <div onclick="window.location.href='carrep/'" class="device-card">
+            <div class="dynamic-island"></div>
+            <div class="device-screen relative" style="background-image: linear-gradient(to bottom, rgba(11, 12, 16, 0.5), rgba(11, 12, 16, 0.96)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=400&auto=format&fit=crop')">
+                <!-- Status Bar -->
+                <div class="flex justify-between items-center w-full px-6 pt-3 pb-1 text-[10px] font-bold text-white/90 z-50">
+                    <span>09:55</span>
+                    <div class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.58 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                        <div class="w-4.5 h-2.5 border border-white/60 rounded-[3px] p-[1px] flex items-center"><div class="h-full bg-white/90 w-[85%] rounded-[1px]"></div></div>
+                    </div>
+                </div>
+
+                <!-- App Header -->
+                <div class="px-5 pt-3">
+                    <span class="text-[10px] uppercase tracking-wider font-extrabold" style="color: #fa8231">REPAIR REPORT</span>
+                    <h2 class="text-xl font-black text-white leading-tight">CarRep 🔧</h2>
+                </div>
+
+                <!-- Car Diagram Widget -->
+                <div class="mx-4 mt-3 rounded-2xl relative overflow-hidden" style="background: rgba(27,34,52,0.9); border: 1px solid rgba(255,255,255,0.08); padding: 12px;">
+                    <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
+                        <!-- Car body top-down -->
+                        <ellipse cx="100" cy="70" rx="48" ry="62" fill="#1a2235" stroke="#2f3640" stroke-width="1.5"/>
+                        <path d="M66 36 Q73 16 100 12 Q127 16 134 36 Z" fill="#151e2d" stroke="#2f3640" stroke-width="1"/>
+                        <path d="M66 104 Q73 124 100 128 Q127 124 134 104 Z" fill="#151e2d" stroke="#2f3640" stroke-width="1"/>
+                        <!-- Wheels -->
+                        <rect x="46" y="38" width="13" height="24" rx="4" fill="#0d1521" stroke="#45f3ff" stroke-width="1"/>
+                        <rect x="141" y="38" width="13" height="24" rx="4" fill="#0d1521" stroke="#45f3ff" stroke-width="1"/>
+                        <rect x="46" y="78" width="13" height="24" rx="4" fill="#0d1521" stroke="#45f3ff" stroke-width="1"/>
+                        <rect x="141" y="78" width="13" height="24" rx="4" fill="#0d1521" stroke="#45f3ff" stroke-width="1"/>
+                        <!-- Highlight zones -->
+                        <ellipse cx="100" cy="54" rx="28" ry="10" fill="rgba(255,59,48,0.15)" stroke="#ff3b30" stroke-width="1.5"><animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/></ellipse>
+                        <ellipse cx="100" cy="80" rx="24" ry="9" fill="rgba(69,243,255,0.15)" stroke="#45f3ff" stroke-width="1.5"><animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/></ellipse>
+                        <text x="100" y="10" text-anchor="middle" fill="#a0a8b3" font-size="7">앞</text>
+                        <text x="100" y="137" text-anchor="middle" fill="#a0a8b3" font-size="7">뒤</text>
+                    </svg>
+                </div>
+
+                <!-- Cost Summary -->
+                <div class="mx-4 mt-2.5 flex flex-col gap-1.5">
+                    <div class="flex justify-between items-center p-2 rounded-lg" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-[9px] font-bold" style="color: #a0a8b3">🔩 부품비</span>
+                        <span class="text-[9px] font-black" style="color: #45f3ff">1,343,950원</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded-lg" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
+                        <span class="text-[9px] font-bold" style="color: #a0a8b3">🛠️ 공임비</span>
+                        <span class="text-[9px] font-black" style="color: #fa8231">482,300원</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded-lg" style="background: linear-gradient(135deg,rgba(69,243,255,0.08),rgba(250,130,49,0.08)); border: 1px solid rgba(250,130,49,0.3);">
+                        <span class="text-[9px] font-black text-white">합계</span>
+                        <span class="text-[10px] font-black" style="background: linear-gradient(90deg,#45f3ff,#fa8231); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">2,008,875원</span>
+                    </div>
+                </div>
+
+                <div class="home-bar"></div>
+            </div>
+        </div>
     </main>
-  </div>
 
-  <!-- Sticky Bottom Navigation Bar (Floating Pill) -->
-  <div class="absolute bottom-6 inset-x-4 h-[64px] bg-[#0c1416]/95 backdrop-blur-2xl border border-[#98FFD9]/10 rounded-[32px] z-50 flex items-center justify-around px-6 shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
-    <!-- 홈 (Home) -->
-    <button onclick="window.switchTab('live')" id="tab-btn-live" class="flex flex-col items-center gap-1 text-[#98FFD9] transition-colors cursor-pointer group">
-      <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-      <span class="text-[10px] font-bold">홈</span>
-    </button>
+    <script>
+        // Dynamically inject custom animation keyframes and classes
+        // to bypass Tailwind CSS v4 in-browser DOM compiler stripping/rewriting
+        const customStyle = document.createElement('style');
+        customStyle.innerHTML = `
+            /* Soundwave bounce animations */
+            .wave-bar {
+                animation: bounce 1.2s ease-in-out infinite alternate;
+            }
+            @keyframes bounce {
+                0% { height: 4px; }
+                100% { height: 28px; }
+            }
 
-    <!-- 유튜브 (YouTube) -->
-    <button onclick="window.switchTab('youtube')" id="tab-btn-youtube" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
-      <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 11.5a29 29 0 0 0 .46 5.08 2.78 2.78 0 0 0 1.95 1.96c1.71.46 8.59.46 8.59.46s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 11.5a29 29 0 0 0-.46-5.08z"/>
-        <polygon points="9.75 15.02 15.5 11.5 9.75 7.98 9.75 15.02"/>
-      </svg>
-      <span class="text-[10px] font-bold">유튜브</span>
-    </button>
+            /* Unique LP/CD Record Spin Keyframe to avoid Tailwind collisions */
+            @keyframes lpSpin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
 
-    <!-- YT Music -->
-    <button onclick="window.location.href='ytmusic.html'" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
-      <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <circle cx="12" cy="12" r="10"/><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12l3 3"/>
-      </svg>
-      <span class="text-[10px] font-bold">YT Music</span>
-    </button>
+            .animate-lp-spin {
+                animation: lpSpin 6s linear infinite !important;
+            }
 
-    <!-- 넷플릭스 -->
-    <button onclick="window.openNetflix()" class="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors cursor-pointer group">
-      <svg class="group-hover:scale-105 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M4 2v20h3.5v-7.5L16 22h4V2h-3.5v7.5L8 2H4z"/>
-      </svg>
-      <span class="text-[10px] font-bold">넷플릭스</span>
-    </button>
+            /* Live TV Zoom Panning Video Background */
+            @keyframes zoomPanning {
+                0% { transform: scale(1.0); }
+                100% { transform: scale(1.15) translate(-3px, -2px); }
+            }
 
+            /* Live TV Ticker Scrolling News Marquee */
+            @keyframes marquee {
+                0% { transform: translate3d(0, 0, 0); }
+                100% { transform: translate3d(-100%, 0, 0); }
+            }
 
-  </div>
-
-  </div> <!-- End app-container -->
-
-  <script>
-    function safeNavigate(url) {
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'NAVIGATE', url: url }, '*');
-          return;
-        }
-      } catch (e) {
-        console.warn('[PlayTime] postMessage navigation failed:', e);
-      }
-      try {
-        if (window.parent && typeof window.parent.navigateTo === 'function') {
-          window.parent.navigateTo(url);
-          return;
-        }
-      } catch (e) {
-        console.warn('[PlayTime] Direct parent navigation failed:', e);
-      }
-      let targetUrl = url;
-      if (window.location.pathname.includes('/livetv-app/') || window.location.pathname.includes('/livetv/')) {
-        targetUrl = '../' + url;
-      }
-      window.location.href = targetUrl;
-    }
-
-    // 24시간 시계
-    (function() {
-      function updateClock() {
-        var el = document.getElementById('header-clock');
-        if (!el) return;
-        var now = new Date();
-        var h = String(now.getHours()).padStart(2, '0');
-        var m = String(now.getMinutes()).padStart(2, '0');
-        el.textContent = h + ':' + m;
-      }
-      updateClock();
-      setInterval(updateClock, 1000);
-    })();
-
-    // 배터리 잔량 표시
-    (function() {
-      function updateBattery(battery) {
-        var pct = Math.round(battery.level * 100);
-        var fill = document.getElementById('battery-fill');
-        var charging = document.getElementById('battery-charging');
-        var body = document.getElementById('battery-body');
-        if (!fill) return;
-
-        fill.style.width = pct + '%';
-
-        // 잔량에 따른 색상
-        if (pct <= 20) {
-          fill.style.background = 'rgba(239,68,68,0.9)';
-        } else if (pct <= 50) {
-          fill.style.background = 'rgba(251,191,36,0.9)';
-        } else {
-          fill.style.background = 'rgba(74,222,128,0.9)';
-        }
-
-        // 충전 중일 때만 번개 아이콘 표시
-        if (charging) charging.style.display = battery.charging ? 'inline' : 'none';
-        if (body) body.style.borderColor = battery.charging
-          ? 'rgba(250,204,21,0.7)' : 'rgba(255,255,255,0.55)';
-      }
-
-      if (navigator.getBattery) {
-        navigator.getBattery().then(function(battery) {
-          updateBattery(battery);
-          battery.addEventListener('levelchange', function() { updateBattery(battery); });
-          battery.addEventListener('chargingchange', function() { updateBattery(battery); });
-        }).catch(function() {
-          var el = document.getElementById('header-battery');
-          if (el) el.style.display = 'none';
-        });
-      } else {
-        var el = document.getElementById('header-battery');
-        if (el) el.style.display = 'none';
-      }
-    })();
-
-    // 앱 실행 시 (네이티브 앱 환경일 때) 시계와 배터리 표시부 숨김 처리
-    (function() {
-      var isNative = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) ||
-                     (window.location.hostname === 'localhost' && window.location.port === '') || 
-                     window.location.protocol === 'capacitor:';
-      if (isNative) {
-        var container = document.getElementById('header-status-container');
-        if (container) container.style.display = 'none';
-      }
-    })();
-  </script>
-
-  <!-- 시스템 진단 로그 모달 UI -->
-  <button id="debug-log-toggle" onclick="document.getElementById('debug-log-modal').classList.remove('hidden')" class="fixed bottom-28 right-6 w-10 h-10 rounded-full bg-zinc-950/90 border border-[#FF823E]/20 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all z-50 text-[#FF823E] hover:text-[#FFA366]" title="시스템 진단 로그">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <circle cx="11" cy="11" r="8"></circle>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      <line x1="11" y1="8" x2="11" y2="14"></line>
-      <line x1="8" y1="11" x2="14" y2="11"></line>
-    </svg>
-  </button>
-
-  <div id="debug-log-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[9999] flex items-center justify-center p-4">
-    <div class="bg-zinc-950/95 border border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[70vh]">
-      <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-zinc-900/50">
-        <div class="flex items-center gap-2">
-          <div class="w-2 h-2 rounded-full bg-[#FF823E] animate-pulse"></div>
-          <span class="font-extrabold text-sm tracking-tight text-white">시스템 진단 로그</span>
-        </div>
-        <button onclick="document.getElementById('debug-log-modal').classList.add('hidden')" class="text-gray-400 hover:text-white transition-colors p-1">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div id="debug-log-content" class="flex-1 overflow-y-auto p-4 space-y-1 bg-black/40 no-scrollbar select-text">
-        <!-- Logs populated dynamically -->
-      </div>
-      <div class="px-6 py-4 border-t border-white/5 bg-zinc-900/50 flex items-center justify-end gap-3">
-        <button onclick="window.__clearLogs()" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 hover:text-white rounded-xl text-xs font-bold transition-all active:scale-95">로그 초기화</button>
-        <button onclick="window.__copyLogs()" class="px-4 py-2 bg-[#FF823E] hover:bg-[#FF823E]/80 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all active:scale-95">로그 복사</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    window.__clearLogs = function() {
-      try {
-        localStorage.removeItem('playtime_debug_logs');
-        window.__LOGS__ = [];
-        var el = document.getElementById('debug-log-content');
-        if (el) el.innerHTML = '';
-        alert('진단 로그가 초기화되었습니다.');
-      } catch(e) {}
-    };
-
-    window.__copyLogs = function() {
-      try {
-        var logsText = (window.__LOGS__ || []).join('\n');
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(logsText).then(function() {
-            alert('진단 로그가 클립보드에 복사되었습니다.');
-          }).catch(function() {
-            fallbackCopyText(logsText);
-          });
-        } else {
-          fallbackCopyText(logsText);
-        }
-      } catch(e) {
-        alert('복사 실패: ' + e.message);
-      }
-    };
-
-    function fallbackCopyText(text) {
-      var textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.style.position = "fixed";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        alert('진단 로그가 클립보드에 복사되었습니다. (폴백)');
-      } catch (err) {
-        alert('복사 실패 (폴백): ' + err.message);
-      }
-      document.body.removeChild(textArea);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      var el = document.getElementById('debug-log-content');
-      if (el && window.__LOGS__) {
-        el.innerHTML = '';
-        window.__LOGS__.forEach(function(log) {
-          var div = document.createElement('div');
-          div.className = 'py-0.5 border-b border-white/5 text-[10px] text-gray-300 font-mono break-all';
-          div.textContent = log;
-          el.appendChild(div);
-        });
-        el.scrollTop = el.scrollHeight;
-      }
-    });
-  </script>
-  <script type="module" src="./src/main.js?v=CACHE_BUST"></script>
+            .animate-marquee {
+                display: inline-block;
+                white-space: nowrap;
+                animation: marquee 14s linear infinite !important;
+            }
+        `;
+        document.head.appendChild(customStyle);
+        console.log('[Portal] Successfully injected animation layer bypassing Tailwind.');
+    </script>
 </body>
-
 </html>
