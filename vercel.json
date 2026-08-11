@@ -4,6 +4,9 @@
   "outputDirectory": "deploy_dist",
   "cleanUrls": true,
   "trailingSlash": true,
+  "rewrites": [
+    { "source": "/", "destination": "/home.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

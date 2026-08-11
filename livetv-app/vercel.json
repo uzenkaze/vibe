@@ -3,5 +3,8 @@
   "buildCommand": "node build_dist.js",
   "outputDirectory": "../deploy_dist",
   "cleanUrls": true,
-  "trailingSlash": true
+  "trailingSlash": true,
+  "rewrites": [
+    { "source": "/", "destination": "/home.html" }
+  ]
 }
