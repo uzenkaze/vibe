@@ -18,6 +18,7 @@ function EditableRow({ row, sectionKey, columns, onUpdate, onDelete, onDetail })
               placeholder={col.placeholder || ''}
               onChange={val => onUpdate(sectionKey, row.id, col.key, val)}
               rightAlign={col.right}
+              allowDecimal={col.allowDecimal}
             />
           ) : (
             <input
@@ -67,7 +68,7 @@ function DataSection({ title, sectionKey, columns, accentColor = 'var(--coral)',
           <span className="data-section-dot" />
           {title}
         </div>
-        <button className="btn btn-teal btn-sm" onClick={() => addRow(sectionKey)}>
+        <button className="btn btn-teal btn-sm" style={{ marginBottom: '0.5rem' }} onClick={() => addRow(sectionKey)}>
           + 추가
         </button>
       </div>
@@ -121,7 +122,7 @@ export default function ExpenseSection({ onSummary, onExpenseDetail, onExpenseCh
     { key: 'category', label: '분류', width: 135 },
     { key: 'content', label: '내용', width: 200 },
     { key: 'amount', label: '원금', type: 'number', right: true, width: 130, format: formatKRW },
-    { key: 'rate', label: '이율(%)', type: 'number', right: true, width: 80 },
+    { key: 'rate', label: '이율(%)', type: 'number', right: true, width: 80, allowDecimal: true },
     { key: 'remAmount', label: '잔여금', type: 'number', right: true, width: 130, format: formatKRW },
   ];
 
@@ -151,21 +152,25 @@ export default function ExpenseSection({ onSummary, onExpenseDetail, onExpenseCh
         </div>
         <button
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
-            padding: '0.35rem 0.875rem', borderRadius: 99,
-            background: 'linear-gradient(135deg, var(--coral), #ff4f4f)',
-            color: '#fff', border: 'none', fontSize: '0.75rem', fontWeight: 700,
-            cursor: 'pointer', boxShadow: '0 4px 12px rgba(255,107,107,0.3)',
-            transition: 'var(--transition)',
+            display: 'inline-flex', alignItems: 'center', gap: '0.45rem',
+            padding: '0.45rem 1.05rem', borderRadius: '10px',
+            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+            color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.2)',
+            fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.02em',
+            cursor: 'pointer', boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.opacity='0.88'; e.currentTarget.style.transform='translateY(-1px)'; }}
-          onMouseLeave={e => { e.currentTarget.style.opacity='1'; e.currentTarget.style.transform='none'; }}
+          onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px) scale(1.02)'; e.currentTarget.style.boxShadow='0 6px 20px rgba(99, 102, 241, 0.5)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 4px 14px rgba(99, 102, 241, 0.35)'; }}
           onClick={() => onSummary('expenses')}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
-          Summary
+          요약 보고서
         </button>
       </div>
 

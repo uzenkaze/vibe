@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { formatKRW } from '../../utils/format';
 
-function InstallmentStatCard({ label, value, theme, icon, subBadge, progressPct, tooltipContent, dark }) {
+function InstallmentStatCard({ label, value, theme, icon, subBadge, tooltipContent, dark }) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -16,59 +16,55 @@ function InstallmentStatCard({ label, value, theme, icon, subBadge, progressPct,
     setIsHovered(false);
   };
 
-  // Dribbble Sales Analytics 4컬러 테마 스펙
+  // 첨부 이미지 스타일 스펙 (Soft Pastel Glow Gradient Background, Inner Floating Soft Icon Box, Rounded Pill Tags)
   const themeStyles = {
     indigo: {
-      bg: dark ? 'linear-gradient(135deg, rgba(30, 27, 75, 0.7) 0%, rgba(49, 46, 129, 0.4) 100%)' : 'linear-gradient(135deg, #f0f3ff 0%, #e5ebff 100%)',
-      border: dark ? 'rgba(99, 102, 241, 0.35)' : '#dbe4ff',
-      badgeBg: dark ? 'rgba(99, 102, 241, 0.25)' : '#ffffff',
-      badgeBorder: dark ? 'rgba(99, 102, 241, 0.4)' : '#c7d2fe',
-      iconColor: '#6366f1',
-      pillBg: dark ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.1)',
-      pillText: '#4f46e5',
-      textColor: dark ? '#ffffff' : '#1e1b4b',
-      mutedColor: dark ? 'rgba(255, 255, 255, 0.7)' : '#4338ca',
-      barColor: '#6366f1',
-      shadow: '0 10px 24px -6px rgba(99, 102, 241, 0.25)'
+      cardBg: dark ? 'linear-gradient(135deg, #111827 0%, #1e293b 100%)' : 'linear-gradient(135deg, #f0f7ff 0%, #e6f0fa 100%)',
+      cardBorder: dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(219, 234, 254, 0.9)',
+      iconBoxBg: dark ? 'rgba(59, 130, 246, 0.15)' : '#ffffff',
+      iconBoxShadow: dark ? '0 8px 20px rgba(0, 0, 0, 0.4)' : '0 10px 22px -4px rgba(37, 99, 235, 0.12), inset 0 2px 4px #ffffff',
+      iconColor: '#3b82f6',
+      titleColor: dark ? '#f8fafc' : '#0f172a',
+      pillBg: dark ? 'rgba(59, 130, 246, 0.18)' : '#ffffff',
+      pillBorder: dark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(226, 232, 240, 0.8)',
+      pillText: dark ? '#93c5fd' : '#2563eb',
+      valueColor: dark ? '#60a5fa' : '#2563eb'
     },
     rose: {
-      bg: dark ? 'linear-gradient(135deg, rgba(76, 5, 25, 0.7) 0%, rgba(136, 19, 55, 0.4) 100%)' : 'linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%)',
-      border: dark ? 'rgba(244, 63, 94, 0.35)' : '#fecdd3',
-      badgeBg: dark ? 'rgba(244, 63, 94, 0.25)' : '#ffffff',
-      badgeBorder: dark ? 'rgba(244, 63, 94, 0.4)' : '#fda4af',
+      cardBg: dark ? 'linear-gradient(135deg, #1f1216 0%, #29151c 100%)' : 'linear-gradient(135deg, #fff2f5 0%, #ffe6ec 100%)',
+      cardBorder: dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(254, 205, 211, 0.9)',
+      iconBoxBg: dark ? 'rgba(244, 63, 94, 0.15)' : '#ffffff',
+      iconBoxShadow: dark ? '0 8px 20px rgba(0, 0, 0, 0.4)' : '0 10px 22px -4px rgba(225, 29, 72, 0.12), inset 0 2px 4px #ffffff',
       iconColor: '#f43f5e',
-      pillBg: dark ? 'rgba(244, 63, 94, 0.2)' : 'rgba(244, 63, 94, 0.1)',
-      pillText: '#e11d48',
-      textColor: dark ? '#ffffff' : '#881337',
-      mutedColor: dark ? 'rgba(255, 255, 255, 0.7)' : '#9f1239',
-      barColor: '#f43f5e',
-      shadow: '0 10px 24px -6px rgba(244, 63, 94, 0.25)'
+      titleColor: dark ? '#f8fafc' : '#0f172a',
+      pillBg: dark ? 'rgba(244, 63, 94, 0.18)' : '#ffffff',
+      pillBorder: dark ? 'rgba(244, 63, 94, 0.3)' : 'rgba(226, 232, 240, 0.8)',
+      pillText: dark ? '#fca5a5' : '#e11d48',
+      valueColor: dark ? '#f87171' : '#e11d48'
     },
     emerald: {
-      bg: dark ? 'linear-gradient(135deg, rgba(6, 78, 59, 0.7) 0%, rgba(6, 95, 70, 0.4) 100%)' : 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-      border: dark ? 'rgba(16, 185, 129, 0.35)' : '#a7f3d0',
-      badgeBg: dark ? 'rgba(16, 185, 129, 0.25)' : '#ffffff',
-      badgeBorder: dark ? 'rgba(16, 185, 129, 0.4)' : '#6ee7b7',
+      cardBg: dark ? 'linear-gradient(135deg, #091e17 0%, #112921 100%)' : 'linear-gradient(135deg, #f0fdf4 0%, #dcfee9 100%)',
+      cardBorder: dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(167, 243, 208, 0.9)',
+      iconBoxBg: dark ? 'rgba(16, 185, 129, 0.15)' : '#ffffff',
+      iconBoxShadow: dark ? '0 8px 20px rgba(0, 0, 0, 0.4)' : '0 10px 22px -4px rgba(5, 150, 105, 0.12), inset 0 2px 4px #ffffff',
       iconColor: '#10b981',
-      pillBg: dark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)',
-      pillText: '#059669',
-      textColor: dark ? '#ffffff' : '#064e3b',
-      mutedColor: dark ? 'rgba(255, 255, 255, 0.7)' : '#047857',
-      barColor: '#10b981',
-      shadow: '0 10px 24px -6px rgba(16, 185, 129, 0.25)'
+      titleColor: dark ? '#f8fafc' : '#0f172a',
+      pillBg: dark ? 'rgba(16, 185, 129, 0.18)' : '#ffffff',
+      pillBorder: dark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(226, 232, 240, 0.8)',
+      pillText: dark ? '#6ee7b7' : '#059669',
+      valueColor: dark ? '#34d399' : '#059669'
     },
     violet: {
-      bg: dark ? 'linear-gradient(135deg, rgba(46, 16, 101, 0.7) 0%, rgba(76, 29, 149, 0.4) 100%)' : 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
-      border: dark ? 'rgba(139, 92, 246, 0.35)' : '#ddd6fe',
-      badgeBg: dark ? 'rgba(139, 92, 246, 0.25)' : '#ffffff',
-      badgeBorder: dark ? 'rgba(139, 92, 246, 0.4)' : '#c4b5fd',
+      cardBg: dark ? 'linear-gradient(135deg, #18122c 0%, #23193d 100%)' : 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+      cardBorder: dark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(221, 214, 254, 0.9)',
+      iconBoxBg: dark ? 'rgba(139, 92, 246, 0.15)' : '#ffffff',
+      iconBoxShadow: dark ? '0 8px 20px rgba(0, 0, 0, 0.4)' : '0 10px 22px -4px rgba(124, 58, 237, 0.12), inset 0 2px 4px #ffffff',
       iconColor: '#8b5cf6',
-      pillBg: dark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.1)',
-      pillText: '#7c3aed',
-      textColor: dark ? '#ffffff' : '#4c1d95',
-      mutedColor: dark ? 'rgba(255, 255, 255, 0.7)' : '#5b21b6',
-      barColor: '#8b5cf6',
-      shadow: '0 10px 24px -6px rgba(139, 92, 246, 0.25)'
+      titleColor: dark ? '#f8fafc' : '#0f172a',
+      pillBg: dark ? 'rgba(139, 92, 246, 0.18)' : '#ffffff',
+      pillBorder: dark ? 'rgba(139, 92, 246, 0.3)' : 'rgba(226, 232, 240, 0.8)',
+      pillText: dark ? '#c4b5fd' : '#7c3aed',
+      valueColor: dark ? '#a78bfa' : '#7c3aed'
     }
   }[theme || 'indigo'];
 
@@ -78,89 +74,85 @@ function InstallmentStatCard({ label, value, theme, icon, subBadge, progressPct,
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{ 
-        background: themeStyles.bg, 
+        background: themeStyles.cardBg, 
         position: 'relative', 
         zIndex: isHovered ? 100 : 1,
-        color: themeStyles.textColor,
-        border: `1px solid ${themeStyles.border}`,
-        borderRadius: '18px',
-        padding: '0.85rem 1.1rem',
-        boxShadow: isHovered ? themeStyles.shadow : '0 4px 14px rgba(0,0,0,0.03)',
+        border: `2px solid ${themeStyles.cardBorder}`,
+        borderRadius: '24px',
+        padding: '1rem 1.15rem',
+        boxShadow: isHovered 
+          ? '0 16px 36px -8px rgba(15, 23, 42, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05)' 
+          : '0 8px 24px -4px rgba(15, 23, 42, 0.06)',
         transform: isHovered ? 'translateY(-3px)' : 'translateY(0)',
         transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        overflow: 'hidden'
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem',
+        boxSizing: 'border-box'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div className="stat-icon-box" style={{
-            width: 28, height: 28, borderRadius: '8px',
-            background: themeStyles.badgeBg,
-            border: `1px solid ${themeStyles.badgeBorder}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: themeStyles.iconColor, flexShrink: 0,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-          }}>
-            {icon}
-          </div>
-          <div 
-            className="installment-stat-label" 
-            style={{ 
-              margin: 0,
-              fontSize: '0.82rem',
-              fontWeight: 800,
-              color: themeStyles.textColor,
-              letterSpacing: '-0.01em'
-            }}
-          >
-            {label}
-          </div>
+      {/* 첨부 이미지 스타일: 좌측 독립 3D 입체 소프트 아이콘 박스 */}
+      <div style={{
+        width: 58,
+        height: 58,
+        borderRadius: '18px',
+        background: themeStyles.iconBoxBg,
+        boxShadow: themeStyles.iconBoxShadow,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: themeStyles.iconColor,
+        flexShrink: 0,
+        border: dark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.9)'
+      }}>
+        {icon}
+      </div>
+
+      {/* 우측 정보 영역 (타이틀, 금액, 알약 태그) */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <div style={{
+          fontSize: '0.92rem',
+          fontWeight: 800,
+          color: themeStyles.titleColor,
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          letterSpacing: '-0.02em',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        }}>
+          {label}
+        </div>
+
+        <div style={{
+          fontSize: 'clamp(1.1rem, 2.3vw, 1.45rem)',
+          fontWeight: 900,
+          color: themeStyles.valueColor,
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          letterSpacing: '-0.03em',
+          lineHeight: 1.15
+        }}>
+          {formatKRW(value)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
         </div>
 
         {subBadge && (
-          <span className="col-hide-mobile" style={{
-            fontSize: '0.68rem',
-            fontWeight: 700,
-            padding: '3px 10px',
-            borderRadius: '99px',
-            background: themeStyles.pillBg,
-            color: themeStyles.pillText,
-            letterSpacing: '-0.01em',
-            whiteSpace: 'nowrap'
-          }}>
-            {subBadge}
-          </span>
+          <div style={{ marginTop: '0.1rem' }}>
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              padding: '3px 10px',
+              borderRadius: '999px',
+              background: themeStyles.pillBg,
+              border: `1px solid ${themeStyles.pillBorder}`,
+              color: themeStyles.pillText,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+            }}>
+              {subBadge}
+            </span>
+          </div>
         )}
-      </div>
-
-      <div 
-        className="installment-stat-value num" 
-        style={{ 
-          color: themeStyles.textColor,
-          textAlign: 'right',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'baseline',
-          fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)',
-          fontWeight: 900,
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          letterSpacing: '-0.03em',
-          marginBottom: 0
-        }}
-      >
-        {formatKRW(value)}
-        <span 
-          style={{ 
-            fontSize: '0.75rem', 
-            fontWeight: 600, 
-            color: themeStyles.mutedColor, 
-            marginLeft: 3 
-          }}
-        >
-          원
-        </span>
       </div>
 
       {isHovered && tooltipContent && (
@@ -169,17 +161,15 @@ function InstallmentStatCard({ label, value, theme, icon, subBadge, progressPct,
           top: 'calc(100% + 10px)',
           left: '50%',
           transform: 'translateX(-50%)',
-          background: 'var(--card)',
-          border: '1px solid var(--card-border)',
-          borderRadius: '14px',
-          padding: '0.875rem',
-          boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
+          background: '#ffffff',
+          border: '1px solid var(--border)',
+          borderRadius: '16px',
+          padding: '0.85rem 1.1rem',
+          boxShadow: '0 14px 36px rgba(15, 23, 42, 0.22)',
           zIndex: 1000,
-          minWidth: '260px',
-          color: 'var(--text-primary)',
-          pointerEvents: 'none',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          minWidth: '250px',
+          color: '#0f172a',
+          pointerEvents: 'none'
         }}>
           {tooltipContent}
         </div>
@@ -254,28 +244,13 @@ export default function InstallmentOverview() {
       });
     }
 
-    const cardThisMonthSum = cardMonthlySummaries.reduce((a, c) => a + (Number(c.currentMonthTotal) || 0), 0);
-    const installmentThisMonth = activeInstallments.reduce((a, r) => {
-      if (Number(r.currentMonth) === 0) return a;
-      return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
-    }, 0);
-    const thisMonthTotal = cardThisMonthSum + installmentThisMonth;
-
-    const cardNextMonthSum = cardMonthlySummaries.reduce((a, c) => a + (Number(c.nextMonthExpected) || 0), 0);
-    const installmentNextMonth = activeInstallments.reduce((a, r) => {
-      const currentMonthVal = Number(r.currentMonth) || 0;
-      const totalMonthsVal = Number(r.totalMonths) || 1;
-      if (currentMonthVal < totalMonthsVal) {
-        return a + (Number(r.monthlyPrincipal) || 0) + (Number(r.monthlyFee) || 0);
-      }
-      return a;
-    }, 0);
-    const nextMonthTotal = cardNextMonthSum + installmentNextMonth;
-
+    // 카드별 결제금액 상세 영역의 이달 결제액 합계 및 다음달 결제액 합계 그대로 표시
+    const thisMonthTotal = cardMonthlySummaries.reduce((a, c) => a + (Number(c.currentMonthTotal) || 0), 0);
+    const nextMonthTotal = cardMonthlySummaries.reduce((a, c) => a + (Number(c.nextMonthExpected) || 0), 0);
     const remainTotal = Math.max(totalAmount - thisMonthTotal, 0);
 
     return { totalAmount, thisMonthTotal, nextMonthTotal, remainTotal };
-  }, [activeInstallments, cardMonthlySummaries, yearData, year, month]);
+  }, [cardMonthlySummaries, yearData, year, month]);
 
   const stats = [
     {
@@ -510,6 +485,22 @@ export default function InstallmentOverview() {
               }}>
                 {expiringSchedules.totalCount}건
               </span>
+              {(() => {
+                const scheduleTotalSum = expiringSchedules.sortedKeys.reduce((acc, key) => {
+                  const items = expiringSchedules.groupsMap[key];
+                  return acc + items.reduce((sum, item) => sum + (Number(item.remAmount) || 0), 0);
+                }, 0);
+                return scheduleTotalSum > 0 ? (
+                  <span style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 800,
+                    color: 'var(--text-muted)',
+                    marginLeft: '4px'
+                  }}>
+                    (잔액 합계 {formatKRW(scheduleTotalSum)}원)
+                  </span>
+                ) : null;
+              })()}
             </div>
           </div>
 
@@ -627,6 +618,18 @@ export default function InstallmentOverview() {
                       </div>
                     ))}
                   </div>
+
+                  {/* 그룹별 잔여금 금액 표시 */}
+                  {(() => {
+                    const groupSum = items.reduce((a, c) => a + (Number(c.remAmount) || 0), 0);
+                    return groupSum > 0 ? (
+                      <div style={{ marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', monospace" }}>
+                          {formatKRW(groupSum)}원
+                        </span>
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
               );
             })}

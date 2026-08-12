@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 
 <head>
@@ -3948,7 +3948,8 @@
         let currentTableSearch = '';
         let calDate = new Date();
         let lastExpandedManpowerGroup = null;
-        let ghConfig = JSON.parse(localStorage.getItem('taskGitHubConfig') || '{"repo":"uzenkaze/vibe","branch":"main","autoSync":true}');
+        let ghConfig = JSON.parse(localStorage.getItem('taskGitHubConfig') || '{"repo":"uzenkaze/vibe","branch":"master","autoSync":true}');
+        if (ghConfig.branch === 'main') { ghConfig.branch = 'master'; localStorage.setItem('taskGitHubConfig', JSON.stringify(ghConfig)); }
 
         let tableSpecs = [];
         let selectedTableIds = [];
@@ -8315,7 +8316,7 @@
         function openGitHubSettings() {
             document.getElementById('gh-token').value = ghConfig.token || '';
             document.getElementById('gh-repo').value = ghConfig.repo || 'uzenkaze/vibe';
-            document.getElementById('gh-branch').value = ghConfig.branch || 'main';
+            document.getElementById('gh-branch').value = ghConfig.branch || 'master';
             document.getElementById('gh-autosync').checked = ghConfig.autoSync;
             document.getElementById('settings-modal').classList.add('active');
         }

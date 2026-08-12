@@ -38,15 +38,15 @@ export default function AssetAnalyticsChart() {
     };
   }, [sections]);
 
-  // 자산 포트폴리오 비중 (%) - 첨부 이미지의 5색상 파레트 매칭
+  // 자산 포트폴리오 비중 (%) - EAM 앱 대시보드 테마 컬러 매칭 (Navy Blue, Emerald Mint, Soft Violet, Amber Gold)
   const portfolioSegments = useMemo(() => {
     const total = totals.totalAsset || 0;
     
     const items = [
       { id: 'nonCash', name: '비현금/금융자산', amount: totals.nonCash, color: '#3b82f6', displayColor: '#3b82f6' },
-      { id: 'cash', name: '현금자산', amount: totals.cash, color: '#2dd4bf', displayColor: '#2dd4bf' },
-      { id: 'retirement', name: '연금자산', amount: totals.retirement, color: '#f472b6', displayColor: '#f472b6' },
-      { id: 'debt', name: '기타/부채', amount: totals.debt, color: 'url(#striped-pattern)', displayColor: '#cbd5e1' },
+      { id: 'cash', name: '현금자산', amount: totals.cash, color: '#10b981', displayColor: '#10b981' },
+      { id: 'retirement', name: '연금자산', amount: totals.retirement, color: '#8b5cf6', displayColor: '#8b5cf6' },
+      { id: 'debt', name: '기타/부채', amount: totals.debt, color: '#f59e0b', displayColor: '#f59e0b' },
     ];
 
     if (total > 0) {
@@ -60,9 +60,9 @@ export default function AssetAnalyticsChart() {
       // 등록된 데이터가 없을 경우 샘플 비중 노출
       return [
         { id: 'nonCash', name: '비현금/금융자산', amount: 43000000, color: '#3b82f6', displayColor: '#3b82f6', pct: 45 },
-        { id: 'cash', name: '현금자산', amount: 28000000, color: '#2dd4bf', displayColor: '#2dd4bf', pct: 30 },
-        { id: 'retirement', name: '연금자산', amount: 17000000, color: '#f472b6', displayColor: '#f472b6', pct: 15 },
-        { id: 'debt', name: '기타/부채', amount: 10000000, color: 'url(#striped-pattern)', displayColor: '#cbd5e1', pct: 10 },
+        { id: 'cash', name: '현금자산', amount: 28000000, color: '#10b981', displayColor: '#10b981', pct: 30 },
+        { id: 'retirement', name: '연금자산', amount: 17000000, color: '#8b5cf6', displayColor: '#8b5cf6', pct: 15 },
+        { id: 'debt', name: '기타/부채', amount: 10000000, color: '#f59e0b', displayColor: '#f59e0b', pct: 10 },
       ];
     }
   }, [totals]);
@@ -120,17 +120,17 @@ export default function AssetAnalyticsChart() {
         <div className="asset-portfolio-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', paddingRight: '0.75rem', borderRight: dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #f1f5f9' }}>
           
           {/* 도넛 차트 SVG 영역 */}
-          <div className="donut-chart-container">
-            <svg viewBox="0 0 200 200" style={{ overflow: 'visible' }}>
+          <div className="donut-chart-container" style={{ position: 'relative', width: 180, height: 180, flexShrink: 0 }}>
+            <svg viewBox="0 0 200 200" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
               <defs>
                 {/* 빗금 패턴 서식 */}
                 <pattern id="striped-pattern" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                  <rect width="8" height="8" fill="#f8fafc" />
-                  <line x1="0" y1="0" x2="0" y2="8" stroke="#cbd5e1" strokeWidth="4" />
+                  <rect width="8" height="8" fill={dark ? '#1e293b' : '#f8fafc'} />
+                  <line x1="0" y1="0" x2="0" y2="8" stroke={dark ? '#475569' : '#cbd5e1'} strokeWidth="4" />
                 </pattern>
                 {/* 퍼센티지 뱃지 쉐도우 */}
                 <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#000000" floodOpacity="0.15" />
+                  <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.18" />
                 </filter>
               </defs>
 
@@ -147,7 +147,15 @@ export default function AssetAnalyticsChart() {
                 />
               ))}
 
-              {/* 이미지와 동일한 조각 내부의 백색 퍼센티지 뱃지 알약(Pill) */}
+              {/* 중앙 총 자산 요약 텍스트 */}
+              <text x="100" y="93" textAnchor="middle" fill="var(--text-muted)" fontSize="9.5" fontWeight="700" fontFamily="'Plus Jakarta Sans', sans-serif">
+                총 자산
+              </text>
+              <text x="100" y="112" textAnchor="middle" fill="var(--text-primary)" fontSize="12.5" fontWeight="900" fontFamily="'Plus Jakarta Sans', sans-serif">
+                {formatKRW(totals.totalAsset)}
+              </text>
+
+              {/* 조각 내부의 퍼센티지 뱃지 알약(Pill) */}
               {donutArcs.map((arc, i) => (
                 <g key={`badge-${i}`} transform={`translate(${arc.badgeX.toFixed(2)}, ${arc.badgeY.toFixed(2)})`} filter="url(#badge-shadow)">
                   <rect
@@ -157,16 +165,16 @@ export default function AssetAnalyticsChart() {
                     height="19"
                     rx="9.5"
                     ry="9.5"
-                    fill="#ffffff"
-                    stroke="rgba(0,0,0,0.06)"
+                    fill={dark ? '#0f172a' : '#ffffff'}
+                    stroke={dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'}
                     strokeWidth="0.8"
                   />
                   <text
                     x="0"
                     y="3.5"
                     textAnchor="middle"
-                    fill="#0f172a"
-                    fontSize="10.5"
+                    fill={dark ? '#f8fafc' : '#0f172a'}
+                    fontSize="10"
                     fontWeight="800"
                     fontFamily="'Plus Jakarta Sans', sans-serif"
                   >

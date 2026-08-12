@@ -610,7 +610,7 @@ export default function InstallmentPage() {
                       {(() => {
                         const groupTotal = items.reduce((sum, it) => {
                           const calc = calculateInstallment(it, year, month);
-                          return sum + (Number(calc.remainingBalance) || 0);
+                          return sum + (Number(calc.remAmount) || 0);
                         }, 0);
 
                         let bg = 'var(--border)';
@@ -641,7 +641,7 @@ export default function InstallmentPage() {
                               fontWeight: 800,
                               whiteSpace: 'nowrap'
                             }}>
-                              {remCount > 0 ? `잔여 ${remCount}회` : '이달 만료'}
+                              {items.length > 1 ? `${items.length}건 / ` : ''}{remCount > 0 ? `잔여 ${remCount}회` : '이달 만료'}
                             </span>
                           </div>
                         );

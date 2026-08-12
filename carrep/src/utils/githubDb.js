@@ -29,7 +29,8 @@ export async function getGithubJson(path, token) {
       headers['Authorization'] = `token ${token}`;
     }
     
-    const res = await fetch(`${url}?t=${Date.now()}`, { headers });
+    // 강제로 master 브랜치(ref)를 조회
+    const res = await fetch(`${url}?ref=master&t=${Date.now()}`, { headers });
     if (!res.ok) {
       if (res.status === 404) return null; // File doesn't exist yet
       throw new Error(`GitHub API returned status ${res.status}`);
@@ -66,7 +67,7 @@ export async function saveGithubJson(path, content, token, commitMessage) {
   // Obtain SHA hash
   let sha = null;
   try {
-    const getRes = await fetch(`${url}?t=${Date.now()}`, {
+    const getRes = await fetch(`${url}?ref=master&t=${Date.now()}`, {
       headers: {
         'Authorization': `token ${token}`,
         'Accept': 'application/vnd.github.v3+json'
@@ -82,7 +83,8 @@ export async function saveGithubJson(path, content, token, commitMessage) {
 
   const body = {
     message: commitMessage || 'chore(data): sync carrep JSON database',
-    content: base64Content
+    content: base64Content,
+    branch: 'master'
   };
   if (sha) {
     body.sha = sha;

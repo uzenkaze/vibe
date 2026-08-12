@@ -6,8 +6,9 @@ Asset/data/*.json
 # Keep JSON files inside asset-react project
 !Asset/asset-react/**/*.json
 
-# Keep learn package-lock.json for CI/CD npm install
+# Keep learn package-lock.json and data.json for CI/CD and sync
 !learn/package-lock.json
+!learn/data.json
 
 # Node modules
 node_modules/
@@ -18,3 +19,11 @@ dist/
 *.db
 *.db-journal
 dev.db
+
+# Build & Deploy temp directories
+deploy_dist/
+temp-deploy/
+.gradle/
+build/
+*.tmp
+

@@ -34,7 +34,7 @@ const CHANNELS = [
   { id: 'kbs_life', name: 'KBS Life', network: 'KBS_LIFE', category: '방송/오락', kbsApiCode: 'N93', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N93&ch_type=globalList', urls: [] },
   { id: 'kbs_kids', name: 'KBS Kids', network: 'KBS_KIDS', category: '방송/오락', kbsApiCode: 'N96', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=N96&ch_type=globalList', urls: [] },
   { id: 'kbs_world', name: 'KBS World', network: 'KBS_WORLD', category: '방송/오락', kbsApiCode: '14', officialUrl: 'https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=14&ch_type=globalList', urls: [] },
-  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', ytChannelId: 'UC-VbFgagk6GJGDJgRQIMpZw', noPlayableHls: true, urls: [
+  { id: 'mbc_every1', name: 'MBC every1', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=2', ytHandle: '@MBCevery1', ytChannelId: 'UC-VbFgagk6GJGDJgRQIMpZw', urls: [
     'https://live2.mbcmpp.co.kr/etc2/_definst_/every1/playlist.m3u8'
   ] },
   { id: 'mbc_drama', name: 'MBC Drama', network: 'MBC', category: '방송/오락', officialUrl: 'https://m.mbcplus.com/web/onair.do?categoryid=1', ytHandle: '@mbc_drama', urls: [

@@ -54,33 +54,26 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
       style={{ zIndex: isHovered || isOpen ? 100 : 1, position: 'relative', cursor: 'pointer' }}
     >
       <div className="summary-card-inner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.65rem' }}>
-          <div style={{
-            width: 32, height: 32,
-            borderRadius: '10px',
-            background: accentColorDim || 'rgba(99,102,241,0.08)',
-            border: `1px solid ${accentColor ? accentColor + '33' : 'rgba(255,255,255,0.1)'}`,
-            boxShadow: `0 0 12px ${accentColorDim || 'transparent'}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: accentColor || 'var(--brand)', flexShrink: 0,
-          }}>
-            {icon}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{
+              width: 34, height: 34,
+              borderRadius: '10px',
+              background: accentColorDim || 'rgba(59, 130, 246, 0.1)',
+              border: `1px solid ${accentColor ? accentColor + '33' : 'rgba(59, 130, 246, 0.2)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: accentColor || 'var(--brand)', flexShrink: 0,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
+            }}>
+              {icon}
+            </div>
+            <div className="summary-card-label" style={{ margin: 0, fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              {label}
+            </div>
           </div>
-          <div className="summary-card-label" style={{ margin: 0, fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            {label}
-          </div>
-        </div>
-        <div
-          className="summary-card-value num"
-          style={{ color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 900, marginBottom: 0, letterSpacing: '-0.03em', textAlign: 'right', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-        >
-          {formatKRW(value)}
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 3, fontWeight: 700 }}>원</span>
-        </div>
 
-        {/* 전월대비 증감율 (배경색 및 그림자 제거) */}
-        {hasPrev && compareDiff !== 0 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.35rem' }}>
+          {/* 전월대비 뱃지 칩 */}
+          {hasPrev && compareDiff !== 0 && (
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -88,13 +81,29 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
               fontSize: '0.68rem',
               fontWeight: 800,
               color: badgeColor,
+              background: badgeBg,
+              padding: '3px 8px',
+              borderRadius: '99px',
+              border: `1px solid ${badgeColor}33`
             }}>
               <span>{isPositive ? '▲' : '▼'}</span>
               <span>{Math.abs(compareRate).toFixed(1)}%</span>
-              <span style={{ opacity: 0.8, marginLeft: '2px', fontWeight: 600 }}>
-                ({isPositive ? '+' : ''}{formatKRW(compareDiff)})
-              </span>
             </div>
+          )}
+        </div>
+
+        <div
+          className="summary-card-value num"
+          style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.2rem', letterSpacing: '-0.03em', textAlign: 'right', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
+          {formatKRW(value)}
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginLeft: 3, fontWeight: 700 }}>원</span>
+        </div>
+
+        {/* 증감액 세부 표시 */}
+        {hasPrev && compareDiff !== 0 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+            전월대비 {isPositive ? '+' : ''}{formatKRW(compareDiff)}원
           </div>
         )}
       </div>

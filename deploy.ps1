@@ -33,11 +33,10 @@ Write-Host "> 'learn' 프로젝트 빌드 중..." -ForegroundColor Yellow
 try {
     Set-Location learn
     npm.cmd run build
-    # 빌드 결과물에서 불필요한 .git 폴더 제거 (GitHub Pages 간섭 방지)
     if (Test-Path "dist/.git") { Remove-Item -Recurse -Force "dist/.git" }
     Set-Location ..
 } catch {
-    Write-Host "> 'learn' 프로젝트 빌드 실패 (기존 dist 복사 시도)" -ForegroundColor Red
+    Write-Host "> 'learn' 프로젝트 빌드 실패" -ForegroundColor Red
     Set-Location ..
 }
 
@@ -75,12 +74,8 @@ if (Test-Path "$deployDir/carrep") { Remove-Item -Recurse -Force "$deployDir/car
 New-Item -ItemType Directory -Path "$deployDir/carrep" | Out-Null
 Copy-Item -Path "carrep/dist/*" -Destination "$deployDir/carrep" -Recurse -Force
 
-# 3-2. 'livetv-app' 프로젝트 빌드 (건너뛰고 정적 직접 복사 방식 사용)
-Write-Host "> 'livetv-app' 프로젝트 빌드는 건너뜁니다 (정적 소스 직접 복사)" -ForegroundColor Yellow
-
-
 # 4. 기타 정적 폴더 복사 (asset, task, hobby 등)
-$staticFolders = @("asset", "task", "hobby-app", "livetv-app", "vibe-hybrid-app")
+$staticFolders = @("asset", "task", "hobby", "livetv", "vibe-hybrid-app")
 foreach ($folder in $staticFolders) {
     if (Test-Path $folder) {
         # livetv-app 폴더는 배포 시 간단한 'livetv' 경로로 매핑, hobby-app은 'mPlay'로 매핑
@@ -89,24 +84,14 @@ foreach ($folder in $staticFolders) {
         if ($folder -eq "hobby-app") { $targetFolder = "mPlay" }
 
         Write-Host "> $folder 폴더 복사 중 (node_modules 제외)... ($targetFolder 및 hobby 경로로 복사)"
-        if ($folder -eq "hobby-app") {
-            New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
-            Copy-Item -Path "$folder/www/*" -Destination "$deployDir/$targetFolder" -Recurse -Force
-            # 레거시 하이브리드 앱과의 완벽한 주소 호환을 위해 hobby 폴더에도 동시에 물리 복사하여 배포
+        if ($folder -eq "hobby") {
             New-Item -ItemType Directory -Path "$deployDir/hobby" -Force | Out-Null
-            Copy-Item -Path "$folder/www/*" -Destination "$deployDir/hobby" -Recurse -Force
-        } elseif ($folder -eq "livetv-app") {
-            # livetv-app은 dist/ 빌드 산출물을 복사하여 배포 (hls.min.js 등 누락 방지)
-            Write-Host "> livetv-app dist 빌드 결과물 복사 중..." -ForegroundColor Cyan
-            New-Item -ItemType Directory -Path "$deployDir/$targetFolder" -Force | Out-Null
-            if (Test-Path "$folder/dist") {
-                Copy-Item -Path "$folder/dist/*" -Destination "$deployDir/$targetFolder" -Recurse -Force
-                Write-Host "> livetv dist 복사 완료 (hls.min.js 포함)" -ForegroundColor Green
-            } else {
-                # dist 없으면 루트 정적 파일만 복사 (node_modules, .git, android 등 제외)
-                Get-ChildItem -Path $folder -Exclude "node_modules",".git",".vscode","android","temp-deploy" | Copy-Item -Destination "$deployDir/$targetFolder" -Recurse -Force
-                Write-Host "> livetv 루트 복사 완료" -ForegroundColor Green
-            }
+            Copy-Item -Path "$folder/*" -Destination "$deployDir/hobby" -Recurse -Force
+        } elseif ($folder -eq "livetv") {
+            Write-Host "> livetv 폴더 복사 중..." -ForegroundColor Cyan
+            New-Item -ItemType Directory -Path "$deployDir/livetv" -Force | Out-Null
+            Get-ChildItem -Path $folder -Exclude "node_modules",".git",".vscode","android","temp-deploy" | Copy-Item -Destination "$deployDir/livetv" -Recurse -Force
+            Write-Host "> livetv 복사 완료" -ForegroundColor Green
         } elseif ($folder -eq "vibe-hybrid-app") {
             # 용량이 큰 프로젝트는 필요한 파일만 선별 복사하거나 dist가 있다면 dist만 복사
             if (Test-Path "$folder/dist") {
@@ -123,11 +108,11 @@ foreach ($folder in $staticFolders) {
             New-Item -ItemType Directory -Path "$deployDir/asset" -Force | Out-Null
             if (Test-Path "asset/favicon.png") { Copy-Item -Path "asset/favicon.png" -Destination "$deployDir/asset/" -Force }
             if (Test-Path "asset/data") { Copy-Item -Path "asset/data" -Destination "$deployDir/asset/" -Recurse -Force }
-            # HTML 및 JS 등 레거시 웹 페이지 복사 추가
+            # HTML 및 JS 등 레거시 웹 페이지 복사
             if (Test-Path "asset/*.html") { Copy-Item -Path "asset/*.html" -Destination "$deployDir/asset/" -Force }
             if (Test-Path "asset/*.js") { Copy-Item -Path "asset/*.js" -Destination "$deployDir/asset/" -Force }
             if (Test-Path "asset/asset-react/dist") {
-                # asset/ 폴더 바로 아래에 리액트 빌드 산출물(index.html, assets 등) 복사하여 /asset/ 경로로 직접 진입 가능
+                # 최신 리액트 빌드 산출물(index.html, assets 등)을 덮어써서 최신 빌드 번들 참조 보장
                 Copy-Item -Path "asset/asset-react/dist/*" -Destination "$deployDir/asset/" -Recurse -Force
                 # 레거시 URL 호환을 위해 asset/asset-react/dist 경로도 유지
                 New-Item -ItemType Directory -Path "$deployDir/asset/asset-react/dist" -Force | Out-Null
@@ -155,10 +140,7 @@ if (Test-Path "404.html") {
 }
 # .nojekyll 파일 생성 (Jekyll 처리 방지)
 New-Item -ItemType File -Path "$deployDir/.nojekyll" -Force | Out-Null
-if (Test-Path "livetv-favicon.png") { Copy-Item "livetv-favicon.png" $deployDir }
-# 포털 메인 카드 이미지 파일(vibe_*.png) 및 모바일 APK 파일 복사
-Write-Host "> vibe_*.png 및 *.apk 파일 복사 중..."
-Get-ChildItem -Path . -Filter vibe_*.png | Copy-Item -Destination $deployDir
+Write-Host "> *.apk 파일 복사 중..."
 Get-ChildItem -Path . -Filter *.apk | Copy-Item -Destination $deployDir
 
 # 하위 디렉토리 내 .git 폴더 완벽 제거 (Git Submodule 및 누락 방지 - RULE 9 STEP 3 준수)

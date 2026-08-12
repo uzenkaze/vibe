@@ -57,7 +57,7 @@ export default function SummaryModal({ type, onClose }) {
         { key: 'cash', label: '현금성 자산', color: 'var(--teal)', span2: false },
         { key: 'non-cash', label: '비현금성 자산', color: '#5B6BF8', span2: false },
         { key: 'retirement', label: '연금·보험', color: '#a78bfa', span2: false },
-        { key: 'income', label: '수입', color: '#2DC9A0', span2: true }, // 마지막 수입을 span2로 넓게 배치
+        { key: 'income', label: '수입', color: '#10b981', span2: false },
       ];
       let grandTotal = 0;
       const processedGroups = groups.map(g => {

@@ -139,15 +139,12 @@ const loadMoreBtn = document.getElementById('loadMoreBtn');
 const lyricsContainer = document.getElementById('lyricsContainer');
 
 window.handleImageError = function(img, videoId) {
-    if (img.dataset.failed === "2") {
+    if (img.dataset.failed === "1") {
         img.onerror = null;
         img.src = 'music_placeholder.png';
-    } else if (img.dataset.failed === "1") {
-        img.dataset.failed = "2";
-        img.src = `https://images.weserv.nl/?url=https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
     } else {
         img.dataset.failed = "1";
-        img.src = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+        img.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
     }
 };
 
@@ -462,6 +459,8 @@ async function performSearch(queryOverride = null) {
 async function handleGlobalSearch(customQuery = null, limit = 100) {
     const query = (typeof customQuery === 'string') ? customQuery : searchInput.value.trim();
     if (!query) return;
+
+    const cleanQ = cleanSearchQuery(query);
 
     // 1. Check Cache first (Instant)
     if (searchCache.has(query)) {
@@ -1461,36 +1460,36 @@ window.clearRecentSongs = function() {
 
 const fallbackDiscoveryData = {
     trending: [
-        { id: "local_trend1", title: "Supernova", artist: "aespa(에스파)", youtubeId: "JmD8_t0IuGg" },
-        { id: "local_trend2", title: "고민중독", artist: "QWER", youtubeId: "X_P3-X_v_U" },
-        { id: "local_trend3", title: "Ditto", artist: "NewJeans", youtubeId: "km_OnhPjD0o" },
-        { id: "local_trend4", title: "밤양갱", artist: "비비 (BIBI)", youtubeId: "v9gGfQy7-C4" },
+        { id: "local_trend1", title: "Supernova", artist: "aespa(에스파)", youtubeId: "phuiiNCxRMg" },
+        { id: "local_trend2", title: "고민중독", artist: "QWER", youtubeId: "ImuWa3SJulY" },
+        { id: "local_trend3", title: "Ditto", artist: "NewJeans", youtubeId: "pSUydWEqKwE" },
+        { id: "local_trend4", title: "밤양갱", artist: "비비 (BIBI)", youtubeId: "v7bnOxV4jAc" },
         { id: "local_trend5", title: "Magnetic", artist: "ILLIT (아일릿)", youtubeId: "Vk5-c_v4gMU" },
-        { id: "local_trend6", title: "HEYA (해야)", artist: "IVE (아이브)", youtubeId: "7WJ46OQ6C-4" }
+        { id: "local_trend6", title: "HEYA (해야)", artist: "IVE (아이브)", youtubeId: "pG6iaOMV46I" }
     ],
     latest: [
-        { id: "local_latest1", title: "Armageddon", artist: "aespa(에스파)", youtubeId: "nFYwcndKlOY" },
-        { id: "local_latest2", title: "How Sweet", artist: "NewJeans", youtubeId: "Q3K0TOvTO5I" },
+        { id: "local_latest1", title: "Armageddon", artist: "aespa(에스파)", youtubeId: "nFYwcndNuOY" },
+        { id: "local_latest2", title: "How Sweet", artist: "NewJeans", youtubeId: "ft70sAYrFyY" },
         { id: "local_latest3", title: "Bubble Gum", artist: "NewJeans", youtubeId: "dJdqn5v4Dkw" },
-        { id: "local_latest4", title: "SPOT! (feat. JENNIE)", artist: "ZICO (지코)", youtubeId: "fEjqj6_H5cQ" },
-        { id: "local_latest5", title: "SHEESH", artist: "BABYMONSTER", youtubeId: "2wA_b78E3iE" },
-        { id: "local_latest6", title: "소나기 (Sudden Shower)", artist: "ECLIPSE (이클립스)", youtubeId: "H-P6pDqM0U4" }
+        { id: "local_latest4", title: "SPOT! (feat. JENNIE)", artist: "ZICO (지코)", youtubeId: "11cta61wi0g" },
+        { id: "local_latest5", title: "SHEESH", artist: "BABYMONSTER", youtubeId: "2wA_b6YHjqQ" },
+        { id: "local_latest6", title: "소나기 (Sudden Shower)", artist: "ECLIPSE (이클립스)", youtubeId: "fBB4MaBybyg" }
     ],
     pop: [
-        { id: "local_pop1", title: "Cruel Summer", artist: "Taylor Swift", youtubeId: "ic8j13gFLzc" },
-        { id: "local_pop2", title: "Fortnight (feat. Post Malone)", artist: "Taylor Swift", youtubeId: "q3zqJs7k7c" },
+        { id: "local_pop1", title: "Cruel Summer", artist: "Taylor Swift", youtubeId: "tCXGJQYZ9JA" },
+        { id: "local_pop2", title: "LUNCH", artist: "Billie Eilish", youtubeId: "K4DyBUG242c" },
         { id: "local_pop3", title: "Espresso", artist: "Sabrina Carpenter", youtubeId: "eVli-tstM5E" },
-        { id: "local_pop4", title: "Greedy", artist: "Tate McRae", youtubeId: "T73h55z8xN0" },
-        { id: "local_pop5", title: "Too Sweet", artist: "Hozier", youtubeId: "aTg8_s6b_k0" },
-        { id: "local_pop6", title: "As It Was", artist: "Harry Styles", youtubeId: "HP-gSz1gGC4" }
+        { id: "local_pop4", title: "Too Sweet", artist: "Hozier", youtubeId: "aezstCBHOPQ" },
+        { id: "local_pop5", title: "As It Was", artist: "Harry Styles", youtubeId: "H5v3kku4y6Q" },
+        { id: "local_pop6", title: "Lovesick Girls", artist: "BLACKPINK", youtubeId: "dyRsYk0LyA8" }
     ],
     suggested: [
-        { id: "local_sug1", title: "빗소리와 함께 듣는 로파이 (Lofi Rain)", artist: "Lofi Vibes", youtubeId: "5wRWniH70r8" },
-        { id: "local_sug2", title: "잔잔한 어쿠스틱 피아노 명상 음악", artist: "Peaceful Music", youtubeId: "bO1fS-Z49fA" },
+        { id: "local_sug1", title: "빗소리와 함께 듣는 로파이 (Lofi Rain)", artist: "Lofi Vibes", youtubeId: "5qap5aO4i9A" },
+        { id: "local_sug2", title: "잔잔한 어쿠스틱 피아노 명상 음악", artist: "Peaceful Music", youtubeId: "3TfJeKy10AM" },
         { id: "local_sug3", title: "Sleep Lullaby (수면 힐링 음악)", artist: "Sleep Oasis", youtubeId: "hTWKbfoikeg" },
-        { id: "local_sug4", title: "카페에서 듣기 좋은 산뜻한 보사노바", artist: "Cafe Jazz", youtubeId: "17l_B1UvU-A" },
+        { id: "local_sug4", title: "카페에서 듣기 좋은 산뜻한 보사노바", artist: "Cafe Jazz", youtubeId: "ru4DicGUCY0" },
         { id: "local_sug5", title: "Relaxing Forest Rain & Wind Sounds", artist: "Nature Healing", youtubeId: "mPZkdNFkNps" },
-        { id: "local_sug6", title: "힐링 지브리 아쿠스틱 오르골 메들리", artist: "Orgel Melody", youtubeId: "e9SnaG89nO8" }
+        { id: "local_sug6", title: "힐링 지브리 아쿠스틱 오르골 메들리", artist: "Orgel Melody", youtubeId: "CgCVZdcKcqY" }
     ]
 };
 
@@ -1615,7 +1614,7 @@ function renderDiscoveryFromData(sections) {
 function renderCardList(songsList, isRecent = false) {
     if (!songsList) return '';
     return songsList.map(song => {
-        const primaryThumb = `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`;
+        const primaryThumb = `https://i.ytimg.com/vi/${song.youtubeId}/hqdefault.jpg`;
         
         return `
             <div class="music-card" onclick="handleSongClick(${JSON.stringify(song).replace(/"/g, '&quot;')}, 'audio')">
@@ -1842,46 +1841,43 @@ function cleanSearchQuery(text) {
  * Piped API Fallback Loader - Extremely robust alternative to HTML scraping.
  */
 async function fetchFromPipedAPI(query, idPrefix = 'global_') {
-    const pipedNodes = [
-        'https://pipedapi.kavin.rocks',
-        'https://pipedapi.tokhmi.xyz',
-        'https://pipedapi.smnz.de',
-        'https://api.piped.victr.me',
-        'https://pipedapi.moomoo.me',
-        'https://piped-api.lunar.icu',
-        'https://piped-api.garudalinux.org'
+    const cleanQ = cleanSearchQuery(query);
+    if (!cleanQ) return [];
+
+    const endpoints = [
+        { url: `https://invidious.f5.si/api/v1/search?q=${encodeURIComponent(cleanQ)}&type=video`, type: 'invidious' }
     ];
 
-    const fetchFromNode = async (node) => {
+    const fetchFromEndpoint = async (ep) => {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
         try {
-            const res = await fetch(`${node}/search?q=${encodeURIComponent(query)}&filter=all`, {
-                signal: controller.signal
-            });
+            const res = await fetch(ep.url, { signal: controller.signal });
             clearTimeout(timeoutId);
-            if (!res.ok) throw new Error('Node failed');
+            if (!res.ok) throw new Error('Endpoint failed');
             const data = await res.json();
-            if (!data.items || data.items.length === 0) throw new Error('No items');
             
-            return data.items.filter(item => item.type === "stream" || (item.url && item.url.includes('?v='))).map(item => {
-                const videoId = item.url.split('?v=')[1] || item.url.split('/watch?v=')[1];
-                let durationText = "";
-                if (item.duration) {
-                    const mins = Math.floor(item.duration / 60);
-                    const secs = item.duration % 60;
-                    durationText = `${mins}:${secs.toString().padStart(2, '0')}`;
-                }
-                return {
-                    id: idPrefix + videoId, 
-                    title: item.title,
-                    artist: item.uploaderName || 'YouTube Artist',
-                    youtubeId: videoId,
-                    duration: durationText,
-                    isGlobal: true,
-                    lyrics: `(API 자동 검색 결과)\n업로더: ${item.uploaderName || 'Unknown'}`
-                };
-            });
+            if (ep.type === 'invidious') {
+                if (!Array.isArray(data) || data.length === 0) throw new Error('No items');
+                return data.filter(item => item.videoId).map(item => {
+                    let durationText = "";
+                    if (item.lengthSeconds) {
+                        const mins = Math.floor(item.lengthSeconds / 60);
+                        const secs = item.lengthSeconds % 60;
+                        durationText = `${mins}:${secs.toString().padStart(2, '0')}`;
+                    }
+                    return {
+                        id: idPrefix + item.videoId,
+                        title: item.title,
+                        artist: item.author || 'YouTube Artist',
+                        youtubeId: item.videoId,
+                        duration: durationText,
+                        isGlobal: true,
+                        lyrics: `(API 자동 검색 결과)\n업로더: ${item.author || 'Unknown'}`
+                    };
+                });
+            }
+            throw new Error('Unknown type');
         } catch(e) {
             clearTimeout(timeoutId);
             throw e;
@@ -1889,16 +1885,17 @@ async function fetchFromPipedAPI(query, idPrefix = 'global_') {
     };
 
     try {
-        // Parallel fetch for extreme speed
-        return await Promise.any(pipedNodes.map(node => fetchFromNode(node)));
+        return await Promise.any(endpoints.map(ep => fetchFromEndpoint(ep)));
     } catch(e) {
-        throw new Error("All piped nodes failed");
+        return [];
     }
 }
 
 
-async function fetchRelatedSongs(query, timeoutMs = 7000) {
+async function fetchRelatedSongs(query, timeoutMs = 4000) {
     const cleanQ = cleanSearchQuery(query);
+    if (!cleanQ) return [];
+
     const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanQ)}`;
     
     const fetchFromProxy = async (proxyUrl) => {
@@ -1912,7 +1909,7 @@ async function fetchRelatedSongs(query, timeoutMs = 7000) {
             });
             
             clearTimeout(timeoutId);
-            if (!response.ok) throw new Error(`Proxy failed: ${response.status}`);
+            if (!response.ok) throw new Error(`Proxy failed`);
             
             let html;
             const contentType = response.headers.get('content-type');
@@ -1935,7 +1932,7 @@ async function fetchRelatedSongs(query, timeoutMs = 7000) {
                 } else if (ytData.contents?.sectionListRenderer?.contents) {
                     contents = ytData.contents.sectionListRenderer.contents[0].itemSectionRenderer?.contents || [];
                 }
-            } catch(e) { console.warn("Parse path failed, fallback..."); }
+            } catch(e) {}
             
             if (!contents || contents.length === 0) return [];
 
@@ -1957,24 +1954,16 @@ async function fetchRelatedSongs(query, timeoutMs = 7000) {
     };
 
     const proxyUrls = [
-        `https://api.codetabs.com/v1/proxy?quest=${ytUrl}`,
         `https://api.allorigins.win/raw?url=${encodeURIComponent(ytUrl)}`,
-        `https://corsproxy.io/?${encodeURIComponent(ytUrl)}`,
-        `https://corsproxy.org/?${encodeURIComponent(ytUrl)}`,
-        `https://cors-anywhere.herokuapp.com/${ytUrl}`
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(ytUrl)}`
     ];
 
     try {
         const results = await Promise.any(proxyUrls.map(url => fetchFromProxy(url)));
-        return results || [];
-    } catch (e) {
-        console.warn("All search proxies failed:", e);
-        try {
-            return await fetchFromPipedAPI(cleanQ, 'related_');
-        } catch (pipedErr) {
-            return [];
-        }
-    }
+        if (results && results.length > 0) return results;
+    } catch (e) {}
+
+    return await fetchFromPipedAPI(cleanQ, 'related_');
 }
 
 

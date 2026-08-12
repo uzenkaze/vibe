@@ -4,7 +4,7 @@
 <head>
 
     <script>
-        // 최신 자산관리 앱(AssetOS)으로 캐시 방지 타임스탬프와 함께 즉시 연결
+        // 최신 ?�산관�???AssetOS)?�로 캐시 방�? ?�?�스?�프?� ?�께 즉시 ?�결
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.location.replace('http://localhost:5173/');
         } else {
@@ -248,7 +248,7 @@
             background: rgba(0, 0, 0, 0.7) !important;
         }
 
-        /* 다크모드: 헤더 브랜드명, 부제목 */
+        /* ?�크모드: ?�더 브랜?�명, 부?�목 */
         html.dark .text-dyo-dark\/60 {
             color: rgba(232, 232, 240, 0.7) !important;
         }
@@ -265,7 +265,7 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: Monthly Overview 제목 */
+        /* ?�크모드: Monthly Overview ?�목 */
         html.dark h1 {
             color: var(--text-primary) !important;
         }
@@ -275,7 +275,7 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: section title (소계 텍스트) */
+        /* ?�크모드: section title (?�계 ?�스?? */
         html.dark .section-title {
             color: var(--text-primary) !important;
         }
@@ -284,7 +284,7 @@
             background: var(--text-primary) !important;
         }
 
-        /* 다크모드: summary label (ASSET, EXPENSE 등) */
+        /* ?�크모드: summary label (ASSET, EXPENSE ?? */
         html.dark .summary-label {
             color: var(--text-secondary) !important;
             opacity: 1 !important;
@@ -294,7 +294,7 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: summary-table */
+        /* ?�크모드: summary-table */
         html.dark .summary-table th {
             background: rgba(255, 255, 255, 0.05) !important;
             color: var(--text-primary) !important;
@@ -320,7 +320,7 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: 입력 필드 (테이블 내) */
+        /* ?�크모드: ?�력 ?�드 (?�이�??? */
         html.dark input[type="text"],
         html.dark input[type="number"],
         html.dark input[type="date"],
@@ -388,7 +388,7 @@
             color: #9CA3AF !important;
         }
 
-        /* 요약보기 모달 전용 표 글로벌 스타일 */
+        /* ?�약보기 모달 ?�용 ??글로벌 ?��???*/
         .summary-table {
             width: 100% !important;
             min-width: 100% !important;
@@ -421,12 +421,12 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: section-box border */
+        /* ?�크모드: section-box border */
         html.dark .section-box {
             border-color: var(--glass-border) !important;
         }
 
-        /* 다크모드: pension bar */
+        /* ?�크모드: pension bar */
         html.dark .pension-bar {
             background: rgba(255, 255, 255, 0.03) !important;
             border-color: var(--glass-border) !important;
@@ -438,7 +438,7 @@
             color: var(--text-secondary) !important;
         }
 
-        /* 다크모드: pension table */
+        /* ?�크모드: pension table */
         html.dark .pension-table th {
             background: rgba(255, 255, 255, 0.05) !important;
             color: var(--text-secondary) !important;
@@ -451,12 +451,12 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: unified-card-title border bottom */
+        /* ?�크모드: unified-card-title border bottom */
         html.dark .unified-card-title {
             border-bottom-color: var(--glass-border) !important;
         }
 
-        /* 다크모드: btn-add */
+        /* ?�크모드: btn-add */
         html.dark .btn-add {
             background: rgba(255, 255, 255, 0.07) !important;
             color: var(--text-primary) !important;
@@ -468,7 +468,7 @@
             color: #0F0F12 !important;
         }
 
-        /* 다크모드: details hover layer */
+        /* ?�크모드: details hover layer */
         html.dark .details-hover-layer {
             background: #1A1A24 !important;
             border-color: var(--glass-border) !important;
@@ -488,7 +488,7 @@
             border-color: var(--accent-blue) !important;
         }
 
-        /* 다크모드: nav 브랜드 이름 */
+        /* ?�크모드: nav 브랜???�름 */
         html.dark nav p,
         html.dark nav span,
         html.dark nav a {
@@ -503,7 +503,7 @@
             color: var(--text-secondary) !important;
         }
 
-        /* 다크모드: nav 버튼 (bg-white 햄버거/메뉴 버튼) */
+        /* ?�크모드: nav 버튼 (bg-white ?�버�?메뉴 버튼) */
         html.dark nav button.bg-white,
         html.dark header button.bg-white {
             background: var(--card-bg) !important;
@@ -515,14 +515,14 @@
             background: var(--text-primary) !important;
         }
 
-        /* 다크모드: 메뉴 확장 패널 (bg-white rounded-full 메뉴바) */
+        /* ?�크모드: 메뉴 ?�장 ?�널 (bg-white rounded-full 메뉴�? */
         html.dark #horizontalMenu,
         html.dark #dashboardMenu {
             background: var(--card-bg) !important;
             border-color: var(--glass-border) !important;
         }
 
-        /* 다크모드: 메뉴 항목 링크 (text-dyo-dark/60, text-dyo-dark/40) */
+        /* ?�크모드: 메뉴 ??�� 링크 (text-dyo-dark/60, text-dyo-dark/40) */
         html.dark #horizontalMenu a,
         html.dark #dashboardMenu a {
             color: rgba(232, 232, 240, 0.55) !important;
@@ -533,13 +533,13 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: 랜딩 header 아이콘 원 테두리 */
+        /* ?�크모드: ?�딩 header ?�이�????�두�?*/
         html.dark header .border-dyo-dark,
         html.dark nav .border-dyo-dark {
             border-color: var(--glass-border) !important;
         }
 
-        /* 다크모드: Monthly Overview 제목 & 부제목 */
+        /* ?�크모드: Monthly Overview ?�목 & 부?�목 */
         html.dark h2.font-serif {
             color: var(--text-primary) !important;
         }
@@ -568,7 +568,7 @@
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: Dashboard Summary 버튼 (bg-dyo-bg) */
+        /* ?�크모드: Dashboard Summary 버튼 (bg-dyo-bg) */
         html.dark .bg-dyo-bg {
             background: rgba(255, 255, 255, 0.06) !important;
         }
@@ -581,14 +581,14 @@
             border-color: var(--glass-border) !important;
         }
 
-        /* 다크모드: 예상연금, 저장&동기화 버튼 */
+        /* ?�크모드: ?�상?�금, ?�???�기??버튼 */
         html.dark button.bg-white.text-dyo-dark {
             background: rgba(255, 255, 255, 0.07) !important;
             color: var(--text-primary) !important;
             border-color: var(--glass-border) !important;
         }
 
-        /* 다크모드: 랜딩 h1 hero quote */
+        /* ?�크모드: ?�딩 h1 hero quote */
         html.dark h1.font-serif {
             color: var(--text-primary) !important;
         }
@@ -597,31 +597,31 @@
             color: rgba(232, 232, 240, 0.7) !important;
         }
 
-        /* 다크모드: nav 아이콘 SVG (text-dyo-dark) */
+        /* ?�크모드: nav ?�이�?SVG (text-dyo-dark) */
         html.dark .text-dyo-dark svg,
         html.dark nav svg {
             color: var(--text-primary) !important;
         }
 
-        /* 다크모드: data-modal textarea */
+        /* ?�크모드: data-modal textarea */
         html.dark .data-modal-textarea {
             background: var(--input-bg) !important;
             color: var(--text-primary) !important;
             border-color: var(--glass-border) !important;
         }
 
-        /* ===== 다크모드: 랜딩 페이지 전체 오버라이드 ===== */
+        /* ===== ?�크모드: ?�딩 ?�이지 ?�체 ?�버?�이??===== */
         html.dark #landingPage {
             background-color: var(--bg-color) !important;
             color: var(--text-primary) !important;
         }
 
-        /* 랜딩 페이지 hero 인용문 제목 */
+        /* ?�딩 ?�이지 hero ?�용�??�목 */
         html.dark #landingPage h1 {
             color: var(--text-primary) !important;
         }
 
-        /* 신규 랜딩 페이지 디자인 스타일 */
+        /* ?�규 ?�딩 ?�이지 ?�자???��???*/
         .landing-bg-text-container {
             position: absolute;
             inset: 0;
@@ -778,7 +778,7 @@
             }
         }
 
-        /* "— Warren Buffett" 텍스트 */
+        /* "??Warren Buffett" ?�스??*/
         html.dark #landingPage p {
             color: rgba(232, 232, 240, 0.6) !important;
         }
@@ -789,12 +789,12 @@
             color: var(--bg-color) !important;
         }
 
-        /* 이미지 슬라이더 오버레이 */
+        /* ?��?지 ?�라?�더 ?�버?�이 */
         html.dark #landingPage .bg-gradient-to-t {
             background: linear-gradient(to top, var(--bg-color), transparent) !important;
         }
 
-        /* 랜딩 헤더 */
+        /* ?�딩 ?�더 */
         html.dark #landingPage header {
             color: var(--text-primary) !important;
         }
@@ -803,23 +803,23 @@
             color: var(--text-primary) !important;
         }
 
-        /* Hans 이름 */
+        /* Hans ?�름 */
         html.dark #landingPage .font-serif {
             color: var(--text-primary) !important;
         }
 
-        /* WEALTH MANAGEMENT 소제목 */
+        /* WEALTH MANAGEMENT ?�제�?*/
         html.dark #landingPage .tracking-\[0\.4em\] {
             color: rgba(232, 232, 240, 0.35) !important;
         }
 
-        /* 메뉴바 배경 */
+        /* 메뉴�?배경 */
         html.dark #landingPage #horizontalMenu {
             background: var(--card-bg) !important;
             border-color: var(--glass-border) !important;
         }
 
-        /* 메뉴 버튼 (햄버거) */
+        /* 메뉴 버튼 (?�버�? */
         html.dark #landingPage header button {
             background: var(--card-bg) !important;
             border-color: var(--glass-border) !important;
@@ -829,19 +829,19 @@
             background: var(--text-primary) !important;
         }
 
-        /* 아이콘 원 테두리 */
+        /* ?�이�????�두�?*/
         html.dark #landingPage .rounded-full.border {
             border-color: var(--glass-border) !important;
         }
 
-        /* 슬라이더 배경 박스 */
+        /* ?�라?�더 배경 박스 */
         html.dark #landingPage #heroSlider {
             background: var(--card-bg) !important;
             border-color: var(--glass-border) !important;
         }
 
-        /* ===== 다크모드: 대시보드(mainContainer) nav 오버라이드 ===== */
-        /* 햄버거 버튼 */
+        /* ===== ?�크모드: ?�?�보??mainContainer) nav ?�버?�이??===== */
+        /* ?�버�?버튼 */
         html.dark #mainContainer nav button {
             background: var(--card-bg) !important;
             border-color: var(--glass-border) !important;
@@ -851,22 +851,22 @@
             background: var(--text-primary) !important;
         }
 
-        /* Hans 브랜드 아이콘 원 */
+        /* Hans 브랜???�이�???*/
         html.dark #mainContainer nav .rounded-full.border {
             border-color: var(--glass-border) !important;
         }
 
-        /* Hans 이름 */
+        /* Hans ?�름 */
         html.dark #mainContainer nav .font-serif {
             color: var(--text-primary) !important;
         }
 
-        /* Wealth Management 소제목 */
+        /* Wealth Management ?�제�?*/
         html.dark #mainContainer nav span {
             color: var(--text-secondary) !important;
         }
 
-        /* Monthly Overview 제목 */
+        /* Monthly Overview ?�목 */
         html.dark #mainContainer h2.font-serif {
             color: var(--text-primary) !important;
         }
@@ -876,7 +876,7 @@
             color: rgba(232, 232, 240, 0.4) !important;
         }
 
-        /* 예상연금 버튼 */
+        /* ?�상?�금 버튼 */
         html.dark #mainContainer button.bg-white {
             background: var(--card-bg) !important;
             color: var(--text-primary) !important;
@@ -895,7 +895,7 @@
 
         html {
             font-size: 16px;
-            /* 고정 폰트 스케일링으로 일관된 타이포그래피 유지 */
+            /* 고정 ?�트 ?��??�링?�로 ?��????�?�포그래???��? */
         }
 
         * {
@@ -1747,10 +1747,10 @@
             border: 1px solid #e2e8f0;
             min-width: 160px;
             max-width: 300px;
-            /* 레이어 최대 너비 고정으로 화면 가득 참 문제 해결 */
+            /* ?�이??최�? ?�비 고정?�로 ?�면 가??�?문제 ?�결 */
         }
 
-        /* 헤더 아이콘 버튼 CSS 툴팁 */
+        /* ?�더 ?�이�?버튼 CSS ?�팁 */
         .btn-header-tool[title] {
             position: relative;
         }
@@ -1783,7 +1783,7 @@
         .details-hover-layer table {
             width: auto;
             min-width: 180px;
-            /* 내용에 맞게 자동 조정 */
+            /* ?�용??맞게 ?�동 조정 */
             border-collapse: collapse;
             font-size: 0.85rem;
         }
@@ -2633,7 +2633,7 @@
             }
         }
 
-        /* 📱 모바일 반응형 UI 지원 */
+        /* ?�� 모바??반응??UI 지??*/
         @media (max-width: 768px) {
             .hide-on-mobile {
                 display: none !important;
@@ -2647,7 +2647,7 @@
                 width: 100% !important;
             }
 
-            /* 상단 헤더 영역 세로 스태킹 및 감싸기 */
+            /* ?�단 ?�더 ?�역 ?�로 ?�태??�?감싸�?*/
             #mainContainer>div:first-child,
             .pension-bar>div:first-child {
                 flex-direction: column !important;
@@ -2662,7 +2662,7 @@
                 width: 100%;
             }
 
-            /* 버튼 크기 및 상단 우측 툴바 정렬 최적화 */
+            /* 버튼 ?�기 �??�단 ?�측 ?�바 ?�렬 최적??*/
             .btn {
                 padding: 0.5rem 0.75rem;
                 font-size: 0.85rem;
@@ -2683,7 +2683,7 @@
                 gap: 0.5rem !important;
             }
 
-            /* 테이블 스크롤 보장 및 요약 테이블 모바일 맞춤 적용 */
+            /* ?�이�??�크�?보장 �??�약 ?�이�?모바??맞춤 ?�용 */
             .section-box,
             .unified-card,
             .modal-content {
@@ -2695,7 +2695,7 @@
                 min-width: 500px;
             }
 
-            /* 요약 카드 2단 그리드로 재배치 */
+            /* ?�약 카드 2??그리?�로 ?�배�?*/
             .summary-bar {
                 grid-template-columns: 1fr 1fr;
                 gap: 0.5rem;
@@ -2705,12 +2705,12 @@
                 padding: 1rem;
             }
 
-            /* 모달창 꽉 차게 */
+            /* 모달�?�?차게 */
             .modal-content {
                 width: 95% !important;
             }
 
-            /* 상세 레이어 모바일 맞춤 적용 (말줄임표) */
+            /* ?�세 ?�이??모바??맞춤 ?�용 (말줄?�표) */
             .details-hover-layer {
                 max-width: 90vw !important;
             }
@@ -2905,7 +2905,7 @@
         }
 
         .features-list li::before {
-            content: '✓';
+            content: '??;
             display: inline-flex;
             justify-content: center;
             align-items: center;
@@ -3237,11 +3237,11 @@
             gap: 6px;
         }
     </style>
-    <!-- ✅ 로그인 플래시(FOUC) 방지: DOM 렌더링 전에 세션 확인 후 화면 즉시 결정 -->
+    <!-- ??로그???�래??FOUC) 방�?: DOM ?�더�??�에 ?�션 ?�인 ???�면 즉시 결정 -->
     <script>
             (function () {
                 if (sessionStorage.getItem('assetLoginSession') === 'true' && sessionStorage.getItem('temp_master_pw')) {
-                    // 이미 로그인 상태: 로그인 화면 미리 숨김 (JS 실행 전 깜빡임 완전 차단)
+                    // ?��? 로그???�태: 로그???�면 미리 ?��? (JS ?�행 ??깜빡???�전 차단)
                     document.documentElement.style.setProperty('--login-flash-display', 'none');
                 } else {
                     document.documentElement.style.setProperty('--login-flash-display', 'none');
@@ -3426,32 +3426,32 @@
                 </svg>
             </div>
 
-            <!-- 탭 스위처 (로그인/회원가입) - 계정이 있을 때만 표시 -->
+            <!-- ???�위�?(로그???�원가?? - 계정???�을 ?�만 ?�시 -->
             <div id="loginTabSwitcher"
                 style="display:none; gap:4px; width:100%; margin-bottom:1.5rem; background:rgba(255,255,255,0.06); border-radius:14px; padding:4px;">
                 <button id="tabSignIn" onclick="switchLoginTab('signin')"
-                    style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:rgba(255,255,255,0.12); color:#fff; font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">로그인</button>
+                    style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:rgba(255,255,255,0.12); color:#fff; font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">로그??/button>
                 <button id="tabSignUp" onclick="switchLoginTab('signup')"
-                    style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:transparent; color:rgba(255,255,255,0.4); font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">회원가입</button>
+                    style="flex:1; padding:0.6rem; border:none; border-radius:10px; background:transparent; color:rgba(255,255,255,0.4); font-weight:700; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">?�원가??/button>
             </div>
 
-            <!-- [A] 로그인 폼 -->
+            <!-- [A] 로그????-->
             <div id="loginFormContainer" style="width:100%;">
                 <div id="loginError"
                     style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;">
                 </div>
                 <div class="login-input">
-                    <span class="login-input-label">아이디</span>
-                    <input type="text" id="loginId" placeholder="아이디 입력"
+                    <span class="login-input-label">?�이??/span>
+                    <input type="text" id="loginId" placeholder="?�이???�력"
                         onkeypress="if(event.key==='Enter') attemptLogin()">
                 </div>
                 <div class="login-input">
-                    <span class="login-input-label">비밀번호</span>
-                    <input type="password" id="loginPw" placeholder="비밀번호 입력"
+                    <span class="login-input-label">비�?번호</span>
+                    <input type="password" id="loginPw" placeholder="비�?번호 ?�력"
                         onkeypress="if(event.key==='Enter') attemptLogin()">
                 </div>
                 <div id="loginOTPContainer" class="login-input" style="display:none; margin-top:0.75rem;">
-                    <span class="login-input-label">TOTP 인증 코드 (스마트폰 앱)</span>
+                    <span class="login-input-label">TOTP ?�증 코드 (?�마?�폰 ??</span>
                     <input type="text" id="loginOTP" placeholder="000000" maxlength="6" inputmode="numeric"
                         style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;"
                         onkeypress="if(event.key==='Enter') attemptLogin()">
@@ -3460,48 +3460,48 @@
                     <input type="checkbox" id="rememberId" checked>
                 </div>
                 <button class="btn-hans btn-hans-primary" onclick="attemptLogin()"
-                    style="width:100%; margin-top:1rem; padding:1rem;">로그인</button>
+                    style="width:100%; margin-top:1rem; padding:1rem;">로그??/button>
             </div>
 
-            <!-- [B] 회원가입 폼 -->
+            <!-- [B] ?�원가????-->
             <div id="signupContainer" style="display:none; width:100%;">
                 <div id="signupError"
                     style="color:#ff4d4d; margin-bottom:1rem; display:none; font-size:0.85rem; text-align:center; padding:0.5rem; background:rgba(255,77,77,0.1); border-radius:8px;">
                 </div>
 
-                <!-- Step 1: 기본 정보 -->
+                <!-- Step 1: 기본 ?�보 -->
                 <div id="signupStep1">
                     <p
                         style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:1rem; letter-spacing:0.05em;">
-                        STEP 1 / 2 — 기본 정보 입력</p>
+                        STEP 1 / 2 ??기본 ?�보 ?�력</p>
                     <div class="login-input">
-                        <span class="login-input-label">이름</span>
-                        <input type="text" id="signupName" placeholder="실명 입력">
+                        <span class="login-input-label">?�름</span>
+                        <input type="text" id="signupName" placeholder="?�명 ?�력">
                     </div>
                     <div class="login-input">
-                        <span class="login-input-label">아이디</span>
-                        <input type="text" id="signupUserId" placeholder="사용할 아이디 (영문+숫자)">
+                        <span class="login-input-label">?�이??/span>
+                        <input type="text" id="signupUserId" placeholder="?�용???�이??(?�문+?�자)">
                     </div>
                     <div class="login-input">
-                        <span class="login-input-label">비밀번호</span>
-                        <input type="password" id="signupPw" placeholder="비밀번호 (6자 이상)">
+                        <span class="login-input-label">비�?번호</span>
+                        <input type="password" id="signupPw" placeholder="비�?번호 (6???�상)">
                     </div>
                     <div class="login-input">
-                        <span class="login-input-label">비밀번호 확인</span>
-                        <input type="password" id="signupPwConfirm" placeholder="비밀번호 재입력">
+                        <span class="login-input-label">비�?번호 ?�인</span>
+                        <input type="password" id="signupPwConfirm" placeholder="비�?번호 ?�입??>
                     </div>
                     <button class="btn-hans btn-hans-primary" onclick="goToSignupStep2()"
-                        style="width:100%; margin-top:1rem; padding:1rem;">다음 → 본인인증 (TOTP)</button>
+                        style="width:100%; margin-top:1rem; padding:1rem;">?�음 ??본인?�증 (TOTP)</button>
                 </div>
 
-                <!-- Step 2: TOTP 본인인증 -->
+                <!-- Step 2: TOTP 본인?�증 -->
                 <div id="signupStep2" style="display:none; text-align:center;">
                     <p
                         style="color:rgba(255,255,255,0.5); font-size:0.75rem; text-align:center; margin-bottom:0.75rem; letter-spacing:0.05em;">
-                        STEP 2 / 2 — 본인인증</p>
+                        STEP 2 / 2 ??본인?�증</p>
                     <p style="color:rgba(255,255,255,0.7); font-size:0.82rem; margin-bottom:1rem; line-height:1.7;">
-                        📱 <strong style="color:#fff;">Google Authenticator</strong> 또는 <strong
-                            style="color:#fff;">Authy</strong> 앱으로<br>아래 QR코드를 스캔 후 6자리 코드를 입력하세요.
+                        ?�� <strong style="color:#fff;">Google Authenticator</strong> ?�는 <strong
+                            style="color:#fff;">Authy</strong> ?�으�?br>?�래 QR코드�??�캔 ??6?�리 코드�??�력?�세??
                     </p>
                     <div
                         style="margin:0 auto 0.75rem; width:170px; height:170px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
@@ -3510,67 +3510,67 @@
                     <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;"
                         id="signupSecretDisplay"></p>
                     <div class="login-input" style="margin-top:0.75rem;">
-                        <span class="login-input-label">인증 코드 6자리</span>
+                        <span class="login-input-label">?�증 코드 6?�리</span>
                         <input type="text" id="signupOTPCode" placeholder="000000" maxlength="6" inputmode="numeric"
                             style="text-align:center; letter-spacing:0.4em; font-size:1.4rem; font-weight:700;"
                             onkeypress="if(event.key==='Enter') verifySignupOTP()">
                     </div>
                     <button class="btn-hans btn-hans-primary" onclick="verifySignupOTP()"
-                        style="width:100%; margin-top:0.75rem; padding:1rem;">인증 완료 → 계정 생성</button>
+                        style="width:100%; margin-top:0.75rem; padding:1rem;">?�증 ?�료 ??계정 ?�성</button>
                     <button onclick="backToSignupStep1()"
-                        style="background:transparent; border:none; color:rgba(255,255,255,0.35); font-size:0.8rem; margin-top:0.5rem; cursor:pointer; width:100%; padding:0.4rem;">←
-                        이전으로</button>
+                        style="background:transparent; border:none; color:rgba(255,255,255,0.35); font-size:0.8rem; margin-top:0.5rem; cursor:pointer; width:100%; padding:0.4rem;">??
+                        ?�전?�로</button>
                 </div>
             </div>
 
-            <!-- [C] 승인 대기 화면 -->
+            <!-- [C] ?�인 ?��??�면 -->
             <div id="pendingContainer" style="display:none; width:100%; text-align:center; padding:1rem 0;">
-                <div style="font-size:3rem; margin-bottom:1rem;">⏳</div>
-                <p style="color:#fff; font-size:1.05rem; font-weight:700; margin-bottom:0.5rem;">승인 대기 중</p>
-                <p style="color:rgba(255,255,255,0.55); font-size:0.85rem; line-height:1.7;">계정이 생성되었습니다.<br>관리자 승인 후
-                    로그인이 가능합니다.</p>
+                <div style="font-size:3rem; margin-bottom:1rem;">??/div>
+                <p style="color:#fff; font-size:1.05rem; font-weight:700; margin-bottom:0.5rem;">?�인 ?��?�?/p>
+                <p style="color:rgba(255,255,255,0.55); font-size:0.85rem; line-height:1.7;">계정???�성?�었?�니??<br>관리자 ?�인 ??
+                    로그?�이 가?�합?�다.</p>
                 <button onclick="hideLoginScreen()"
-                    style="margin-top:1.5rem; background:transparent; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.7); padding:0.75rem 2rem; border-radius:12px; cursor:pointer; font-size:0.9rem; font-weight:600;">닫기</button>
+                    style="margin-top:1.5rem; background:transparent; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.7); padding:0.75rem 2rem; border-radius:12px; cursor:pointer; font-size:0.9rem; font-weight:600;">?�기</button>
             </div>
 
-            <!-- [D] 최초 관리자 설정 (계정 없을 때) -->
+            <!-- [D] 최초 관리자 ?�정 (계정 ?�을 ?? -->
             <div id="adminCreateContainer" style="display:none; width:100%;">
                 <p
                     style="color:rgba(255,255,255,0.6); font-size:0.85rem; text-align:center; margin-bottom:1.25rem; line-height:1.6;">
-                    최초 관리자 계정 설정<br><span style="font-size:0.75rem; opacity:0.6;">기존 데이터가 있으면 Cloud에서 먼저 불러오세요.</span>
+                    최초 관리자 계정 ?�정<br><span style="font-size:0.75rem; opacity:0.6;">기존 ?�이?��? ?�으�?Cloud?�서 먼�? 불러?�세??</span>
                 </p>
                 <div
                     style="margin-bottom:1rem; padding:0.9rem; border:1px dashed rgba(255,255,255,0.15); border-radius:12px; text-align:center;">
-                    <button class="login-btn" style="background:transparent !important;" onclick="openGitHubModal()">☁️
-                        Cloud에서 가져오기</button>
+                    <button class="login-btn" style="background:transparent !important;" onclick="openGitHubModal()">?�️
+                        Cloud?�서 가?�오�?/button>
                 </div>
 
-                <!-- 마스터키 인증 -->
+                <!-- 마스?�키 ?�증 -->
                 <div id="setupKeySection" style="display:flex; flex-direction:column; gap:0.75rem;">
                     <div class="login-input">
-                        <span class="login-input-label">시스템 마스터 키</span>
-                        <input type="password" id="setupMasterKey" placeholder="마스터 키 입력"
+                        <span class="login-input-label">?�스??마스????/span>
+                        <input type="password" id="setupMasterKey" placeholder="마스?????�력"
                             onkeypress="if(event.key==='Enter') verifySetupKey()">
                     </div>
                     <button class="login-btn" style="background:#fff !important; color:#000 !important;"
-                        onclick="verifySetupKey()">시스템 인증</button>
+                        onclick="verifySetupKey()">?�스???�증</button>
                 </div>
 
-                <!-- 관리자 기본 정보 -->
+                <!-- 관리자 기본 ?�보 -->
                 <div id="adminFieldsSection"
                     style="display:none; border-top:1px solid rgba(255,255,255,0.1); padding-top:1.25rem; margin-top:1.25rem; flex-direction:column; gap:0.75rem;">
                     <div id="adminStep1">
-                        <div class="login-input"><input type="text" id="adminName" placeholder="관리자 이름"></div>
-                        <div class="login-input"><input type="text" id="adminId" placeholder="관리자 아이디"></div>
-                        <div class="login-input"><input type="password" id="adminPw" placeholder="비밀번호 (6자 이상)"></div>
+                        <div class="login-input"><input type="text" id="adminName" placeholder="관리자 ?�름"></div>
+                        <div class="login-input"><input type="text" id="adminId" placeholder="관리자 ?�이??></div>
+                        <div class="login-input"><input type="password" id="adminPw" placeholder="비�?번호 (6???�상)"></div>
                         <button class="btn-hans btn-hans-primary" onclick="goToAdminTOTP()"
-                            style="width:100%; padding:1rem; margin-top:0.5rem;">다음 → 본인인증 (TOTP)</button>
+                            style="width:100%; padding:1rem; margin-top:0.5rem;">?�음 ??본인?�증 (TOTP)</button>
                     </div>
-                    <!-- 관리자 TOTP 설정 -->
+                    <!-- 관리자 TOTP ?�정 -->
                     <div id="adminStep2" style="display:none; text-align:center;">
                         <p
                             style="color:rgba(255,255,255,0.7); font-size:0.82rem; margin-bottom:0.75rem; line-height:1.6;">
-                            📱 Google Authenticator 앱으로 QR 스캔 후 코드 입력</p>
+                            ?�� Google Authenticator ?�으�?QR ?�캔 ??코드 ?�력</p>
                         <div
                             style="margin:0 auto 0.5rem; width:150px; height:150px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                             <div id="adminQrImg"></div>
@@ -3578,13 +3578,13 @@
                         <p style="color:rgba(255,255,255,0.3); font-size:0.65rem; margin:0.5rem 0; word-break:break-all;"
                             id="adminSecretDisplay"></p>
                         <div class="login-input" style="margin-top:0.75rem;">
-                            <span class="login-input-label">인증 코드 6자리</span>
+                            <span class="login-input-label">?�증 코드 6?�리</span>
                             <input type="text" id="adminOTPCode" placeholder="000000" maxlength="6" inputmode="numeric"
                                 style="text-align:center; letter-spacing:0.4em; font-size:1.2rem; font-weight:700;"
                                 onkeypress="if(event.key==='Enter') createAdminAccount()">
                         </div>
                         <button class="btn-hans btn-hans-secondary" onclick="createAdminAccount()"
-                            style="width:100%; padding:1rem; margin-top:0.5rem;">관리자 계정 생성 완료</button>
+                            style="width:100%; padding:1rem; margin-top:0.5rem;">관리자 계정 ?�성 ?�료</button>
                     </div>
                 </div>
             </div>
@@ -3598,22 +3598,22 @@
 
         <!-- Summary Bar -->
         <div class="summary-bar px-4 mb-12">
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '이번 달 총 수입')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '?�번 ??�??�입')"
                 onmouseleave="hideHoverLayer()">
                 <div class="summary-label">MONTHLY INCOME</div>
                 <div class="summary-value" id="summary-income">0</div>
             </div>
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '고정 지출 + 변동 지출 + 이번달 할부 청구액')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '고정 지�?+ 변??지�?+ ?�번???��? �?��??)"
                 onmouseleave="hideHoverLayer()">
                 <div class="summary-label">EXPENSE</div>
                 <div class="summary-value value-expense" id="summary-expense">0</div>
             </div>
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '수입 - 지출')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '?�입 - 지�?)"
                 onmouseleave="hideHoverLayer()">
                 <div class="summary-label">MONTHLY P&L</div>
                 <div class="summary-value" id="summary-credit">0</div>
             </div>
-            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '자산 총액 - 부채 총액(할부 포함)')"
+            <div class="summary-card group" onmouseenter="showSummaryTooltip(event, '?�산 총액 - 부�?총액(?��? ?�함)')"
                 onmouseleave="hideHoverLayer()">
                 <div class="summary-label">NET WORTH</div>
                 <div class="summary-value" id="summary-net">0</div>
@@ -3635,7 +3635,7 @@
                     </div>
                     <div>
                         <h2 class="text-sm font-bold text-dyo-dark dark:text-white tracking-tight flex items-center">
-                            카드 할부 현황
+                            카드 ?��? ?�황
                             <svg id="mainInstallmentAccordionIcon"
                                 class="w-3.5 h-3.5 ml-1 transition-transform duration-300 transform opacity-50"
                                 style="transform: rotate(0deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3659,52 +3659,52 @@
 
             <div id="mainInstallmentContent" style="display: none; margin-top: 1rem;">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <!-- 전체 결제 원금 -->
+                    <!-- ?�체 결제 ?�금 -->
                     <div
                         class="bg-gray-50 dark:bg-white/5 py-4 px-5 rounded-2xl border border-glass-border flex flex-col justify-center shadow-sm transition-all hover:shadow-md">
                         <p
                             class="text-[10px] font-bold uppercase tracking-widest text-dyo-dark/50 dark:text-white/50 mb-1.5">
-                            전체 결제 원금</p>
+                            ?�체 결제 ?�금</p>
                         <div class="flex items-baseline gap-1">
                             <span id="installment-total-amount"
                                 class="text-2xl font-black text-dyo-dark dark:text-white tracking-tighter">0</span>
-                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">??/span>
                         </div>
                     </div>
-                    <!-- 이번 달 납부 -->
+                    <!-- ?�번 ???��? -->
                     <div
                         class="bg-blue-50/50 dark:bg-blue-500/10 py-4 px-5 rounded-2xl border border-blue-100 dark:border-blue-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/40">
                         <p
                             class="text-[10px] font-bold uppercase tracking-widest text-blue-600/70 dark:text-blue-400/70 mb-1.5">
-                            이번 달 납부 (원금+수수료)</p>
+                            ?�번 ???��? (?�금+?�수�?</p>
                         <div class="flex items-baseline gap-1">
                             <span id="installment-total-principal"
                                 class="text-2xl font-black text-blue-600 dark:text-blue-400 tracking-tighter">0</span>
-                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">??/span>
                         </div>
                     </div>
-                    <!-- 다음 달 납부 예정 -->
+                    <!-- ?�음 ???��? ?�정 -->
                     <div
                         class="bg-purple-50/50 dark:bg-purple-500/10 py-4 px-5 rounded-2xl border border-purple-100 dark:border-purple-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-purple-200 dark:hover:border-purple-500/40">
                         <p
                             class="text-[10px] font-bold uppercase tracking-widest text-purple-600/70 dark:text-purple-400/70 mb-1.5">
-                            다음 달 납부 예정</p>
+                            ?�음 ???��? ?�정</p>
                         <div class="flex items-baseline gap-1">
                             <span id="installment-next-month-total"
                                 class="text-2xl font-black text-purple-600 dark:text-purple-400 tracking-tighter">0</span>
-                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">??/span>
                         </div>
                     </div>
-                    <!-- 남은 할부 총 잔액 -->
+                    <!-- ?��? ?��? �??�액 -->
                     <div
                         class="bg-emerald-50/50 dark:bg-emerald-500/10 py-4 px-5 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-center shadow-sm transition-all hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-500/40">
                         <p
                             class="text-[10px] font-bold uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70 mb-1.5">
-                            남은 할부 총 잔액</p>
+                            ?��? ?��? �??�액</p>
                         <div class="flex items-baseline gap-1">
                             <span id="total-installment"
                                 class="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter">0</span>
-                            <span class="text-[11px] font-bold opacity-30 tracking-tight">원</span>
+                            <span class="text-[11px] font-bold opacity-30 tracking-tight">??/span>
                         </div>
                     </div>
                 </div>
@@ -3720,57 +3720,57 @@
                 <div class="card-content-scrollable">
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">현금성 자산</h2><button class="btn-hans btn-hans-secondary"
-                                onclick="addRow('cash')">추가</button>
+                            <h2 class="section-title">?�금???�산</h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('cash')">추�?</button>
                         </div>
                         <table>
                             <thead>
                                 <tr>
                                     <th style="width: 80px;">분류</th>
-                                    <th style="width: 200px;">내용</th>
+                                    <th style="width: 200px;">?�용</th>
                                     <th style="width: 150px;">금액</th>
                                     <th style="width: 200px;">비고</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-cash"></tbody>
                         </table>
-                        <div class="section-footer">소계: <span id="total-cash">0</span></div>
+                        <div class="section-footer">?�계: <span id="total-cash">0</span></div>
                     </div>
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">비현금성 자산</h2><button class="btn-hans btn-hans-secondary"
-                                onclick="addRow('non-cash')">추가</button>
+                            <h2 class="section-title">비현금성 ?�산</h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('non-cash')">추�?</button>
                         </div>
                         <table>
                             <thead>
                                 <tr>
                                     <th style="width: 120px;">분류</th>
-                                    <th style="width: 200px;">내용</th>
+                                    <th style="width: 200px;">?�용</th>
                                     <th style="width: 110px;">금액</th>
                                     <th style="width: 200px;">비고</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-non-cash"></tbody>
                         </table>
-                        <div class="section-footer">소계: <span id="total-non-cash">0</span></div>
+                        <div class="section-footer">?�계: <span id="total-non-cash">0</span></div>
                     </div>
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">수입 내역</h2><button class="btn-hans btn-hans-secondary"
-                                onclick="addRow('income')">추가</button>
+                            <h2 class="section-title">?�입 ?�역</h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('income')">추�?</button>
                         </div>
                         <table>
                             <thead>
                                 <tr>
                                     <th style="width: 120px;">분류</th>
-                                    <th style="width: 200px;">내용</th>
+                                    <th style="width: 200px;">?�용</th>
                                     <th style="width: 110px;">금액</th>
                                     <th style="width: 200px;">비고</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-income"></tbody>
                         </table>
-                        <div class="section-footer">소계: <span id="total-income">0</span></div>
+                        <div class="section-footer">?�계: <span id="total-income">0</span></div>
                     </div>
 
                 </div>
@@ -3784,29 +3784,29 @@
                 <div class="card-content-scrollable">
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">부채</h2><button class="btn-hans btn-hans-secondary"
-                                onclick="addRow('debt')">추가</button>
+                            <h2 class="section-title">부�?/h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('debt')">추�?</button>
                         </div>
                         <table>
                             <thead>
                                 <tr>
                                     <th style="width: 100px;">분류</th>
-                                    <th style="width: 160px;">내용</th>
-                                    <th style="width: 160px;">원금</th>
-                                    <th style="width: 100px;">이율(%)</th>
-                                    <th style="width: 180px;">잔여금</th>
+                                    <th style="width: 160px;">?�용</th>
+                                    <th style="width: 160px;">?�금</th>
+                                    <th style="width: 100px;">?�율(%)</th>
+                                    <th style="width: 180px;">?�여�?/th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-debt"></tbody>
                         </table>
-                        <div class="section-footer">총 부채: <span id="total-debt">0</span></div>
+                        <div class="section-footer">�?부�? <span id="total-debt">0</span></div>
                     </div>
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">변동 지출</h2>
+                            <h2 class="section-title">변??지�?/h2>
                             <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn btn-tool" onclick="openExpenseChart('v-expense')">📊 그래프</button>
-                                <button class="btn btn-add" onclick="addRow('v-expense')">+ 추가</button>
+                                <button class="btn btn-tool" onclick="openExpenseChart('v-expense')">?�� 그래??/button>
+                                <button class="btn btn-add" onclick="addRow('v-expense')">+ 추�?</button>
                             </div>
                         </div>
                         <table>
@@ -3819,12 +3819,12 @@
                             </thead>
                             <tbody id="tbody-v-expense"></tbody>
                         </table>
-                        <div class="section-footer">소계: <span id="total-v-expense">0</span></div>
+                        <div class="section-footer">?�계: <span id="total-v-expense">0</span></div>
                     </div>
                     <div class="section-box">
                         <div class="section-header">
-                            <h2 class="section-title">고정 지출</h2><button class="btn-hans btn-hans-secondary"
-                                onclick="addRow('f-expense')">추가</button>
+                            <h2 class="section-title">고정 지�?/h2><button class="btn-hans btn-hans-secondary"
+                                onclick="addRow('f-expense')">추�?</button>
                         </div>
                         <table>
                             <thead>
@@ -3836,7 +3836,7 @@
                             </thead>
                             <tbody id="tbody-f-expense"></tbody>
                         </table>
-                        <div class="section-footer">소계: <span id="total-f-expense">0</span></div>
+                        <div class="section-footer">?�계: <span id="total-f-expense">0</span></div>
                     </div>
                 </div>
             </div>
@@ -3847,24 +3847,24 @@
     <div class="modal-overlay" id="expenseDetailModal">
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
-                <span class="modal-title" id="expenseDetailTitle">상세 지출 내역</span>
+                <span class="modal-title" id="expenseDetailTitle">?�세 지�??�역</span>
                 <button class="btn-close" onclick="closeExpenseDetailModal()">&times;</button>
             </div>
             <table style="font-size: 0.9rem;">
                 <thead>
                     <tr>
-                        <th style="width: 200px;">내용</th>
+                        <th style="width: 200px;">?�용</th>
                         <th style="width: 150px;">금액</th>
                         <th style="width: 350px;">비고</th>
                     </tr>
                 </thead>
                 <tbody id="tbody-expense-details"></tbody>
             </table>
-            <button class="btn-hans btn-hans-secondary" style="margin-top: 1rem;" onclick="addExpenseDetailRow()">상세
-                추가</button>
+            <button class="btn-hans btn-hans-secondary" style="margin-top: 1rem;" onclick="addExpenseDetailRow()">?�세
+                추�?</button>
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
                 <button class="btn-hans btn-hans-primary px-10" onclick="closeExpenseDetailModal()">취소</button>
-                <button class="btn-hans btn-hans-primary px-10" onclick="saveExpenseDetailModal()">저장</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="saveExpenseDetailModal()">?�??/button>
             </div>
         </div>
     </div>
@@ -3875,7 +3875,7 @@
     <div class="modal-overlay" id="accountModal">
         <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
-                <span class="modal-title">계정 등록 및 관리 (관리자 전용)</span>
+                <span class="modal-title">계정 ?�록 �?관�?(관리자 ?�용)</span>
                 <div style="display: flex; gap: 0.75rem; align-items: center;">
                     <button class="btn-close" onclick="closeAccountModal()">&times;</button>
                 </div>
@@ -3884,19 +3884,19 @@
                 <table style="font-size: 0.9rem;">
                     <thead>
                         <tr>
-                            <th style="width: 150px;">이름</th>
-                            <th style="width: 150px;">아이디 (ID)</th>
+                            <th style="width: 150px;">?�름</th>
+                            <th style="width: 150px;">?�이??(ID)</th>
                             <th style="width: 120px;">권한</th>
-                            <th style="width: 150px;">가입일시</th>
-                            <th style="width: 150px;">상태</th>
-                            <th style="width: 180px;">관리</th>
+                            <th style="width: 150px;">가?�일??/th>
+                            <th style="width: 150px;">?�태</th>
+                            <th style="width: 180px;">관�?/th>
                         </tr>
                     </thead>
                     <tbody id="tbody-accounts"></tbody>
                 </table>
             </div>
             <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.85rem; color: var(--text-secondary);">계정 정보는 GitHub 저장소에 암호화되어 백업됩니다.</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">계정 ?�보??GitHub ?�?�소???�호?�되??백업?�니??</span>
             </div>
         </div>
     </div>
@@ -3907,7 +3907,7 @@
     <div class="modal-overlay" id="expenseChartModal">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
-                <span class="modal-title" id="chartModalTitle">지출 분석 그래프</span>
+                <span class="modal-title" id="chartModalTitle">지�?분석 그래??/span>
                 <button class="btn-close" onclick="closeExpenseChart()">&times;</button>
             </div>
             <div id="chartContainer" style="display: flex; flex-direction: column; align-items: center; gap: 2rem;">
@@ -3917,7 +3917,7 @@
                 </div>
             </div>
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
-                <button class="btn-hans btn-hans-primary px-10" onclick="closeExpenseChart()">닫기</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="closeExpenseChart()">?�기</button>
             </div>
         </div>
     </div>
@@ -3926,14 +3926,14 @@
     <div class="modal-overlay" id="summaryModal">
         <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
-                <span class="modal-title" id="summaryModalTitle">요약 정보</span>
+                <span class="modal-title" id="summaryModalTitle">?�약 ?�보</span>
                 <button class="btn-close" onclick="closeSummaryModal()">&times;</button>
             </div>
             <div id="summaryModalContent">
                 <!-- Content will be injected by JavaScript -->
             </div>
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
-                <button class="btn-hans btn-hans-primary px-10" onclick="closeSummaryModal()">닫기</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="closeSummaryModal()">?�기</button>
             </div>
         </div>
     </div>
@@ -3943,75 +3943,75 @@
     <div class="modal-overlay" id="manualModal">
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
-                <span class="modal-title">📖 자산 관리 앱 사용 매뉴얼</span>
+                <span class="modal-title">?�� ?�산 관�????�용 매뉴??/span>
                 <button class="btn-close" onclick="closeManualModal()">&times;</button>
             </div>
 
             <!-- Tab Navigation -->
             <div class="manual-tabs flex gap-2 mb-6">
                 <button class="btn-hans btn-hans-secondary active" onclick="switchManualTab('usage', this)">기본
-                    사용법</button>
+                    ?�용�?/button>
                 <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('calc', this)">계산 로직</button>
-                <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('installment', this)">할부
-                    관리</button>
-                <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('github', this)">GitHub 연동</button>
+                <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('installment', this)">?��?
+                    관�?/button>
+                <button class="btn-hans btn-hans-secondary" onclick="switchManualTab('github', this)">GitHub ?�동</button>
             </div>
 
-            <!-- 탭 1: 기본 사용법 -->
+            <!-- ??1: 기본 ?�용�?-->
             <div id="manual-usage" class="manual-tab-content" style="line-height: 1.8; color: var(--text-primary);">
-                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. 화면 구성</h3>
-                <p>앱은 크게 <strong>상단 헤더</strong>와 <strong>자산/수입/지출 영역</strong>으로 구성됩니다.</p>
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. ?�면 구성</h3>
+                <p>?��? ?�게 <strong>?�단 ?�더</strong>?� <strong>?�산/?�입/지�??�역</strong>?�로 구성?�니??</p>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>연도 / 월 선택:</strong> 상단에서 조회할 연도와 월을 선택합니다. 월을 변경하면 해당 월의 데이터가 자동으로 불러와집니다.</li>
-                    <li><strong>요약 카드:</strong> 총 수입 · 총 지출 · 가용 잔액 · 순자산이 한눈에 표시됩니다. 카드 위에 마우스를 올리면 계산 기준 툴팁이 표시됩니다.
+                    <li><strong>?�도 / ???�택:</strong> ?�단?�서 조회???�도?� ?�을 ?�택?�니?? ?�을 변경하�??�당 ?�의 ?�이?��? ?�동?�로 불러?�집니??</li>
+                    <li><strong>?�약 카드:</strong> �??�입 · �?지�?· 가???�액 · ?�자?�이 ?�눈???�시?�니?? 카드 ?�에 마우?��? ?�리�?계산 기�? ?�팁???�시?�니??
                     </li>
-                    <li><strong>요약 보기 버튼:</strong> 각 섹션 상단의 요약 버튼을 누르면 해당 항목의 상세 요약 레이어가 팝업으로 표시됩니다.</li>
+                    <li><strong>?�약 보기 버튼:</strong> �??�션 ?�단???�약 버튼???�르�??�당 ??��???�세 ?�약 ?�이?��? ?�업?�로 ?�시?�니??</li>
                 </ul>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">2. 상단 헤더 버튼 안내</h3>
-                <p>상단 오른쪽에는 다음 텍스트 메뉴들이 있으며, 마우스를 올리면 한글 툴팁이 나타납니다.</p>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">2. ?�단 ?�더 버튼 ?�내</h3>
+                <p>?�단 ?�른쪽에???�음 ?�스??메뉴?�이 ?�으�? 마우?��? ?�리�??��? ?�팁???��??�니??</p>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>Card (카드할부):</strong> 카드 할부 관리 창을 엽니다. 이번 달 지출할 원금 및 수수료 합계가 총 지출에 반영됩니다.</li>
-                    <li><strong>Copy (데이터 복사):</strong> 가장 최근 월의 항목들을 현재 월로 이월합니다. 반복 지출 항목을 매달 새로 입력할 필요가 없습니다.</li>
-                    <li><strong>Cloud (클라우드 동기화):</strong> GitHub 연동 설정 창을 엽니다.</li>
-                    <li><strong>Data (데이터 관리):</strong> 데이터 백업(JSON 다운로드), 복원(JSON 붙여넣기), 월 데이터 삭제 기능을 제공합니다.</li>
-                    <li><strong>Manual (매뉴얼):</strong> 현재 보고 계신 이 화면입니다.</li>
-                    <li><strong>User (사용자 정보):</strong> 계정 정보를 확인하거나 수정합니다.</li>
-                    <li><strong>Logout (로그아웃):</strong> 현재 로그인된 상태를 해제합니다.</li>
+                    <li><strong>Card (카드?��?):</strong> 카드 ?��? 관�?창을 ?�니?? ?�번 ??지출할 ?�금 �??�수�??�계가 �?지출에 반영?�니??</li>
+                    <li><strong>Copy (?�이??복사):</strong> 가??최근 ?�의 ??��?�을 ?�재 ?�로 ?�월?�니?? 반복 지�???��??매달 ?�로 ?�력???�요가 ?�습?�다.</li>
+                    <li><strong>Cloud (?�라?�드 ?�기??:</strong> GitHub ?�동 ?�정 창을 ?�니??</li>
+                    <li><strong>Data (?�이??관�?:</strong> ?�이??백업(JSON ?�운로드), 복원(JSON 붙여?�기), ???�이????�� 기능???�공?�니??</li>
+                    <li><strong>Manual (매뉴??:</strong> ?�재 보고 계신 ???�면?�니??</li>
+                    <li><strong>User (?�용???�보):</strong> 계정 ?�보�??�인?�거???�정?�니??</li>
+                    <li><strong>Logout (로그?�웃):</strong> ?�재 로그?�된 ?�태�??�제?�니??</li>
                 </ul>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">3. 자산·수입·지출 항목 입력</h3>
-                <p>각 섹션에서 <strong>[+ 추가]</strong> 버튼을 누르면 새 행이 추가됩니다. 항목 입력 후 <strong>[저장]</strong>을 클릭하거나, 상단 Pension &
-                    Sync 바의 <strong>[💾 저장 & 동기화]</strong>로 데이터를 보존합니다.</p>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">3. ?�산·?�입·지�???�� ?�력</h3>
+                <p>�??�션?�서 <strong>[+ 추�?]</strong> 버튼???�르�????�이 추�??�니?? ??�� ?�력 ??<strong>[?�??</strong>???�릭?�거?? ?�단 Pension &
+                    Sync 바의 <strong>[?�� ?�??& ?�기??</strong>�??�이?��? 보존?�니??</p>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li>금액 칸에는 숫자만 입력하면 자동으로 콤마(,) 형식으로 변환됩니다.</li>
-                    <li>내용이 긴 항목은 툴팁으로 표시될 수 있습니다.</li>
-                    <li><strong>변동/고정지출</strong>의 <strong>[상세]</strong> 버튼을 누르면 세부 항목을 분리하여 입력할 수 있습니다. (예: 식비 = 마트 + 배달
-                        + 외식)</li>
-                    <li>모바일에서도 [상세] 버튼을 탭(터치)하면 세부 입력 창이 열립니다.</li>
+                    <li>금액 칸에???�자�??�력?�면 ?�동?�로 콤마(,) ?�식?�로 변?�됩?�다.</li>
+                    <li>?�용??�???��?� ?�팁?�로 ?�시?????�습?�다.</li>
+                    <li><strong>변??고정지�?/strong>??<strong>[?�세]</strong> 버튼???�르�??��? ??��??분리?�여 ?�력?????�습?�다. (?? ?�비 = 마트 + 배달
+                        + ?�식)</li>
+                    <li>모바?�에?�도 [?�세] 버튼?????�치)?�면 ?��? ?�력 창이 ?�립?�다.</li>
                 </ul>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. 연금 정보 및 저장 바</h3>
-                <p>화면 상단의 흰색 막대(Pension & Sync Bar)에서 연금 및 저장 관련 기능을 수행합니다.</p>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. ?�금 ?�보 �??�??�?/h3>
+                <p>?�면 ?�단???�색 막�?(Pension & Sync Bar)?�서 ?�금 �??�??관??기능???�행?�니??</p>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>📊 Pension Info:</strong> 예상 국민연금 정보를 입력할 수 있습니다. (세전/세후 예상 수령액, 수령 시기, 가입 기간 등 입력 시 자동
+                    <li><strong>?�� Pension Info:</strong> ?�상 �???�금 ?�보�??�력?????�습?�다. (?�전/?�후 ?�상 ?�령?? ?�령 ?�기, 가??기간 ???�력 ???�동
                         계산)</li>
-                    <li><strong>💾 저장 & 동기화:</strong> 현재 화면의 데이터를 로컬 스토리지와 GitHub(연동 시)에 즉시 저장하고 동기화합니다.</li>
+                    <li><strong>?�� ?�??& ?�기??</strong> ?�재 ?�면???�이?��? 로컬 ?�토리�??� GitHub(?�동 ????즉시 ?�?�하�??�기?�합?�다.</li>
                 </ul>
             </div>
 
-            <!-- 탭 2: 계산 로직 -->
+            <!-- ??2: 계산 로직 -->
             <div id="manual-calc" class="manual-tab-content"
                 style="line-height: 1.8; color: var(--text-primary); display: none;">
-                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">이 앱의 핵심 목적</h3>
-                <p>매달 <strong>수입을 기준으로 지출 금액을 빼면 얼마가 남는지(또는 부족한지)</strong>를 한눈에 파악하는 것입니다.<br>
-                    현금성 자산이나 부채는 현재 보유 현황만 볼 뿐, 월별 잔액 계산에는 포함되지 않습니다.</p>
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">???�의 ?�심 목적</h3>
+                <p>매달 <strong>?�입??기�??�로 지�?금액??빼면 ?�마가 ?�는지(?�는 부족한지)</strong>�??�눈???�악?�는 것입?�다.<br>
+                    ?�금???�산?�나 부채는 ?�재 보유 ?�황�?�?�? ?�별 ?�액 계산?�는 ?�함?��? ?�습?�다.</p>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">요약 카드 계산 공식</h3>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">?�약 카드 계산 공식</h3>
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 0.5rem;">
                     <thead>
                         <tr style="background: #f1f5f9;">
-                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">항목</th>
+                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">??��</th>
                             <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">계산 공식
                             </th>
                         </tr>
@@ -4020,161 +4020,161 @@
                         <tr>
                             <td
                                 style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-green);">
-                                총 수입</td>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">수입 내역 금액 합계</td>
+                                �??�입</td>
+                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">?�입 ?�역 금액 ?�계</td>
                         </tr>
                         <tr>
                             <td
                                 style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-red);">
-                                총 지출</td>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">변동 지출 합계 + 고정 지출 합계 + 이번달
-                                진행 중인 할부 월 원금 합계</td>
+                                �?지�?/td>
+                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">변??지�??�계 + 고정 지�??�계 + ?�번??
+                                진행 중인 ?��? ???�금 ?�계</td>
                         </tr>
                         <tr>
                             <td
                                 style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: var(--accent-blue);">
-                                가용 잔액</td>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">총 수입 - 총 지출 (플러스: 잉여 /
-                                마이너스: 적자)</td>
+                                가???�액</td>
+                            <td style="padding: 8px 12px; border-bottom: 1px solid #f1f5f9;">�??�입 - �?지�?(?�러?? ?�여 /
+                                마이?�스: ?�자)</td>
                         </tr>
                         <tr>
-                            <td style="padding: 8px 12px; font-weight: 700; color: var(--accent-purple);">순자산</td>
-                            <td style="padding: 8px 12px;">(현금 + 비현금 + 퇴직금) - (부채 잔액 + 할부 잔액 합계)</td>
+                            <td style="padding: 8px 12px; font-weight: 700; color: var(--accent-purple);">?�자??/td>
+                            <td style="padding: 8px 12px;">(?�금 + 비현�?+ ?�직�? - (부�??�액 + ?��? ?�액 ?�계)</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div
                     style="margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(239,68,68,0.06); border-left: 3px solid var(--accent-red); border-radius: 4px; font-size: 0.88rem;">
-                    ⚠️ <strong>할부 계산 주의:</strong> 종료일(endDate)이 현재 조회 월보다 이전인 만료된 할부는 총 지출 계산에서 자동으로 제외됩니다.
+                    ?�️ <strong>?��? 계산 주의:</strong> 종료??endDate)???�재 조회 ?�보???�전??만료???��???�?지�?계산?�서 ?�동?�로 ?�외?�니??
                 </div>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">섹션별 금액 반영 범위</h3>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">?�션�?금액 반영 범위</h3>
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                     <thead>
                         <tr style="background: #f1f5f9;">
-                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">섹션</th>
-                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">총 수입</th>
-                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">총 지출</th>
-                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">순자산</th>
+                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">?�션</th>
+                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">�??�입</th>
+                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">�?지�?/th>
+                            <th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">?�자??/th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">현금성 자산</td>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">?�금???�산</td>
                             <td>-</td>
                             <td>-</td>
-                            <td style="color:var(--accent-green)">+자산</td>
+                            <td style="color:var(--accent-green)">+?�산</td>
                         </tr>
                         <tr>
-                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">비현금성 자산</td>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">비현금성 ?�산</td>
                             <td>-</td>
                             <td>-</td>
-                            <td style="color:var(--accent-green)">+자산</td>
+                            <td style="color:var(--accent-green)">+?�산</td>
                         </tr>
                         <tr>
-                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">수입 내역</td>
-                            <td style="color:var(--accent-green)">포함</td>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">?�입 ?�역</td>
+                            <td style="color:var(--accent-green)">?�함</td>
                             <td>-</td>
                             <td>-</td>
                         </tr>
 
                         <tr>
-                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부채</td>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">부�?/td>
                             <td>-</td>
                             <td>-</td>
-                            <td style="color:var(--accent-red)">-부채(잔액)</td>
+                            <td style="color:var(--accent-red)">-부�??�액)</td>
                         </tr>
                         <tr>
-                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">변동 지출</td>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">변??지�?/td>
                             <td>-</td>
-                            <td style="color:var(--accent-red)">포함</td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">고정 지출</td>
-                            <td>-</td>
-                            <td style="color:var(--accent-red)">포함</td>
+                            <td style="color:var(--accent-red)">?�함</td>
                             <td>-</td>
                         </tr>
                         <tr>
-                            <td style="padding:6px 12px;">카드 할부</td>
+                            <td style="padding:6px 12px; border-bottom:1px solid #f1f5f9;">고정 지�?/td>
                             <td>-</td>
-                            <td style="color:var(--accent-red)">월 원금 포함(진행 중만)</td>
-                            <td style="color:var(--accent-red)">-부채(잔액)</td>
+                            <td style="color:var(--accent-red)">?�함</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 12px;">카드 ?��?</td>
+                            <td>-</td>
+                            <td style="color:var(--accent-red)">???�금 ?�함(진행 중만)</td>
+                            <td style="color:var(--accent-red)">-부�??�액)</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- 탭 3: 할부 관리 -->
+            <!-- ??3: ?��? 관�?-->
             <div id="manual-installment" class="manual-tab-content"
                 style="line-height: 1.8; color: var(--text-primary); display: none;">
-                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. 할부 관리 열기</h3>
-                <p>상단 헤더의 <strong>[💳 Card / 할부 관리]</strong> 버튼을 클릭하여 카드 할부 관리 창을 엽니다.</p>
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. ?��? 관�??�기</h3>
+                <p>?�단 ?�더??<strong>[?�� Card / ?��? 관�?</strong> 버튼???�릭?�여 카드 ?��? 관�?창을 ?�니??</p>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">2. 할부 항목 입력</h3>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">2. ?��? ??�� ?�력</h3>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>사용일:</strong> 카드 사용 날짜를 선택합니다.</li>
-                    <li><strong>카드사:</strong> 국민 / 신한 / 롯데 중 선택하거나 직접 입력합니다.</li>
-                    <li><strong>내용:</strong> 할부 항목명 (예: 노트북, 냉장고 등)</li>
-                    <li><strong>금액:</strong> 총 할부 금액을 입력합니다.</li>
-                    <li><strong>회차:</strong> 현재 납부 회차 / 전체 회차 (예: 3 / 12 → 12개월 중 3회 납부 완료)</li>
-                    <li><strong>월 원금:</strong> 총 금액 ÷ 전체 회차로 계산된 값이 자동으로 표시됩니다.</li>
-                    <li><strong>잔액:</strong> (전체회차 - 현재회차) × 월 원금으로 자동 계산됩니다.</li>
-                    <li><strong>종료일:</strong> 사용일 기준 전체 회차 후의 날짜가 자동으로 계산됩니다. (YY.MM 형식)</li>
+                    <li><strong>?�용??</strong> 카드 ?�용 ?�짜�??�택?�니??</li>
+                    <li><strong>카드??</strong> �?? / ?�한 / �?�� �??�택?�거??직접 ?�력?�니??</li>
+                    <li><strong>?�용:</strong> ?��? ??���?(?? ?�트�? ?�장�???</li>
+                    <li><strong>금액:</strong> �??��? 금액???�력?�니??</li>
+                    <li><strong>?�차:</strong> ?�재 ?��? ?�차 / ?�체 ?�차 (?? 3 / 12 ??12개월 �?3???��? ?�료)</li>
+                    <li><strong>???�금:</strong> �?금액 ÷ ?�체 ?�차�?계산??값이 ?�동?�로 ?�시?�니??</li>
+                    <li><strong>?�액:</strong> (?�체?�차 - ?�재?�차) × ???�금?�로 ?�동 계산?�니??</li>
+                    <li><strong>종료??</strong> ?�용??기�? ?�체 ?�차 ?�의 ?�짜가 ?�동?�로 계산?�니?? (YY.MM ?�식)</li>
                 </ul>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">3. 행 색상 의미</h3>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">3. ???�상 ?��?</h3>
                 <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li>🟡 <strong>노란색 배경:</strong> 다음 달에 종료되는 할부 항목 (곧 완납 예정)</li>
-                    <li>🩶 <strong>회색 배경 + 흐릿하게:</strong> 종료일이 현재 조회 월보다 이전인 만료 완납된 할부</li>
-                    <li>⬜ <strong>기본 흰색:</strong> 정상 진행 중인 할부</li>
+                    <li>?�� <strong>?��???배경:</strong> ?�음 ?�에 종료?�는 ?��? ??�� (�??�납 ?�정)</li>
+                    <li>?�� <strong>?�색 배경 + ?�릿?�게:</strong> 종료?�이 ?�재 조회 ?�보???�전??만료 ?�납???��?</li>
+                    <li>�?<strong>기본 ?�색:</strong> ?�상 진행 중인 ?��?</li>
                 </ul>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. 정렬 및 합계</h3>
-                <p>상단 정렬 드롭다운으로 사용일/금액/종료일 기준 오름/내림차순 정렬을 할 수 있습니다.<br>
-                    하단에는 <strong>전체 금액 합계 / 이번달 원금 합계(진행 중) / 할부 총 잔액</strong>이 자동으로 계산됩니다.</p>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. ?�렬 �??�계</h3>
+                <p>?�단 ?�렬 ?�롭?�운?�로 ?�용??금액/종료??기�? ?�름/?�림차순 ?�렬???????�습?�다.<br>
+                    ?�단?�는 <strong>?�체 금액 ?�계 / ?�번???�금 ?�계(진행 �? / ?��? �??�액</strong>???�동?�로 계산?�니??</p>
 
                 <div
                     style="margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(59,130,246,0.06); border-left: 3px solid var(--accent-blue); border-radius: 4px; font-size: 0.88rem;">
-                    💡 이번달 원금 합계는 <strong>진행 중인 할부만</strong> 계산하며, 이 금액이 메인 화면 <strong>총 지출</strong>에 반영됩니다.
+                    ?�� ?�번???�금 ?�계??<strong>진행 중인 ?��?�?/strong> 계산?�며, ??금액??메인 ?�면 <strong>�?지�?/strong>??반영?�니??
                 </div>
             </div>
 
-            <!-- 탭 4: GitHub 연동 -->
+            <!-- ??4: GitHub ?�동 -->
             <div id="manual-github" class="manual-tab-content"
                 style="line-height: 1.8; color: var(--text-primary); display: none;">
-                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. GitHub 연동의 장점</h3>
-                <p>GitHub 연동을 통해 데이터를 클라우드에 안전하게 보관하고, 여러 기기(PC, 모바일 등)에서 동일한 데이터를 동기화하여 사용할 수 있습니다. 브라우저의 로컬 스토리지가
-                    삭제되어도 데이터가 안전하게 유지됩니다.</p>
+                <h3 style="margin: 1rem 0 0.5rem; color: var(--accent-blue);">1. GitHub ?�동???�점</h3>
+                <p>GitHub ?�동???�해 ?�이?��? ?�라?�드???�전?�게 보�??�고, ?�러 기기(PC, 모바?????�서 ?�일???�이?��? ?�기?�하???�용?????�습?�다. 브라?��???로컬 ?�토리�?가
+                    ??��?�어???�이?��? ?�전?�게 ?��??�니??</p>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">2. 연동 설정 방법</h3>
-                <p>오른쪽 상단의 <strong>[☁️ / GitHub]</strong> 버튼을 클릭하여 설정을 시작합니다.</p>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">2. ?�동 ?�정 방법</h3>
+                <p>?�른�??�단??<strong>[?�️ / GitHub]</strong> 버튼???�릭?�여 ?�정???�작?�니??</p>
                 <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><strong>Personal Access Token (PAT):</strong> GitHub → Settings → Developer settings → Personal
-                        access tokens 에서 발급합니다. (최소 <code>repo</code> 권한 필요)</li>
-                    <li><strong>저장소 (Repository):</strong> 데이터를 저장할 저장소 이름 (예: <code>username/repo-name</code>)</li>
-                    <li><strong>브랜치:</strong> 기본값은 <code>main</code>. 저장소 기본 브랜치에 맞게 수정합니다.</li>
-                    <li><strong>[💾 설정 저장]</strong> 버튼을 누르면 즉시 GitHub에서 기존 데이터를 가져오려고 시도합니다.</li>
+                    <li><strong>Personal Access Token (PAT):</strong> GitHub ??Settings ??Developer settings ??Personal
+                        access tokens ?�서 발급?�니?? (최소 <code>repo</code> 권한 ?�요)</li>
+                    <li><strong>?�?�소 (Repository):</strong> ?�이?��? ?�?�할 ?�?�소 ?�름 (?? <code>username/repo-name</code>)</li>
+                    <li><strong>브랜�?</strong> 기본값�? <code>main</code>. ?�?�소 기본 브랜치에 맞게 ?�정?�니??</li>
+                    <li><strong>[?�� ?�정 ?�??</strong> 버튼???�르�?즉시 GitHub?�서 기존 ?�이?��? 가?�오?�고 ?�도?�니??</li>
                 </ol>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">3. 자동 저장</h3>
-                <p><strong>[데이터 변경 시 자동 업로드]</strong> 옵션을 활성화하면 데이터를 저장할 때마다 자동으로 GitHub에 업로드(Push)됩니다.</p>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">3. ?�동 ?�??/h3>
+                <p><strong>[?�이??변�????�동 ?�로??</strong> ?�션???�성?�하�??�이?��? ?�?�할 ?�마???�동?�로 GitHub???�로??Push)?�니??</p>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. 실시간 수동 저장</h3>
-                <p>하단 연금 바의 <strong>[💾 실시간 저장]</strong> 버튼을 누르면 현재 데이터를 로컬 스토리지와 GitHub에 즉시 저장합니다.<br>
-                    저장 중에는 버튼이 ⏳로 바뀌고, 완료되면 ✅ 저장 완료로 잠시 표시됩니다.</p>
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">4. ?�시�??�동 ?�??/h3>
+                <p>?�단 ?�금 바의 <strong>[?�� ?�시�??�??</strong> 버튼???�르�??�재 ?�이?��? 로컬 ?�토리�??� GitHub??즉시 ?�?�합?�다.<br>
+                    ?�??중에??버튼???�로 바뀌고, ?�료?�면 ???�???�료�??�시 ?�시?�니??</p>
 
-                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">5. 데이터 조회 및 복원</h3>
-                <p>GitHub 연동 모달 내 <strong>📂 GitHub 데이터 관리</strong> 섹션에서 저장된 JSON 파일 목록을 불러오고, 선택한 파일의 내용을 미리 볼 수 있습니다.
+                <h3 style="margin: 1.2rem 0 0.5rem; color: var(--accent-blue);">5. ?�이??조회 �?복원</h3>
+                <p>GitHub ?�동 모달 ??<strong>?�� GitHub ?�이??관�?/strong> ?�션?�서 ?�?�된 JSON ?�일 목록??불러?�고, ?�택???�일???�용??미리 �????�습?�다.
                 </p>
-                <p>새 기기에서 시작하려면 로그인 화면의 <strong>[☁️ GitHub에서 가져오기]</strong>를 이용하거나, JSON 파일을 화면에 드래그 앤 드롭하여 복원할 수 있습니다.
+                <p>??기기?�서 ?�작?�려�?로그???�면??<strong>[?�️ GitHub?�서 가?�오�?</strong>�??�용?�거?? JSON ?�일???�면???�래�????�롭?�여 복원?????�습?�다.
                 </p>
             </div>
 
             <button class="btn btn-add" style="margin-top: 2rem; width: 100%; justify-content: center;"
-                onclick="closeManualModal()">닫기</button>
+                onclick="closeManualModal()">?�기</button>
         </div>
     </div>
 
@@ -4201,7 +4201,7 @@
                 document.getElementById('adminFieldsSection').style.display = 'block';
                 document.getElementById('adminName').focus();
             } else {
-                alert('잘못된 설치 마스터 키입니다. 관리자에게 문의하세요.');
+                alert('?�못???�치 마스???�입?�다. 관리자?�게 문의?�세??');
             }
         }
 
@@ -4230,7 +4230,7 @@
             combined.set(iv, salt.length);
             combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
 
-            // 호출 스택 크기 초과(Maximum call stack size exceeded) 방지를 위한 안전한 루프 방식의 base64 인코딩
+            // ?�출 ?�택 ?�기 초과(Maximum call stack size exceeded) 방�?�??�한 ?�전??루프 방식??base64 ?�코??
             let binary = '';
             const len = combined.byteLength;
             for (let i = 0; i < len; i++) {
@@ -4265,14 +4265,14 @@
         function openDataManageModal() {
             document.getElementById('dataManageModal').style.display = 'flex';
 
-            // 연/월 선택기 초기화
+            // ?????�택�?초기??
             const yearSelect = document.getElementById('dataModalYearSelect');
             const monthSelect = document.getElementById('dataModalMonthSelect');
             if (yearSelect && monthSelect) {
                 const curY = document.getElementById('yearSelect').value;
                 const curM = document.getElementById('monthSelect').value;
 
-                // 기존 연도 선택기 복사
+                // 기존 ?�도 ?�택�?복사
                 yearSelect.innerHTML = document.getElementById('yearSelect').innerHTML;
                 monthSelect.innerHTML = document.getElementById('monthSelect').innerHTML;
 
@@ -4280,7 +4280,7 @@
                 monthSelect.value = curM;
             }
 
-            // 드래그 앤 드롭 이벤트 초기화 (한 번만 설정)
+            // ?�래�????�롭 ?�벤??초기??(??번만 ?�정)
             const textarea = document.getElementById('importJsonText');
             if (textarea && !textarea.dataset.dropBound) {
                 const modalBody = textarea.closest('.modal-body');
@@ -4299,9 +4299,9 @@
                         const file = files[0];
                         if (file.name.toLowerCase().endsWith('.json')) {
                             const reader = new FileReader();
-                            reader.onload = (ev) => { textarea.value = ev.target.result; alert('JSON 파일의 내용을 읽어왔습니다.'); };
+                            reader.onload = (ev) => { textarea.value = ev.target.result; alert('JSON ?�일???�용???�어?�습?�다.'); };
                             reader.readAsText(file);
-                        } else { alert('JSON 확장자(.json) 파일만 가능합니다.'); }
+                        } else { alert('JSON ?�장??.json) ?�일�?가?�합?�다.'); }
                     }
                 });
                 textarea.dataset.dropBound = "true";
@@ -4317,11 +4317,11 @@
             const yearKey = getYearKey();
             let yearData = localStorage.getItem(yearKey);
 
-            // 현재 메모리상의 데이터 병합
+            // ?�재 메모리상???�이??병합
             yearData = yearData ? JSON.parse(yearData) : { year: document.getElementById('yearSelect').value, months: {} };
             yearData.months[getMonthKey()] = state;
 
-            // 계정 정보 포함
+            // 계정 ?�보 ?�함
             loadAccounts();
             if (accountsData.length > 0) {
                 try {
@@ -4331,37 +4331,37 @@
 
             const dataStr = JSON.stringify(yearData, null, 2);
             navigator.clipboard.writeText(dataStr).then(() => {
-                alert('연도 데이터가 클립보드에 복사되었습니다. (JSON 형식)');
+                alert('?�도 ?�이?��? ?�립보드??복사?�었?�니?? (JSON ?�식)');
             }).catch(err => {
-                alert('복사 실패: ' + err);
+                alert('복사 ?�패: ' + err);
             });
         }
 
         function importDataFromText() {
             const jsonText = document.getElementById('importJsonText').value.trim();
-            if (!jsonText) return alert('가져올 JSON 데이터를 입력해주세요.');
+            if (!jsonText) return alert('가?�올 JSON ?�이?��? ?�력?�주?�요.');
 
-            if (!confirm('현재 연도의 데이터를 덮어쓰고 새로운 데이터를 가져오시겠습니까?\n(기존 데이터는 삭제됩니다.)')) return;
+            if (!confirm('?�재 ?�도???�이?��? ??��?�고 ?�로???�이?��? 가?�오?�겠?�니�?\n(기존 ?�이?�는 ??��?�니??)')) return;
 
             try {
                 const uploaded = JSON.parse(jsonText);
 
-                // 기본 구조 검증
+                // 기본 구조 검�?
                 if (!uploaded.months && !uploaded.sections) {
-                    throw new Error('올바른 데이터 형식이 아닙니다. (months 또는 sections 필드 필요)');
+                    throw new Error('?�바�??�이???�식???�닙?�다. (months ?�는 sections ?�드 ?�요)');
                 }
 
                 document.getElementById('loadingSpinner').style.display = 'flex';
 
-                // 계정 정보 복원
+                // 계정 ?�보 복원
                 if (uploaded._secureAccounts) {
                     try {
                         accountsData = JSON.parse(decodeURIComponent(atob(uploaded._secureAccounts)));
                         saveAccounts();
-                    } catch (e) { console.warn("계정 복원 실패", e); }
+                    } catch (e) { console.warn("계정 복원 ?�패", e); }
                 }
 
-                // 데이터 병합 및 저장
+                // ?�이??병합 �??�??
                 let targetYear = "";
                 let targetMonth = "";
                 let updatedYearData = null;
@@ -4382,7 +4382,7 @@
 
                 localStorage.setItem(`assetData_${targetYear}`, JSON.stringify(updatedYearData));
 
-                // 로그인 세션 강제 활성화 (관리자 데이터 등을 불러왔을 경우 대비)
+                // 로그???�션 강제 ?�성??(관리자 ?�이???�을 불러?�을 경우 ?��?
                 if (!isLoggedIn) {
                     sessionStorage.setItem('assetLoginSession', 'true');
                     setCookie('assetLoginSession', 'true');
@@ -4398,9 +4398,9 @@
                 loadData();
 
                 closeDataManageModal();
-                alert(`${targetYear}년 데이터를 성공적으로 가져왔습니다.`);
+                alert(`${targetYear}???�이?��? ?�공?�으�?가?�왔?�니??`);
             } catch (err) {
-                alert("가져오기 실패: " + err.message);
+                alert("가?�오�??�패: " + err.message);
             } finally {
                 document.getElementById('loadingSpinner').style.display = 'none';
             }
@@ -4432,7 +4432,7 @@
                     }));
                 }
             }
-            // 연금 데이터 병합
+            // ?�금 ?�이??병합
             if (uploaded.pension) {
                 base.pension = { ...base.pension, ...uploaded.pension };
             }
@@ -4454,7 +4454,7 @@
 
             yEl.innerHTML = '';
             const startYear = 2024;
-            // URL 파라미터로 들어온 연도가 현재 계산된 범위보다 크면 그 연도까지 표시
+            // URL ?�라미터�??�어???�도가 ?�재 계산??범위보다 ?�면 �??�도까�? ?�시
             const endYear = Math.max(startYear, now.getFullYear() + 5, currentYear);
 
             for (let i = startYear; i <= endYear; i++) {
@@ -4469,7 +4469,7 @@
                 const monthStr = String(i).padStart(2, '0');
                 const opt = document.createElement('option');
                 opt.value = monthStr;
-                opt.textContent = i + '월';
+                opt.textContent = i + '??;
                 if (monthStr === currentMonth) opt.selected = true;
                 mEl.appendChild(opt);
             }
@@ -4494,7 +4494,7 @@
         }
 
         function getMonthKey() {
-            // value 자체가 "01", "02" 형식이므로 그대로 반환
+            // value ?�체가 "01", "02" ?�식?��?�?그�?�?반환
             return document.getElementById('monthSelect').value;
         }
 
@@ -4522,10 +4522,10 @@
 
             const finalPassword = sessionStorage.getItem('temp_master_pw');
 
-            // 하이브리드 백업: 계정 정보를 데이터 객체에 포함
+            // ?�이브리??백업: 계정 ?�보�??�이??객체???�함
             yearData._backupAccounts = accountsData;
 
-            // 최종 수정 시간 기록 (스마트 동기화)
+            // 최종 ?�정 ?�간 기록 (?�마???�기??
             const updatedAt = Date.now();
             yearData.updatedAt = updatedAt;
 
@@ -4565,7 +4565,7 @@
             }
 
             let migrated = false;
-            // 1월부터 12월까지 기존 키 검사 (예: assetData_2026-03)
+            // 1?��???12?�까지 기존 ??검??(?? assetData_2026-03)
             for (let m = 1; m <= 12; m++) {
                 const monthStr = String(m).padStart(2, '0');
                 if (!yearData.months[monthStr]) {
@@ -4584,7 +4584,7 @@
         }
 
         async function loadData() {
-            console.log("[Load] loadData 시작");
+            console.log("[Load] loadData ?�작");
             migrateOldData();
 
             const yearKey = getYearKey();
@@ -4592,7 +4592,7 @@
 
             const ghDataEnc = await syncWithGitHub('download');
             if (ghDataEnc) {
-                // 로컬 스토리지 데이터의 최종 수정 시간과 비교
+                // 로컬 ?�토리�? ?�이?�의 최종 ?�정 ?�간�?비교
                 const localRaw = localStorage.getItem(yearKey);
                 let shouldOverwrite = true;
 
@@ -4628,15 +4628,15 @@
                         const password = sessionStorage.getItem('temp_master_pw');
                         yearData = await decryptData(yearData, password);
                         if (!yearData) {
-                            alert("데이터 복호화에 실패했습니다. 올바른 비밀번호인지 확인해주세요.");
+                            alert("?�이??복호?�에 ?�패?�습?�다. ?�바�?비�?번호?��? ?�인?�주?�요.");
                             logout();
                             return;
                         }
 
-                        // 하이브리드 백업에서 계정 정보 복원
+                        // ?�이브리??백업?�서 계정 ?�보 복원
                         if (yearData._backupAccounts && yearData._backupAccounts.length > 0) {
                             accountsData = yearData._backupAccounts;
-                            saveAccounts(); // 로컬 기기 동기화
+                            saveAccounts(); // 로컬 기기 ?�기??
                             console.log("[Migration] Remote accounts restored to local device.");
                         }
                     }
@@ -4662,7 +4662,7 @@
             if (s === 'installment') {
                 const now = new Date();
                 item.date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-                item.card = '롯데';
+                item.card = '�?��';
                 item.totalMonths = 1; item.currentMonth = 1; item.monthlyPrincipal = 0; item.monthlyFee = 0; item.endDate = '';
             }
             state.sections[s].push(item);
@@ -4679,7 +4679,7 @@
             const yearDataStr = localStorage.getItem(yearKey);
 
             if (!yearDataStr) {
-                alert('이월할 수 있는 이전 데이터가 없습니다.');
+                alert('?�월?????�는 ?�전 ?�이?��? ?�습?�다.');
                 return;
             }
 
@@ -4688,19 +4688,19 @@
             if (yearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
                 if (!password) {
-                    alert('보안(암호화) 상태이므로 이전 데이터를 읽을 수 없습니다. 다시 로그인 후 시도해주세요.');
+                    alert('보안(?�호?? ?�태?��?�??�전 ?�이?��? ?�을 ???�습?�다. ?�시 로그?????�도?�주?�요.');
                     return;
                 }
                 try {
                     yearData = await decryptData(yearData, password);
                 } catch (err) {
-                    alert('데이터 복호화에 실패하여 이월할 수 없습니다.');
+                    alert('?�이??복호?�에 ?�패?�여 ?�월?????�습?�다.');
                     return;
                 }
             }
 
             if (!yearData || !yearData.months) {
-                alert('이월할 수 있는 이전 데이터 구조가 없거나 손상되었습니다.');
+                alert('?�월?????�는 ?�전 ?�이??구조가 ?�거???�상?�었?�니??');
                 return;
             }
 
@@ -4717,14 +4717,14 @@
             }
 
             if (prevData) {
-                if (confirm(`${prevMonth}월 데이터를 현재 월(${monthKey}월)로 이월하시겠습니까?\n(기존에 입력된 정보가 있다면 덮어씌워집니다.)`)) {
+                if (confirm(`${prevMonth}???�이?��? ?�재 ??${monthKey}??�??�월?�시겠습?�까?\n(기존???�력???�보가 ?�다�???��?�워집니??)`)) {
                     state = mergeState(prevData);
                     await saveData();
                     render();
-                    alert(`${prevMonth}월 데이터를 이월했습니다.`);
+                    alert(`${prevMonth}???�이?��? ?�월?�습?�다.`);
                 }
             } else {
-                alert('이월할 수 있는 이전 달 데이터가 없습니다.');
+                alert('?�월?????�는 ?�전 ???�이?��? ?�습?�다.');
             }
         }
 
@@ -4735,7 +4735,7 @@
                     (item.content && item.content.trim() !== '') || (item.card && item.card.trim() !== '') ||
                     (item.desc && item.desc.trim() !== '') || (item.details && item.details.length > 0);
 
-                if (hasData && !confirm('입력된 데이터가 있습니다. 정말 삭제하시겠습니까?')) {
+                if (hasData && !confirm('?�력???�이?��? ?�습?�다. ?�말 ??��?�시겠습?�까?')) {
                     return;
                 }
             }
@@ -4754,7 +4754,7 @@
                 item.remAmount = 0;
                 item.monthlyFee = 0;
                 item.monthlyPrincipal = 0;
-                item.endDate = "완납";
+                item.endDate = "?�납";
                 return item;
             }
 
@@ -4843,7 +4843,7 @@
             const curM = parseInt(document.getElementById('monthSelect').value);
 
             if (targetY === curY && targetM === curM) {
-                alert('현재 화면과 대상 연/월이 동일합니다.');
+                alert('?�재 ?�면�??�?????�이 ?�일?�니??');
                 return;
             }
 
@@ -4855,14 +4855,14 @@
 
             if (targetYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
-                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                if (!password) { alert('보안 ?�호???�태?�니?? 먼�? 로그?�해주세??'); return; }
                 targetYearData = await decryptData(targetYearData, password);
             }
 
             if (!targetYearData.months) targetYearData.months = {};
 
             if (targetYearData.months[targetMonthStr]) {
-                if (!confirm(`${targetY}년 ${targetM}월에 이미 데이터가 있습니다. 현재 화면의 데이터로 덮어쓰시겠습니까?`)) return;
+                if (!confirm(`${targetY}??${targetM}?�에 ?��? ?�이?��? ?�습?�다. ?�재 ?�면???�이?�로 ??��?�시겠습?�까?`)) return;
             }
 
             const clonedState = JSON.parse(JSON.stringify(state));
@@ -4875,7 +4875,7 @@
                 localStorage.setItem(targetYearKey, JSON.stringify(targetYearData));
             }
 
-            alert(`${targetY}년 ${targetM}월로 데이터 복사가 완료되었습니다.`);
+            alert(`${targetY}??${targetM}?�로 ?�이??복사가 ?�료?�었?�니??`);
             syncWithGitHub('upload', targetYearKey, localStorage.getItem(targetYearKey));
         }
 
@@ -4886,20 +4886,20 @@
             const targetYearKey = `assetData_${targetY}`;
 
             let targetYearDataStr = localStorage.getItem(targetYearKey);
-            if (!targetYearDataStr) { alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return; }
+            if (!targetYearDataStr) { alert(`${targetY}??${targetM}???�이?��? ?�습?�다.`); return; }
 
             let targetYearData = JSON.parse(targetYearDataStr);
             if (targetYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
-                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                if (!password) { alert('보안 ?�호???�태?�니?? 먼�? 로그?�해주세??'); return; }
                 targetYearData = await decryptData(targetYearData, password);
             }
 
             if (!targetYearData.months || !targetYearData.months[targetMonthStr]) {
-                alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return;
+                alert(`${targetY}??${targetM}???�이?��? ?�습?�다.`); return;
             }
 
-            // 다음 달 계산
+            // ?�음 ??계산
             let nextY = targetY;
             let nextM = targetM + 1;
             if (nextM > 12) { nextM = 1; nextY++; }
@@ -4911,13 +4911,13 @@
 
             if (nextYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
-                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                if (!password) { alert('보안 ?�호???�태?�니?? 먼�? 로그?�해주세??'); return; }
                 nextYearData = await decryptData(nextYearData, password);
             }
 
             if (!nextYearData.months) nextYearData.months = {};
             if (nextYearData.months[nextMonthStr]) {
-                if (!confirm(`${nextY}년 ${nextM}월에 이미 데이터가 있습니다. ${targetY}년 ${targetM}월 데이터로 덮어쓰시겠습니까?`)) return;
+                if (!confirm(`${nextY}??${nextM}?�에 ?��? ?�이?��? ?�습?�다. ${targetY}??${targetM}???�이?�로 ??��?�시겠습?�까?`)) return;
             }
 
             nextYearData.months[nextMonthStr] = JSON.parse(JSON.stringify(targetYearData.months[targetMonthStr]));
@@ -4929,7 +4929,7 @@
                 localStorage.setItem(nextYearKey, JSON.stringify(nextYearData));
             }
 
-            alert(`${targetY}년 ${targetM}월 데이터를 ${nextY}년 ${nextM}월로 성공적으로 복사했습니다.`);
+            alert(`${targetY}??${targetM}???�이?��? ${nextY}??${nextM}?�로 ?�공?�으�?복사?�습?�다.`);
             syncWithGitHub('upload', nextYearKey, localStorage.getItem(nextYearKey));
         }
 
@@ -4940,7 +4940,7 @@
             const curM = parseInt(document.getElementById('monthSelect').value);
 
             if (targetY === curY && targetM === curM) {
-                alert('현재 연/월과 대상 연/월이 동일합니다.');
+                alert('?�재 ???�과 ?�?????�이 ?�일?�니??');
                 return;
             }
 
@@ -4948,17 +4948,17 @@
             const targetYearKey = `assetData_${targetY}`;
 
             let targetYearDataStr = localStorage.getItem(targetYearKey);
-            if (!targetYearDataStr) { alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return; }
+            if (!targetYearDataStr) { alert(`${targetY}??${targetM}???�이?��? ?�습?�다.`); return; }
 
             let targetYearData = JSON.parse(targetYearDataStr);
             if (targetYearData._isEncrypted) {
                 const password = sessionStorage.getItem('temp_master_pw');
-                if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                if (!password) { alert('보안 ?�호???�태?�니?? 먼�? 로그?�해주세??'); return; }
                 targetYearData = await decryptData(targetYearData, password);
             }
 
             if (!targetYearData.months || !targetYearData.months[targetMonthStr]) {
-                alert(`${targetY}년 ${targetM}월 데이터가 없습니다.`); return;
+                alert(`${targetY}??${targetM}???�이?��? ?�습?�다.`); return;
             }
 
             let currentHasData = false;
@@ -4969,7 +4969,7 @@
             }
 
             if (currentHasData) {
-                if (!confirm(`현재 화면(${curY}년 ${curM}월)에 이미 데이터가 있습니다. 가져온 데이터로 덮어쓰시겠습니까?`)) {
+                if (!confirm(`?�재 ?�면(${curY}??${curM}?????��? ?�이?��? ?�습?�다. 가?�온 ?�이?�로 ??��?�시겠습?�까?`)) {
                     return;
                 }
             }
@@ -4978,7 +4978,7 @@
             state = clonedState;
             await saveData();
             render();
-            alert(`${targetY}년 ${targetM}월 데이터를 성공적으로 가져왔습니다.`);
+            alert(`${targetY}??${targetM}???�이?��? ?�공?�으�?가?�왔?�니??`);
             closeDataManageModal();
         }
 
@@ -4990,14 +4990,14 @@
             const targetMonthStr = String(targetM).padStart(2, '0');
             const targetYearKey = `assetData_${targetY}`;
 
-            if (!confirm(`정말 ${targetY}년 ${targetM}월 데이터를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
+            if (!confirm(`?�말 ${targetY}??${targetM}???�이?��? 모두 ??��?�시겠습?�까?\n???�업?� ?�돌�????�습?�다.`)) return;
 
             let targetYearDataStr = localStorage.getItem(targetYearKey);
             if (targetYearDataStr) {
                 let targetYearData = JSON.parse(targetYearDataStr);
                 if (targetYearData._isEncrypted) {
                     const password = sessionStorage.getItem('temp_master_pw');
-                    if (!password) { alert('보안 암호화 상태입니다. 먼저 로그인해주세요.'); return; }
+                    if (!password) { alert('보안 ?�호???�태?�니?? 먼�? 로그?�해주세??'); return; }
                     targetYearData = await decryptData(targetYearData, password);
                 }
 
@@ -5023,7 +5023,7 @@
                 render();
             }
 
-            alert(`${targetY}년 ${targetM}월 데이터가 완전히 삭제되었습니다.`);
+            alert(`${targetY}??${targetM}???�이?��? ?�전????��?�었?�니??`);
             closeDataManageModal();
         }
 
@@ -5062,7 +5062,7 @@
         }
 
         function render() {
-            console.log("[Render] render 시작");
+            console.log("[Render] render ?�작");
             if (!state || !state.sections) return;
             for (let s in state.sections) {
                 const tbody = document.getElementById(`tbody-${s}`);
@@ -5073,7 +5073,7 @@
                     if (s === 'installment') {
                         calculateInstallment(item);
 
-                        // 현재 조회중인 월 기준으로 다음 달(YY.MM) 계산
+                        // ?�재 조회중인 ??기�??�로 ?�음 ??YY.MM) 계산
                         const curY = parseInt(document.getElementById('yearSelect').value);
                         const curM = parseInt(document.getElementById('monthSelect').value);
                         let nextY = curY;
@@ -5081,7 +5081,7 @@
                         if (nextM > 12) { nextM = 1; nextY++; }
                         const targetEndDate = `${String(nextY).substring(2)}.${String(nextM).padStart(2, '0')}`;
 
-                        // 현재 월 식별자 (YY.MM 포맷)
+                        // ?�재 ???�별??(YY.MM ?�맷)
                         const currentEndDate = `${String(curY).substring(2)}.${String(curM).padStart(2, '0')}`;
 
                         let endDateClass = "";
@@ -5089,12 +5089,12 @@
                             tr.classList.add('installment-expired');
                             endDateClass = "end-date-expired";
                         }
-                        // 이번 달에 종료되는 할부 건 강조 표시 (노란색 배경 + 파란색 텍스트)
+                        // ?�번 ?�에 종료?�는 ?��? �?강조 ?�시 (?��???배경 + ?��????�스??
                         else if (item.endDate === currentEndDate) {
                             tr.classList.add('installment-ending');
                             endDateClass = "end-date-ending";
                         }
-                        // 다음 달에 종료되는 할부 건 강조 표시 (노란색)
+                        // ?�음 ?�에 종료?�는 ?��? �?강조 ?�시 (?��???
                         else if (item.endDate === targetEndDate) {
                             tr.classList.add('installment-highlight');
                         }
@@ -5103,11 +5103,11 @@
                             <td><input type="text" value="${item.date}" placeholder="YYYY-MM-DD" maxlength="10" onclick="openCalendar(this)" oninput="formatDateInput(this)" onchange="updateValue('${s}', ${item.id}, 'date', this.value)"></td>
                             <td>
                                 <select onchange="updateValue('${s}', ${item.id}, 'card', this.value)">
-                                    <option value="국민" ${item.card === '국민' ? 'selected' : ''}>국민</option>
-                                    <option value="신한" ${item.card === '신한' ? 'selected' : ''}>신한</option>
-                                    <option value="롯데" ${item.card === '롯데' ? 'selected' : ''}>롯데</option>
-                                    <option value="삼성" ${item.card === '삼성' ? 'selected' : ''}>삼성</option>
-                                    ${!['국민', '신한', '롯데', '삼성'].includes(item.card) && item.card ? `<option value="${item.card}" selected>${item.card}</option>` : ''}
+                                    <option value="�??" ${item.card === '�??' ? 'selected' : ''}>�??</option>
+                                    <option value="?�한" ${item.card === '?�한' ? 'selected' : ''}>?�한</option>
+                                    <option value="�?��" ${item.card === '�?��' ? 'selected' : ''}>�?��</option>
+                                    <option value="?�성" ${item.card === '?�성' ? 'selected' : ''}>?�성</option>
+                                    ${!['�??', '?�한', '�?��', '?�성'].includes(item.card) && item.card ? `<option value="${item.card}" selected>${item.card}</option>` : ''}
                                 </select>
                             </td>
                             <td><input type="text" value="${item.content}" onchange="updateValue('${s}', ${item.id}, 'content', this.value)"></td>
@@ -5133,7 +5133,7 @@
                             <td><div class="amount font-bold" style="color: var(--accent-red) !important;">${formatNumber(item.remAmount)}</div></td>
                             <td><div class="text-center font-bold ${endDateClass}">${item.endDate}</div></td>
                             <td style="text-align: center;">
-                                <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold transition-all" onclick="openInstallmentDetail(${item.id})">상세</button>
+                                <button class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold transition-all" onclick="openInstallmentDetail(${item.id})">?�세</button>
                             </td>
                             <td class="flex justify-center">
                                 <button class="btn-delete" onclick="deleteRow('${s}', ${item.id})">&times;</button>
@@ -5187,7 +5187,7 @@
         function updatePensionDisplay() {
             if (!state.pension || !state.pension.totalPeriod) return;
 
-            // 앱 내 선택 월이 아닌 실제 '오늘' 날짜를 기준으로 계산
+            // ?????�택 ?�이 ?�닌 ?�제 '?�늘' ?�짜�?기�??�로 계산
             const now = new Date();
             const curY = now.getFullYear();
             const curM = now.getMonth() + 1;
@@ -5203,41 +5203,41 @@
             const endDate = new Date(endY, endM - 1);
 
             const totalMonths = (endY - startY) * 12 + (endM - startM);
-            let paidMonths = (curY - startY) * 12 + (curM - startM) + 1; // 현재 월 포함
+            let paidMonths = (curY - startY) * 12 + (curM - startM) + 1; // ?�재 ???�함
 
             if (paidMonths < 0) paidMonths = 0;
             if (paidMonths > totalMonths) paidMonths = totalMonths;
 
             const ratio = totalMonths > 0 ? paidMonths / totalMonths : 0;
 
-            // 최종 목표 금액 (세후 기준)
+            // 최종 목표 금액 (?�후 기�?)
             const targetAmount = parseInt(String(state.pension.afterTax).replace(/[^0-9]/g, '')) || 0;
             const currentEstimatedAmount = Math.floor(targetAmount * ratio);
 
-            // 헤더 및 모달 내부 금액 업데이트
+            // ?�더 �?모달 ?��? 금액 ?�데?�트
             const headerAmountEl = document.getElementById('pensionHeaderAmount');
             if (headerAmountEl) headerAmountEl.innerText = formatNumber(currentEstimatedAmount);
 
             const yearlyEl = document.getElementById('pensionYearlyAmount');
             if (yearlyEl && currentEstimatedAmount > 0) {
-                yearlyEl.innerText = `(연 ${formatNumber(currentEstimatedAmount * 12)}원)`;
+                yearlyEl.innerText = `(??${formatNumber(currentEstimatedAmount * 12)}??`;
             }
 
-            // 총 예상 납부액 계산 (가정: 총 예상 납부액 / 총 개월수 * 현재 개월수)
+            // �??�상 ?��???계산 (가?? �??�상 ?��???/ �?개월??* ?�재 개월??
             const targetTotalPaid = parseInt(String(state.pension.totalPaid).replace(/[^0-9]/g, '')) || 0;
             const currentTotalPaid = Math.floor(targetTotalPaid * ratio);
 
-            // 모달이 열려있을 때 입력 필드 업데이트 방지 (사용자 입력 방해 금지)
-            // 단, 헤더 정보는 실시간 반영
+            // 모달???�려?�을 ???�력 ?�드 ?�데?�트 방�? (?�용???�력 방해 금�?)
+            // ?? ?�더 ?�보???�시�?반영
             if (document.getElementById('pensionModal').style.display === 'flex') {
-                document.getElementById('pensionPeriodSubtext').innerText = `총 ${totalMonths}개월 (현재 ${paidMonths}개월 납부 중)`;
+                document.getElementById('pensionPeriodSubtext').innerText = `�?${totalMonths}개월 (?�재 ${paidMonths}개월 ?��? �?`;
             }
         }
 
         function updateCalculations() {
             let assets = 0, debts = 0, income = 0, expense = 0;
 
-            // 현재 월 식별자 (YY.MM, 할부 만료 여부 판단용)
+            // ?�재 ???�별??(YY.MM, ?��? 만료 ?��? ?�단??
             const curY = parseInt(document.getElementById('yearSelect')?.value || new Date().getFullYear());
             const curM = parseInt(document.getElementById('monthSelect')?.value || (new Date().getMonth() + 1));
             const currentMonthStr = `${String(curY).substring(2)}.${String(curM).padStart(2, '0')}`;
@@ -5253,16 +5253,16 @@
                 if (s === 'installment') {
                     const totalAmt = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
 
-                    // ✅ 총지출에는 현재 월 기준 진행 중인 할부 원금 + 수수료 포함 (만료된 할부 제외)
+                    // ??총�?출에???�재 ??기�? 진행 중인 ?��? ?�금 + ?�수�??�함 (만료???��? ?�외)
                     const activeMonthlyTotal = state.sections[s]
                         .filter(i => !i.endDate || i.endDate >= currentMonthStr)
                         .reduce((sum, i) => sum + (parseFloat(i.monthlyPrincipal) || 0) + (parseFloat(i.monthlyFee) || 0), 0);
 
-                    // 할부 관리 모달 하단 표시용 전체 원금 합계 (만료 포함)
+                    // ?��? 관�?모달 ?�단 ?�시???�체 ?�금 ?�계 (만료 ?�함)
                     const rem = state.sections[s].reduce((sum, i) => sum + (parseFloat(i.remAmount) || 0), 0);
-                    expense += activeMonthlyTotal;  // 총지출에는 진행 중인 할부만
+                    expense += activeMonthlyTotal;  // 총�?출에??진행 중인 ?��?�?
 
-                    // 다음 달 납부 예정액 계산 (다음 달에도 진행 중인 항목만)
+                    // ?�음 ???��? ?�정??계산 (?�음 ?�에??진행 중인 ??���?
                     let nextY = curY;
                     let nextM = curM + 1;
                     if (nextM > 12) { nextM = 1; nextY++; }
@@ -5274,8 +5274,8 @@
                             const principal = parseFloat(i.monthlyPrincipal) || 0;
                             let nextFee = 0;
                             if (parseFloat(i.rate) > 0) {
-                                const currentRem = (parseFloat(i.totalMonths - i.currentMonth + 1) * principal); // 이번 달 납입 전 잔액 추정
-                                const nextRem = parseFloat(i.remAmount) || 0; // 이번 달 납입 후 잔액
+                                const currentRem = (parseFloat(i.totalMonths - i.currentMonth + 1) * principal); // ?�번 ???�입 ???�액 추정
+                                const nextRem = parseFloat(i.remAmount) || 0; // ?�번 ???�입 ???�액
                                 const currentFee = parseFloat(i.monthlyFee) || 0;
                                 if (currentRem > 0) {
                                     nextFee = Math.floor(currentFee * (nextRem / currentRem));
@@ -5292,13 +5292,13 @@
                     if (amtEl) amtEl.innerText = formatNumber(totalAmt);
                     if (nxtEl) nxtEl.innerText = formatNumber(nextMonthTotal);
                     if (priEl) {
-                        priEl.innerText = formatNumber(activeMonthlyTotal);  // 진행 중 원금+수수료 표시
+                        priEl.innerText = formatNumber(activeMonthlyTotal);  // 진행 �??�금+?�수�??�시
 
-                        // 툴팁용 요약 데이터 생성
+                        // ?�팁???�약 ?�이???�성
                         const activeItems = state.sections[s].filter(i => i.endDate && i.endDate >= currentMonthStr);
                         if (activeItems.length > 0) {
                             let tooltipHtml = '<div style="font-size:11px; min-width:200px;"><table style="width:100%; border-collapse:collapse;">';
-                            tooltipHtml += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">사용처</th><th style="text-align:right;padding:4px">원금</th><th style="text-align:right;padding:4px">수수료</th></tr>';
+                            tooltipHtml += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">?�용�?/th><th style="text-align:right;padding:4px">?�금</th><th style="text-align:right;padding:4px">?�수�?/th></tr>';
                             activeItems.forEach(i => {
                                 const p = parseFloat(i.monthlyPrincipal) || 0;
                                 const f = parseFloat(i.monthlyFee) || 0;
@@ -5330,7 +5330,7 @@
                         html += `<tr><td style="padding:4px; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${i.category || i.content || '-'}</td><td style="text-align:right;padding:4px">${formatNumber(i.amount)}</td></tr>`;
                     });
                 } else {
-                     html += `<tr><td colspan="2" style="text-align:center;padding:4px;opacity:0.5;">내역 없음</td></tr>`;
+                     html += `<tr><td colspan="2" style="text-align:center;padding:4px;opacity:0.5;">?�역 ?�음</td></tr>`;
                 }
                 html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">총합</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(income)}</td></tr></table></div>`;
                 incEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
@@ -5344,9 +5344,9 @@
                 let fTotal = state.sections['f-expense'] ? state.sections['f-expense'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
                 let vTotal = state.sections['v-expense'] ? state.sections['v-expense'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
                 let instTotal = state.sections['installment'] ? state.sections['installment'].filter(i => !i.endDate || i.endDate >= currentMonthStr).reduce((sum, i) => sum + (parseFloat(i.monthlyPrincipal)||0) + (parseFloat(i.monthlyFee)||0), 0) : 0;
-                html += `<tr><td style="padding:4px;">고정 지출</td><td style="text-align:right;padding:4px">${formatNumber(fTotal)}</td></tr>`;
-                html += `<tr><td style="padding:4px;">변동 지출</td><td style="text-align:right;padding:4px">${formatNumber(vTotal)}</td></tr>`;
-                html += `<tr><td style="padding:4px;">할부 청구액</td><td style="text-align:right;padding:4px">${formatNumber(instTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">고정 지�?/td><td style="text-align:right;padding:4px">${formatNumber(fTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">변??지�?/td><td style="text-align:right;padding:4px">${formatNumber(vTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">?��? �?��??/td><td style="text-align:right;padding:4px">${formatNumber(instTotal)}</td></tr>`;
                 html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">총합</td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(expense)}</td></tr></table></div>`;
                 expEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
                 expEl.parentElement.style.cursor = 'help';
@@ -5355,10 +5355,10 @@
             if (pnlEl) {
                 pnlEl.innerText = formatNumber(income - expense);
                 let html = '<div style="font-size:11px; min-width:200px;"><table style="width:100%; border-collapse:collapse;">';
-                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">항목</th><th style="text-align:right;padding:4px">금액</th></tr>';
-                html += `<tr><td style="padding:4px;">월 수입</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(income)}</td></tr>`;
-                html += `<tr><td style="padding:4px;">월 지출</td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(expense)}</td></tr>`;
-                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">순수익</td><td style="text-align:right;padding:4px;">${formatNumber(income - expense)}</td></tr></table></div>`;
+                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">??��</th><th style="text-align:right;padding:4px">금액</th></tr>';
+                html += `<tr><td style="padding:4px;">???�입</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(income)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">??지�?/td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(expense)}</td></tr>`;
+                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">?�수??/td><td style="text-align:right;padding:4px;">${formatNumber(income - expense)}</td></tr></table></div>`;
                 pnlEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
                 pnlEl.parentElement.style.cursor = 'help';
             }
@@ -5366,7 +5366,7 @@
             if (netEl) {
                 netEl.innerText = formatNumber(assets - debts);
                 let html = '<div style="font-size:11px; min-width:240px;"><table style="width:100%; border-collapse:collapse;">';
-                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">항목</th><th style="text-align:right;padding:4px">금액</th></tr>';
+                html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.2)"><th style="text-align:left;padding:4px">??��</th><th style="text-align:right;padding:4px">금액</th></tr>';
                 let cTotal = state.sections['cash'] ? state.sections['cash'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
                 let ncTotal = state.sections['non-cash'] ? state.sections['non-cash'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
                 let rTotal = state.sections['retirement'] ? state.sections['retirement'].reduce((sum, i) => sum + (parseFloat(i.amount)||0), 0) : 0;
@@ -5374,14 +5374,14 @@
                 let iTotal = state.sections['installment'] ? state.sections['installment'].reduce((sum, i) => sum + (parseFloat(i.remAmount)||0), 0) : 0;
                 let tAssets = cTotal + ncTotal + rTotal;
                 let tDebts = dTotal + iTotal;
-                html += `<tr><td style="padding:4px;">총 자산</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(tAssets)}</td></tr>`;
-                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 현금성 자산</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(cTotal)}</td></tr>`;
-                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 비현금성 자산</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(ncTotal)}</td></tr>`;
-                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 퇴직금</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(rTotal)}</td></tr>`;
-                html += `<tr><td style="padding:4px;">총 부채</td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(tDebts)}</td></tr>`;
-                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 대출 잔액</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(dTotal)}</td></tr>`;
-                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ↳ 할부 잔액</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(iTotal)}</td></tr>`;
-                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">순자산</td><td style="text-align:right;padding:4px;">${formatNumber(assets - debts)}</td></tr></table></div>`;
+                html += `<tr><td style="padding:4px;">�??�산</td><td style="text-align:right;padding:4px; color:var(--accent-blue);">${formatNumber(tAssets)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ???�금???�산</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(cTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ??비현금성 ?�산</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(ncTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ???�직�?/td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(rTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px;">�?부�?/td><td style="text-align:right;padding:4px; color:var(--accent-red);">${formatNumber(tDebts)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ???��??�액</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(dTotal)}</td></tr>`;
+                html += `<tr><td style="padding:4px; color:rgba(128,128,128,0.8);">&nbsp; ???��? ?�액</td><td style="text-align:right;padding:4px; color:rgba(128,128,128,0.8);">${formatNumber(iTotal)}</td></tr>`;
+                html += `<tr style="border-top:1px solid rgba(128,128,128,0.2); font-weight:bold;"><td style="padding:4px;">?�자??/td><td style="text-align:right;padding:4px;">${formatNumber(assets - debts)}</td></tr></table></div>`;
                 netEl.parentElement.onmouseenter = (e) => showSummaryTooltip(e, html);
                 netEl.parentElement.style.cursor = 'help';
             }
@@ -5427,7 +5427,7 @@
             if (!item || !item.details || item.details.length === 0) return;
 
             const layer = document.getElementById('hoverLayer');
-            let html = '<table><thead><tr><th>내용</th><th style="text-align:right">금액</th></tr></thead><tbody>';
+            let html = '<table><thead><tr><th>?�용</th><th style="text-align:right">금액</th></tr></thead><tbody>';
             item.details.forEach(d => {
                 html += `<tr><td title="${Math.floor(d.amount) + ' ' + (d.content || '')}">${d.content}</td><td class="amount">${formatNumber(d.amount)}</td></tr>`;
             });
@@ -5473,19 +5473,19 @@
 
         function openExpenseChart(s) {
             const items = state.sections[s];
-            if (!items || items.length === 0) { alert('데이터가 없습니다.'); return; }
-            const titleMap = { 'v-expense': '변동 지출 분석', 'f-expense': '고정 지출 분석' };
-            document.getElementById('chartModalTitle').innerText = titleMap[s] || '지출 분석 그래프';
+            if (!items || items.length === 0) { alert('?�이?��? ?�습?�다.'); return; }
+            const titleMap = { 'v-expense': '변??지�?분석', 'f-expense': '고정 지�?분석' };
+            document.getElementById('chartModalTitle').innerText = titleMap[s] || '지�?분석 그래??;
             const dataMap = {};
             items.forEach(item => {
-                const cat = (item.category || '기타').trim() || '기타';
+                const cat = (item.category || '기�?').trim() || '기�?';
                 dataMap[cat] = (dataMap[cat] || 0) + (item.amount || 0);
             });
             const chartData = Object.entries(dataMap)
                 .map(([name, value]) => ({ name, value }))
                 .filter(d => d.value > 0)
                 .sort((a, b) => b.value - a.value);
-            if (chartData.length === 0) { alert('금액이 입력된 데이터가 없습니다.'); return; }
+            if (chartData.length === 0) { alert('금액???�력???�이?��? ?�습?�다.'); return; }
             drawPieChart(chartData);
             document.getElementById('expenseChartModal').style.display = 'flex';
         }
@@ -5505,18 +5505,18 @@
                 : ['debt', 'v-expense', 'f-expense'];
 
             const titleMap = {
-                'assets': '자산 및 수입 상세 요약',
-                'expenses': '부채 및 지출 상세 요약',
-                'cash': '현금성 자산',
-                'non-cash': '비현금성 자산',
-                'income': '수입 내역',
+                'assets': '?�산 �??�입 ?�세 ?�약',
+                'expenses': '부�?�?지�??�세 ?�약',
+                'cash': '?�금???�산',
+                'non-cash': '비현금성 ?�산',
+                'income': '?�입 ?�역',
 
-                'debt': '부채',
-                'v-expense': '변동 지출',
-                'f-expense': '고정 지출'
+                'debt': '부�?,
+                'v-expense': '변??지�?,
+                'f-expense': '고정 지�?
             };
 
-            titleEl.innerText = titleMap[type] || '요약 정보';
+            titleEl.innerText = titleMap[type] || '?�약 ?�보';
 
             sections.forEach(s => {
                 const items = state.sections[s] || [];
@@ -5532,11 +5532,11 @@
 
                 let headHtml = '<thead><tr>';
                 if (s === 'debt') {
-                    headHtml += '<th>분류</th><th>내용</th><th style="text-align:right">잔여금</th>';
+                    headHtml += '<th>분류</th><th>?�용</th><th style="text-align:right">?�여�?/th>';
                 } else if (['v-expense', 'f-expense'].includes(s)) {
                     headHtml += '<th>분류</th><th>비고</th><th style="text-align:right">금액</th>';
                 } else {
-                    headHtml += '<th>분류</th><th>내용</th><th style="text-align:right">금액</th>';
+                    headHtml += '<th>분류</th><th>?�용</th><th style="text-align:right">금액</th>';
                 }
                 headHtml += '</tr></thead>';
                 table.innerHTML = headHtml;
@@ -5562,7 +5562,7 @@
                 // Section Total Row
                 const totalRow = document.createElement('tr');
                 totalRow.className = 'summary-total-row';
-                totalRow.innerHTML = `<td colspan="2" style="text-align:right">소계</td><td class="amount">${formatNumber(sectionSum)}</td>`;
+                totalRow.innerHTML = `<td colspan="2" style="text-align:right">?�계</td><td class="amount">${formatNumber(sectionSum)}</td>`;
                 tbody.appendChild(totalRow);
 
                 table.appendChild(tbody);
@@ -5573,7 +5573,7 @@
             // Grand Total
             const grandTotalDiv = document.createElement('div');
             grandTotalDiv.className = 'summary-grand-total';
-            grandTotalDiv.innerHTML = `<span>총 합계</span><span>${formatNumber(totalGrand)}</span>`;
+            grandTotalDiv.innerHTML = `<span>�??�계</span><span>${formatNumber(totalGrand)}</span>`;
             contentEl.appendChild(grandTotalDiv);
 
             document.getElementById('summaryModal').style.display = 'flex';
@@ -5588,7 +5588,7 @@
             const data = localStorage.getItem('assetManagerAccounts');
             accountsData = data ? JSON.parse(data) : [];
             
-            // 데이터 마이그레이션: 기존에 생성된 첫 번째 계정(관리자)의 권한이 누락된 경우 복구
+            // ?�이??마이그레?�션: 기존???�성??�?번째 계정(관리자)??권한???�락??경우 복구
             if (accountsData.length > 0) {
                 let needsSave = false;
                 if (accountsData[0].role !== 'admin') {
@@ -5627,38 +5627,38 @@
             accountsData.forEach((acc, idx) => {
                 const tr = document.createElement('tr');
 
-                // 가입일시 포맷팅
+                // 가?�일???�맷??
                 let dateStr = '-';
                 if (acc.createdAt) {
                     const d = new Date(acc.createdAt);
                     dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
                 }
 
-                // 권한 배지
+                // 권한 배�?
                 let roleBadge = acc.role === 'admin'
                     ? '<span style="background:rgba(255,59,48,0.1); color:#ff3b30; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">관리자</span>'
-                    : '<span style="background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:2px 8px; border-radius:12px; font-size:0.75rem;">일반</span>';
+                    : '<span style="background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:2px 8px; border-radius:12px; font-size:0.75rem;">?�반</span>';
 
-                // 상태 배지
+                // ?�태 배�?
                 let statusBadge = '';
                 if (acc.approved) {
-                    statusBadge = '<span style="color:#10b981; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>승인됨</span>';
+                    statusBadge = '<span style="color:#10b981; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>?�인??/span>';
                 } else {
-                    statusBadge = '<span style="color:#f59e0b; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;"></span>승인 대기</span>';
+                    statusBadge = '<span style="color:#f59e0b; font-weight:600; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;"></span>?�인 ?��?/span>';
                 }
 
-                // 관리 버튼 (승인/반려/삭제)
+                // 관�?버튼 (?�인/반려/??��)
                 let actionBtns = '';
                 if (acc.role === 'admin') {
-                    actionBtns = `<span style="color:rgba(255,255,255,0.3); font-size:0.8rem;">관리 불가</span>`;
+                    actionBtns = `<span style="color:rgba(255,255,255,0.3); font-size:0.8rem;">관�?불�?</span>`;
                 } else if (!acc.approved) {
                     actionBtns = `
-                        <button onclick="approveUser(${idx})" style="background:#10b981; color:#fff; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600;">승인</button>
+                        <button onclick="approveUser(${idx})" style="background:#10b981; color:#fff; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600;">?�인</button>
                         <button onclick="rejectUser(${idx})" style="background:rgba(255,59,48,0.1); color:#ff3b30; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin-left:4px;">거절</button>
                     `;
                 } else {
                     actionBtns = `
-                        <button onclick="deleteAccountRow(${idx})" style="background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem;">삭제</button>
+                        <button onclick="deleteAccountRow(${idx})" style="background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem;">??��</button>
                     `;
                 }
 
@@ -5675,16 +5675,16 @@
         }
 
         function approveUser(idx) {
-            if (confirm(`'${accountsData[idx].site}' 사용자의 로그인을 승인하시겠습니까?`)) {
+            if (confirm(`'${accountsData[idx].site}' ?�용?�의 로그?�을 ?�인?�시겠습?�까?`)) {
                 accountsData[idx].approved = true;
-                accountsData[idx].remarks = '승인 완료';
+                accountsData[idx].remarks = '?�인 ?�료';
                 saveAccounts();
                 renderAccounts();
             }
         }
 
         function rejectUser(idx) {
-            if (confirm(`'${accountsData[idx].site}' 사용자의 가입을 거절(삭제)하시겠습니까?`)) {
+            if (confirm(`'${accountsData[idx].site}' ?�용?�의 가?�을 거절(??��)?�시겠습?�까?`)) {
                 accountsData.splice(idx, 1);
                 saveAccounts();
                 renderAccounts();
@@ -5692,7 +5692,7 @@
         }
 
         function deleteAccountRow(idx) {
-            if (confirm('해당 계정을 영구적으로 삭제하시겠습니까? (삭제 후 복구 불가)')) {
+            if (confirm('?�당 계정???�구?�으�???��?�시겠습?�까? (??�� ??복구 불�?)')) {
                 accountsData.splice(idx, 1);
                 saveAccounts();
                 renderAccounts();
@@ -5703,11 +5703,11 @@
             const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
             document.getElementById('ghToken').value = config.token || '';
             document.getElementById('ghRepo').value = config.repo || 'uzenkaze/vibe';
-            document.getElementById('ghBranch').value = config.branch || 'main';
+            document.getElementById('ghBranch').value = config.branch || 'master';
             document.getElementById('ghAutoSync').checked = config.autoSync !== false;
             document.getElementById('gitHubModal').style.display = 'flex';
 
-            // 파일 목록 로드
+            // ?�일 목록 로드
             loadGitHubFileList();
         }
 
@@ -5723,13 +5723,13 @@
             previewEl.innerText = '';
 
             if (!config.token || !config.repo) {
-                fileListEl.innerHTML = '<option value="">설정 후 로드 가능</option>';
+                fileListEl.innerHTML = '<option value="">?�정 ??로드 가??/option>';
                 return;
             }
 
             try {
-                fileListEl.innerHTML = '<option value="">로드 중...</option>';
-                const branch = config.branch || 'main';
+                fileListEl.innerHTML = '<option value="">로드 �?..</option>';
+                const branch = config.branch || 'master';
                 const url = `https://api.github.com/repos/${config.repo}/contents/asset/data?ref=${branch}`;
                 const res = await fetch(url, {
                     headers: {
@@ -5743,16 +5743,16 @@
                     const jsonFiles = files.filter(f => f.name.endsWith('.json'));
 
                     if (jsonFiles.length === 0) {
-                        fileListEl.innerHTML = '<option value="">JSON 파일 없음</option>';
+                        fileListEl.innerHTML = '<option value="">JSON ?�일 ?�음</option>';
                     } else {
                         fileListEl.innerHTML = jsonFiles.map(f => {
                             const displayName = f.name.replace('.json', '');
                             return `<option value="${f.path}">${displayName}</option>`;
                         }).join('');
 
-                        // 파일이 1개일 때 버튼 형태 강조 (사용자 요청)
+                        // ?�일??1개일 ??버튼 ?�태 강조 (?�용???�청)
                         if (jsonFiles.length === 1) {
-                            viewBtn.innerText = '데이터 보기';
+                            viewBtn.innerText = '?�이??보기';
                             viewBtn.style.background = 'var(--accent-blue)';
                             viewBtn.style.color = 'white';
                         } else {
@@ -5760,7 +5760,7 @@
                             viewBtn.style.background = 'var(--accent-blue)';
                             viewBtn.style.color = 'white';
                         }
-                        // 공통 버튼 스타일 (높이 및 여백)
+                        // 공통 버튼 ?��???(?�이 �??�백)
                         viewBtn.style.setProperty('height', '38px', 'important');
                         viewBtn.style.setProperty('box-sizing', 'border-box', 'important');
                         viewBtn.style.padding = '0 20px';
@@ -5770,10 +5770,10 @@
                         viewBtn.style.lineHeight = '1';
                     }
                 } else {
-                    fileListEl.innerHTML = '<option value="">로드 실패</option>';
+                    fileListEl.innerHTML = '<option value="">로드 ?�패</option>';
                 }
             } catch (e) {
-                fileListEl.innerHTML = '<option value="">오류 발생</option>';
+                fileListEl.innerHTML = '<option value="">?�류 발생</option>';
             }
         }
 
@@ -5783,13 +5783,13 @@
             const previewEl = document.getElementById('ghDataPreview');
 
             if (!filePath || !filePath.endsWith('.json')) {
-                alert('조회할 파일을 선택해주세요.');
+                alert('조회???�일???�택?�주?�요.');
                 return;
             }
 
             try {
                 previewEl.style.display = 'block';
-                previewEl.innerText = '데이터 가져오는 중...';
+                previewEl.innerText = '?�이??가?�오??�?..';
 
                 const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${config.branch}`;
                 const res = await fetch(url, {
@@ -5805,10 +5805,10 @@
                     previewEl.innerText = JSON.stringify(JSON.parse(content), null, 2);
                     previewEl.scrollTop = 0;
                 } else {
-                    previewEl.innerText = '데이터 로드 실패';
+                    previewEl.innerText = '?�이??로드 ?�패';
                 }
             } catch (e) {
-                previewEl.innerText = '오류 발생: ' + e.message;
+                previewEl.innerText = '?�류 발생: ' + e.message;
             }
         }
 
@@ -5844,7 +5844,7 @@
             await saveData();
             closePensionModal();
 
-            // GitHub 동기화 (사용자 요청)
+            // GitHub ?�기??(?�용???�청)
             await manualGitHubSync();
         }
 
@@ -5853,7 +5853,7 @@
             let startDate = document.getElementById('pensionStartDate').value;
             const totalPeriod = document.getElementById('pensionTotalPeriod').value;
 
-            // 앱 내 선택 월이 아닌 실제 '오늘' 날짜를 기준으로 계산
+            // ?????�택 ?�이 ?�닌 ?�제 '?�늘' ?�짜�?기�??�로 계산
             const now = new Date();
             const curY = now.getFullYear();
             const curM = now.getMonth() + 1;
@@ -5873,26 +5873,26 @@
                 ratio = totalMonths > 0 ? paidMonths / totalMonths : 0;
             }
 
-            // 연금액 계산
+            // ?�금??계산
             const targetAmount = parseInt(afterTax.replace(/[^0-9]/g, '')) || 0;
             const currentAmount = Math.floor(targetAmount * ratio);
 
             document.getElementById('pensionHeaderAmount').innerText = formatNumber(currentAmount);
 
             if (startDate && /\d$/.test(startDate.trim())) {
-                startDate = startDate.trim() + '월';
+                startDate = startDate.trim() + '??;
             }
-            document.getElementById('pensionHeaderDate').innerText = startDate || '2039년 03월';
+            document.getElementById('pensionHeaderDate').innerText = startDate || '2039??03??;
 
             if (currentAmount > 0) {
                 const yearly = (currentAmount * 12).toLocaleString();
-                document.getElementById('pensionYearlyAmount').innerText = `(연 ${yearly}원)`;
+                document.getElementById('pensionYearlyAmount').innerText = `(??${yearly}??`;
             } else {
                 document.getElementById('pensionYearlyAmount').innerText = '';
             }
 
             if (totalMonths > 0) {
-                document.getElementById('pensionPeriodSubtext').innerText = `총 ${totalMonths}개월 (현재 ${paidMonths}개월 납부 중)`;
+                document.getElementById('pensionPeriodSubtext').innerText = `�?${totalMonths}개월 (?�재 ${paidMonths}개월 ?��? �?`;
             }
         }
 
@@ -5901,9 +5901,9 @@
             if (value) {
                 const formatted = parseInt(value).toLocaleString();
                 if (input.id === 'pensionBeforeTax' || input.id === 'pensionAfterTax') {
-                    input.value = `매월 ${formatted}원`;
+                    input.value = `매월 ${formatted}??;
                 } else {
-                    input.value = `${formatted}원`;
+                    input.value = `${formatted}??;
                 }
             }
         }
@@ -5925,10 +5925,10 @@
                 if (paidMonths < 0) paidMonths = 0;
                 if (paidMonths > totalMonths) paidMonths = totalMonths;
 
-                subtextEl.innerText = `총 ${totalMonths}개월 (현재 ${paidMonths}개월 납부 중)`;
+                subtextEl.innerText = `�?${totalMonths}개월 (?�재 ${paidMonths}개월 ?��? �?`;
                 updatePensionHeader();
             } else {
-                subtextEl.innerText = '형식: YYYY.MM ~ YYYY.MM';
+                subtextEl.innerText = '?�식: YYYY.MM ~ YYYY.MM';
             }
         }
 
@@ -5948,18 +5948,18 @@
 
             try {
                 if (btn) {
-                    btn.innerHTML = '<span class="text-2xl">⏳</span><span class="uppercase tracking-widest text-sm">저장 중...</span>';
+                    btn.innerHTML = '<span class="text-2xl">??/span><span class="uppercase tracking-widest text-sm">?�??�?..</span>';
                     btn.style.opacity = '0.7';
                     btn.disabled = true;
                 }
 
-                // 1. 현재 화면 데이터 저장
+                // 1. ?�재 ?�면 ?�이???�??
                 await saveData();
 
-                // 2. GitHub 업로드
+                // 2. GitHub ?�로??
                 const config = JSON.parse(localStorage.getItem('assetGitHubConfig') || '{}');
                 if (!config.token || !config.repo) {
-                    showToast('ℹ️ 로컬 브라우저 저장소에만 저장되었습니다. (GitHub 서버 연동 필요)');
+                    showToast('?�️ 로컬 브라?��? ?�?�소?�만 ?�?�되?�습?�다. (GitHub ?�버 ?�동 ?�요)');
                     if (btn) {
                         btn.innerHTML = originalContent;
                         btn.style.opacity = '1';
@@ -5971,9 +5971,9 @@
                 await syncWithGitHub('upload');
 
                 if (btn) {
-                    btn.innerHTML = '<span class="text-2xl">✅</span><span class="uppercase tracking-widest text-sm text-green-500">저장 완료</span>';
+                    btn.innerHTML = '<span class="text-2xl">??/span><span class="uppercase tracking-widest text-sm text-green-500">?�???�료</span>';
                 }
-                showToast('✅ 로컬 및 GitHub 서버에 성공적으로 동기화 저장되었습니다.');
+                showToast('??로컬 �?GitHub ?�버???�공?�으�??�기???�?�되?�습?�다.');
 
                 setTimeout(() => {
                     if (btn) {
@@ -5984,7 +5984,7 @@
                 }, 2000);
             } catch (error) {
                 console.error('Sync Error:', error);
-                showToast('⚠️ 로컬 저장소에만 저장되었습니다. (GitHub 저장 오류 발생)');
+                showToast('?�️ 로컬 ?�?�소?�만 ?�?�되?�습?�다. (GitHub ?�???�류 발생)');
                 if (btn) {
                     btn.innerHTML = originalContent;
                     btn.style.opacity = '1';
@@ -6004,10 +6004,10 @@
             const toggleIcon = document.getElementById('patToggleIcon');
             if (tokenInput.type === 'password') {
                 tokenInput.type = 'text';
-                toggleIcon.innerText = '🙈';
+                toggleIcon.innerText = '?��';
             } else {
                 tokenInput.type = 'password';
-                toggleIcon.innerText = '👁️';
+                toggleIcon.innerText = '?���?;
             }
         }
 
@@ -6018,13 +6018,13 @@
                 branch: document.getElementById('ghBranch').value.trim(),
                 autoSync: document.getElementById('ghAutoSync').checked
             };
-            if (config.token && !config.repo) { alert('저장소 정보를 입력해주세요.'); return; }
+            if (config.token && !config.repo) { alert('?�?�소 ?�보�??�력?�주?�요.'); return; }
             localStorage.setItem('assetGitHubConfig', JSON.stringify(config));
             if (typeof updateCloudMenuStatus === 'function') {
                 updateCloudMenuStatus();
             }
             
-            showToast('GitHub 설정이 저장되었습니다.');
+            showToast('GitHub ?�정???�?�되?�습?�다.');
             closeGitHubModal();
             loadData();
         }
@@ -6042,7 +6042,7 @@
 
             const yearKey = targetYearKey || getYearKey();
             const filePath = `asset/data/${yearKey}.json`;
-            const branch = config.branch || 'main';
+            const branch = config.branch || 'master';
             const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${branch}`;
             const headers = {
                 'Authorization': `token ${config.token}`,
@@ -6087,7 +6087,7 @@
                     } else {
                         const err = await putRes.json();
                         console.error("GitHub Sync Error:", err);
-                        alert("GitHub 동기화 실패: " + (err.message || '알 수 없는 오류'));
+                        alert("GitHub ?�기???�패: " + (err.message || '?????�는 ?�류'));
                     }
                 }
             } catch (e) {
@@ -6098,7 +6098,7 @@
         function showSyncToast() {
             const toast = document.createElement('div');
             toast.style.cssText = `position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:30px; font-size:0.85rem; z-index:10000; animation: fadeOut 3s forwards; pointer-events:none;`;
-            toast.innerText = '☁️ 로컬 및 GitHub 서버 동기화 완료';
+            toast.innerText = '?�️ 로컬 �?GitHub ?�버 ?�기???�료';
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -6132,14 +6132,14 @@
             `;
             document.body.appendChild(toast);
 
-            // Reflow 강제 실행하여 transition 적용
+            // Reflow 강제 ?�행?�여 transition ?�용
             toast.offsetHeight;
             toast.style.opacity = '1';
 
             setTimeout(() => {
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 500);
-            }, 3000); // 3초 유지
+            }, 3000); // 3�??��?
         };
         // --------------------------------
 
@@ -6250,12 +6250,12 @@
             const pw = document.getElementById('signupPw').value.trim();
             const pw2 = document.getElementById('signupPwConfirm').value.trim();
 
-            if (!name || !id || !pw) { alert('모든 정보를 입력해주세요.'); return; }
-            if (pw !== pw2) { alert('비밀번호가 일치하지 않습니다.'); return; }
-            if (accountsData.some(a => a.userid === id)) { alert('이미 존재하는 아이디입니다.'); return; }
+            if (!name || !id || !pw) { alert('모든 ?�보�??�력?�주?�요.'); return; }
+            if (pw !== pw2) { alert('비�?번호가 ?�치?��? ?�습?�다.'); return; }
+            if (accountsData.some(a => a.userid === id)) { alert('?��? 존재?�는 ?�이?�입?�다.'); return; }
 
             tempSignupSecret = generateTOTPSecret();
-            document.getElementById('signupSecretDisplay').innerText = "복구 키: " + tempSignupSecret;
+            document.getElementById('signupSecretDisplay').innerText = "복구 ?? " + tempSignupSecret;
             document.getElementById('signupQrImg').innerHTML = '';
 
             // Google Authenticator URI Format
@@ -6273,17 +6273,17 @@
 
         async function verifySignupOTP() {
             const inputOtp = document.getElementById('signupOTPCode').value.trim();
-            if (!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
+            if (!inputOtp || inputOtp.length !== 6) { alert('6?�리 코드�??�력?�주?�요.'); return; }
 
             const expectedOtp = await getTOTPCode(tempSignupSecret);
-            if (inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다. 다시 시도해주세요.'); return; }
+            if (inputOtp !== expectedOtp) { alert('?�증 코드가 ?�치?��? ?�습?�다. ?�시 ?�도?�주?�요.'); return; }
 
-            // 계정 생성
+            // 계정 ?�성
             accountsData.push({
                 site: document.getElementById('signupName').value.trim(),
                 userid: document.getElementById('signupUserId').value.trim(),
                 password: document.getElementById('signupPw').value.trim(),
-                remarks: '가입 승인 대기중',
+                remarks: '가???�인 ?�기중',
                 totpSecret: tempSignupSecret,
                 role: 'user',
                 approved: false,
@@ -6294,7 +6294,7 @@
             document.getElementById('signupStep2').style.display = 'none';
             document.getElementById('pendingContainer').style.display = 'block';
 
-            // 폼 초기화
+            // ??초기??
             document.getElementById('signupName').value = '';
             document.getElementById('signupUserId').value = '';
             document.getElementById('signupPw').value = '';
@@ -6309,10 +6309,10 @@
             const id = document.getElementById('adminId').value.trim();
             const pw = document.getElementById('adminPw').value.trim();
 
-            if (!name || !id || !pw) { alert('모든 항목을 입력해주세요.'); return; }
+            if (!name || !id || !pw) { alert('모든 ??��???�력?�주?�요.'); return; }
 
             tempAdminSecret = generateTOTPSecret();
-            document.getElementById('adminSecretDisplay').innerText = "복구 키: " + tempAdminSecret;
+            document.getElementById('adminSecretDisplay').innerText = "복구 ?? " + tempAdminSecret;
             document.getElementById('adminQrImg').innerHTML = '';
 
             const uri = `otpauth://totp/WealthManagerAdmin:${id}?secret=${tempAdminSecret}&issuer=WealthManager`;
@@ -6324,10 +6324,10 @@
 
         async function createAdminAccount() {
             const inputOtp = document.getElementById('adminOTPCode').value.trim();
-            if (!inputOtp || inputOtp.length !== 6) { alert('6자리 코드를 입력해주세요.'); return; }
+            if (!inputOtp || inputOtp.length !== 6) { alert('6?�리 코드�??�력?�주?�요.'); return; }
 
             const expectedOtp = await getTOTPCode(tempAdminSecret);
-            if (inputOtp !== expectedOtp) { alert('인증 코드가 일치하지 않습니다.'); return; }
+            if (inputOtp !== expectedOtp) { alert('?�증 코드가 ?�치?��? ?�습?�다.'); return; }
 
             const name = document.getElementById('adminName').value.trim();
             const id = document.getElementById('adminId').value.trim();
@@ -6339,18 +6339,18 @@
             }];
             saveAccounts();
 
-            // 세션용 임시 비밀번호 저장
+            // ?�션???�시 비�?번호 ?�??
             sessionStorage.setItem('temp_master_pw', pw);
 
-            alert('관리자 계정이 생성되었습니다. 해당 계정으로 로그인합니다.');
+            alert('관리자 계정???�성?�었?�니?? ?�당 계정?�로 로그?�합?�다.');
             loginSuccess();
         }
 
         function checkLoginState() {
-            console.log("[Login] checkLoginState 시작");
+            console.log("[Login] checkLoginState ?�작");
             loadAccounts();
 
-            // 초기 관리자 등록 화면을 위한 드롭 리스너 추가 (최초 1회)
+            // 초기 관리자 ?�록 ?�면???�한 ?�롭 리스??추�? (최초 1??
             const adminContainer = document.getElementById('adminCreateContainer');
             if (adminContainer && !adminContainer.dataset.dropBound) {
                 adminContainer.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });
@@ -6365,18 +6365,18 @@
                                 const yearKey = getYearKey();
                                 localStorage.setItem(yearKey, JSON.stringify(data));
 
-                                const pw = prompt("파일 데이터를 해독하기 위한 마스터 비밀번호를 입력해주세요:");
+                                const pw = prompt("?�일 ?�이?��? ?�독?�기 ?�한 마스??비�?번호�??�력?�주?�요:");
                                 if (pw) {
                                     sessionStorage.setItem('temp_master_pw', pw);
                                     await loadData();
                                     if (accountsData.length > 0) {
-                                        alert("계정 정보와 데이터를 성공적으로 복구했습니다.");
+                                        alert("계정 ?�보?� ?�이?��? ?�공?�으�?복구?�습?�다.");
                                         loginSuccess();
                                     } else {
-                                        alert("데이터는 복구되었으나 계정 정보를 찾을 수 없습니다. 신규 등록을 진행해주세요.");
+                                        alert("?�이?�는 복구?�었?�나 계정 ?�보�?찾을 ???�습?�다. ?�규 ?�록??진행?�주?�요.");
                                     }
                                 }
-                            } catch (err) { alert("파일 처리 중 오류가 발생했습니다."); }
+                            } catch (err) { alert("?�일 처리 �??�류가 발생?�습?�다."); }
                         };
                         reader.readAsText(file);
                     }
@@ -6431,7 +6431,7 @@
 
             if (!user) {
                 document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').innerText = '아이디 또는 비밀번호가 일치하지 않습니다.';
+                document.getElementById('loginError').innerText = '?�이???�는 비�?번호가 ?�치?��? ?�습?�다.';
                 return;
             }
 
@@ -6453,13 +6453,13 @@
                 } else {
                     if (!otpInput || otpInput.length !== 6) {
                         document.getElementById('loginError').style.display = 'block';
-                        document.getElementById('loginError').innerText = '6자리 인증 코드를 입력해주세요.';
+                        document.getElementById('loginError').innerText = '6?�리 ?�증 코드�??�력?�주?�요.';
                         return;
                     }
                     const expectedOtp = await getTOTPCode(user.totpSecret);
                     if (otpInput !== expectedOtp) {
                         document.getElementById('loginError').style.display = 'block';
-                        document.getElementById('loginError').innerText = '인증 코드가 일치하지 않습니다.';
+                        document.getElementById('loginError').innerText = '?�증 코드가 ?�치?��? ?�습?�다.';
                         return;
                     }
                 }
@@ -6481,7 +6481,7 @@
         }
 
         async function loginSuccess() {
-            console.log("[Login] loginSuccess 시작");
+            console.log("[Login] loginSuccess ?�작");
             isLoggedIn = true;
             // Set session storage and cookie for persistence
             setCookie('assetLoginSession', 'true');
@@ -6501,8 +6501,8 @@
                 title: 'Monthly Overview',
                 subtitle: 'Track your financial trajectory',
                 buttons: [
-                    { text: '📊 예상연금', class: 'px-8 py-3 bg-white text-dyo-dark dark:bg-[#1A1A24] dark:text-white rounded-full text-[11px] font-black tracking-widest hover:bg-dyo-bg transition-colors border border-dyo-bg dark:border-white/20 shadow-sm uppercase', onclick: 'openPensionModal()' },
-                    { text: '💾 저장 & 동기화', class: 'px-8 py-3 bg-[#E8F5E9] text-[#2E7D32] dark:bg-[#2E7D32] dark:text-white rounded-full text-[11px] font-black tracking-widest hover:opacity-80 transition-opacity border border-[#E8F5E9] dark:border-transparent shadow-sm uppercase', onclick: 'manualGitHubSync()' }
+                    { text: '?�� ?�상?�금', class: 'px-8 py-3 bg-white text-dyo-dark dark:bg-[#1A1A24] dark:text-white rounded-full text-[11px] font-black tracking-widest hover:bg-dyo-bg transition-colors border border-dyo-bg dark:border-white/20 shadow-sm uppercase', onclick: 'openPensionModal()' },
+                    { text: '?�� ?�??& ?�기??, class: 'px-8 py-3 bg-[#E8F5E9] text-[#2E7D32] dark:bg-[#2E7D32] dark:text-white rounded-full text-[11px] font-black tracking-widest hover:opacity-80 transition-opacity border border-[#E8F5E9] dark:border-transparent shadow-sm uppercase', onclick: 'manualGitHubSync()' }
                 ]
             });
 
@@ -6513,7 +6513,7 @@
         function logout() {
             setCookie('assetLoginSession', '', -1);
             sessionStorage.removeItem('assetLoginSession');
-            sessionStorage.removeItem('temp_master_pw'); // 비밀번호 흔적 제거
+            sessionStorage.removeItem('temp_master_pw'); // 비�?번호 ?�적 ?�거
             isLoggedIn = false;
             document.getElementById('mainContainer').style.display = 'none';
             document.getElementById('loginScreen').classList.remove('show');
@@ -6521,7 +6521,7 @@
             document.getElementById('landingPage').style.display = 'block';
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
-            alert('로그아웃 되었습니다.');
+            alert('로그?�웃 ?�었?�니??');
         }
 
 
@@ -6566,7 +6566,7 @@
             const yearKey = getYearKey();
             let yearData = localStorage.getItem(yearKey);
 
-            // 현재 메모리상의 데이터가 최신일 수 있으므로 병합 처리
+            // ?�재 메모리상???�이?��? 최신?????�으므�?병합 처리
             yearData = yearData ? JSON.parse(yearData) : { year: document.getElementById('yearSelect').value, months: {} };
             yearData.months[getMonthKey()] = state;
 
@@ -6596,15 +6596,15 @@
     </script>
     <div id="hoverLayer" class="details-hover-layer"></div>
 
-    <!-- 데이터 관리 모달 -->
+    <!-- ?�이??관�?모달 -->
     <div class="modal-overlay" id="dataManageModal">
         <div class="modal-content" style="max-width: 600px; padding: 0; overflow: hidden; border-radius: 32px;">
             <div class="modal-header" style="padding: 2rem 2rem 1rem; border: none;">
                 <div class="flex items-center gap-3">
                     <div
                         class="w-10 h-10 bg-dyo-dark dark:bg-white/10 rounded-xl flex items-center justify-center text-xl">
-                        ⚙️</div>
-                    <span class="modal-title text-2xl font-black tracking-tighter">데이터 관리 (백업 및 복구)</span>
+                        ?�️</div>
+                    <span class="modal-title text-2xl font-black tracking-tighter">?�이??관�?(백업 �?복구)</span>
                 </div>
                 <button
                     class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
@@ -6627,7 +6627,7 @@
                                 stroke-width="2.5" class="mr-2">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
                             </svg>
-                            파일 다운로드
+                            ?�일 ?�운로드
                         </button>
                         <button class="btn-hans btn-hans-secondary py-4" onclick="copyDataToClipboard()">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -6657,7 +6657,7 @@
                                 stroke-width="2.5" class="mr-2">
                                 <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>
-                            선택 월 데이터를 다음 달로 복사
+                            ?�택 ???�이?��? ?�음 ?�로 복사
                         </button>
                         <button
                             class="btn-hans btn-hans-secondary w-full py-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
@@ -6667,7 +6667,7 @@
                                 <path
                                     d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
                             </svg>
-                            선택 월 데이터 전체 삭제
+                            ?�택 ???�이???�체 ??��
                         </button>
                     </div>
                 </div>
@@ -6678,54 +6678,54 @@
                         Import Data</h4>
                     <textarea id="importJsonText"
                         class="data-modal-textarea w-full p-4 rounded-2xl bg-white dark:bg-black/20 border-gray-200 dark:border-white/10 text-xs font-mono"
-                        rows="4" placeholder='JSON 데이터를 여기에 붙여넣거나 파일을 드래그하세요...'></textarea>
+                        rows="4" placeholder='JSON ?�이?��? ?�기??붙여?�거???�일???�래그하?�요...'></textarea>
                 </div>
             </div>
 
             <div class="modal-footer px-8 py-6 bg-gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex justify-end gap-3 rounded-b-3xl">
-                <button class="btn-hans btn-hans-secondary px-8" onclick="closeDataManageModal()">닫기</button>
-                <button class="btn-hans btn-hans-primary px-8" onclick="importDataFromText()">가져오기 적용</button>
+                <button class="btn-hans btn-hans-secondary px-8" onclick="closeDataManageModal()">?�기</button>
+                <button class="btn-hans btn-hans-primary px-8" onclick="importDataFromText()">가?�오�??�용</button>
             </div>
         </div>
     </div>
-    <!-- GitHub 설정 모달 -->
+    <!-- GitHub ?�정 모달 -->
     <div class="modal-overlay" id="gitHubModal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <span class="modal-title">☁️ GitHub 저장소 설정</span>
+                <span class="modal-title">?�️ GitHub ?�?�소 ?�정</span>
                 <button class="btn-close" onclick="closeGitHubModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.2rem; line-height: 1.5;">
-                    GitHub API를 통해 데이터를 원격 저장소에 보관합니다.<br>
+                    GitHub API�??�해 ?�이?��? ?�격 ?�?�소??보�??�니??<br>
                     <a href="https://github.com/settings/tokens" target="_blank"
                         style="color: var(--accent-blue); text-decoration: underline;">GitHub PAT(Personal Access
-                        Token)</a>이 필요합니다. (권한: repo)
+                        Token)</a>???�요?�니?? (권한: repo)
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
                         <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">GitHub
-                            토큰 (PAT)</label>
+                            ?�큰 (PAT)</label>
                         <div style="position: relative; display: flex; align-items: center;">
                             <input type="password" id="ghToken" class="pension-input"
                                 style="height: 38px; padding: 0 40px 0 12px; width: 100%;"
                                 placeholder="ghp_xxxxxxxxxxxx">
                             <button type="button" onclick="togglePatVisibility()"
                                 style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); padding: 5px;">
-                                <span id="patToggleIcon">👁️</span>
+                                <span id="patToggleIcon">?���?/span>
                             </button>
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 2;">
-                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">저장소
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">?�?�소
                                 (Owner/Repo)</label>
                             <input type="text" id="ghRepo" class="data-modal-textarea"
                                 style="height: 38px; padding: 0 10px;" placeholder="uzenkaze/vibe">
                         </div>
                         <div style="flex: 1;">
                             <label
-                                style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">브랜치</label>
+                                style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">브랜�?/label>
                             <input type="text" id="ghBranch" class="data-modal-textarea"
                                 style="height: 38px; padding: 0 10px;" value="main">
                         </div>
@@ -6733,12 +6733,12 @@
 
                     <div style="border-top: 1px dashed var(--glass-border); padding: 15px 0; margin-top: 5px;">
                         <label
-                            style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--accent-blue);">📂
-                            GitHub 데이터 관리 (조회)</label>
+                            style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--accent-blue);">?��
+                            GitHub ?�이??관�?(조회)</label>
                         <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
                             <select id="ghFileList" class="data-modal-textarea"
                                 style="height: 38px !important; box-sizing: border-box !important; flex: 1; padding: 0 40px 0 15px; font-size: 0.9rem; border: 1px solid var(--glass-border); margin: 0; border-radius: 9999px; appearance: none; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 15px center;">
-                                <option value="">파일 목록 로드 중...</option>
+                                <option value="">?�일 목록 로드 �?..</option>
                             </select>
                             <button class="btn-hans btn-hans-primary" id="ghViewBtn" onclick="viewGitHubData()"
                                 style="height: 38px !important;">조회</button>
@@ -6754,8 +6754,8 @@
                             <input type="checkbox" id="ghAutoSync"
                                 style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" checked>
                             <span
-                                style="white-space: nowrap; font-weight: 600; color: var(--text-primary); flex-shrink: 0;">데이터
-                                변경 시 자동 업로드</span>
+                                style="white-space: nowrap; font-weight: 600; color: var(--text-primary); flex-shrink: 0;">?�이??
+                                변�????�동 ?�로??/span>
                         </label>
                     </div>
                 </div>
@@ -6763,7 +6763,7 @@
             <div class="modal-footer"
                 style="padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px;">
                 <button class="btn-hans btn-hans-secondary" onclick="closeGitHubModal()">취소</button>
-                <button class="btn-hans btn-hans-primary" onclick="saveGitHubConfig()">설정 저장</button>
+                <button class="btn-hans btn-hans-primary" onclick="saveGitHubConfig()">?�정 ?�??/button>
             </div>
         </div>
     </div>
@@ -6775,58 +6775,58 @@
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <img src="data:image/png;base64,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"
                         style="height: 22px; width: auto; vertical-align: middle;">
-                    <span class="modal-title">예상 연금 정보</span>
+                    <span class="modal-title">?�상 ?�금 ?�보</span>
                 </div>
                 <button class="btn-close" onclick="closePensionModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="pension-alert-box pension-alert-orange" style="text-align: center;">
-                    <span id="pensionHeaderDate" style="margin-right: 8px;">2039년 03월</span>(<span
-                        id="pensionHeaderAge">65세</span>)부터<br>
-                    받게될 예상 연금액은 매월 <span id="pensionHeaderAmount">0</span>원 입니다.
+                    <span id="pensionHeaderDate" style="margin-right: 8px;">2039??03??/span>(<span
+                        id="pensionHeaderAge">65??/span>)부??br>
+                    받게???�상 ?�금?��? 매월 <span id="pensionHeaderAmount">0</span>???�니??
                 </div>
                 <div class="pension-alert-box pension-info-blue"
                     style="text-align: left; line-height: 1.6; font-weight: 500; word-break: keep-all; padding: 1rem 1.5rem;">
-                    ※ 위 금액은 향후 소득, 물가가 변동 없으며, 60세(현재월 기준)까지 보험료 납부를 가정하여 산정 (단, 납부 중단자는 기존 보험료 내역만을 반영)
+                    ????금액?� ?�후 ?�득, 물�?가 변???�으�? 60???�재??기�?)까�? 보험�??��?�?가?�하???�정 (?? ?��? 중단?�는 기존 보험�??�역만을 반영)
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin: 2rem 0 1rem;">
-                    <span style="font-size: 1.2rem;">📈</span>
-                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">예상 노령연금액</h3>
+                    <span style="font-size: 1.2rem;">?��</span>
+                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #1e293b;">?�상 ?�령?�금??/h3>
                 </div>
 
                 <table class="pension-table">
                     <tr>
-                        <th>세전</th>
+                        <th>?�전</th>
                         <td>
-                            <input type="text" id="pensionBeforeTax" class="pension-input" placeholder="매월 0원"
+                            <input type="text" id="pensionBeforeTax" class="pension-input" placeholder="매월 0??
                                 oninput="formatCurrencyInput(this)">
                         </td>
                     </tr>
                     <tr>
-                        <th>세후</th>
+                        <th>?�후</th>
                         <td>
                             <input type="text" id="pensionAfterTax" class="pension-input pension-input-bold"
-                                placeholder="매월 0원" oninput="formatCurrencyInput(this); updatePensionHeader()">
+                                placeholder="매월 0?? oninput="formatCurrencyInput(this); updatePensionHeader()">
                             <div id="pensionYearlyAmount" class="pension-sub-text"></div>
                         </td>
                     </tr>
                     <tr>
-                        <th>연금받는시기</th>
+                        <th>?�금받는?�기</th>
                         <td>
-                            <input type="text" id="pensionStartDate" class="pension-input" placeholder="YYYY년 MM월"
+                            <input type="text" id="pensionStartDate" class="pension-input" placeholder="YYYY??MM??
                                 oninput="updatePensionHeader()">
                         </td>
                     </tr>
                     <tr>
-                        <th>총 예상납부액</th>
+                        <th>�??�상?��???/th>
                         <td>
-                            <input type="text" id="pensionTotalPaid" class="pension-input" placeholder="0원"
+                            <input type="text" id="pensionTotalPaid" class="pension-input" placeholder="0??
                                 oninput="formatCurrencyInput(this)">
                         </td>
                     </tr>
                     <tr>
-                        <th>총 예상가입기간</th>
+                        <th>�??�상가?�기�?/th>
                         <td>
                             <input type="text" id="pensionTotalPeriod" class="pension-input pension-input-bold"
                                 placeholder="YYYY.MM ~ YYYY.MM" oninput="updatePensionPeriodSubtext()">
@@ -6837,14 +6837,14 @@
             </div>
             <div class="modal-footer"
                 style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
-                <button class="btn-hans btn-hans-primary px-10" onclick="savePensionData()">확인 후 닫기</button>
+                <button class="btn-hans btn-hans-primary px-10" onclick="savePensionData()">?�인 ???�기</button>
             </div>
         </div>
     </div>
 
 
 
-    <!-- Toast Popup for 저장 & 동기화 -->
+    <!-- Toast Popup for ?�??& ?�기??-->
     <div id="toastPopup"></div>
     <script>
         function toggleMainInstallmentAccordion() {
@@ -6882,16 +6882,16 @@
             const btn = document.getElementById('themeToggleBtn');
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                if (btn) btn.textContent = '🌙';
+                if (btn) btn.textContent = '?��';
                 localStorage.setItem('theme', 'light');
             } else {
                 html.classList.add('dark');
-                if (btn) btn.textContent = '☀️';
+                if (btn) btn.textContent = '?��?;
                 localStorage.setItem('theme', 'dark');
             }
         }
 
-        // 저장된 테마 즉시 적용 (플리커 방지)
+        // ?�?�된 ?�마 즉시 ?�용 (?�리�?방�?)
         (function () {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
@@ -6899,11 +6899,11 @@
             }
         })();
 
-        // DOMContentLoaded 후 테마 버튼 아이콘 동기화 및 모달 처리
+        // DOMContentLoaded ???�마 버튼 ?�이�??�기??�?모달 처리
         document.addEventListener('DOMContentLoaded', function () {
             const savedTheme = localStorage.getItem('theme');
             const btn = document.getElementById('themeToggleBtn');
-            if (savedTheme === 'dark' && btn) btn.textContent = '☀️';
+            if (savedTheme === 'dark' && btn) btn.textContent = '?��?;
 
             // Handle cross-page modal opening
             const urlParams = new URLSearchParams(window.location.search);
@@ -6937,7 +6937,7 @@
             const rect = el.getBoundingClientRect();
             const cal = document.getElementById('customCalendar');
 
-            // 위치 계산 (화면 밖으로 나가지 않도록 조정)
+            // ?�치 계산 (?�면 밖으�??��?지 ?�도�?조정)
             let top = rect.bottom + window.scrollY + 8;
             let left = rect.left + window.scrollX;
 
@@ -6967,12 +6967,12 @@
             const month = calendarDate.getMonth();
 
             const headerText = cal.querySelector('.calendar-header span');
-            headerText.innerText = `${year}년 ${month + 1}월`;
+            headerText.innerText = `${year}??${month + 1}??;
 
             const grid = cal.querySelector('.calendar-grid');
             grid.innerHTML = '';
 
-            ['일', '월', '화', '수', '목', '금', '토'].forEach(d => {
+            ['??, '??, '??, '??, '�?, '�?, '??].forEach(d => {
                 const div = document.createElement('div');
                 div.className = 'calendar-day-label';
                 div.innerText = d;
@@ -7003,20 +7003,20 @@
         }
 
         const KOREAN_HOLIDAYS = {
-            '01-01': '신정', '03-01': '삼일절', '05-05': '어린이날', '06-06': '현충일',
-            '08-15': '광복절', '10-03': '개천절', '10-09': '한글날', '12-25': '성탄절',
-            '2024-02-09': '설날 연휴', '2024-02-10': '설날', '2024-02-11': '설날 연휴', '2024-02-12': '대체휴일',
-            '2024-04-10': '총선', '2024-05-06': '대체휴일', '2024-05-15': '부처님오신날',
-            '2024-09-16': '추석 연휴', '2024-09-17': '추석', '2024-09-18': '추석 연휴',
-            '2025-01-28': '설날 연휴', '2025-01-29': '설날', '2025-01-30': '설날 연휴',
-            '2025-03-03': '대체휴일', '2025-05-05': '부처님오신날', '2025-05-06': '대체휴일',
-            '2025-10-05': '추석 연휴', '2025-10-06': '추석', '2025-10-07': '추석 연휴', '2025-10-08': '대체휴일',
-            '2026-02-16': '설날 연휴', '2026-02-17': '설날', '2026-02-18': '설날 연휴',
-            '2026-05-24': '부처님오신날', '2026-05-25': '대체휴일', '2026-06-03': '지방선거',
-            '2026-09-24': '추석 연휴', '2026-09-25': '추석', '2026-09-26': '추석 연휴', '2026-09-28': '대체휴일',
-            '2027-02-06': '설날 연휴', '2027-02-07': '설날', '2027-02-08': '설날 연휴', '2027-02-09': '대체휴일',
-            '2027-03-03': '대선', '2027-05-13': '부처님오신날',
-            '2027-09-14': '추석 연휴', '2027-09-15': '추석', '2027-09-16': '추석 연휴'
+            '01-01': '?�정', '03-01': '?�일??, '05-05': '?�린?�날', '06-06': '?�충??,
+            '08-15': '광복??, '10-03': '개천??, '10-09': '?��???, '12-25': '?�탄??,
+            '2024-02-09': '?�날 ?�휴', '2024-02-10': '?�날', '2024-02-11': '?�날 ?�휴', '2024-02-12': '?�체휴??,
+            '2024-04-10': '총선', '2024-05-06': '?�체휴??, '2024-05-15': '부처님?�신??,
+            '2024-09-16': '추석 ?�휴', '2024-09-17': '추석', '2024-09-18': '추석 ?�휴',
+            '2025-01-28': '?�날 ?�휴', '2025-01-29': '?�날', '2025-01-30': '?�날 ?�휴',
+            '2025-03-03': '?�체휴??, '2025-05-05': '부처님?�신??, '2025-05-06': '?�체휴??,
+            '2025-10-05': '추석 ?�휴', '2025-10-06': '추석', '2025-10-07': '추석 ?�휴', '2025-10-08': '?�체휴??,
+            '2026-02-16': '?�날 ?�휴', '2026-02-17': '?�날', '2026-02-18': '?�날 ?�휴',
+            '2026-05-24': '부처님?�신??, '2026-05-25': '?�체휴??, '2026-06-03': '지방선�?,
+            '2026-09-24': '추석 ?�휴', '2026-09-25': '추석', '2026-09-26': '추석 ?�휴', '2026-09-28': '?�체휴??,
+            '2027-02-06': '?�날 ?�휴', '2027-02-07': '?�날', '2027-02-08': '?�날 ?�휴', '2027-02-09': '?�체휴??,
+            '2027-03-03': '?�??, '2027-05-13': '부처님?�신??,
+            '2027-09-14': '추석 ?�휴', '2027-09-15': '추석', '2027-09-16': '추석 ?�휴'
         };
 
         function addDateCell(y, m, d, otherMonth, isToday, isSelected) {
@@ -7232,7 +7232,7 @@
 
         function openAccountModal() {
             // Account modal logic can be implemented here if needed
-            alert('계정 관리 모달은 준비 중입니다.');
+            alert('계정 관�?모달?� 준�?중입?�다.');
         }
 
         function openManualModal() {
@@ -7260,7 +7260,7 @@
     </script>
     
     <!-- Floating Calculator -->
-    <div class="floating-calc-btn" onclick="toggleCalculator()" title="계산기 열기">
+    <div class="floating-calc-btn" onclick="toggleCalculator()" title="계산�??�기">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
             <line x1="8" y1="6" x2="16" y2="6"></line>

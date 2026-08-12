@@ -128,7 +128,7 @@ function updateCloudMenuStatus() {
             if (isConnected) {
                 const isDark = document.documentElement.classList.contains('dark');
                 const greenColor = isDark ? '#81C784' : '#2E7D32';
-                cloudMenu.innerHTML = `☁️ <span style="color: ${greenColor} !important;">Cloud</span>`;
+                cloudMenu.innerHTML = `?�️ <span style="color: ${greenColor} !important;">Cloud</span>`;
                 cloudMenu.style.setProperty('color', greenColor, 'important');
             } else {
                 cloudMenu.innerHTML = 'Cloud';
@@ -142,7 +142,7 @@ function updateCloudMenuStatus() {
 
 function updateThemeUI(isDark) {
     const btn = document.getElementById('themeToggleBtn');
-    if (btn) btn.innerText = isDark ? '☀️' : '🌙';
+    if (btn) btn.innerText = isDark ? '?��? : '?��';
 }
 
 // Initial theme check
@@ -184,7 +184,7 @@ async function backgroundGitHubSync(immediate = false) {
             if (!yearDataStr) return;
 
             const filePath = `asset/data/${yearKey}.json`;
-            const branch = config.branch || 'main';
+            const branch = config.branch || 'master';
             const url = `https://api.github.com/repos/${config.repo}/contents/${filePath}?ref=${branch}`;
             const headers = {
                 'Authorization': `token ${config.token}`,
@@ -262,7 +262,7 @@ async function flushPendingSync() {
 window.addEventListener('beforeunload', (e) => {
     if (autoSyncTimeout || window.pendingSyncPromise) {
         e.preventDefault();
-        e.returnValue = '데이터가 아직 GitHub에 동기화되지 않았습니다. 페이지를 벗어나시겠습니까?';
+        e.returnValue = '?�이?��? ?�직 GitHub???�기?�되지 ?�았?�니?? ?�이지�?벗어?�시겠습?�까?';
         return e.returnValue;
     }
 });
@@ -274,7 +274,7 @@ function showAutoSyncToast() {
     const toast = document.createElement('div');
     toast.id = 'autoSyncToast';
     toast.style.cssText = `position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:white; padding:8px 16px; border-radius:20px; font-size:0.8rem; z-index:10000; animation: fadeOut 3s forwards; pointer-events:none; display:flex; align-items:center; gap:6px;`;
-    toast.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> 로컬 및 GitHub 서버 동기화 완료`;
+    toast.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> 로컬 �?GitHub ?�버 ?�기???�료`;
     
     // Add fadeOut animation if not exists
     if (!document.getElementById('toastKeyframes')) {

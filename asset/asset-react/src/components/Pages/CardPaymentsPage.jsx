@@ -66,13 +66,13 @@ export default function CardPaymentsPage() {
   };
 
 
-  // --- 항목별 라인 설정 (문구 간소화 적용) ---
+  // --- 항목별 라인 설정 (첨부 이미지 스타일 색상 적용: 노랑, 주황-레드, 핑크, 보라, 파랑) ---
   const lineConfigs = {
-    total: { label: '전체', color: '#ff8a00', gradId: 'totalGrad', areaGradId: 'totalAreaGrad', dimColor: 'rgba(255, 138, 0, 0.12)' },
-    cash: { label: '현금', color: '#ec4899', gradId: 'cashGrad', areaGradId: 'cashAreaGrad', dimColor: 'rgba(236, 72, 153, 0.12)' },
-    card: { label: '카드', color: '#3b82f6', gradId: 'cardGrad', areaGradId: 'cardAreaGrad', dimColor: 'rgba(59, 130, 246, 0.12)' },
-    jisan: { label: '지산', color: '#10b981', gradId: 'jisanGrad', areaGradId: 'jisanAreaGrad', dimColor: 'rgba(16, 185, 129, 0.12)' },
-    kabank: { label: '카뱅', color: '#8b5cf6', gradId: 'kabankGrad', areaGradId: 'kabankAreaGrad', dimColor: 'rgba(139, 92, 246, 0.12)' }
+    total: { label: '전체', color: '#ffb703', gradId: 'totalGrad', areaGradId: 'totalAreaGrad', dimColor: 'rgba(255, 183, 3, 0.15)' },
+    cash: { label: '현금', color: '#f77f00', gradId: 'cashGrad', areaGradId: 'cashAreaGrad', dimColor: 'rgba(247, 127, 0, 0.15)' },
+    card: { label: '카드', color: '#e63946', gradId: 'cardGrad', areaGradId: 'cardAreaGrad', dimColor: 'rgba(230, 57, 70, 0.15)' },
+    jisan: { label: '지산', color: '#8a2be2', gradId: 'jisanGrad', areaGradId: 'jisanAreaGrad', dimColor: 'rgba(138, 43, 226, 0.15)' },
+    kabank: { label: '카뱅', color: '#2563eb', gradId: 'kabankGrad', areaGradId: 'kabankAreaGrad', dimColor: 'rgba(37, 99, 235, 0.15)' }
   };
 
   // --- 라인 활성화 토글 상태 (기본값: '전체' 칩만 활성화) ---
@@ -643,21 +643,25 @@ export default function CardPaymentsPage() {
                 style={{ overflow: 'visible', minWidth: '700px' }}
               >
                 <defs>
-                  {/* 각 라인별 3D 영역 그라디언트 정의 */}
+                  {/* 각 라인별 첨부 이미지 스타일의 부드러운 하단 그라디언트 영역 정의 */}
                   {Object.entries(lineConfigs).map(([key, cfg]) => (
                     <linearGradient key={`grad-${key}`} id={`lineGrad-${key}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={cfg.color} stopOpacity="0.45" />
-                      <stop offset="60%" stopColor={cfg.color} stopOpacity="0.1" />
+                      <stop offset="0%" stopColor={cfg.color} stopOpacity="0.35" />
+                      <stop offset="50%" stopColor={cfg.color} stopOpacity="0.12" />
                       <stop offset="100%" stopColor={cfg.color} stopOpacity="0.0" />
                     </linearGradient>
                   ))}
 
-                  {/* 3D 글로우 드롭 섀도우 필터 */}
-                  <filter id="shadow3D" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="3" dy="8" stdDeviation="6" floodColor="#000000" floodOpacity="0.4" />
+                  {/* 은은한 네온 글로우 필터 */}
+                  <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
                   </filter>
                   
-                  {/* 네온 글로우 3D 필터 */}
+                  {/* 노드 포인트 네온 글로우 */}
                   <filter id="neon3D" x="-30%" y="-30%" width="160%" height="160%">
                     <feGaussianBlur stdDeviation="4" result="blur" />
                     <feMerge>
@@ -802,16 +806,14 @@ export default function CardPaymentsPage() {
                   return (
                     <g key={key} style={{ pointerEvents: 'none' }}>
                       <path d={areaD} fill={`url(#lineGrad-${key})`} />
-                      <path d={shadowPathD} fill="none" stroke={cfg.color} strokeWidth="3" opacity="0.2" strokeLinecap="round" />
-                      <path d={pathD} fill="none" stroke={cfg.color} strokeWidth="3.5" filter="url(#shadow3D)" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d={pathD} fill="none" stroke={cfg.color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                       {linePoints.map((p, idx) => {
                         const isHovered = hoveredPoint && hoveredPoint.month === p.month;
                         const isCurMonth = month === (idx + 1);
                         return (
                           <g key={idx}>
-                            <circle cx={p.x + depthX} cy={p.y + depthY} r={isHovered ? 6 : 4} fill={cfg.color} opacity="0.3" style={{ transition: 'all 0.25s ease' }} />
-                            <circle cx={p.x} cy={p.y} r={isHovered ? 9 : (isCurMonth ? 7 : 5)} fill={dark ? "#0f172a" : "#ffffff"} stroke={cfg.color} strokeWidth={isHovered ? "3.5" : "2.5"} filter={isHovered ? "url(#neon3D)" : "none"} style={{ transition: 'all 0.25s ease' }} />
-                            <circle cx={p.x} cy={p.y} r={isHovered ? 4 : (isCurMonth ? 3.5 : 2.5)} fill={cfg.color} style={{ transition: 'all 0.25s ease' }} />
+                            <circle cx={p.x} cy={p.y} r={isHovered ? 8 : (isCurMonth ? 6 : 4)} fill={dark ? "#0f172a" : "#ffffff"} stroke={cfg.color} strokeWidth={isHovered ? "3.5" : "2.5"} filter={isHovered ? "url(#neon3D)" : "none"} style={{ transition: 'all 0.25s ease' }} />
+                            <circle cx={p.x} cy={p.y} r={isHovered ? 4 : (isCurMonth ? 3 : 2)} fill={cfg.color} style={{ transition: 'all 0.25s ease' }} />
                           </g>
                         );
                       })}
@@ -930,7 +932,7 @@ export default function CardPaymentsPage() {
               income: (
                 <div 
                   ref={incomeCardRef}
-                  className="top-volume-card top-volume-card-current"
+                  className="top-volume-card top-volume-card-income"
                   onMouseEnter={() => {
                     if (window.innerWidth > 768) {
                       setIsExpenseHovered(false);
@@ -956,50 +958,37 @@ export default function CardPaymentsPage() {
                   style={{
                     position: 'relative',
                     zIndex: isIncomeHovered ? 50 : 1,
-                    borderTop: '3px solid var(--teal)',
-                    height: '100%'
+                    height: '100%',
+                    padding: '0.75rem 1rem'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '8px',
-                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--teal)',
-                        border: '1px solid rgba(16, 185, 129, 0.3)'
-                      }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          INCOME
-                        </div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          수입
-                        </div>
-                      </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                    <div style={{
+                      width: 34, height: 34, borderRadius: '10px',
+                      background: 'rgba(16, 185, 129, 0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#10b981', flexShrink: 0
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.2 }}>INCOME</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>수입</div>
                     </div>
                   </div>
 
                   <div style={{ 
-                    fontSize: 'clamp(1.1rem, 2.2vw, 1.4rem)', 
-                    fontWeight: 900, 
-                    color: 'var(--teal)', 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    letterSpacing: '-0.03em',
-                    marginBottom: '0.4rem',
-                    lineHeight: 1.1,
-                    textAlign: 'right'
+                    fontSize: 'clamp(1.1rem, 2.2vw, 1.45rem)', fontWeight: 900, color: '#10b981', 
+                    fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em', marginBottom: '0.6rem', lineHeight: 1.1
                   }}>
                     {formatKRW(totalIncome)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid rgba(226, 232, 240, 0.7)' }}>
                     <span>수입 항목 {(sections.income || []).length}건</span>
-                    <span style={{ color: 'var(--teal)', fontWeight: 700 }}>상세 보기</span>
+                    <span style={{ color: '#10b981', fontWeight: 700 }}>상세 보기</span>
                   </div>
 
                   {/* PC 수입 상세 툴팁 레이어 */}
@@ -1008,7 +997,7 @@ export default function CardPaymentsPage() {
                       className="summary-detail-modal"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div style={{ fontSize: '0.8rem', color: 'var(--teal)', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
+                      <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
                         수입 내역
                       </div>
                       <div className="summary-detail-modal-list">
@@ -1023,7 +1012,7 @@ export default function CardPaymentsPage() {
                                   : (i.category || i.content || '미지정')
                                 }
                               </span>
-                              <span style={{ fontWeight: 800, color: 'var(--teal)', textAlign: 'right', flexShrink: 0, fontFamily: "'Plus Jakarta Sans', monospace" }}>{formatKRW(i.amount)}원</span>
+                              <span style={{ fontWeight: 800, color: '#10b981', textAlign: 'right', flexShrink: 0, fontFamily: "'Plus Jakarta Sans', monospace" }}>{formatKRW(i.amount)}원</span>
                             </div>
                           ))
                         )}
@@ -1035,7 +1024,7 @@ export default function CardPaymentsPage() {
               cash: (
                 <div 
                   ref={expenseCardRef}
-                  className="top-volume-card top-volume-card-next"
+                  className="top-volume-card top-volume-card-cash"
                   onMouseEnter={() => {
                     if (window.innerWidth > 768) {
                       setIsIncomeHovered(false);
@@ -1061,50 +1050,37 @@ export default function CardPaymentsPage() {
                   style={{
                     position: 'relative',
                     zIndex: isExpenseHovered ? 50 : 1,
-                    borderTop: '3px solid #ff8a00',
-                    height: '100%'
+                    height: '100%',
+                    padding: '0.75rem 1rem'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '8px',
-                        background: 'linear-gradient(135deg, rgba(255, 138, 0, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#ff8a00',
-                        border: '1px solid rgba(255, 138, 0, 0.3)'
-                      }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          CASH
-                        </div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          현금
-                        </div>
-                      </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                    <div style={{
+                      width: 34, height: 34, borderRadius: '10px',
+                      background: 'rgba(245, 158, 11, 0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#f59e0b', flexShrink: 0
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.2 }}>CASH</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>현금</div>
                     </div>
                   </div>
 
                   <div style={{ 
-                    fontSize: 'clamp(1.1rem, 2.2vw, 1.4rem)', 
-                    fontWeight: 900, 
-                    color: '#ff8a00', 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    letterSpacing: '-0.03em',
-                    marginBottom: '0.4rem',
-                    lineHeight: 1.1,
-                    textAlign: 'right'
+                    fontSize: 'clamp(1.1rem, 2.2vw, 1.45rem)', fontWeight: 900, color: '#f59e0b', 
+                    fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em', marginBottom: '0.6rem', lineHeight: 1.1
                   }}>
                     {formatKRW(paymentsTotalAmount)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid rgba(226, 232, 240, 0.7)' }}>
                     <span>현금 지출 {cardPayments.length}건</span>
-                    <span style={{ color: '#ff8a00', fontWeight: 700 }}>상세 보기</span>
+                    <span style={{ color: '#f59e0b', fontWeight: 700 }}>상세 보기</span>
                   </div>
 
                   {/* PC 현금 상세 툴팁 레이어 */}
@@ -1113,7 +1089,7 @@ export default function CardPaymentsPage() {
                       className="summary-detail-modal"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div style={{ fontSize: '0.8rem', color: '#ff8a00', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
+                      <div style={{ fontSize: '0.8rem', color: '#f59e0b', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
                         현금 지출 내역
                       </div>
                       <div className="summary-detail-modal-list">
@@ -1128,7 +1104,7 @@ export default function CardPaymentsPage() {
                                   ({displayPayDate(p.payDate)})
                                 </span>
                               </span>
-                              <span style={{ fontWeight: 800, color: p.isPaid ? 'var(--text-muted)' : '#ff8a00', textAlign: 'right', flexShrink: 0, textDecoration: p.isPaid ? 'line-through' : 'none', fontFamily: "'Plus Jakarta Sans', monospace" }}>{formatKRW(p.amount)}원</span>
+                              <span style={{ fontWeight: 800, color: p.isPaid ? 'var(--text-muted)' : '#f59e0b', textAlign: 'right', flexShrink: 0, textDecoration: p.isPaid ? 'line-through' : 'none', fontFamily: "'Plus Jakarta Sans', monospace" }}>{formatKRW(p.amount)}원</span>
                             </div>
                           ))
                         )}
@@ -1140,7 +1116,7 @@ export default function CardPaymentsPage() {
               card: (
                 <div 
                   ref={cardCardRef}
-                  className="top-volume-card"
+                  className="top-volume-card top-volume-card-card"
                   onMouseEnter={() => {
                     if (window.innerWidth > 768) {
                       setIsIncomeHovered(false);
@@ -1166,49 +1142,36 @@ export default function CardPaymentsPage() {
                   style={{
                     position: 'relative',
                     zIndex: isCardHovered ? 50 : 1,
-                    borderTop: '3px solid #3b82f6',
-                    height: '100%'
+                    height: '100%',
+                    padding: '0.75rem 1rem'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '8px',
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#3b82f6',
-                        border: '1px solid rgba(59, 130, 246, 0.3)'
-                      }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                          <line x1="1" y1="10" x2="23" y2="10" />
-                        </svg>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          CARD
-                        </div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          카드
-                        </div>
-                      </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                    <div style={{
+                      width: 34, height: 34, borderRadius: '10px',
+                      background: 'rgba(59, 130, 246, 0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#3b82f6', flexShrink: 0
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                        <line x1="1" y1="10" x2="23" y2="10" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.2 }}>CARD</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>카드</div>
                     </div>
                   </div>
 
                   <div style={{ 
-                    fontSize: 'clamp(1.1rem, 2.2vw, 1.4rem)', 
-                    fontWeight: 900, 
-                    color: '#3b82f6', 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    letterSpacing: '-0.03em',
-                    marginBottom: '0.4rem',
-                    lineHeight: 1.1,
-                    textAlign: 'right'
+                    fontSize: 'clamp(1.1rem, 2.2vw, 1.45rem)', fontWeight: 900, color: '#3b82f6', 
+                    fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em', marginBottom: '0.6rem', lineHeight: 1.1
                   }}>
                     {formatKRW(cardTotalAmount)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid rgba(226, 232, 240, 0.7)' }}>
                     <span>카드 결제 {cardBreakdown.length}건</span>
                     <span style={{ color: '#3b82f6', fontWeight: 700 }}>상세 보기</span>
                   </div>
@@ -1247,113 +1210,84 @@ export default function CardPaymentsPage() {
               ),
               difference: (
                 <div 
-                  className="top-volume-card"
+                  className={`top-volume-card ${isShortage ? 'top-volume-card-expense' : 'top-volume-card-income'}`}
                   style={{
-                    borderTop: `3px solid ${isShortage ? 'var(--coral)' : 'var(--teal)'}`,
-                    height: '100%'
+                    height: '100%',
+                    padding: '0.75rem 1rem'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '8px',
-                        background: isShortage 
-                          ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(244, 63, 94, 0.2) 100%)' 
-                          : 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: isShortage ? 'var(--coral)' : 'var(--teal)',
-                        border: `1px solid ${isShortage ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
-                      }}>
-                        {isShortage ? (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                          </svg>
-                        ) : (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12"/>
-                          </svg>
-                        )}
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          DIFFERENCE
-                        </div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          차액
-                        </div>
-                      </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                    <div style={{
+                      width: 34, height: 34, borderRadius: '10px',
+                      background: isShortage ? 'rgba(244, 63, 94, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: isShortage ? 'var(--coral)' : '#10b981', flexShrink: 0
+                    }}>
+                      {isShortage ? (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.2 }}>DIFFERENCE</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>차액</div>
                     </div>
                   </div>
 
                   <div style={{ 
-                    fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)', 
-                    fontWeight: 900, 
-                    color: isShortage ? 'var(--coral)' : 'var(--teal)', 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    letterSpacing: '-0.03em',
-                    marginBottom: '0.2rem',
-                    lineHeight: 1.1,
-                    textAlign: 'right'
+                    fontSize: 'clamp(1.1rem, 2.2vw, 1.45rem)', fontWeight: 900, 
+                    color: isShortage ? 'var(--coral)' : '#10b981', 
+                    fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em', marginBottom: '0.6rem', lineHeight: 1.1
                   }}>
                     {isShortage ? `-${formatKRW(absDifference)}` : formatKRW(absDifference)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid rgba(226, 232, 240, 0.7)' }}>
                     <span>{isShortage ? '지출 초과' : '수입 여유'}</span>
-                    <span style={{ color: isShortage ? 'var(--coral)' : 'var(--teal)', fontWeight: 700 }}>
-                      {isShortage ? '부족' : '여유'}
-                    </span>
+                    <span style={{ color: isShortage ? 'var(--coral)' : '#10b981', fontWeight: 700 }}>{isShortage ? '부족' : '여유'}</span>
                   </div>
                 </div>
               ),
               totalExpense: (
                 <div 
-                  className="top-volume-card"
+                  className="top-volume-card top-volume-card-expense"
                   style={{
-                    borderTop: '3px solid #ec4899',
-                    height: '100%'
+                    height: '100%',
+                    padding: '0.75rem 1rem'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '8px',
-                        background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(244, 114, 182, 0.2) 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#ec4899',
-                        border: '1px solid rgba(236, 72, 153, 0.3)'
-                      }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          EXPENSE
-                        </div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          지출
-                        </div>
-                      </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                    <div style={{
+                      width: 34, height: 34, borderRadius: '10px',
+                      background: 'rgba(244, 63, 94, 0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'var(--coral)', flexShrink: 0
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.2 }}>EXPENSE</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>총 지출</div>
                     </div>
                   </div>
 
                   <div style={{ 
-                    fontSize: 'clamp(1.1rem, 2.2vw, 1.4rem)', 
-                    fontWeight: 900, 
-                    color: '#ec4899', 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    letterSpacing: '-0.03em',
-                    marginBottom: '0.4rem',
-                    lineHeight: 1.1,
-                    textAlign: 'right'
+                    fontSize: 'clamp(1.1rem, 2.2vw, 1.45rem)', fontWeight: 900, color: 'var(--coral)', 
+                    fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em', marginBottom: '0.6rem', lineHeight: 1.1
                   }}>
                     {formatKRW(totalOutflow)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid rgba(226, 232, 240, 0.7)' }}>
                     <span>현금 + 카드 원금 합산</span>
-                    <span style={{ color: '#ec4899', fontWeight: 700 }}>총 지출</span>
+                    <span style={{ color: 'var(--coral)', fontWeight: 700 }}>총 지출</span>
                   </div>
                 </div>
               ),
@@ -1386,64 +1320,52 @@ export default function CardPaymentsPage() {
                   style={{
                     position: 'relative',
                     zIndex: isPrepaidHovered ? 50 : 1,
-                    borderTop: '3px solid #8b5cf6',
-                    height: '100%'
+                    borderLeft: '4px solid #8b5cf6',
+                    height: '100%',
+                    padding: '0.75rem 1rem'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '8px',
-                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#8b5cf6',
-                        border: '1px solid rgba(139, 92, 246, 0.3)'
-                      }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          PAID
-                        </div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          납부
-                        </div>
-                      </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                    <div style={{
+                      width: 34, height: 34, borderRadius: '10px',
+                      background: 'rgba(139, 92, 246, 0.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#8b5cf6', flexShrink: 0
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.2 }}>PAID</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>납부</div>
                     </div>
                   </div>
 
                   <div style={{ 
-                    fontSize: 'clamp(1.1rem, 2.2vw, 1.4rem)', 
-                    fontWeight: 900, 
-                    color: '#8b5cf6', 
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    letterSpacing: '-0.03em',
-                    marginBottom: '0.4rem',
-                    lineHeight: 1.1,
-                    textAlign: 'right'
+                    fontSize: 'clamp(1.1rem, 2.2vw, 1.45rem)', fontWeight: 900, color: '#8b5cf6', 
+                    fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.03em', marginBottom: '0.6rem', lineHeight: 1.1
                   }}>
                     {formatKRW(totalPrepaidAmount)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', paddingTop: '0.4rem', borderTop: '1px solid rgba(226, 232, 240, 0.7)' }}>
                     <span>현금 {cardPayments.filter(p => p.isPaid).length}건 · 카드 {cardMonthlySummaries.filter(s => s.isPaid).length}건</span>
                     <span style={{ color: '#8b5cf6', fontWeight: 700 }}>상세 보기</span>
                   </div>
 
-                  {/* PC 납부 상세 툴팁 레이어 */}
+                  {/* PC 선납/선결제 상세 툴팁 레이어 */}
                   {isPrepaidHovered && window.innerWidth > 768 && (
                     <div 
                       className="summary-detail-modal"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div style={{ fontSize: '0.8rem', color: '#8b5cf6', fontWeight: 800, borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
-                        결제 완료
+                        선납 / 선결제 완료 내역
                       </div>
                       <div className="summary-detail-modal-list">
-                        {totalPrepaidAmount === 0 ? (
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem 0' }}>납부 또는 결제 완료 항목이 없습니다.</div>
+                        {cardPayments.filter(p => p.isPaid).length === 0 && cardMonthlySummaries.filter(s => s.isPaid).length === 0 ? (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem 0' }}>완료된 선납/선결제 내역이 없습니다.</div>
                         ) : (
                           <>
                             {cardPayments.filter(p => p.isPaid).map((p, idx) => (
