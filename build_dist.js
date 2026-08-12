@@ -43,13 +43,41 @@ function copyRecursiveSync(src, dest) {
 }
 
 // 2. Build React/Vite Apps
+// Safety: Validate source index.html is a dev entry point (not a compiled dist output)
+function validateSourceIndexHtml(dir) {
+  const indexPath = path.join(dir, 'index.html');
+  if (!fs.existsSync(indexPath)) return;
+  const content = fs.readFileSync(indexPath, 'utf-8');
+  // Compiled dist/index.html contains hashed asset filenames like index-XXXXXXXX.js
+  if (/assets\/index-[A-Za-z0-9_-]+\.js/.test(content)) {
+    throw new Error(
+      `[SAFETY] ${indexPath} contains compiled asset paths!\n` +
+      `This file must use the dev entry point (e.g. <script src="/src/main.jsx">).\n` +
+      `It appears dist/index.html was accidentally copied over the source. Please restore it.`
+    );
+  }
+}
+
 function buildApp(dir) {
+  const indexPath = path.join(dir, 'index.html');
+  // Validate before build
+  validateSourceIndexHtml(dir);
+  // Backup source index.html
+  const backup = fs.existsSync(indexPath) ? fs.readFileSync(indexPath) : null;
   const nodeModulesDir = path.join(dir, 'node_modules');
   if (!fs.existsSync(nodeModulesDir)) {
     console.log(`> Installing dependencies in ${dir}...`);
-    runCommand('npm install --legacy-peer-deps --no-audit --no-fund', dir);
+    runCommand('npm install --no-audit --no-fund', dir);
   }
-  runCommand('npm run build', dir);
+  try {
+    runCommand('npm run build', dir);
+  } finally {
+    // Always restore source index.html after build (Vite may overwrite it)
+    if (backup !== null) {
+      fs.writeFileSync(indexPath, backup);
+      console.log(`> Restored source index.html in ${dir}`);
+    }
+  }
 }
 
 try {
@@ -64,7 +92,7 @@ try {
   buildApp(path.join(rootDir, 'carrep'));
 } catch (e) { console.error('carrep build failed:', e.message); }
 
-// 3. Copy Learn dist (and sync compiled index.html to root learn folder for Vercel static router)
+// 3. Copy Learn dist (and necessary data/docs)
 console.log('> Copying learn...');
 if (fs.existsSync(path.join(rootDir, 'learn', 'docs'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'docs'), path.join(deployDir, 'learn', 'docs'));
@@ -74,12 +102,9 @@ if (fs.existsSync(path.join(rootDir, 'learn', 'data.json'))) {
 }
 if (fs.existsSync(path.join(rootDir, 'learn', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
-  if (fs.existsSync(path.join(rootDir, 'learn', 'dist', 'index.html'))) {
-    fs.copyFileSync(path.join(rootDir, 'learn', 'dist', 'index.html'), path.join(rootDir, 'learn', 'index.html'));
-  }
 }
 
-// 4. Copy CarRep dist (and sync compiled index.html to root carrep folder for Vercel static router)
+// 4. Copy CarRep dist (and necessary data/images)
 console.log('> Copying carrep...');
 if (fs.existsSync(path.join(rootDir, 'carrep', 'data'))) {
   copyRecursiveSync(path.join(rootDir, 'carrep', 'data'), path.join(deployDir, 'carrep', 'data'));
@@ -89,9 +114,6 @@ if (fs.existsSync(path.join(rootDir, 'carrep', 'avatars'))) {
 }
 if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), path.join(deployDir, 'carrep'));
-  if (fs.existsSync(path.join(rootDir, 'carrep', 'dist', 'index.html'))) {
-    fs.copyFileSync(path.join(rootDir, 'carrep', 'dist', 'index.html'), path.join(rootDir, 'carrep', 'index.html'));
-  }
 }
 
 // 5. Copy Asset & Asset-React dist
