@@ -277,47 +277,50 @@ async function getYoutubeLiveVideoId(handle, channelId) {
   }
 
   let videoId = null;
-  let scrapeError = null;
 
-  // 1순위: 유튜브 /live 공식 페이지 직접 스크래핑 (0.5초 내 가장 빠른 100% 정확한 실시간 감지)
+  // 1순위: 유튜브 /live 공식 페이지 직접 스크래핑
   try {
     const url = `https://www.youtube.com/@${handle}/live`;
     const html = await fetchUrl(url);
-    
-    if (html) {
-      const isConsentPage = html.includes('consent.youtube.com') || 
-                            html.includes('consent.google.com') || 
-                            html.includes('Before you continue') || 
-                            html.includes('consent_cookie_conds');
-      if (!isConsentPage) {
-        let match = html.match(/"liveStreamability"[\s\S]*?"videoId":"([a-zA-Z0-9_-]{11})"/);
-        if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') {
+    if (html && !html.includes('consent.youtube.com') && !html.includes('consent.google.com')) {
+      let match = html.match(/"liveStreamability"[\s\S]*?"videoId":"([a-zA-Z0-9_-]{11})"/);
+      if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw') {
+        videoId = match[1];
+        console.log(`[YT Live Scraper] Main scraper liveStreamability videoId: ${videoId}`);
+      } else {
+        match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+        if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw' && (html.includes('"isLive":true') || html.includes('"isLive": true'))) {
           videoId = match[1];
-          console.log(`[YT Live Scraper] Main scraper liveStreamability videoId: ${videoId}`);
-        } else {
-          match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-          if (match?.[1] && match[1] !== 'C3aa-Vv4Fzw' && (html.includes('"isLive":true') || html.includes('"isLive": true'))) {
-            videoId = match[1];
-            console.log(`[YT Live Scraper] Main scraper isLive videoId: ${videoId}`);
-          }
+          console.log(`[YT Live Scraper] Main scraper isLive videoId: ${videoId}`);
         }
       }
     }
   } catch (err) {
     console.warn(`[YT Live Scraper] Direct scrape failed for ${handle}:`, err.message);
-    scrapeError = err;
   }
 
-          throw scrapeError || fallbackErr;
-        }
-      }
-    } else {
-      throw scrapeError || new Error('Could not find live video ID in page source');
+  // 2순위: 획득 실패 시 Invidious/RSS 폴백 스크래퍼 시도
+  const cid = channelId || HANDLE_TO_CHANNEL_ID[handle];
+  if (!videoId && cid) {
+    try {
+      videoId = await getYoutubeLiveVideoIdFallback(handle, cid);
+    } catch (e) {
+      console.warn(`[YT Live Scraper] Fallback failed for ${handle}:`, e.message);
     }
   }
 
-  ytLiveCache.set(cacheKey, { videoId, timestamp: Date.now() });
-  return videoId;
+  // 3순위: 비상 우선순위 실시간 ID 맵 사용
+  if (!videoId && cid && PRIORITY_LIVE_IDS[cid]) {
+    videoId = PRIORITY_LIVE_IDS[cid];
+    console.log(`[YT Live Scraper] Using priority fallback ID for ${handle}: ${videoId}`);
+  }
+
+  if (videoId) {
+    ytLiveCache.set(cacheKey, { videoId, timestamp: Date.now() });
+    return videoId;
+  }
+
+  throw new Error(`Could not determine live video ID for ${handle}`);
 }
 
 export default async function handler(req, res) {

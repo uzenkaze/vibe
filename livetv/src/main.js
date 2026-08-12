@@ -1369,7 +1369,7 @@ async function showYouTubeIframePlayback(ch) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
 
     // 2a. 1순위: 자체 백엔드/서버리스 라이브 분석기 호출 (CORS 우회)
-    if (!liveVideoId && ch.ytHandle && !isNative) {
+    if (!liveVideoId && ch.ytHandle) {
       try {
         const handle = ch.ytHandle.replace('@', '');
         const proxyBase = getProxyBaseUrl();
