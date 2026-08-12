@@ -10,6 +10,9 @@ Asset/data/*.json
 !learn/package-lock.json
 !learn/data.json
 
+# Keep all deploy_dist files (Vercel serving directory)
+!deploy_dist/**
+
 # Node modules
 node_modules/
 dist/
@@ -21,7 +24,6 @@ dist/
 dev.db
 
 # Build & Deploy temp directories
-deploy_dist/
 temp-deploy/
 .gradle/
 build/
