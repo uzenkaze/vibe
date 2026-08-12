@@ -64,19 +64,25 @@ try {
   buildApp(path.join(rootDir, 'carrep'));
 } catch (e) { console.error('carrep build failed:', e.message); }
 
-// 3. Copy Learn (source folder + dist overlay)
+// 3. Copy Learn dist (and necessary data/docs)
 console.log('> Copying learn...');
-if (fs.existsSync(path.join(rootDir, 'learn'))) {
-  copyRecursiveSync(path.join(rootDir, 'learn'), path.join(deployDir, 'learn'));
+if (fs.existsSync(path.join(rootDir, 'learn', 'docs'))) {
+  copyRecursiveSync(path.join(rootDir, 'learn', 'docs'), path.join(deployDir, 'learn', 'docs'));
+}
+if (fs.existsSync(path.join(rootDir, 'learn', 'data.json'))) {
+  fs.copyFileSync(path.join(rootDir, 'learn', 'data.json'), path.join(deployDir, 'learn', 'data.json'));
 }
 if (fs.existsSync(path.join(rootDir, 'learn', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
 }
 
-// 4. Copy CarRep (source folder + dist overlay)
+// 4. Copy CarRep dist (and necessary data/images)
 console.log('> Copying carrep...');
-if (fs.existsSync(path.join(rootDir, 'carrep'))) {
-  copyRecursiveSync(path.join(rootDir, 'carrep'), path.join(deployDir, 'carrep'));
+if (fs.existsSync(path.join(rootDir, 'carrep', 'data'))) {
+  copyRecursiveSync(path.join(rootDir, 'carrep', 'data'), path.join(deployDir, 'carrep', 'data'));
+}
+if (fs.existsSync(path.join(rootDir, 'carrep', 'avatars'))) {
+  copyRecursiveSync(path.join(rootDir, 'carrep', 'avatars'), path.join(deployDir, 'carrep', 'avatars'));
 }
 if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), path.join(deployDir, 'carrep'));
