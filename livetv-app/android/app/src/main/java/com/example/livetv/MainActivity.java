@@ -58,7 +58,7 @@ public class MainActivity extends BridgeActivity {
                     setupJavascriptInterface(webView);
 
                     // remote live web app URL 직접 로드 (브라우저와 100% 동일하게 실행)
-                    webView.loadUrl("https://uzenkaze.github.io/vibe/livetv/");
+                    webView.loadUrl("https://vibe-kaze.vercel.app/livetv/");
                 }
             }
         });
