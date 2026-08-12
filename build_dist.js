@@ -60,6 +60,7 @@ function validateSourceIndexHtml(dir) {
 
 function buildApp(dir) {
   const indexPath = path.join(dir, 'index.html');
+  const distIndexPath = path.join(dir, 'dist', 'index.html');
   // Validate before build
   validateSourceIndexHtml(dir);
   // Backup source index.html
@@ -72,10 +73,17 @@ function buildApp(dir) {
   try {
     runCommand('npm run build', dir);
   } finally {
-    // Always restore source index.html after build (Vite may overwrite it)
+    // Save compiled dist/index.html before restoring source
+    const distIndexBackup = fs.existsSync(distIndexPath) ? fs.readFileSync(distIndexPath) : null;
+    // Always restore source index.html after build
     if (backup !== null) {
       fs.writeFileSync(indexPath, backup);
       console.log(`> Restored source index.html in ${dir}`);
+    }
+    // Re-write dist/index.html to ensure it has the compiled content (not source)
+    if (distIndexBackup !== null) {
+      fs.writeFileSync(distIndexPath, distIndexBackup);
+      console.log(`> Verified dist/index.html in ${dir}`);
     }
   }
 }
@@ -102,6 +110,12 @@ if (fs.existsSync(path.join(rootDir, 'learn', 'data.json'))) {
 }
 if (fs.existsSync(path.join(rootDir, 'learn', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
+  // Explicitly overwrite index.html with the compiled dist version (never source)
+  const learnDistIndex = path.join(rootDir, 'learn', 'dist', 'index.html');
+  if (fs.existsSync(learnDistIndex)) {
+    fs.copyFileSync(learnDistIndex, path.join(deployDir, 'learn', 'index.html'));
+    console.log('> Enforced deploy_dist/learn/index.html from dist (compiled)');
+  }
 }
 
 // 4. Copy CarRep dist (and necessary data/images)
@@ -114,6 +128,12 @@ if (fs.existsSync(path.join(rootDir, 'carrep', 'avatars'))) {
 }
 if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), path.join(deployDir, 'carrep'));
+  // Explicitly overwrite index.html with the compiled dist version (never source)
+  const carrepDistIndex = path.join(rootDir, 'carrep', 'dist', 'index.html');
+  if (fs.existsSync(carrepDistIndex)) {
+    fs.copyFileSync(carrepDistIndex, path.join(deployDir, 'carrep', 'index.html'));
+    console.log('> Enforced deploy_dist/carrep/index.html from dist (compiled)');
+  }
 }
 
 // 5. Copy Asset & Asset-React dist
