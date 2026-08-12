@@ -475,7 +475,7 @@ async function executeSearchNetwork(query, isAppend = false) {
     if (!isCapacitor && !isLocal) {
       console.log('[YT Music] Production website detected. Fetching via Vercel Backend Proxy API...');
       try {
-        const base = window.location.hostname.includes('github.io') ? 'https://vibe-eight-iota.vercel.app' : '';
+        const base = window.location.hostname.includes('github.io') ? 'https://vibe-kaze.vercel.app' : '';
         const res = await smartFetch(`${base}/api/youtube/music?q=${encodeURIComponent(query)}`, { timeout: 4500 });
         if (res.ok) {
           const data = await res.json();

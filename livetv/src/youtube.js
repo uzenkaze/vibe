@@ -413,7 +413,7 @@ async function searchInvidious(query, page = 1, limitChannelVideos = false) {
   // 1. 프로덕션 사이트 웹 환경의 경우, CORS/429 우회를 위해 신설한 Vercel 백엔드 검색 API를 1순위로 찌름
   if (!isCapacitor && !isLocal) {
     try {
-      const base = window.location.hostname.includes('github.io') ? 'https://vibe-eight-iota.vercel.app' : '';
+      const base = window.location.hostname.includes('github.io') ? 'https://vibe-kaze.vercel.app' : '';
       const res = await fetch(`${base}/api/youtube/search?q=${encodeURIComponent(query)}&page=${targetPage}`, { signal: AbortSignal.timeout(4500) });
       if (res.ok) {
         const data = await res.json();
@@ -702,7 +702,7 @@ function getProxyBaseUrl() {
                       (!!window.Capacitor || (window.location.hostname === 'localhost' && window.location.port === '') || window.location.protocol === 'capacitor:');
   
   if (isCapacitor) {
-    return 'https://vibe-eight-iota.vercel.app';
+    return 'https://vibe-kaze.vercel.app';
   }
   if (isLocal) {
     return `http://${window.location.hostname}:5174`;

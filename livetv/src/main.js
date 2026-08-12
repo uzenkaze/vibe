@@ -219,7 +219,7 @@ function getProxyBaseUrl() {
   const isGitHub = window.location.hostname.includes('github.io') || window.location.hostname.includes('github.com');
   
   if (isCapacitor || isGitHub) {
-    return 'https://vibe-eight-iota.vercel.app';
+    return 'https://vibe-kaze.vercel.app';
   }
   if (isLocal) {
     return `http://${window.location.hostname}:5174`;
