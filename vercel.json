@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node build_dist.js",
+  "buildCommand": "echo 'Pre-built: serving deploy_dist from git'",
   "outputDirectory": "deploy_dist",
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
