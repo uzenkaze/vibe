@@ -43,16 +43,25 @@ function copyRecursiveSync(src, dest) {
 }
 
 // 2. Build React/Vite Apps
+function buildApp(dir) {
+  const nodeModulesDir = path.join(dir, 'node_modules');
+  if (!fs.existsSync(nodeModulesDir)) {
+    console.log(`> Installing dependencies in ${dir}...`);
+    runCommand('npm install --no-audit --no-fund', dir);
+  }
+  runCommand('npm run build', dir);
+}
+
 try {
-  runCommand('npm run build', path.join(rootDir, 'learn'));
+  buildApp(path.join(rootDir, 'learn'));
 } catch (e) { console.error('learn build failed:', e.message); }
 
 try {
-  runCommand('npm run build', path.join(rootDir, 'asset', 'asset-react'));
+  buildApp(path.join(rootDir, 'asset', 'asset-react'));
 } catch (e) { console.error('asset-react build failed:', e.message); }
 
 try {
-  runCommand('npm run build', path.join(rootDir, 'carrep'));
+  buildApp(path.join(rootDir, 'carrep'));
 } catch (e) { console.error('carrep build failed:', e.message); }
 
 // 3. Copy Learn dist
