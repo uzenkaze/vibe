@@ -157,6 +157,9 @@ git commit -m "Integrated deploy: learn, asset, task, and others"
 git push -f https://github.com/uzenkaze/vibe.git master:gh-pages
 Set-Location ..
 
+Write-Host "> Vercel Production 동기화 중 (main 브랜치)..." -ForegroundColor Green
+git push origin master:main
+
 Write-Host ">>> 모든 사이트 배포 완료!" -ForegroundColor Green
 Write-Host "접속 주소:"
 Write-Host "- Learn: https://uzenkaze.github.io/vibe/learn/"
