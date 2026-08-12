@@ -42,79 +42,26 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-// Clean dev source templates required BEFORE Vite build
-const DEV_TEMPLATES = {
-  learn: `<!doctype html>
-<html lang="ko">
-<head>
-  <script type="text/javascript">
-    if (window.location.port === '5500' && window.self === window.top) {
-      window.location.replace('/?p=learn/');
-    }
-  </script>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="apple-touch-icon" href="/favicon.png" />
-  <meta name="theme-color" content="#0f1117" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <meta name="description" content="배움과 지식을 체계적으로 정리하고 관리하는 지식 관리 플랫폼" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <title>Hans's Knowledge</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-</html>`,
-  carrep: `<!doctype html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <meta name="description" content="차량 정비 내역을 입력하면 수리 부위를 시각화하고 보고서를 자동 생성해주는 서비스입니다." />
-    <title>CarRep — 차량 정비 보고서</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Inter:wght@400;600;700&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>`,
-  'asset-react': `<!doctype html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>Asset React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>`
-};
-
 function buildApp(appName, dir) {
   const sourceIndexPath = path.join(dir, 'index.html');
-  
-  // Step 1: Ensure clean dev entry point BEFORE build so Vite can resolve /src/main.*
-  if (DEV_TEMPLATES[appName]) {
-    fs.writeFileSync(sourceIndexPath, DEV_TEMPLATES[appName], 'utf-8');
+  const distIndexPath = path.join(dir, 'dist', 'index.html');
+
+  // If source index.html was synced with compiled dist/index.html in a previous build,
+  // we must check if vite build will fail due to pre-existing asset script links.
+  // Replacing with clean dev script tag ONLY IF compiled asset is present.
+  if (fs.existsSync(sourceIndexPath)) {
+    let content = fs.readFileSync(sourceIndexPath, 'utf-8');
+    if (content.includes('/assets/index-') || content.includes('assets/index-')) {
+      console.log(`> Restoring dev script tag in ${sourceIndexPath} before build...`);
+      if (appName === 'learn') {
+        content = content.replace(/<script type="module" crossorigin src="[^"]+"><\/script>/, '<script type="module" src="/src/main.tsx"></script>')
+                         .replace(/<link rel="stylesheet" crossorigin href="[^"]+">/, '');
+      } else {
+        content = content.replace(/<script type="module" crossorigin src="[^"]+"><\/script>/, '<script type="module" src="/src/main.jsx"></script>')
+                         .replace(/<link rel="stylesheet" crossorigin href="[^"]+">/, '');
+      }
+      fs.writeFileSync(sourceIndexPath, content, 'utf-8');
+    }
   }
 
   const nodeModulesDir = path.join(dir, 'node_modules');
@@ -123,11 +70,10 @@ function buildApp(appName, dir) {
     runCommand('npm install --no-audit --no-fund', dir);
   }
   
-  // Step 2: Run Vite build
+  // Run Vite build
   runCommand('npm run build', dir);
 
-  // Step 3: Sync compiled dist/index.html back to source index.html so Vercel serving source index.html gets compiled bundle!
-  const distIndexPath = path.join(dir, 'dist', 'index.html');
+  // Sync compiled dist/index.html back to source index.html
   if (fs.existsSync(distIndexPath)) {
     fs.copyFileSync(distIndexPath, sourceIndexPath);
     console.log(`> Synced compiled ${distIndexPath} -> ${sourceIndexPath}`);
