@@ -80,6 +80,15 @@
       "id": "cat_mr46ymt7_p3bvv",
       "createdAt": "2026-07-03T00:24:51.451Z",
       "order": 8
+    },
+    {
+      "name": "Tax",
+      "description": "세금관련 정보",
+      "icon": "✏️",
+      "color": "#6366f1",
+      "id": "cat_mspm269f_0a6e2",
+      "createdAt": "2026-08-12T04:50:22.899Z",
+      "order": 9
     }
   ],
   "articles": [
