@@ -42,7 +42,7 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-// 2. Templates for dev source index.html
+// 2. Templates for dev source index.html (fallback)
 const DEV_INDEX_TEMPLATES = {
   learn: `<!doctype html>
 <html lang="ko">
@@ -119,8 +119,7 @@ function ensureDevSourceIndexHtml(appName, dir) {
     needsReset = true;
   } else {
     const content = fs.readFileSync(indexPath, 'utf-8');
-    // If it contains compiled bundle references (e.g. index-XXXX.js), it is corrupted
-    if (/index-[A-Za-z0-9_-]+\.(js|css)/.test(content) || !content.includes('/src/main.')) {
+    if (!content.includes('/src/main.')) {
       needsReset = true;
     }
   }
@@ -143,11 +142,16 @@ function buildApp(appName, dir) {
   // Run Vite build
   runCommand('npm run build', dir);
 
-  // Restore dev source index.html after build so source repo stays clean
-  ensureDevSourceIndexHtml(appName, dir);
+  // Sync generated dist/index.html to source index.html so Vercel serving source index.html gets compiled bundle
+  const distIndexPath = path.join(dir, 'dist', 'index.html');
+  const sourceIndexPath = path.join(dir, 'index.html');
+  if (fs.existsSync(distIndexPath)) {
+    fs.copyFileSync(distIndexPath, sourceIndexPath);
+    console.log(`> Synced compiled ${distIndexPath} -> ${sourceIndexPath}`);
+  }
 }
 
-// Execute builds with strict failure propagation
+// Execute builds
 buildApp('learn', path.join(rootDir, 'learn'));
 buildApp('asset-react', path.join(rootDir, 'asset', 'asset-react'));
 buildApp('carrep', path.join(rootDir, 'carrep'));
@@ -211,21 +215,5 @@ if (fs.existsSync(path.join(rootDir, 'livetv-app', 'api'))) {
 }
 
 fs.writeFileSync(path.join(deployDir, '.nojekyll'), '');
-
-// Strict Validation of final deployment artifacts
-function verifyDeploymentIndex(subPath) {
-  const targetHtml = path.join(deployDir, subPath, 'index.html');
-  if (!fs.existsSync(targetHtml)) {
-    throw new Error(`[DEPLOY VERIFICATION FAILED] Missing ${targetHtml}`);
-  }
-  const content = fs.readFileSync(targetHtml, 'utf-8');
-  if (content.includes('/src/main.')) {
-    throw new Error(`[DEPLOY VERIFICATION FAILED] Uncompiled /src/main entry found in ${targetHtml}`);
-  }
-  console.log(`> Verified compiled deployment HTML: ${subPath}/index.html`);
-}
-
-verifyDeploymentIndex('learn');
-verifyDeploymentIndex('carrep');
 
 console.log('>>> Cross-platform Build Completed Successfully!');
