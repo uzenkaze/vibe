@@ -42,8 +42,8 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-// 2. Templates for dev source index.html (fallback)
-const DEV_INDEX_TEMPLATES = {
+// Clean dev source templates required BEFORE Vite build
+const DEV_TEMPLATES = {
   learn: `<!doctype html>
 <html lang="ko">
 <head>
@@ -109,29 +109,13 @@ const DEV_INDEX_TEMPLATES = {
 </html>`
 };
 
-function ensureDevSourceIndexHtml(appName, dir) {
-  const indexPath = path.join(dir, 'index.html');
-  const template = DEV_INDEX_TEMPLATES[appName];
-  if (!template) return;
-  
-  let needsReset = false;
-  if (!fs.existsSync(indexPath)) {
-    needsReset = true;
-  } else {
-    const content = fs.readFileSync(indexPath, 'utf-8');
-    if (!content.includes('/src/main.')) {
-      needsReset = true;
-    }
-  }
-
-  if (needsReset) {
-    console.log(`> Resetting ${indexPath} to clean dev entry point...`);
-    fs.writeFileSync(indexPath, template, 'utf-8');
-  }
-}
-
 function buildApp(appName, dir) {
-  ensureDevSourceIndexHtml(appName, dir);
+  const sourceIndexPath = path.join(dir, 'index.html');
+  
+  // Step 1: Ensure clean dev entry point BEFORE build so Vite can resolve /src/main.*
+  if (DEV_TEMPLATES[appName]) {
+    fs.writeFileSync(sourceIndexPath, DEV_TEMPLATES[appName], 'utf-8');
+  }
 
   const nodeModulesDir = path.join(dir, 'node_modules');
   if (!fs.existsSync(nodeModulesDir)) {
@@ -139,12 +123,11 @@ function buildApp(appName, dir) {
     runCommand('npm install --no-audit --no-fund', dir);
   }
   
-  // Run Vite build
+  // Step 2: Run Vite build
   runCommand('npm run build', dir);
 
-  // Sync generated dist/index.html to source index.html so Vercel serving source index.html gets compiled bundle
+  // Step 3: Sync compiled dist/index.html back to source index.html so Vercel serving source index.html gets compiled bundle!
   const distIndexPath = path.join(dir, 'dist', 'index.html');
-  const sourceIndexPath = path.join(dir, 'index.html');
   if (fs.existsSync(distIndexPath)) {
     fs.copyFileSync(distIndexPath, sourceIndexPath);
     console.log(`> Synced compiled ${distIndexPath} -> ${sourceIndexPath}`);
