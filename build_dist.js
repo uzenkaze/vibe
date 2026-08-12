@@ -43,47 +43,31 @@ function copyRecursiveSync(src, dest) {
 }
 
 // 2. Build React/Vite Apps
-// Safety: Validate source index.html is a dev entry point (not a compiled dist output)
-function validateSourceIndexHtml(dir) {
-  const indexPath = path.join(dir, 'index.html');
-  if (!fs.existsSync(indexPath)) return;
-  const content = fs.readFileSync(indexPath, 'utf-8');
-  // Compiled dist/index.html contains hashed asset filenames like index-XXXXXXXX.js
-  if (/assets\/index-[A-Za-z0-9_-]+\.js/.test(content)) {
-    throw new Error(
-      `[SAFETY] ${indexPath} contains compiled asset paths!\n` +
-      `This file must use the dev entry point (e.g. <script src="/src/main.jsx">).\n` +
-      `It appears dist/index.html was accidentally copied over the source. Please restore it.`
-    );
-  }
-}
-
+// Strategy:
+//   - Source index.html = rich HTML with compiled asset paths (Vercel serves this directly)
+//   - Before build: temporarily replace with dev-entry for Vite to process
+//   - After build: restore original source index.html
+//   - deploy_dist/index.html is always explicitly copied from dist/index.html
 function buildApp(dir) {
   const indexPath = path.join(dir, 'index.html');
   const distIndexPath = path.join(dir, 'dist', 'index.html');
-  // Validate before build
-  validateSourceIndexHtml(dir);
-  // Backup source index.html
-  const backup = fs.existsSync(indexPath) ? fs.readFileSync(indexPath) : null;
+  // Backup current source index.html (rich HTML with compiled paths)
+  const sourceBackup = fs.existsSync(indexPath) ? fs.readFileSync(indexPath) : null;
   const nodeModulesDir = path.join(dir, 'node_modules');
   if (!fs.existsSync(nodeModulesDir)) {
     console.log(`> Installing dependencies in ${dir}...`);
     runCommand('npm install --no-audit --no-fund', dir);
   }
+  // Write minimal dev-entry so Vite bundles src/main correctly
+  const srcEntry = fs.existsSync(path.join(dir, 'src', 'main.tsx')) ? '/src/main.tsx' : '/src/main.jsx';
+  fs.writeFileSync(indexPath, `<!doctype html>\n<html><head><meta charset="UTF-8"/></head><body><div id="root"></div><script type="module" src="${srcEntry}"></script></body></html>\n`);
   try {
     runCommand('npm run build', dir);
   } finally {
-    // Save compiled dist/index.html before restoring source
-    const distIndexBackup = fs.existsSync(distIndexPath) ? fs.readFileSync(distIndexPath) : null;
-    // Always restore source index.html after build
-    if (backup !== null) {
-      fs.writeFileSync(indexPath, backup);
+    // Always restore source index.html (never leave it as dev-entry)
+    if (sourceBackup !== null) {
+      fs.writeFileSync(indexPath, sourceBackup);
       console.log(`> Restored source index.html in ${dir}`);
-    }
-    // Re-write dist/index.html to ensure it has the compiled content (not source)
-    if (distIndexBackup !== null) {
-      fs.writeFileSync(distIndexPath, distIndexBackup);
-      console.log(`> Verified dist/index.html in ${dir}`);
     }
   }
 }
