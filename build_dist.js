@@ -64,13 +64,23 @@ try {
   buildApp(path.join(rootDir, 'carrep'));
 } catch (e) { console.error('carrep build failed:', e.message); }
 
-// 3. Copy Learn dist
-console.log('> Copying learn dist...');
-copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
+// 3. Copy Learn (source folder + dist overlay)
+console.log('> Copying learn...');
+if (fs.existsSync(path.join(rootDir, 'learn'))) {
+  copyRecursiveSync(path.join(rootDir, 'learn'), path.join(deployDir, 'learn'));
+}
+if (fs.existsSync(path.join(rootDir, 'learn', 'dist'))) {
+  copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
+}
 
-// 4. Copy CarRep dist
-console.log('> Copying carrep dist...');
-copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), path.join(deployDir, 'carrep'));
+// 4. Copy CarRep (source folder + dist overlay)
+console.log('> Copying carrep...');
+if (fs.existsSync(path.join(rootDir, 'carrep'))) {
+  copyRecursiveSync(path.join(rootDir, 'carrep'), path.join(deployDir, 'carrep'));
+}
+if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
+  copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), path.join(deployDir, 'carrep'));
+}
 
 // 5. Copy Asset & Asset-React dist
 console.log('> Copying asset & asset-react dist...');
