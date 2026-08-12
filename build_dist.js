@@ -47,7 +47,7 @@ function buildApp(dir) {
   const nodeModulesDir = path.join(dir, 'node_modules');
   if (!fs.existsSync(nodeModulesDir)) {
     console.log(`> Installing dependencies in ${dir}...`);
-    runCommand('npm install --no-audit --no-fund', dir);
+    runCommand('npm install --legacy-peer-deps --no-audit --no-fund', dir);
   }
   runCommand('npm run build', dir);
 }
@@ -64,7 +64,7 @@ try {
   buildApp(path.join(rootDir, 'carrep'));
 } catch (e) { console.error('carrep build failed:', e.message); }
 
-// 3. Copy Learn dist (and necessary data/docs)
+// 3. Copy Learn dist (and sync compiled index.html to root learn folder for Vercel static router)
 console.log('> Copying learn...');
 if (fs.existsSync(path.join(rootDir, 'learn', 'docs'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'docs'), path.join(deployDir, 'learn', 'docs'));
@@ -74,9 +74,12 @@ if (fs.existsSync(path.join(rootDir, 'learn', 'data.json'))) {
 }
 if (fs.existsSync(path.join(rootDir, 'learn', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
+  if (fs.existsSync(path.join(rootDir, 'learn', 'dist', 'index.html'))) {
+    fs.copyFileSync(path.join(rootDir, 'learn', 'dist', 'index.html'), path.join(rootDir, 'learn', 'index.html'));
+  }
 }
 
-// 4. Copy CarRep dist (and necessary data/images)
+// 4. Copy CarRep dist (and sync compiled index.html to root carrep folder for Vercel static router)
 console.log('> Copying carrep...');
 if (fs.existsSync(path.join(rootDir, 'carrep', 'data'))) {
   copyRecursiveSync(path.join(rootDir, 'carrep', 'data'), path.join(deployDir, 'carrep', 'data'));
@@ -86,6 +89,9 @@ if (fs.existsSync(path.join(rootDir, 'carrep', 'avatars'))) {
 }
 if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), path.join(deployDir, 'carrep'));
+  if (fs.existsSync(path.join(rootDir, 'carrep', 'dist', 'index.html'))) {
+    fs.copyFileSync(path.join(rootDir, 'carrep', 'dist', 'index.html'), path.join(rootDir, 'carrep', 'index.html'));
+  }
 }
 
 // 5. Copy Asset & Asset-React dist
