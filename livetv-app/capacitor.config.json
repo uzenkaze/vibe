@@ -1,0 +1,18 @@
+{
+  "appId": "com.playtime.livetv",
+  "appName": "PlayTime",
+  "webDir": "dist",
+  "server": {
+    "url": "https://vibe-kaze.vercel.app/livetv/",
+    "cleartext": true
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": false
+    }
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#000000"
+  }
+}
