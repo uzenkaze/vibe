@@ -2,6 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// Recursion Guard: Prevent infinite build loop if Vercel or child processes invoke build_dist.js again
+if (process.env.BUILD_DIST_RUNNING) {
+  console.log('>>> build_dist.js is already running, skipping recursive invocation.');
+  process.exit(0);
+}
+process.env.BUILD_DIST_RUNNING = 'true';
+
 const rootDir = __dirname;
 const deployDir = path.join(rootDir, 'deploy_dist');
 

@@ -2,6 +2,6 @@
   "name": "livetv-app",
   "version": "1.0.0",
   "scripts": {
-    "build": "node build_dist.js"
+    "build": "echo 'Build handled by root'"
   }
 }
