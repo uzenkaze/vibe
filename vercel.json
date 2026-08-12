@@ -3,17 +3,17 @@
   "buildCommand": "node build_dist.js",
   "outputDirectory": "deploy_dist",
   "rewrites": [
-    { "source": "/learn/(.*)", "destination": "/learn/index.html" },
+    { "source": "/learn/", "destination": "/learn/index.html" },
     { "source": "/learn", "destination": "/learn/index.html" },
-    { "source": "/carrep/(.*)", "destination": "/carrep/index.html" },
+    { "source": "/carrep/", "destination": "/carrep/index.html" },
     { "source": "/carrep", "destination": "/carrep/index.html" },
-    { "source": "/asset/(.*)", "destination": "/asset/index.html" },
+    { "source": "/asset/", "destination": "/asset/index.html" },
     { "source": "/asset", "destination": "/asset/index.html" },
-    { "source": "/livetv/(.*)", "destination": "/livetv/index.html" },
+    { "source": "/livetv/", "destination": "/livetv/index.html" },
     { "source": "/livetv", "destination": "/livetv/index.html" },
-    { "source": "/task/(.*)", "destination": "/task/task-manager.html" },
+    { "source": "/task/", "destination": "/task/task-manager.html" },
     { "source": "/task", "destination": "/task/task-manager.html" },
-    { "source": "/hobby/(.*)", "destination": "/hobby/index.html" },
+    { "source": "/hobby/", "destination": "/hobby/index.html" },
     { "source": "/hobby", "destination": "/hobby/index.html" }
   ],
   "headers": [
