@@ -117,10 +117,20 @@ if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
 
 // 5. Copy Asset & Asset-React dist
 console.log('> Copying asset & asset-react dist...');
-copyRecursiveSync(path.join(rootDir, 'asset'), path.join(deployDir, 'asset'));
+const deployAssetDir = path.join(deployDir, 'asset');
+if (!fs.existsSync(deployAssetDir)) fs.mkdirSync(deployAssetDir, { recursive: true });
+
+if (fs.existsSync(path.join(rootDir, 'asset', 'data'))) {
+  copyRecursiveSync(path.join(rootDir, 'asset', 'data'), path.join(deployAssetDir, 'data'));
+}
+['favicon.svg', 'favicon.png', 'asset_character.jpg'].forEach(f => {
+  const p = path.join(rootDir, 'asset', f);
+  if (fs.existsSync(p)) fs.copyFileSync(p, path.join(deployAssetDir, f));
+});
+
 if (fs.existsSync(path.join(rootDir, 'asset', 'asset-react', 'dist'))) {
-  copyRecursiveSync(path.join(rootDir, 'asset', 'asset-react', 'dist'), path.join(deployDir, 'asset'));
-  copyRecursiveSync(path.join(rootDir, 'asset', 'asset-react', 'dist'), path.join(deployDir, 'asset', 'asset-react', 'dist'));
+  copyRecursiveSync(path.join(rootDir, 'asset', 'asset-react', 'dist'), deployAssetDir);
+  copyRecursiveSync(path.join(rootDir, 'asset', 'asset-react', 'dist'), path.join(deployAssetDir, 'asset-react', 'dist'));
 }
 
 // 6. Copy other static folders
