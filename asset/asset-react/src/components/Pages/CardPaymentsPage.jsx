@@ -1590,7 +1590,7 @@ export default function CardPaymentsPage() {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'nowrap', flexShrink: 0 }}>
-            <button className="btn btn-dark" onClick={handleAddPayment} style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+            <button className="btn btn-teal btn-sm" onClick={handleAddPayment} style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
               <span className="desktop-only-text">+ 항목추가</span>
               <span className="mobile-only-text">+ 추가</span>
             </button>
