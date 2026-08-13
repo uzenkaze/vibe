@@ -4,7 +4,7 @@ import { formatKRW } from '../../utils/format';
 import NumberInput from '../UI/NumberInput';
 
 export default function CardMonthlySummarySection({ hideTable = false }) {
-  const { getCurrentSections, persistSections, year, month } = useApp();
+  const { getCurrentSections, persistSections, year, month, dark } = useApp();
   const sections = getCurrentSections();
   const cardMonthlySummaries = sections.cardMonthlySummaries || [];
 
@@ -103,16 +103,28 @@ export default function CardMonthlySummarySection({ hideTable = false }) {
         gap: isMobile ? '0.5rem' : '0.85rem',
         marginBottom: hideTable ? 0 : (isMobile ? '0.85rem' : '1.25rem')
       }}>
-        {/* 이달 결제금액 카드 */}
-        <div className="top-volume-card top-volume-card-current" style={{ padding: isMobile ? '0.55rem 0.75rem' : '0.85rem 1.1rem' }}>
+        {/* 이달 결제금액 카드 (반전 테마 적용) */}
+        <div 
+          className="top-volume-card top-volume-card-current" 
+          style={{ 
+            padding: isMobile ? '0.55rem 0.75rem' : '0.85rem 1.1rem',
+            background: dark 
+              ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)' 
+              : 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            border: dark ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid rgba(255, 255, 255, 0.22)',
+            boxShadow: dark ? '0 8px 24px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(15, 23, 42, 0.25)',
+            borderRadius: '12px',
+            transition: 'all 0.2s ease'
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '0.25rem' : '0.4rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <div style={{
                 width: isMobile ? 22 : 26, height: isMobile ? 22 : 26, borderRadius: '7px',
-                background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)',
+                background: dark ? 'rgba(6, 182, 212, 0.15)' : 'rgba(6, 182, 212, 0.25)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--teal)',
-                border: '1px solid rgba(6, 182, 212, 0.3)',
+                color: dark ? '#0891b2' : '#38bdf8',
+                border: dark ? '1px solid rgba(6, 182, 212, 0.3)' : '1px solid rgba(56, 189, 248, 0.4)',
                 flexShrink: 0
               }}>
                 <svg width={isMobile ? 12 : 15} height={isMobile ? 12 : 15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -122,7 +134,7 @@ export default function CardMonthlySummarySection({ hideTable = false }) {
                   <circle cx="9.5" cy="15" r="1.2" fill="currentColor"/>
                 </svg>
               </div>
-              <div style={{ fontSize: isMobile ? '0.75rem' : '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <div style={{ fontSize: isMobile ? '0.75rem' : '0.82rem', fontWeight: 800, color: dark ? '#0f172a' : '#f8fafc', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 이번달
               </div>
             </div>
@@ -131,26 +143,38 @@ export default function CardMonthlySummarySection({ hideTable = false }) {
           <div style={{
             fontSize: isMobile ? '1.05rem' : '1.3rem',
             fontWeight: 900,
-            color: 'var(--text-primary)',
+            color: dark ? '#0284c7' : '#38bdf8',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             letterSpacing: '-0.03em',
             lineHeight: 1.1,
             textAlign: 'right'
           }}>
-            {formatKRW(totalCurrentMonthUsage)} <span style={{ fontSize: isMobile ? '0.72rem' : '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
+            {formatKRW(totalCurrentMonthUsage)} <span style={{ fontSize: isMobile ? '0.72rem' : '0.8rem', fontWeight: 700, color: dark ? '#64748b' : 'rgba(148, 163, 184, 0.9)' }}>원</span>
           </div>
         </div>
 
-        {/* 다음달 결제금액 카드 */}
-        <div className="top-volume-card top-volume-card-next" style={{ padding: isMobile ? '0.55rem 0.75rem' : '0.85rem 1.1rem' }}>
+        {/* 다음달 결제금액 카드 (반전 테마 적용) */}
+        <div 
+          className="top-volume-card top-volume-card-next" 
+          style={{ 
+            padding: isMobile ? '0.55rem 0.75rem' : '0.85rem 1.1rem',
+            background: dark 
+              ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)' 
+              : 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            border: dark ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid rgba(255, 255, 255, 0.22)',
+            boxShadow: dark ? '0 8px 24px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(15, 23, 42, 0.25)',
+            borderRadius: '12px',
+            transition: 'all 0.2s ease'
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '0.25rem' : '0.4rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <div style={{
                 width: isMobile ? 22 : 26, height: isMobile ? 22 : 26, borderRadius: '7px',
-                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
+                background: dark ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.25)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#f59e0b',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
+                color: dark ? '#d97706' : '#fbbf24',
+                border: dark ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(251, 191, 36, 0.4)',
                 flexShrink: 0
               }}>
                 <svg width={isMobile ? 12 : 15} height={isMobile ? 12 : 15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -161,7 +185,7 @@ export default function CardMonthlySummarySection({ hideTable = false }) {
                   <path d="M12 14l3 3m0-3l-3 3"/>
                 </svg>
               </div>
-              <div style={{ fontSize: isMobile ? '0.75rem' : '0.82rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <div style={{ fontSize: isMobile ? '0.75rem' : '0.82rem', fontWeight: 800, color: dark ? '#0f172a' : '#f8fafc', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 다음달
               </div>
             </div>
@@ -170,13 +194,13 @@ export default function CardMonthlySummarySection({ hideTable = false }) {
           <div style={{
             fontSize: isMobile ? '1.05rem' : '1.3rem',
             fontWeight: 900,
-            color: '#f59e0b',
+            color: dark ? '#d97706' : '#fbbf24',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             letterSpacing: '-0.03em',
             lineHeight: 1.1,
             textAlign: 'right'
           }}>
-            {formatKRW(totalNextMonthPayment)} <span style={{ fontSize: isMobile ? '0.72rem' : '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>원</span>
+            {formatKRW(totalNextMonthPayment)} <span style={{ fontSize: isMobile ? '0.72rem' : '0.8rem', fontWeight: 700, color: dark ? '#64748b' : 'rgba(148, 163, 184, 0.9)' }}>원</span>
           </div>
         </div>
       </div>

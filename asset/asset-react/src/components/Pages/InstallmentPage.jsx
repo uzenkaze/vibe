@@ -841,14 +841,14 @@ export default function InstallmentPage() {
                                 padding: '0.6rem 0.75rem',
                                 borderRadius: '12px',
                                 background: dark 
-                                  ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%)' 
-                                  : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                                  ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)' 
+                                  : 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
                                 border: activePopoverKey === mItem.key
-                                  ? (dark ? '1.5px solid #818cf8' : '1.5px solid #6366f1')
-                                  : (dark ? '1px solid rgba(255, 255, 255, 0.22)' : '1px solid rgba(99, 102, 241, 0.25)'),
+                                  ? '1.5px solid #6366f1'
+                                  : (dark ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid rgba(255, 255, 255, 0.22)'),
                                 boxShadow: activePopoverKey === mItem.key
-                                  ? (dark ? '0 0 16px rgba(129, 140, 248, 0.35)' : '0 6px 20px rgba(99, 102, 241, 0.25)')
-                                  : (dark ? '0 4px 14px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05)' : '0 4px 14px rgba(99, 102, 241, 0.08)'),
+                                  ? (dark ? '0 6px 20px rgba(99, 102, 241, 0.3)' : '0 6px 20px rgba(129, 140, 248, 0.4)')
+                                  : (dark ? '0 4px 14px rgba(0, 0, 0, 0.3)' : '0 4px 14px rgba(15, 23, 42, 0.25)'),
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0.25rem',
@@ -861,11 +861,11 @@ export default function InstallmentPage() {
                                 <span style={{
                                   fontSize: '0.8rem',
                                   fontWeight: 900,
-                                  color: 'var(--text-primary)',
+                                  color: dark ? '#0f172a' : '#f8fafc',
                                   fontFamily: "'Plus Jakarta Sans', sans-serif"
                                 }}>
                                   {mItem.month}월
-                                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: 'var(--text-muted)', marginLeft: 2 }}>
+                                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: dark ? '#64748b' : 'rgba(148, 163, 184, 0.9)', marginLeft: 2 }}>
                                     ({mItem.year.toString().slice(2)}년)
                                   </span>
                                 </span>
@@ -874,9 +874,15 @@ export default function InstallmentPage() {
                                   fontWeight: 800,
                                   padding: '1px 5px',
                                   borderRadius: '99px',
-                                  background: mItem.step === 1 ? 'rgba(99, 102, 241, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                                  color: mItem.step === 1 ? '#6366f1' : '#10b981',
-                                  border: mItem.step === 1 ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)'
+                                  background: mItem.step === 1 
+                                    ? (dark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(129, 140, 248, 0.25)') 
+                                    : (dark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(52, 211, 153, 0.25)'),
+                                  color: mItem.step === 1 
+                                    ? (dark ? '#4f46e5' : '#a5b4fc') 
+                                    : (dark ? '#059669' : '#34d399'),
+                                  border: mItem.step === 1 
+                                    ? (dark ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(165, 180, 252, 0.4)') 
+                                    : (dark ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(52, 211, 153, 0.4)')
                                 }}>
                                   {mItem.step === 1 ? '익월' : `+${mItem.step}개월`}
                                 </span>
@@ -886,7 +892,7 @@ export default function InstallmentPage() {
                               <div style={{
                                 fontSize: '0.95rem',
                                 fontWeight: 900,
-                                color: mItem.step === 1 ? '#6366f1' : 'var(--text-primary)',
+                                color: mItem.step === 1 ? (dark ? '#4f46e5' : '#818cf8') : (dark ? '#0f172a' : '#f8fafc'),
                                 fontFamily: "'Plus Jakarta Sans', monospace",
                                 letterSpacing: '-0.02em',
                                 marginTop: '0.1rem'
@@ -898,7 +904,7 @@ export default function InstallmentPage() {
                               {/* 청구 건수 서브 표시 */}
                               <div style={{
                                 fontSize: '0.63rem',
-                                color: 'var(--text-muted)',
+                                color: dark ? '#64748b' : 'rgba(148, 163, 184, 0.9)',
                                 fontWeight: 600
                               }}>
                                 💳 {mItem.items.length}건 청구 예정
@@ -911,10 +917,10 @@ export default function InstallmentPage() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: '#6366f1',
+                                color: dark ? '#818cf8' : '#818cf8',
                                 fontWeight: 900,
                                 fontSize: '1rem',
-                                opacity: 0.5,
+                                opacity: 0.95,
                                 flexShrink: 0,
                                 userSelect: 'none',
                                 padding: '0 1px'
@@ -926,7 +932,7 @@ export default function InstallmentPage() {
                         ))}
                       </div>
 
-                      {/* PC 마우스 호버 / 모바일 터치 시 노출되는 청구 세부 내역 레이어 패널 */}
+                      {/* PC 마우스 호버 / 모바일 터치 시 노출되는 청구 세부 내역 레이어 패널 (라이트/다크 반대 테마 스타일 적용) */}
                       {activePopoverKey && (() => {
                         const activeMonthObj = monthlyList.find(m => m.key === activePopoverKey);
                         if (!activeMonthObj) return null;
@@ -936,9 +942,11 @@ export default function InstallmentPage() {
                             marginTop: '0.5rem',
                             padding: '0.75rem 0.9rem',
                             borderRadius: '12px',
-                            background: dark ? 'rgba(30, 41, 59, 0.9)' : 'rgba(241, 245, 249, 0.95)',
-                            border: dark ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(99, 102, 241, 0.3)',
-                            boxShadow: dark ? '0 4px 14px rgba(0,0,0,0.3)' : '0 4px 14px rgba(99, 102, 241, 0.1)',
+                            background: dark 
+                              ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)' 
+                              : 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                            border: dark ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid rgba(99, 102, 241, 0.4)',
+                            boxShadow: dark ? '0 8px 24px rgba(0, 0, 0, 0.4)' : '0 8px 24px rgba(15, 23, 42, 0.3)',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '0.5rem',
@@ -947,18 +955,18 @@ export default function InstallmentPage() {
                             <div style={{
                               display: 'flex',
                               alignItems: 'center',
-                              justify: 'space-between',
-                              borderBottom: '1px solid var(--border)',
+                              justifyContent: 'space-between',
+                              borderBottom: dark ? '1px solid rgba(0, 0, 0, 0.08)' : '1px solid rgba(255, 255, 255, 0.12)',
                               paddingBottom: '0.4rem'
                             }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800, color: dark ? '#0f172a' : '#f8fafc' }}>
                                 <span>💳</span>
                                 <span>{activeMonthObj.label} 청구 상세 내역</span>
                                 <span style={{ fontSize: '0.7rem', color: '#6366f1', fontWeight: 700 }}>
                                   ({activeMonthObj.items.length}건)
                                 </span>
                               </div>
-                              <div style={{ fontWeight: 900, fontSize: '0.82rem', color: '#6366f1', fontFamily: "'Plus Jakarta Sans', monospace" }}>
+                              <div style={{ fontWeight: 900, fontSize: '0.82rem', color: dark ? '#4f46e5' : '#818cf8', fontFamily: "'Plus Jakarta Sans', monospace" }}>
                                 합계: {formatKRW(activeMonthObj.totalAmount)}원
                               </div>
                             </div>
@@ -979,8 +987,8 @@ export default function InstallmentPage() {
                                     justify: 'space-between',
                                     padding: '0.45rem 0.65rem',
                                     borderRadius: '8px',
-                                    background: 'var(--card)',
-                                    border: '1px solid var(--border)',
+                                    background: dark ? '#ffffff' : 'rgba(30, 41, 59, 0.85)',
+                                    border: dark ? '1px solid rgba(203, 213, 225, 0.6)' : '1px solid rgba(255, 255, 255, 0.1)',
                                     fontSize: '0.74rem'
                                   }}
                                 >
@@ -990,20 +998,20 @@ export default function InstallmentPage() {
                                       fontWeight: 800,
                                       padding: '1px 5px',
                                       borderRadius: '4px',
-                                      background: 'rgba(99, 102, 241, 0.15)',
-                                      color: '#6366f1',
+                                      background: dark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.25)',
+                                      color: dark ? '#4f46e5' : '#a5b4fc',
                                       flexShrink: 0
                                     }}>
                                       {it.card}
                                     </span>
-                                    <span style={{ fontWeight: 700, color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                    <span style={{ fontWeight: 700, color: dark ? '#0f172a' : '#f1f5f9', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                       {it.content}
                                     </span>
-                                    <span style={{ fontSize: '0.66rem', color: 'var(--text-muted)', flexShrink: 0 }}>
+                                    <span style={{ fontSize: '0.66rem', color: dark ? '#64748b' : 'rgba(148, 163, 184, 0.9)', flexShrink: 0 }}>
                                       ({it.targetRound}/{it.totalMonths}회)
                                     </span>
                                   </div>
-                                  <span style={{ fontWeight: 800, color: 'var(--text-primary)', flexShrink: 0, fontFamily: "'Plus Jakarta Sans', monospace" }}>
+                                  <span style={{ fontWeight: 800, color: dark ? '#4f46e5' : '#38bdf8', flexShrink: 0, fontFamily: "'Plus Jakarta Sans', monospace" }}>
                                     {formatKRW(it.amount)}원
                                   </span>
                                 </div>
