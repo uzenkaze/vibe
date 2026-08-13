@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { StoreProvider } from './hooks/useStore';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
@@ -12,7 +12,7 @@ import MindmapPage from './pages/MindmapPage';
 function App() {
   return (
     <StoreProvider>
-      <HashRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL || '/learn/'}>
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
@@ -24,7 +24,7 @@ function App() {
             <Route path="/docs" element={<DocsPage />} />
           </Route>
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </StoreProvider>
   );
 }

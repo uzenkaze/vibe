@@ -510,112 +510,173 @@ export default function CardPaymentsPage() {
 
   return (
     <>
-      {/* 12개월 필요 자금 변동 추이 차트 (미래지향 사이버네틱 아크 노드 맵 UI) */}
+      {/* 12개월 필요 자금 변동 추이 차트 (Hyper Charts UI Kit Premium Edition) */}
       <div className="section-card" style={{
         marginBottom: '1.5rem',
-        padding: '1.5rem 1.75rem',
+        padding: '1.75rem 2rem',
         background: dark 
-          ? 'radial-gradient(ellipse at 20% 50%, rgba(13, 27, 42, 0.98) 0%, rgba(8, 12, 20, 0.99) 100%)' 
-          : 'linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%)',
-        border: dark ? '1px solid rgba(0, 242, 254, 0.25)' : '1px solid var(--card-border)',
+          ? 'linear-gradient(180deg, #090d16 0%, #05080f 100%)' 
+          : '#ffffff',
+        border: dark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid #e2e8f0',
+        borderRadius: '24px',
         boxShadow: dark 
-          ? '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 242, 254, 0.1)' 
-          : 'var(--shadow-md)',
+          ? '0 25px 60px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05)' 
+          : '0 20px 40px -15px rgba(0, 0, 0, 0.05), inset 0 1px 0 #ffffff',
         position: 'relative',
         overflow: 'hidden',
-        color: 'var(--text-primary)'
+        color: dark ? '#ffffff' : '#0f172a'
       }}>
-        {/* 은은한 펄 및 격자 배경 레이어 */}
+        {/* Hyper Charts 메쉬 도트 배경 */}
         <div style={{
           position: 'absolute',
           inset: 0,
           backgroundImage: dark 
-            ? 'radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.04) 1px, transparent 1px)'
-            : 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
+            ? 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 1.2px, transparent 1.2px)'
+            : 'radial-gradient(circle at 50% 50%, rgba(148, 163, 184, 0.08) 1.2px, transparent 1.2px)',
+          backgroundSize: '20px 20px',
           pointerEvents: 'none'
         }} />
 
-        {/* 차트 상단 헤더 (라이트/다크 가독성 완벽 지원) */}
-        <div className="section-card-header" style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: dark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid var(--border)', background: 'transparent' }}>
-          <div className="section-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: 10, height: 10, borderRadius: '50%',
-              background: '#00f2fe',
-              boxShadow: '0 0 12px #00f2fe, 0 0 20px #00f2fe'
-            }} />
-            <span style={{ 
-              fontSize: '1.05rem', 
-              fontWeight: 900, 
-              letterSpacing: '-0.02em', 
-              color: dark ? '#ffffff' : 'var(--text-primary)',
-              background: dark ? 'linear-gradient(90deg, #ffffff 0%, #4facfe 100%)' : 'none',
-              WebkitBackgroundClip: dark ? 'text' : 'unset',
-              WebkitTextFillColor: dark ? 'transparent' : 'unset'
-            }}>
-              납부 변동 추이
-            </span>
-            <span style={{
-              fontSize: '0.68rem', 
-              color: dark ? 'rgba(255, 255, 255, 0.45)' : 'var(--text-muted)',
-              fontWeight: 700, 
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase', 
-              marginLeft: 6
-            }}>
-              PAYMENT TREND ANALYTICS
-            </span>
-          </div>
-        </div>
-
-        {/* --- 필터 칩스 버튼 그룹 (모바일 반응형 핏 개선) --- */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem', position: 'relative', zIndex: 10 }}>
-          {Object.entries(lineConfigs).map(([key, cfg]) => {
-            const isActive = activeLines[key];
-            return (
-              <button
-                key={key}
-                onClick={() => handleFilterToggle(key)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  padding: '5px 12px',
-                  borderRadius: '99px',
-                  border: `1px solid ${isActive ? cfg.color : (dark ? 'rgba(255, 255, 255, 0.12)' : 'var(--border)')}`,
-                  background: isActive ? `${cfg.color}20` : (dark ? 'rgba(255, 255, 255, 0.03)' : 'var(--card)'),
-                  color: isActive ? (dark ? '#ffffff' : cfg.color) : 'var(--text-muted)',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  letterSpacing: '-0.01em',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: isActive ? `0 2px 10px ${cfg.color}25` : 'none',
-                  backdropFilter: 'blur(8px)',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cfg.color, boxShadow: isActive ? `0 0 6px ${cfg.color}` : 'none', flexShrink: 0 }} />
-                {cfg.label}
-              </button>
-            );
-          })}
-        </div>
-        
-        {/* --- 프리미엄 3D 꺾은선 차트 (입체 원근 그리드 + 글로우 영역 필 + 3D 노드) --- */}
+        {/* --- Hyper Charts UI Kit: 헤더 & 서머리 메트릭 바 --- */}
         {(() => {
-          const svgW = 900;
+          const curMonthIndex = Math.max(0, Math.min(11, parseInt(month, 10) - 1));
+          const curMonthData = chartData[curMonthIndex] || chartData[0] || {};
+          const curTotal = curMonthData.total || 0;
+          const yearlyTotal = chartData.reduce((acc, cur) => acc + (cur.total || 0), 0);
+          const monthlyAvg = Math.round(yearlyTotal / 12);
+          const prevTotal = (chartData[curMonthIndex - 1] || chartData[11] || {}).total || curTotal;
+          const diffRatio = prevTotal > 0 ? (((curTotal - prevTotal) / prevTotal) * 100).toFixed(1) : '0.0';
+          const isUp = Number(diffRatio) >= 0;
+
+          return (
+            <div style={{ marginBottom: '1.5rem', position: 'relative', zIndex: 10 }}>
+              {/* 상단 타이틀 & 뱃지 */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '10px', height: '10px', borderRadius: '50%',
+                    background: '#3b82f6',
+                    boxShadow: '0 0 12px #3b82f6, 0 0 20px rgba(59, 130, 246, 0.5)'
+                  }} />
+                  <span style={{ fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.02em', color: dark ? '#ffffff' : '#0f172a' }}>
+                    Hyper Trend Analytics
+                  </span>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    padding: '3px 10px',
+                    borderRadius: '99px',
+                    background: dark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff',
+                    color: dark ? '#60a5fa' : '#2563eb',
+                    border: dark ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid #bfdbfe'
+                  }}>
+                    LIVE METRICS
+                  </span>
+                </div>
+
+                {/* 필터 칩스 (전체, 현금, 카드, 지산, 카뱅) */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                  {Object.entries(lineConfigs).map(([key, cfg]) => {
+                    const isActive = activeLines[key];
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => handleFilterToggle(key)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '5px 13px',
+                          borderRadius: '99px',
+                          border: `1px solid ${isActive ? cfg.color : (dark ? 'rgba(255, 255, 255, 0.1)' : '#e2e8f0')}`,
+                          background: isActive ? (dark ? `${cfg.color}25` : `${cfg.color}15`) : (dark ? 'rgba(255, 255, 255, 0.03)' : '#f8fafc'),
+                          color: isActive ? (dark ? '#ffffff' : cfg.color) : (dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b'),
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          fontFamily: "'Plus Jakarta Sans', sans-serif",
+                          cursor: 'pointer',
+                          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                          boxShadow: isActive ? `0 4px 12px ${cfg.color}30` : 'none'
+                        }}
+                      >
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cfg.color, boxShadow: isActive ? `0 0 8px ${cfg.color}` : 'none' }} />
+                        {cfg.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Hyper UI Kit 카드 3열 메트릭 스펙 */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '1rem',
+                background: dark ? 'rgba(255, 255, 255, 0.02)' : '#f8fafc',
+                padding: '1.1rem 1.25rem',
+                borderRadius: '16px',
+                border: dark ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid #f1f5f9'
+              }}>
+                {/* 1. 이달 총 납부액 */}
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b', fontWeight: 700, marginBottom: '4px' }}>
+                    {month}월 총 납부액
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                    <span style={{ fontSize: '1.5rem', fontWeight: 900, color: dark ? '#ffffff' : '#0f172a', letterSpacing: '-0.03em', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      {formatKRW(curTotal)}원
+                    </span>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      color: isUp ? '#10b981' : '#ef4444',
+                      background: isUp ? (dark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5') : (dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2'),
+                      padding: '2px 7px',
+                      borderRadius: '6px',
+                      border: isUp ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)'
+                    }}>
+                      {isUp ? `+${diffRatio}%` : `${diffRatio}%`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 2. 월평균 필요 자금 */}
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b', fontWeight: 700, marginBottom: '4px' }}>
+                    12개월 월평균
+                  </div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: dark ? '#ffffff' : '#0f172a', letterSpacing: '-0.03em', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {formatKRW(monthlyAvg)}원
+                  </div>
+                </div>
+
+                {/* 3. 연간 누적 납부액 */}
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b', fontWeight: 700, marginBottom: '4px' }}>
+                    {year}년 연간 누적액
+                  </div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: dark ? '#ffffff' : '#0f172a', letterSpacing: '-0.03em', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {formatKRW(yearlyTotal)}원
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+        
+        {/* --- Hyper Charts UI Kit: Hyper Smooth Spline Line & Area Glow Chart SVG --- */}
+        {(() => {
+          const svgW = 920;
           const svgH = 340;
-          const paddingLeft = 70;
-          const paddingRight = 40;
-          const paddingTop = 40;
-          const paddingBottom = 50;
+          const paddingLeft = 60;
+          const paddingRight = 35;
+          const paddingTop = 30;
+          const paddingBottom = 45;
 
           const chartW = svgW - paddingLeft - paddingRight;
           const chartH = svgH - paddingTop - paddingBottom;
 
-          // 활성화된 선들의 최대값 산출
+          // 데이터 최대값 산출
           let maxVal = 0;
           chartData.forEach(d => {
             Object.keys(lineConfigs).forEach(key => {
@@ -627,12 +688,17 @@ export default function CardPaymentsPage() {
           if (maxVal === 0) maxVal = 1000000;
           maxVal = Math.ceil(maxVal * 1.15 / 100000) * 100000;
 
-          // 12개월 X좌표 산출
+          // 12개월 X 좌표
           const pointsX = chartData.map((_, i) => paddingLeft + (i / 11) * chartW);
 
-          // 3D 입체 축 오프셋 (깊이감 조절)
-          const depthX = 14;
-          const depthY = -12;
+          // Hyper Charts 팔레트
+          const hyperColors = {
+            total: '#ffb703',
+            cash: '#f97316',
+            card: '#ef4444',
+            jisan: '#8b5cf6',
+            kabank: '#06b6d4'
+          };
 
           return (
             <div style={{ position: 'relative', width: '100%', overflowX: 'auto' }}>
@@ -640,30 +706,24 @@ export default function CardPaymentsPage() {
                 width="100%" 
                 height={svgH} 
                 viewBox={`0 0 ${svgW} ${svgH}`} 
-                style={{ overflow: 'visible', minWidth: '700px' }}
+                style={{ overflow: 'visible', minWidth: '750px' }}
               >
                 <defs>
-                  {/* 각 라인별 첨부 이미지 스타일의 부드러운 하단 그라디언트 영역 정의 */}
-                  {Object.entries(lineConfigs).map(([key, cfg]) => (
-                    <linearGradient key={`grad-${key}`} id={`lineGrad-${key}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={cfg.color} stopOpacity="0.35" />
-                      <stop offset="50%" stopColor={cfg.color} stopOpacity="0.12" />
-                      <stop offset="100%" stopColor={cfg.color} stopOpacity="0.0" />
-                    </linearGradient>
-                  ))}
+                  {/* Hyper Area Glow 그라디언트 */}
+                  {Object.entries(lineConfigs).map(([key, cfg]) => {
+                    const c = hyperColors[key] || cfg.color;
+                    return (
+                      <linearGradient key={`hyperGrad-${key}`} id={`hyperGrad-${key}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={c} stopOpacity={dark ? "0.45" : "0.28"} />
+                        <stop offset="60%" stopColor={c} stopOpacity={dark ? "0.1" : "0.05"} />
+                        <stop offset="100%" stopColor={c} stopOpacity="0.0" />
+                      </linearGradient>
+                    );
+                  })}
 
-                  {/* 은은한 네온 글로우 필터 */}
-                  <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                  
-                  {/* 노드 포인트 네온 글로우 */}
-                  <filter id="neon3D" x="-30%" y="-30%" width="160%" height="160%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
+                  {/* Hyper Soft Neon Filter */}
+                  <filter id="hyperGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
                     <feMerge>
                       <feMergeNode in="blur" />
                       <feMergeNode in="SourceGraphic" />
@@ -671,36 +731,22 @@ export default function CardPaymentsPage() {
                   </filter>
                 </defs>
 
-                {/* 1. 3D 입체 가이드 바닥면 (Isometric Floor Mesh) */}
-                <path 
-                  d={`M ${paddingLeft} ${paddingTop + chartH} L ${paddingLeft + depthX} ${paddingTop + chartH + depthY} L ${paddingLeft + chartW + depthX} ${paddingTop + chartH + depthY} L ${paddingLeft + chartW} ${paddingTop + chartH} Z`}
-                  fill={dark ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.03)"}
-                  stroke={dark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)"}
-                />
-
-                {/* Y축 그리드 라인 & 수치 레이블 */}
+                {/* 1. Y축 수평 점선 가이드선 & 수치 라벨 */}
                 {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
                   const val = maxVal * (1 - ratio);
                   const y = paddingTop + ratio * chartH;
                   return (
-                    <g key={idx}>
-                      {/* 평면 그리드 라인 */}
+                    <g key={`y-grid-${idx}`}>
                       <line 
                         x1={paddingLeft} y1={y} 
                         x2={paddingLeft + chartW} y2={y} 
-                        stroke={dark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.05)"} 
+                        stroke={dark ? "rgba(255, 255, 255, 0.08)" : "#f1f5f9"} 
                         strokeDasharray="4 4" 
                       />
-                      {/* 3D 깊이 수직 벽 가이드 */}
-                      <line 
-                        x1={paddingLeft + chartW} y1={y} 
-                        x2={paddingLeft + chartW + depthX} y2={y + depthY} 
-                        stroke={dark ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.04)"} 
-                      />
                       <text 
-                        x={paddingLeft - 10} y={y + 4} 
+                        x={paddingLeft - 14} y={y + 4} 
                         textAnchor="end" 
-                        fill={dark ? "rgba(255, 255, 255, 0.45)" : "#000000"} 
+                        fill={dark ? "rgba(255, 255, 255, 0.4)" : "#94a3b8"} 
                         fontSize="10" 
                         fontWeight="700" 
                         fontFamily="'Plus Jakarta Sans', monospace"
@@ -711,39 +757,37 @@ export default function CardPaymentsPage() {
                   );
                 })}
 
-                {/* X축 월 레이블 및 가이드 축 */}
-                {pointsX.map((x, i) => (
-                  <g key={i}>
-                    <line 
-                      x1={x} y1={paddingTop + chartH} 
-                      x2={x} y2={paddingTop + chartH + 5} 
-                      stroke={dark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)"} 
-                    />
-                    <text 
-                      x={x} y={paddingTop + chartH + 22} 
-                      textAnchor="middle" 
-                      fill={dark ? (month === (i + 1) ? "#00f2fe" : "rgba(255, 255, 255, 0.6)") : "#000000"} 
-                      fontSize={month === (i + 1) ? "12" : "11"} 
-                      fontWeight={month === (i + 1) ? "900" : "700"}
-                      fontFamily="'Plus Jakarta Sans', sans-serif"
-                    >
-                      {i + 1}월
-                    </text>
-                  </g>
-                ))}
+                {/* 2. X축 월 레이블 및 버티컬 가이드선 */}
+                {pointsX.map((x, i) => {
+                  const isCurMonth = month === (i + 1);
+                  const isHovered = hoveredPoint && hoveredPoint.month === `${i + 1}월`;
+                  return (
+                    <g key={`x-axis-${i}`}>
+                      <line 
+                        x1={x} y1={paddingTop} 
+                        x2={x} y2={paddingTop + chartH} 
+                        stroke={isHovered ? (dark ? "#38bdf8" : "#2563eb") : "transparent"} 
+                        strokeWidth="1.5"
+                        strokeDasharray="3 3"
+                      />
+                      <text 
+                        x={x} y={paddingTop + chartH + 22} 
+                        textAnchor="middle" 
+                        fill={dark ? (isCurMonth ? "#38bdf8" : "rgba(255, 255, 255, 0.5)") : (isCurMonth ? "#2563eb" : "#94a3b8")} 
+                        fontSize={isCurMonth ? "12" : "11"} 
+                        fontWeight={isCurMonth ? "900" : "700"}
+                        fontFamily="'Plus Jakarta Sans', sans-serif"
+                      >
+                        {i + 1}월
+                      </text>
+                    </g>
+                  );
+                })}
 
-                {/* X축 각 월별 광범위 투명 히트박스 (정확한 월 매핑) */}
+                {/* X축 마우스 인터랙티브 힛박스 */}
                 {pointsX.map((x, i) => {
                   const colW = chartW / 11;
                   const targetData = chartData[i];
-                  const handleTrigger = (e) => {
-                    if (e) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }
-                    setHoveredPoint(targetData);
-                  };
-
                   return (
                     <rect
                       key={`hit-${i}`}
@@ -753,19 +797,15 @@ export default function CardPaymentsPage() {
                       height={svgH}
                       fill="transparent"
                       style={{ cursor: 'pointer' }}
-                      onPointerDown={handleTrigger}
-                      onClick={handleTrigger}
+                      onClick={() => setHoveredPoint(targetData)}
                       onMouseEnter={() => setHoveredPoint(targetData)}
                     />
                   );
                 })}
 
-                {/* 2. 3D 입체 꺾은선 및 Area Glow 필 렌더링 */}
+                {/* 3. Hyper Spline Curved Line & Smooth Area Glow 렌더링 */}
                 {Object.entries(lineConfigs).map(([key, cfg]) => {
-                  // 'total' 칩 자체는 4개 세부 항목을 포괄하는 그룹 필터이므로 세부 라인 렌더링에서는 제외
                   if (key === 'total') return null;
-
-                  // '전체(total)' 칩이 선택되어 있거나, 개별 칩(activeLines[key])이 켜진 경우 해당 라인 표시
                   const isLineVisible = activeLines.total || activeLines[key];
                   if (!isLineVisible) return null;
 
@@ -775,6 +815,7 @@ export default function CardPaymentsPage() {
                     return { x: pointsX[i], y, val, month: d.month };
                   });
 
+                  // Cubic Bezier Spline 계산
                   let pathD = `M ${linePoints[0].x} ${linePoints[0].y}`;
                   let areaD = `M ${linePoints[0].x} ${paddingTop + chartH} L ${linePoints[0].x} ${linePoints[0].y}`;
 
@@ -792,28 +833,45 @@ export default function CardPaymentsPage() {
 
                   areaD += ` L ${linePoints[linePoints.length - 1].x} ${paddingTop + chartH} Z`;
 
-                  let shadowPathD = `M ${linePoints[0].x + depthX} ${linePoints[0].y + depthY}`;
-                  for (let i = 0; i < linePoints.length - 1; i++) {
-                    const p0 = linePoints[i];
-                    const p1 = linePoints[i + 1];
-                    const cx1 = p0.x + depthX + (p1.x - p0.x) * 0.45;
-                    const cy1 = p0.y + depthY;
-                    const cx2 = p0.x + depthX + (p1.x - p0.x) * 0.55;
-                    const cy2 = p1.y + depthY;
-                    shadowPathD += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x + depthX} ${p1.y + depthY}`;
-                  }
+                  const strokeColor = hyperColors[key] || cfg.color;
 
                   return (
-                    <g key={key} style={{ pointerEvents: 'none' }}>
-                      <path d={areaD} fill={`url(#lineGrad-${key})`} />
-                      <path d={pathD} fill="none" stroke={cfg.color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                    <g key={`hyper-line-${key}`} style={{ pointerEvents: 'none' }}>
+                      {/* Area Glow Fill */}
+                      <path d={areaD} fill={`url(#hyperGrad-${key})`} />
+
+                      {/* Smooth Spline Line */}
+                      <path 
+                        d={pathD} 
+                        fill="none" 
+                        stroke={strokeColor} 
+                        strokeWidth={dark ? "3.5" : "4"} 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        filter={dark ? "url(#hyperGlow)" : "none"} 
+                      />
+
+                      {/* Node Circles (Hyper Ring Node) */}
                       {linePoints.map((p, idx) => {
                         const isHovered = hoveredPoint && hoveredPoint.month === p.month;
                         const isCurMonth = month === (idx + 1);
+                        if (!isHovered && !isCurMonth) return null;
+
                         return (
-                          <g key={idx}>
-                            <circle cx={p.x} cy={p.y} r={isHovered ? 8 : (isCurMonth ? 6 : 4)} fill={dark ? "#0f172a" : "#ffffff"} stroke={cfg.color} strokeWidth={isHovered ? "3.5" : "2.5"} filter={isHovered ? "url(#neon3D)" : "none"} style={{ transition: 'all 0.25s ease' }} />
-                            <circle cx={p.x} cy={p.y} r={isHovered ? 4 : (isCurMonth ? 3 : 2)} fill={cfg.color} style={{ transition: 'all 0.25s ease' }} />
+                          <g key={`node-${idx}`}>
+                            {/* Outer Glow Ring */}
+                            <circle 
+                              cx={p.x} cy={p.y} r={isHovered ? 8 : 6} 
+                              fill={dark ? "#090d16" : "#ffffff"} 
+                              stroke={strokeColor} 
+                              strokeWidth="3" 
+                              style={{ transition: 'all 0.2s ease' }} 
+                            />
+                            {/* Inner Dot */}
+                            <circle 
+                              cx={p.x} cy={p.y} r={isHovered ? 4 : 3} 
+                              fill={strokeColor} 
+                            />
                           </g>
                         );
                       })}
@@ -821,36 +879,36 @@ export default function CardPaymentsPage() {
                   );
                 })}
 
-                {/* 3. 마우스 호버 및 모바일 터치 시 부드럽게 나타나는 3D 스마트 툴팁 카드 */}
+                {/* 4. Hyper Glassmorphism Floating Tooltip Card */}
                 {hoveredPoint && (
                   (() => {
                     const idx = chartData.findIndex(d => d.month === hoveredPoint.month);
                     const hoverX = pointsX[idx];
-                    const tooltipW = 190;
-                    const tooltipH = 125;
+                    const tooltipW = 200;
+                    const tooltipH = 135;
                     const posX = Math.min(Math.max(hoverX - tooltipW / 2, 10), svgW - tooltipW - 10);
 
                     return (
-                      <g transform={`translate(${posX}, 15)`} style={{ pointerEvents: 'none', transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-                        <line x1={hoverX - posX} y1="0" x2={hoverX - posX} y2={chartH + 25} stroke="#00f2fe" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.8" />
+                      <g transform={`translate(${posX}, 15)`} style={{ pointerEvents: 'none', transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)' }}>
                         <foreignObject width={tooltipW} height={tooltipH} style={{ overflow: 'visible' }}>
                           <div style={{
-                            background: dark ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.98)',
-                            border: '1.5px solid #00f2fe',
-                            borderRadius: '14px',
-                            padding: '10px 12px',
-                            boxShadow: '0 14px 35px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 242, 254, 0.3)',
-                            backdropFilter: 'blur(20px)',
-                            WebkitBackdropFilter: 'blur(20px)',
-                            color: dark ? '#ffffff' : '#000000',
-                            animation: 'chartTooltipFadeIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-                            transformOrigin: 'top center'
+                            background: dark ? 'rgba(15, 23, 42, 0.94)' : 'rgba(255, 255, 255, 0.96)',
+                            border: dark ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid #bfdbfe',
+                            borderRadius: '16px',
+                            padding: '12px 14px',
+                            boxShadow: dark 
+                              ? '0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.2)' 
+                              : '0 12px 30px rgba(37, 99, 235, 0.12)',
+                            backdropFilter: 'blur(24px)',
+                            WebkitBackdropFilter: 'blur(24px)',
+                            color: dark ? '#ffffff' : '#0f172a',
+                            animation: 'chartTooltipFadeIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
                           }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '4px', marginBottom: '6px' }}>
-                              <span style={{ fontSize: '0.8rem', fontWeight: 900, color: dark ? '#00f2fe' : '#000000' }}>
-                                📊 {hoveredPoint.month} 내역
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: dark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid #f1f5f9', paddingBottom: '6px', marginBottom: '8px' }}>
+                              <span style={{ fontSize: '0.82rem', fontWeight: 900, color: dark ? '#38bdf8' : '#2563eb' }}>
+                                {hoveredPoint.month} 납부 분석
                               </span>
-                              <span style={{ fontSize: '0.65rem', background: dark ? 'rgba(0, 242, 254, 0.15)' : 'rgba(0, 0, 0, 0.08)', color: dark ? '#00f2fe' : '#000000', padding: '1px 6px', borderRadius: '99px', fontWeight: 800 }}>
+                              <span style={{ fontSize: '0.68rem', background: dark ? 'rgba(56, 189, 248, 0.15)' : '#eff6ff', color: dark ? '#38bdf8' : '#2563eb', padding: '2px 8px', borderRadius: '99px', fontWeight: 800 }}>
                                 {hoveredPoint.total > 0 ? formatKRW(hoveredPoint.total) + '원' : '0원'}
                               </span>
                             </div>
@@ -859,13 +917,14 @@ export default function CardPaymentsPage() {
                               if (key === 'total') return null;
                               const isLineVisible = activeLines.total || activeLines[key];
                               if (!isLineVisible) return null;
+                              const c = hyperColors[key] || cfg.color;
                               return (
-                                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', margin: '2px 0' }}>
-                                  <span style={{ color: cfg.color, fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.color }} />
+                                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', margin: '3px 0' }}>
+                                  <span style={{ color: c, fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: c }} />
                                     {cfg.label}
                                   </span>
-                                  <span style={{ fontWeight: 900, color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', monospace" }}>
+                                  <span style={{ fontWeight: 900, color: dark ? '#ffffff' : '#0f172a', fontFamily: "'Plus Jakarta Sans', monospace" }}>
                                     {formatKRW(hoveredPoint[key])}원
                                   </span>
                                 </div>
