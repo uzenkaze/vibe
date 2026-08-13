@@ -17,6 +17,14 @@ function Copy-HtmlWithCacheBust([string]$Source, [string]$Dest, [string]$Timesta
     Write-TextUtf8 $Dest $text
 }
 
+# 0. 소스 코드 변경사항 전체 자동 커밋 (Vercel 및 GitHub 배포 동기화 보장)
+$status = git status --porcelain
+if ($status) {
+    Write-Host "> 소스 코드 변경사항 전체 자동 커밋 중..." -ForegroundColor Cyan
+    git add -A
+    git commit -m "feat: auto commit before deploy ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))"
+}
+
 $deployDir = "deploy_dist"
 
 Write-Host ">>> 통합 배포 프로세스 시작" -ForegroundColor Cyan
@@ -46,6 +54,10 @@ try {
     Set-Location asset/asset-react
     npm.cmd run build
     Set-Location ../..
+    if (Test-Path "asset/asset-react/dist/index.html") {
+        Copy-Item -Path "asset/asset-react/dist/index.html" -Destination "asset/index.html" -Force
+        Write-Host "> Synced asset/asset-react/dist/index.html -> asset/index.html" -ForegroundColor Green
+    }
 } catch {
     Write-Host "> 'asset/asset-react' 프로젝트 빌드 실패" -ForegroundColor Red
     Set-Location ../..
@@ -157,11 +169,23 @@ git commit -m "Integrated deploy: learn, asset, task, and others"
 git push -f https://github.com/uzenkaze/vibe.git master:gh-pages
 Set-Location ..
 
-Write-Host "> Vercel Production 동기화 중 (main 브랜치)..." -ForegroundColor Green
-git push origin master:main
+Write-Host "> Vercel Production 동기화 중 (main 및 master 브랜치 푸시)..." -ForegroundColor Green
+git push origin master -f
+git push origin master:main -f
+
+if ($env:VERCEL_DEPLOY_HOOK_URL) {
+    Write-Host "> Vercel Deploy Hook 호출 중..." -ForegroundColor Cyan
+    try {
+        Invoke-RestMethod -Uri $env:VERCEL_DEPLOY_HOOK_URL -Method Post | Out-Null
+        Write-Host "> Vercel Deploy Hook 호출 성공!" -ForegroundColor Green
+    } catch {
+        Write-Host "> Vercel Deploy Hook 호출 실패 (경고)" -ForegroundColor Yellow
+    }
+}
 
 Write-Host ">>> 모든 사이트 배포 완료!" -ForegroundColor Green
 Write-Host "접속 주소:"
+Write-Host "- Vercel: https://vibe-kaze.vercel.app/"
 Write-Host "- Learn: https://uzenkaze.github.io/vibe/learn/"
 Write-Host "- Task: https://uzenkaze.github.io/vibe/task/task-manager.html"
 Write-Host "- Asset: https://uzenkaze.github.io/vibe/asset/asset-react/dist/index.html"
