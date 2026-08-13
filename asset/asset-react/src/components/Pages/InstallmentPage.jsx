@@ -562,7 +562,7 @@ export default function InstallmentPage() {
               Installment Detail Management
             </span>
           </div>
-          <button className="btn btn-dark" onClick={handleAdd}>+ 할부 추가</button>
+          <button className="btn btn-teal btn-sm" onClick={handleAdd}>+ 할부 추가</button>
         </div>
 
         {/* 종료일별 할부 완료 예정 알림 칩 바 (회차 기준 종료월 단위 그룹화) */}

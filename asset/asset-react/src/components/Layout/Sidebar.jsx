@@ -1,5 +1,5 @@
 import { useApp } from '../../context/AppContext';
-import mascotImg from '../../public/asset_character.jpg';
+import mascotImg from '../../assets/asset_character.jpg';
 
 const NAV_ITEMS = [
   {
