@@ -8,6 +8,7 @@ import NumberInput from '../UI/NumberInput';
 // 상수 / 유틸
 // ────────────────────────────────────────────────────────
 const PAYMENT_CYCLES = ['월납', '분기납', '반기납', '연납', '일시납'];
+const PAYMENT_METHODS = ['카드', '현금이체'];
 const RENEWAL_TYPES = ['비갱신형', '갱신형'];
 const COVERAGE_CATEGORIES = ['진단', '수술', '입원', '통원', '사망', '후유장애', '손해', '미분류'];
 const INSURANCE_TYPES = [
@@ -206,6 +207,7 @@ const emptyPolicy = () => ({
   feature:      '',   // 보험의 특징
   premium:      '',   // 보험료
   payCycle:     '월납',
+  payMethod:    '카드',
   renewalType:  '비갱신형', // 갱신 / 비갱신
   payStart:     '',   // 납입시작 YYYY.MM.DD
   payEnd:       '',   // 납입종료 YYYY.MM.DD
@@ -521,6 +523,13 @@ function PolicyModal({ policy, colorIdx, onClose, onSave, isNew }) {
               <select className="ins-input" value={form.payCycle}
                 onChange={e => setField('payCycle', e.target.value)}>
                 {PAYMENT_CYCLES.map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="ins-field">
+              <label>납부방법</label>
+              <select className="ins-input" value={form.payMethod || '카드'}
+                onChange={e => setField('payMethod', e.target.value)}>
+                {PAYMENT_METHODS.map(m => <option key={m}>{m}</option>)}
               </select>
             </div>
           <div className="ins-field ins-field-full" style={{ marginTop: '0.25rem' }}>

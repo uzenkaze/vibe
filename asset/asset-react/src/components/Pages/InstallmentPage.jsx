@@ -148,8 +148,10 @@ export default function InstallmentPage() {
   const { getCurrentSections, persistSections, year, month, dark } = useApp();
   const [activeDetailId, setActiveDetailId] = useState(null);
 
-  // 아코디언 상태 관리 (기본 닫힘)
+  // 아코디언 상태 관리 (기본 열림/닫힘)
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+  const [isFutureAccordionOpen, setIsFutureAccordionOpen] = useState(true);
+  const [activePopoverKey, setActivePopoverKey] = useState(null);
   const [modalRepayStatus, setModalRepayStatus] = useState('active');
   const [modalRepaidAmount, setModalRepaidAmount] = useState(0);
 
@@ -443,6 +445,89 @@ export default function InstallmentPage() {
     return installments.filter(i => (i.card || '').trim() === selectedCardFilter);
   }, [installments, selectedCardFilter]);
 
+  // 기준월 (year.month) 기준 향후 월별 청구 예정 집계 데이터 계산
+  const futureMonthlySchedule = useMemo(() => {
+    const futureMap = {};
+    let grandFutureTotal = 0;
+
+    const baseKey = `${year}.${String(month).padStart(2, '0')}`;
+    const targetList = filteredInstallments;
+
+    targetList.forEach(item => {
+      if (item.repayStatus === 'full') return;
+
+      const totalMonths = Math.max(1, parseInt(item.totalMonths) || 1);
+      const monthlyPrincipal = Number(item.monthlyPrincipal) || Math.floor((Number(item.amount) || 0) / totalMonths);
+      const rate = parseFloat(item.rate) || 0;
+
+      // 1회차 첫 청구 연월 산출
+      const payDayVal = item.payDay || (item.card && item.card.includes('삼성') ? 5 : 14);
+      const firstBillingDate = getInitialBillingDate(item.date, payDayVal);
+      const startYear = firstBillingDate.getFullYear();
+      const startMonth = firstBillingDate.getMonth() + 1; // 1 ~ 12
+
+      for (let r = 1; r <= totalMonths; r++) {
+        // r 회차가 실제 청구되는 연/월 계산
+        let bYear = startYear + Math.floor((startMonth + (r - 1) - 1) / 12);
+        let bMonth = ((startMonth + (r - 1) - 1) % 12) + 1;
+        const monthKey = `${bYear}.${String(bMonth).padStart(2, '0')}`;
+
+        // 선택한 기준월(baseKey) 보다 이후 월에 실제 청구되는 회차만 포함
+        if (monthKey > baseKey) {
+          const displayLabel = `${bYear}년 ${bMonth}월`;
+          const step = (bYear - Number(year)) * 12 + (bMonth - Number(month));
+
+          let curPrincipal = (r === totalMonths)
+            ? (Number(item.amount) || 0) - (monthlyPrincipal * (totalMonths - 1))
+            : monthlyPrincipal;
+
+          let remBal = (Number(item.amount) || 0) - (monthlyPrincipal * (r - 1));
+          if (item.repayStatus === 'partial' && item.repaidAmount && r >= (Number(item.currentMonth) || 1)) {
+            remBal = Math.max(0, remBal - (Number(item.repaidAmount) || 0));
+          }
+
+          // 수수료: 이율(rate)이 있으면 잔액 기준 월할 자동 계산, 이율이 0이면 사용자 수동 입력 monthlyFee 사용
+          const curFee = rate > 0 
+            ? Math.floor((remBal * rate / 100) / 12) 
+            : (Number(item.monthlyFee) || 0);
+          const roundTotal = curPrincipal + curFee;
+
+          grandFutureTotal += roundTotal;
+
+          if (!futureMap[monthKey]) {
+            futureMap[monthKey] = {
+              key: monthKey,
+              year: bYear,
+              month: bMonth,
+              label: displayLabel,
+              step,
+              totalAmount: 0,
+              items: []
+            };
+          }
+
+          futureMap[monthKey].totalAmount += roundTotal;
+          futureMap[monthKey].items.push({
+            id: item.id,
+            card: item.card || '카드',
+            content: item.content || item.card || '할부항목',
+            targetRound: r,
+            totalMonths,
+            principal: curPrincipal,
+            fee: curFee,
+            amount: roundTotal
+          });
+        }
+      }
+    });
+
+    const sortedKeys = Object.keys(futureMap).sort();
+    return {
+      monthlyList: sortedKeys.map(k => futureMap[k]),
+      grandFutureTotal
+    };
+  }, [filteredInstallments, year, month]);
+
   const CARD_OPTIONS = [
     { value: '국민', label: '국민', color: '#eab308' },  // 노랑
     { value: '신한', label: '신한', color: '#3b82f6' },  // 파랑
@@ -650,6 +735,286 @@ export default function InstallmentPage() {
                   );
                 })}
               </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* 향후 월별 청구 예정 금액 (기준월 이후 월별 청구 스케줄 및 합계) */}
+        {(() => {
+          const { monthlyList, grandFutureTotal } = futureMonthlySchedule;
+          const hasFutures = monthlyList.length > 0;
+
+          return (
+            <div style={{
+              padding: '0.85rem 1rem',
+              margin: '0.5rem 0.75rem 0',
+              background: dark 
+                ? (isFutureAccordionOpen ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.025)')
+                : (isFutureAccordionOpen ? 'rgba(0, 0, 0, 0.035)' : 'rgba(0, 0, 0, 0.015)'),
+              borderRadius: '14px',
+              border: isFutureAccordionOpen ? '1px solid var(--border-active, rgba(120, 130, 160, 0.35))' : '1px solid var(--card-border)',
+              boxShadow: isFutureAccordionOpen ? '0 2px 10px rgba(0, 0, 0, 0.04)' : 'none',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.6rem'
+            }}>
+              <div 
+                onClick={() => setIsFutureAccordionOpen(!isFutureAccordionOpen)}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  userSelect: 'none'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  <span>🔮</span>
+                  <span>월별 청구 예정</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    (기준월 {month}월 이후)
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+                  {hasFutures ? (
+                    <span style={{ fontSize: '0.74rem', color: 'var(--teal)', fontWeight: 800 }}>
+                      총 {monthlyList.length}개월 / {formatKRW(grandFutureTotal)}원
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                      (향후 예정 내역 없음)
+                    </span>
+                  )}
+                  <div style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--text-muted)',
+                    transition: 'transform 0.2s ease',
+                    transform: isFutureAccordionOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justify: 'center'
+                  }}>
+                    ▼
+                  </div>
+                </div>
+              </div>
+
+              {isFutureAccordionOpen && (
+                <div style={{ marginTop: '0.2rem' }}>
+                  {!hasFutures ? (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', padding: '0.5rem 0' }}>
+                      기준월({year}년 {month}월) 이후에 추가 청구될 예정인 할부 금액이 없습니다.
+                    </div>
+                  ) : (
+                    <>
+                      {/* 가로 카드 스크롤 영역 */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        overflowX: 'auto',
+                        padding: '0.35rem 0.15rem 0.5rem',
+                        scrollbarWidth: 'thin'
+                      }}>
+                        {monthlyList.map((mItem, idx) => (
+                          <div key={mItem.key} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
+                            <div 
+                              onMouseEnter={() => {
+                                if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+                                  setActivePopoverKey(mItem.key);
+                                }
+                              }}
+                              onMouseLeave={() => {
+                                if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+                                  setActivePopoverKey(null);
+                                }
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActivePopoverKey(prev => (prev === mItem.key ? null : mItem.key));
+                              }}
+                              style={{
+                                minWidth: '132px',
+                                padding: '0.6rem 0.75rem',
+                                borderRadius: '12px',
+                                background: dark 
+                                  ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%)' 
+                                  : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                                border: activePopoverKey === mItem.key
+                                  ? '1px solid #6366f1'
+                                  : (dark ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(99, 102, 241, 0.25)'),
+                                boxShadow: activePopoverKey === mItem.key
+                                  ? '0 6px 20px rgba(99, 102, 241, 0.25)'
+                                  : (dark ? '0 4px 14px rgba(0, 0, 0, 0.25)' : '0 4px 14px rgba(99, 102, 241, 0.08)'),
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.25rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                              }}
+                            >
+                              {/* 월 뱃지 및 상대월 */}
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span style={{
+                                  fontSize: '0.8rem',
+                                  fontWeight: 900,
+                                  color: 'var(--text-primary)',
+                                  fontFamily: "'Plus Jakarta Sans', sans-serif"
+                                }}>
+                                  {mItem.month}월
+                                  <span style={{ fontSize: '0.62rem', fontWeight: 600, color: 'var(--text-muted)', marginLeft: 2 }}>
+                                    ({mItem.year.toString().slice(2)}년)
+                                  </span>
+                                </span>
+                                <span style={{
+                                  fontSize: '0.6rem',
+                                  fontWeight: 800,
+                                  padding: '1px 5px',
+                                  borderRadius: '99px',
+                                  background: mItem.step === 1 ? 'rgba(99, 102, 241, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                                  color: mItem.step === 1 ? '#6366f1' : '#10b981',
+                                  border: mItem.step === 1 ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)'
+                                }}>
+                                  {mItem.step === 1 ? '익월' : `+${mItem.step}개월`}
+                                </span>
+                              </div>
+
+                              {/* 월별 합계 금액 */}
+                              <div style={{
+                                fontSize: '0.95rem',
+                                fontWeight: 900,
+                                color: mItem.step === 1 ? '#6366f1' : 'var(--text-primary)',
+                                fontFamily: "'Plus Jakarta Sans', monospace",
+                                letterSpacing: '-0.02em',
+                                marginTop: '0.1rem'
+                              }}>
+                                {formatKRW(mItem.totalAmount)}
+                                <span style={{ fontSize: '0.68rem', fontWeight: 700, marginLeft: 2 }}>원</span>
+                              </div>
+
+                              {/* 청구 건수 서브 표시 */}
+                              <div style={{
+                                fontSize: '0.63rem',
+                                color: 'var(--text-muted)',
+                                fontWeight: 600
+                              }}>
+                                💳 {mItem.items.length}건 청구 예정
+                              </div>
+                            </div>
+
+                            {/* 카드 흐름 연결 화살표 (>) */}
+                            {idx < monthlyList.length - 1 && (
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#6366f1',
+                                fontWeight: 900,
+                                fontSize: '1rem',
+                                opacity: 0.5,
+                                flexShrink: 0,
+                                userSelect: 'none',
+                                padding: '0 1px'
+                              }}>
+                                &gt;
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* PC 마우스 호버 / 모바일 터치 시 노출되는 청구 세부 내역 레이어 패널 */}
+                      {activePopoverKey && (() => {
+                        const activeMonthObj = monthlyList.find(m => m.key === activePopoverKey);
+                        if (!activeMonthObj) return null;
+
+                        return (
+                          <div style={{
+                            marginTop: '0.5rem',
+                            padding: '0.75rem 0.9rem',
+                            borderRadius: '12px',
+                            background: dark ? 'rgba(30, 41, 59, 0.9)' : 'rgba(241, 245, 249, 0.95)',
+                            border: dark ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(99, 102, 241, 0.3)',
+                            boxShadow: dark ? '0 4px 14px rgba(0,0,0,0.3)' : '0 4px 14px rgba(99, 102, 241, 0.1)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.5rem',
+                            animation: 'fadeIn 0.2s ease-in-out'
+                          }}>
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justify: 'space-between',
+                              borderBottom: '1px solid var(--border)',
+                              paddingBottom: '0.4rem'
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                                <span>💳</span>
+                                <span>{activeMonthObj.label} 청구 상세 내역</span>
+                                <span style={{ fontSize: '0.7rem', color: '#6366f1', fontWeight: 700 }}>
+                                  ({activeMonthObj.items.length}건)
+                                </span>
+                              </div>
+                              <div style={{ fontWeight: 900, fontSize: '0.82rem', color: '#6366f1', fontFamily: "'Plus Jakarta Sans', monospace" }}>
+                                합계: {formatKRW(activeMonthObj.totalAmount)}원
+                              </div>
+                            </div>
+
+                            <div style={{
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
+                              gap: '0.45rem',
+                              maxHeight: '220px',
+                              overflowY: 'auto'
+                            }}>
+                              {activeMonthObj.items.map((it, iIdx) => (
+                                <div 
+                                  key={iIdx}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justify: 'space-between',
+                                    padding: '0.45rem 0.65rem',
+                                    borderRadius: '8px',
+                                    background: 'var(--card)',
+                                    border: '1px solid var(--border)',
+                                    fontSize: '0.74rem'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                                    <span style={{
+                                      fontSize: '0.64rem',
+                                      fontWeight: 800,
+                                      padding: '1px 5px',
+                                      borderRadius: '4px',
+                                      background: 'rgba(99, 102, 241, 0.15)',
+                                      color: '#6366f1',
+                                      flexShrink: 0
+                                    }}>
+                                      {it.card}
+                                    </span>
+                                    <span style={{ fontWeight: 700, color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                      {it.content}
+                                    </span>
+                                    <span style={{ fontSize: '0.66rem', color: 'var(--text-muted)', flexShrink: 0 }}>
+                                      ({it.targetRound}/{it.totalMonths}회)
+                                    </span>
+                                  </div>
+                                  <span style={{ fontWeight: 800, color: 'var(--text-primary)', flexShrink: 0, fontFamily: "'Plus Jakarta Sans', monospace" }}>
+                                    {formatKRW(it.amount)}원
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </>
+                  )}
+                </div>
               )}
             </div>
           );
