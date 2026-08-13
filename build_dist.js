@@ -92,11 +92,11 @@ console.log('> Copying learn...');
 if (fs.existsSync(path.join(rootDir, 'learn', 'docs'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'docs'), path.join(deployDir, 'learn', 'docs'));
 }
-if (fs.existsSync(path.join(rootDir, 'learn', 'data.json'))) {
-  fs.copyFileSync(path.join(rootDir, 'learn', 'data.json'), path.join(deployDir, 'learn', 'data.json'));
-}
 if (fs.existsSync(path.join(rootDir, 'learn', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
+}
+if (fs.existsSync(path.join(rootDir, 'learn', 'data.json'))) {
+  fs.copyFileSync(path.join(rootDir, 'learn', 'data.json'), path.join(deployDir, 'learn', 'data.json'));
 }
 
 // 4. Copy CarRep dist

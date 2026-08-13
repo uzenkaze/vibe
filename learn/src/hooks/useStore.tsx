@@ -249,8 +249,33 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     showToast(ok ? 'GitHub에 업로드 완료' : '업로드 실패');
   }, [ghConfig, showToast]);
 
-  // Initial background sync
+  // Initial background sync and seed data mapping
   useEffect(() => {
+    const isDataEmpty = !dataRef.current.categories.length && !dataRef.current.articles.length;
+
+    async function loadLocalSeed() {
+      try {
+        const pathPrefix = window.location.pathname.includes('/learn') ? '/learn' : '';
+        const res = await fetch(`${pathPrefix}/data.json?t=${Date.now()}`);
+        if (res.ok) {
+          const seed = await res.json();
+          if (seed && Array.isArray(seed.categories) && Array.isArray(seed.articles)) {
+            setData(seed);
+            saveData(seed);
+            dataRef.current = seed;
+            showToast('기존 등록 데이터 매핑 완료');
+            if (ghConfig.token && ghConfig.repo) {
+              uploadToGitHub(ghConfig, seed).then(ok => {
+                if (ok) setDataSource('github');
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Seed data load error:', e);
+      }
+    }
+
     if (ghConfig.repo && ghConfig.repo.trim()) {
       setDataSource('syncing');
       downloadFromGitHub<AppData>(ghConfig).then(async result => {
@@ -274,12 +299,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         } else if (ghConfig.token && ghConfig.token.trim()) {
           const ok = await uploadToGitHub(ghConfig, dataRef.current);
           setDataSource(ok ? 'github' : 'local');
+          if (!ok && isDataEmpty) {
+            loadLocalSeed();
+          }
         } else {
           setDataSource('local');
+          if (isDataEmpty) {
+            loadLocalSeed();
+          }
         }
       }).catch(() => {
         setDataSource('local');
+        if (isDataEmpty) {
+          loadLocalSeed();
+        }
       });
+    } else if (isDataEmpty) {
+      loadLocalSeed();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
