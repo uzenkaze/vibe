@@ -52,8 +52,9 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    updateGhConfig({ token: token.trim(), repo: repo.trim(), branch: branch.trim(), autoSync });
-    await syncDown();
+    const newConfig = { token: token.trim(), repo: repo.trim(), branch: branch.trim(), autoSync };
+    updateGhConfig(newConfig);
+    await syncDown(newConfig);
     setIsSaving(false);
   };
 

@@ -196,9 +196,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     showToast('GitHub 설정이 저장되었습니다');
   }, [showToast]);
 
-  const syncDown = useCallback(async () => {
+  const syncDown = useCallback(async (customConfig?: GitHubConfig) => {
     setDataSource('syncing');
-    const result = await downloadFromGitHub<AppData>(ghConfig);
+    const targetConfig = customConfig || ghConfig;
+    const result = await downloadFromGitHub<AppData>(targetConfig);
     if (result && result.categories && result.articles) {
       // Ensure we don't lose memos/trash if they are missing on GH
       const currentData = dataRef.current;
