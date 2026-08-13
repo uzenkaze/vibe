@@ -31,7 +31,7 @@ interface StoreContextType {
   setMindmap: (mindmap: any) => void;
   // GitHub actions
   updateGhConfig: (config: GitHubConfig) => void;
-  syncDown: () => Promise<void>;
+  syncDown: (customConfig?: GitHubConfig) => Promise<void>;
   syncUp: () => Promise<void>;
   // Toast
   toast: string | null;
@@ -199,6 +199,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const syncDown = useCallback(async (customConfig?: GitHubConfig) => {
     setDataSource('syncing');
     const targetConfig = customConfig || ghConfig;
+    if (!targetConfig.repo || !targetConfig.repo.trim()) {
+      setDataSource('local');
+      showToast('GitHub 저장소 정보가 없습니다');
+      return;
+    }
     const result = await downloadFromGitHub<AppData>(targetConfig);
     if (result && result.categories && result.articles) {
       // Ensure we don't lose memos/trash if they are missing on GH
@@ -220,7 +225,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       saveData(merged);
       dataRef.current = merged;
       setDataSource('github');
-      showToast('GitHub에서 데이터를 불러왔습니다');
+      showToast('GitHub 연동 완료 (데이터 동기화 성공)');
+    } else if (targetConfig.token && targetConfig.token.trim()) {
+      // GitHub 데이터가 업로드된 적 없는 경우, 현재 로컬 데이터를 GitHub로 초기 업로드 시도하여 연동 완료
+      const uploadOk = await uploadToGitHub(targetConfig, dataRef.current);
+      if (uploadOk) {
+        setDataSource('github');
+        showToast('GitHub 연동 완료 (로컬 데이터 업로드 성공)');
+      } else {
+        setDataSource('local');
+        showToast('GitHub 연동 실패: 토큰 권한 또는 저장소 이름을 확인해주세요');
+      }
     } else {
       setDataSource('local');
       showToast('GitHub 데이터가 없거나 불러오기에 실패했습니다');
@@ -236,26 +251,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // Initial background sync
   useEffect(() => {
-    if (ghConfig.repo) {
+    if (ghConfig.repo && ghConfig.repo.trim()) {
       setDataSource('syncing');
-      downloadFromGitHub<AppData>(ghConfig).then(result => {
+      downloadFromGitHub<AppData>(ghConfig).then(async result => {
         if (result && result.categories && result.articles) {
           const merged: AppData = {
             ...result,
-            memos: result.memos || data.memos || [],
-            trash: result.trash || data.trash || [],
+            memos: result.memos || dataRef.current.memos || [],
+            trash: result.trash || dataRef.current.trash || [],
             memoFolders: (() => {
-              const f = result.memoFolders || data.memoFolders || [];
+              const f = result.memoFolders || dataRef.current.memoFolders || [];
               if (!f.some(x => x.id === 'folder_default')) {
                 f.unshift({ id: 'folder_default', name: '내 메모', color: '#fbbf24', createdAt: new Date().toISOString() });
               }
               return f;
             })(),
-            mindmap: result.mindmap || data.mindmap,
+            mindmap: result.mindmap || dataRef.current.mindmap,
           };
           setData(merged);
           saveData(merged);
           setDataSource('github');
+        } else if (ghConfig.token && ghConfig.token.trim()) {
+          const ok = await uploadToGitHub(ghConfig, dataRef.current);
+          setDataSource(ok ? 'github' : 'local');
         } else {
           setDataSource('local');
         }
@@ -263,7 +281,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setDataSource('local');
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

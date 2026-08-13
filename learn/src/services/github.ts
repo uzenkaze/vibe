@@ -29,76 +29,74 @@ export function saveGitHubConfig(config: GitHubConfig): void {
   localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(config));
 }
 
+export function getAuthHeader(token?: string): string {
+  if (!token) return '';
+  const trimmed = token.trim();
+  if (trimmed.startsWith('Bearer ') || trimmed.startsWith('token ')) {
+    return trimmed;
+  }
+  return `Bearer ${trimmed}`;
+}
+
 export async function downloadFromGitHub<T>(config: GitHubConfig, path: string = DATA_PATH): Promise<T | null> {
   if (!config.repo) return null;
+  const repoTrimmed = config.repo.trim();
+  const branchTrimmed = (config.branch || 'main').trim();
 
-  // 토큰이 없는 퍼블릭 요청의 경우, API 레이턴시와 Rate limit 회피를 위해 곧바로 raw.githubusercontent.com으로 고속 요청
-  if (!config.token) {
+  // 토큰이 있는 경우 API 요청 시도
+  if (config.token && config.token.trim()) {
+    const url = `https://api.github.com/repos/${repoTrimmed}/contents/${path}?ref=${branchTrimmed}&t=${Date.now()}`;
+    const headers: Record<string, string> = {
+      'Accept': 'application/vnd.github.v3+json',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'Authorization': getAuthHeader(config.token),
+    };
+
     try {
-      const rawUrl = `https://raw.githubusercontent.com/${config.repo}/${config.branch || 'main'}/${path}?t=${Date.now()}`;
-      const rawRes = await fetch(rawUrl, { cache: 'no-store' });
-      if (rawRes.ok) {
-        const data = await rawRes.json();
-        return data as T;
+      const res = await fetch(url, { headers });
+      if (res.ok) {
+        const json = await res.json();
+        if (!Array.isArray(json)) {
+          let base64 = '';
+          if (!json.content || json.size > 1000000) {
+            if (json.sha) {
+              const blobUrl = `https://api.github.com/repos/${repoTrimmed}/git/blobs/${json.sha}`;
+              const blobRes = await fetch(blobUrl, { headers: { 'Authorization': getAuthHeader(config.token) } });
+              if (blobRes.ok) {
+                const blobJson = await blobRes.json();
+                base64 = blobJson.content;
+              }
+            }
+          } else {
+            base64 = json.content;
+          }
+
+          if (base64) {
+            const cleanBase64 = base64.replace(/[\s\r\n\t]/g, '');
+            const binString = atob(cleanBase64);
+            const bytes = new Uint8Array(binString.length);
+            for (let i = 0; i < binString.length; i++) {
+              bytes[i] = binString.charCodeAt(i);
+            }
+            const content = new TextDecoder().decode(bytes);
+            return JSON.parse(content) as T;
+          }
+        }
       }
     } catch (e) {
-      console.error('GitHub Raw Download Error:', e);
+      console.warn('GitHub API Download warn, trying raw fallback:', e);
     }
-    return null;
-  }
-
-  // 토큰이 있는 경우만 API 요청 시도
-  const url = `https://api.github.com/repos/${config.repo}/contents/${path}?ref=${config.branch || 'main'}&t=${Date.now()}`;
-  const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3+json',
-    'Cache-Control': 'no-cache',
-    'Pragma': 'no-cache',
-    'Authorization': `token ${config.token}`,
-  };
-
-  try {
-    const res = await fetch(url, { headers });
-    if (res.status === 404) return null;
-    if (res.ok) {
-      const json = await res.json();
-      if (!Array.isArray(json)) {
-        let base64 = '';
-        if (!json.content || json.size > 1000000) {
-          if (json.sha) {
-            const blobUrl = `https://api.github.com/repos/${config.repo}/git/blobs/${json.sha}`;
-            const blobHeaders: Record<string, string> = {
-              'Authorization': `token ${config.token}`
-            };
-            const blobRes = await fetch(blobUrl, { headers: blobHeaders });
-            if (blobRes.ok) {
-              const blobJson = await blobRes.json();
-              base64 = blobJson.content;
-            }
-          }
-        } else {
-          base64 = json.content;
-        }
-
-        if (base64) {
-          const cleanBase64 = base64.replace(/[\s\r\n\t]/g, '');
-          const binString = atob(cleanBase64);
-          const bytes = new Uint8Array(binString.length);
-          for (let i = 0; i < binString.length; i++) {
-            bytes[i] = binString.charCodeAt(i);
-          }
-          const content = new TextDecoder().decode(bytes);
-          return JSON.parse(content) as T;
-        }
-      }
-    }
-  } catch (e) {
-    console.warn('GitHub API Download warn, trying raw fallback:', e);
   }
 
   // Fallback: raw.githubusercontent.com 퍼블릭 URL로 시도
   try {
-    const rawUrl = `https://raw.githubusercontent.com/${config.repo}/${config.branch || 'main'}/${path}?t=${Date.now()}`;
-    const rawRes = await fetch(rawUrl, { cache: 'no-store' });
+    const rawUrl = `https://raw.githubusercontent.com/${repoTrimmed}/${branchTrimmed}/${path}?t=${Date.now()}`;
+    const rawHeaders: Record<string, string> = { 'Cache-Control': 'no-cache' };
+    if (config.token && config.token.trim()) {
+      rawHeaders['Authorization'] = getAuthHeader(config.token);
+    }
+    const rawRes = await fetch(rawUrl, { headers: rawHeaders, cache: 'no-store' });
     if (rawRes.ok) {
       const data = await rawRes.json();
       return data as T;
@@ -113,9 +111,11 @@ export async function downloadFromGitHub<T>(config: GitHubConfig, path: string =
 export async function uploadToGitHub(config: GitHubConfig, data: unknown, path: string = DATA_PATH, message: string = 'Update learn data'): Promise<boolean> {
   if (!config.token || !config.repo) return false;
 
-  const url = `https://api.github.com/repos/${config.repo}/contents/${path}?ref=${config.branch}`;
+  const repoTrimmed = config.repo.trim();
+  const branchTrimmed = (config.branch || 'main').trim();
+  const url = `https://api.github.com/repos/${repoTrimmed}/contents/${path}?ref=${branchTrimmed}`;
   const headers: Record<string, string> = {
-    'Authorization': `token ${config.token}`,
+    'Authorization': getAuthHeader(config.token),
     'Accept': 'application/vnd.github.v3+json',
     'Content-Type': 'application/json',
   };
@@ -136,7 +136,7 @@ export async function uploadToGitHub(config: GitHubConfig, data: unknown, path: 
     const body: Record<string, unknown> = {
       message,
       content: base64,
-      branch: config.branch,
+      branch: branchTrimmed,
     };
     if (sha) body.sha = sha;
 
