@@ -73,11 +73,7 @@ function buildApp(appName, dir) {
   // Run Vite build
   runCommand('npm run build', dir);
 
-  // Sync compiled dist/index.html back to source index.html
-  if (fs.existsSync(distIndexPath)) {
-    fs.copyFileSync(distIndexPath, sourceIndexPath);
-    console.log(`> Synced compiled ${distIndexPath} -> ${sourceIndexPath}`);
-  }
+  // Keep source index.html intact with dev script tag (/src/main.jsx or /src/main.tsx)
 }
 
 // Execute builds
