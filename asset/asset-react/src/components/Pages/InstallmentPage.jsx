@@ -844,11 +844,11 @@ export default function InstallmentPage() {
                                   ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%)' 
                                   : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
                                 border: activePopoverKey === mItem.key
-                                  ? '1px solid #6366f1'
-                                  : (dark ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(99, 102, 241, 0.25)'),
+                                  ? (dark ? '1.5px solid #818cf8' : '1.5px solid #6366f1')
+                                  : (dark ? '1px solid rgba(255, 255, 255, 0.22)' : '1px solid rgba(99, 102, 241, 0.25)'),
                                 boxShadow: activePopoverKey === mItem.key
-                                  ? '0 6px 20px rgba(99, 102, 241, 0.25)'
-                                  : (dark ? '0 4px 14px rgba(0, 0, 0, 0.25)' : '0 4px 14px rgba(99, 102, 241, 0.08)'),
+                                  ? (dark ? '0 0 16px rgba(129, 140, 248, 0.35)' : '0 6px 20px rgba(99, 102, 241, 0.25)')
+                                  : (dark ? '0 4px 14px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05)' : '0 4px 14px rgba(99, 102, 241, 0.08)'),
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0.25rem',
