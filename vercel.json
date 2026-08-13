@@ -4,16 +4,18 @@
   "outputDirectory": "deploy_dist",
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/learn/assets/:path*", "destination": "/learn/assets/:path*" },
-    { "source": "/learn/:path*", "destination": "/learn/index.html" },
-    { "source": "/carrep/assets/:path*", "destination": "/carrep/assets/:path*" },
-    { "source": "/carrep/:path*", "destination": "/carrep/index.html" },
-    { "source": "/asset/assets/:path*", "destination": "/asset/assets/:path*" },
-    { "source": "/asset/:path*", "destination": "/asset/index.html" },
-    { "source": "/livetv/assets/:path*", "destination": "/livetv/assets/:path*" },
-    { "source": "/livetv/:path*", "destination": "/livetv/index.html" },
-    { "source": "/task/:path*", "destination": "/task/task-manager.html" },
-    { "source": "/hobby/:path*", "destination": "/hobby/index.html" }
+    { "source": "/learn/(.*)\\.(.*)", "destination": "/learn/$1.$2" },
+    { "source": "/learn/(.*)", "destination": "/learn/index.html" },
+    { "source": "/carrep/(.*)\\.(.*)", "destination": "/carrep/$1.$2" },
+    { "source": "/carrep/(.*)", "destination": "/carrep/index.html" },
+    { "source": "/asset/(.*)\\.(.*)", "destination": "/asset/$1.$2" },
+    { "source": "/asset/(.*)", "destination": "/asset/index.html" },
+    { "source": "/livetv/(.*)\\.(.*)", "destination": "/livetv/$1.$2" },
+    { "source": "/livetv/(.*)", "destination": "/livetv/index.html" },
+    { "source": "/task/(.*)\\.(.*)", "destination": "/task/$1.$2" },
+    { "source": "/task/(.*)", "destination": "/task/task-manager.html" },
+    { "source": "/hobby/(.*)\\.(.*)", "destination": "/hobby/$1.$2" },
+    { "source": "/hobby/(.*)", "destination": "/hobby/index.html" }
   ],
   "headers": [
     {
