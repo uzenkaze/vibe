@@ -2,7 +2,6 @@
   "version": 2,
   "buildCommand": "node build_dist.js",
   "outputDirectory": "deploy_dist",
-  "trailingSlash": true,
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/learn/((?!.*\\.[^/]+$).*)", "destination": "/learn/index.html" },
