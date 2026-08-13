@@ -134,10 +134,16 @@ staticFolders.forEach(folder => {
 });
 
 // 7. Copy Root Files
-const rootFiles = ['index.html', 'home.html', '404.html', 'README.md'];
+const rootFiles = ['index.html', 'home.html', '404.html', 'README.md', 'asset_character.jpg'];
 rootFiles.forEach(file => {
   const srcPath = path.join(rootDir, file);
-  if (fs.existsSync(srcPath)) {
+  if (!fs.existsSync(srcPath)) {
+    // Check inside asset/ directory as fallback
+    const assetFallback = path.join(rootDir, 'asset', file);
+    if (fs.existsSync(assetFallback)) {
+      fs.copyFileSync(assetFallback, path.join(deployDir, file));
+    }
+  } else {
     fs.copyFileSync(srcPath, path.join(deployDir, file));
   }
 });

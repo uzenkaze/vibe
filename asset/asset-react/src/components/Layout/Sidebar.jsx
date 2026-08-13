@@ -1,4 +1,5 @@
 import { useApp } from '../../context/AppContext';
+import mascotImg from '../../public/asset_character.jpg';
 
 const NAV_ITEMS = [
   {
@@ -214,7 +215,7 @@ export default function Sidebar({ isOpen, onMenuClick, onSaveSync, onDataModal, 
         <div className="sidebar-divider" />
         <div className="sidebar-user">
           <div className="user-avatar" style={{ overflow: 'hidden', padding: 0, borderRadius: '50%' }}>
-            <img src="/asset_character.jpg" alt="AD Mascot" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={mascotImg} alt="AD Mascot" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div className="sidebar-user-info">
             <div className="user-name">{session.userName || '사용자'}</div>
