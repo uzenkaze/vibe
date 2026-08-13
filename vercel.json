@@ -2,20 +2,15 @@
   "version": 2,
   "buildCommand": "node build_dist.js",
   "outputDirectory": "deploy_dist",
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/learn/((?!.*\\.[^/]+$).*)", "destination": "/learn/index.html" },
-    { "source": "/learn", "destination": "/learn/index.html" },
-    { "source": "/carrep/((?!.*\\.[^/]+$).*)", "destination": "/carrep/index.html" },
-    { "source": "/carrep", "destination": "/carrep/index.html" },
-    { "source": "/asset/((?!.*\\.[^/]+$).*)", "destination": "/asset/index.html" },
-    { "source": "/asset", "destination": "/asset/index.html" },
-    { "source": "/livetv/((?!.*\\.[^/]+$).*)", "destination": "/livetv/index.html" },
-    { "source": "/livetv", "destination": "/livetv/index.html" },
-    { "source": "/task/((?!.*\\.[^/]+$).*)", "destination": "/task/task-manager.html" },
-    { "source": "/task", "destination": "/task/task-manager.html" },
-    { "source": "/hobby/((?!.*\\.[^/]+$).*)", "destination": "/hobby/index.html" },
-    { "source": "/hobby", "destination": "/hobby/index.html" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/learn/(.*)", "dest": "/learn/index.html" },
+    { "src": "/carrep/(.*)", "dest": "/carrep/index.html" },
+    { "src": "/asset/(.*)", "dest": "/asset/index.html" },
+    { "src": "/livetv/(.*)", "dest": "/livetv/index.html" },
+    { "src": "/task/(.*)", "dest": "/task/task-manager.html" },
+    { "src": "/hobby/(.*)", "dest": "/hobby/index.html" }
   ],
   "headers": [
     {
