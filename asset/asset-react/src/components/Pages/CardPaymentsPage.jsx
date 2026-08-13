@@ -537,132 +537,78 @@ export default function CardPaymentsPage() {
           pointerEvents: 'none'
         }} />
 
-        {/* --- Hyper Charts UI Kit: 헤더 & 서머리 메트릭 바 --- */}
-        {(() => {
-          const curMonthIndex = Math.max(0, Math.min(11, parseInt(month, 10) - 1));
-          const curMonthData = chartData[curMonthIndex] || chartData[0] || {};
-          const curTotal = curMonthData.total || 0;
-          const yearlyTotal = chartData.reduce((acc, cur) => acc + (cur.total || 0), 0);
-          const monthlyAvg = Math.round(yearlyTotal / 12);
-          const prevTotal = (chartData[curMonthIndex - 1] || chartData[11] || {}).total || curTotal;
-          const diffRatio = prevTotal > 0 ? (((curTotal - prevTotal) / prevTotal) * 100).toFixed(1) : '0.0';
-          const isUp = Number(diffRatio) >= 0;
+        {/* --- 첨부 문서 100% 동일: 차트 상단 헤더 (타이틀 + 구분선 + 필터 칩스) --- */}
+        <div style={{ position: 'relative', zIndex: 10, marginBottom: '1.25rem' }}>
+          {/* 차트 타이틀 바 */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            paddingBottom: '0.75rem',
+            marginBottom: '1rem',
+            borderBottom: dark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid #e2e8f0'
+          }}>
+            <div style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              background: '#00f2fe',
+              boxShadow: '0 0 12px #00f2fe, 0 0 20px #00f2fe',
+              flexShrink: 0
+            }} />
+            <span style={{ 
+              fontSize: '1.05rem', 
+              fontWeight: 900, 
+              letterSpacing: '-0.02em', 
+              color: dark ? '#ffffff' : '#0f172a'
+            }}>
+              납부 변동 추이
+            </span>
+            <span style={{
+              fontSize: '0.68rem', 
+              color: dark ? 'rgba(255, 255, 255, 0.45)' : '#94a3b8',
+              fontWeight: 700, 
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase', 
+              marginLeft: '6px'
+            }}>
+              PAYMENT TREND ANALYTICS
+            </span>
+          </div>
 
-          return (
-            <div style={{ marginBottom: '1.5rem', position: 'relative', zIndex: 10 }}>
-              {/* 상단 타이틀 & 뱃지 */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '10px', height: '10px', borderRadius: '50%',
-                    background: '#3b82f6',
-                    boxShadow: '0 0 12px #3b82f6, 0 0 20px rgba(59, 130, 246, 0.5)'
-                  }} />
-                  <span style={{ fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.02em', color: dark ? '#ffffff' : '#0f172a' }}>
-                    Hyper Trend Analytics
-                  </span>
-                  <span style={{
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    padding: '3px 10px',
+          {/* 필터 칩스 버튼 그룹 (첨부 문서 스타일) */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {Object.entries(lineConfigs).map(([key, cfg]) => {
+              const isActive = activeLines[key];
+              return (
+                <button
+                  key={key}
+                  onClick={() => handleFilterToggle(key)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '5px 14px',
                     borderRadius: '99px',
-                    background: dark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff',
-                    color: dark ? '#60a5fa' : '#2563eb',
-                    border: dark ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid #bfdbfe'
-                  }}>
-                    LIVE METRICS
-                  </span>
-                </div>
-
-                {/* 필터 칩스 (전체, 현금, 카드, 지산, 카뱅) */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                  {Object.entries(lineConfigs).map(([key, cfg]) => {
-                    const isActive = activeLines[key];
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => handleFilterToggle(key)}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '5px 13px',
-                          borderRadius: '99px',
-                          border: `1px solid ${isActive ? cfg.color : (dark ? 'rgba(255, 255, 255, 0.1)' : '#e2e8f0')}`,
-                          background: isActive ? (dark ? `${cfg.color}25` : `${cfg.color}15`) : (dark ? 'rgba(255, 255, 255, 0.03)' : '#f8fafc'),
-                          color: isActive ? (dark ? '#ffffff' : cfg.color) : (dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b'),
-                          fontSize: '0.75rem',
-                          fontWeight: 800,
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          cursor: 'pointer',
-                          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                          boxShadow: isActive ? `0 4px 12px ${cfg.color}30` : 'none'
-                        }}
-                      >
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cfg.color, boxShadow: isActive ? `0 0 8px ${cfg.color}` : 'none' }} />
-                        {cfg.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Hyper UI Kit 카드 3열 메트릭 스펙 */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '1rem',
-                background: dark ? 'rgba(255, 255, 255, 0.02)' : '#f8fafc',
-                padding: '1.1rem 1.25rem',
-                borderRadius: '16px',
-                border: dark ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid #f1f5f9'
-              }}>
-                {/* 1. 이달 총 납부액 */}
-                <div>
-                  <div style={{ fontSize: '0.75rem', color: dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b', fontWeight: 700, marginBottom: '4px' }}>
-                    {month}월 총 납부액
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                    <span style={{ fontSize: '1.5rem', fontWeight: 900, color: dark ? '#ffffff' : '#0f172a', letterSpacing: '-0.03em', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                      {formatKRW(curTotal)}원
-                    </span>
-                    <span style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 800,
-                      color: isUp ? '#10b981' : '#ef4444',
-                      background: isUp ? (dark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5') : (dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2'),
-                      padding: '2px 7px',
-                      borderRadius: '6px',
-                      border: isUp ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)'
-                    }}>
-                      {isUp ? `+${diffRatio}%` : `${diffRatio}%`}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 2. 월평균 필요 자금 */}
-                <div>
-                  <div style={{ fontSize: '0.75rem', color: dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b', fontWeight: 700, marginBottom: '4px' }}>
-                    12개월 월평균
-                  </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: dark ? '#ffffff' : '#0f172a', letterSpacing: '-0.03em', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    {formatKRW(monthlyAvg)}원
-                  </div>
-                </div>
-
-                {/* 3. 연간 누적 납부액 */}
-                <div>
-                  <div style={{ fontSize: '0.75rem', color: dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b', fontWeight: 700, marginBottom: '4px' }}>
-                    {year}년 연간 누적액
-                  </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: dark ? '#ffffff' : '#0f172a', letterSpacing: '-0.03em', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    {formatKRW(yearlyTotal)}원
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
+                    border: `1px solid ${isActive ? cfg.color : (dark ? 'rgba(255, 255, 255, 0.12)' : '#e2e8f0')}`,
+                    background: isActive ? (dark ? `${cfg.color}25` : `${cfg.color}15`) : (dark ? 'rgba(255, 255, 255, 0.03)' : '#ffffff'),
+                    color: isActive ? (dark ? '#ffffff' : (key === 'total' ? '#d97706' : cfg.color)) : (dark ? 'rgba(255, 255, 255, 0.5)' : '#64748b'),
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: isActive ? `0 2px 10px ${cfg.color}25` : 'none',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cfg.color, boxShadow: isActive ? `0 0 6px ${cfg.color}` : 'none', flexShrink: 0 }} />
+                  {cfg.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         
         {/* --- Hyper Charts UI Kit: Hyper Smooth Spline Line & Area Glow Chart SVG --- */}
         {(() => {
