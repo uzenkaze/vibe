@@ -787,7 +787,7 @@ export default function KnowledgeIndustryPage() {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  📊 대출 2종 나란히 비교
+                  📊 모두보기
                 </button>
               </div>
 
