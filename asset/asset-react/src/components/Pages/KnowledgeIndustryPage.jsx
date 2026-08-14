@@ -425,16 +425,24 @@ export default function KnowledgeIndustryPage() {
           background: ${dark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
         }
 
+        .table-responsive-container {
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          margin-top: 0.5rem;
+          border-radius: 8px;
+        }
         .data-table {
           width: 100%;
+          min-width: 720px;
           border-collapse: collapse;
-          font-size: 0.85rem;
-          margin-top: 0.5rem;
+          font-size: 0.88rem;
         }
         .data-table th, .data-table td {
-          padding: 8px 10px;
+          padding: 10px 12px;
           border: 1px solid ${dark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
           text-align: center;
+          white-space: nowrap;
         }
         .data-table th {
           background: ${dark ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
@@ -884,64 +892,66 @@ export default function KnowledgeIndustryPage() {
                 </button>
               </div>
 
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>순번</th>
-                    <th>연월</th>
-                    <th>금리</th>
-                    <th>원리금(납부액)</th>
-                    <th>원금</th>
-                    <th>이자</th>
-                    <th>최초기준 이자차액</th>
-                    <th>우대금리 조건</th>
-                    <th>편집</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredKbLoans.map((row, idx) => (
-                    <tr key={idx}>
-                      <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
-                      <td style={{ fontWeight: 800 }}>{row.date}</td>
-                      <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 900, color: '#1e40af' }}>{formatMoney(row.payment)}</td>
-                      <td style={{ textAlign: 'right' }}>{formatMoney(row.principal)}</td>
-                      <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
-                      <td style={{ textAlign: 'right', color: row.diff > 0 ? '#ef4444' : '#10b981', fontWeight: 800 }}>
-                        {formatMoney(row.diff)}
-                      </td>
-                      <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.margin || row.condition || '-'}</td>
-                      <td>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenLoanModal('kb', idx)}
-                          title="수정"
-                          className="btn-action-icon"
-                          style={{ color: '#2563eb' }}
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteLoanRow('kb', idx)}
-                          title="삭제"
-                          className="btn-action-icon"
-                          style={{ color: '#ef4444' }}
-                        >
-                          🗑️
-                        </button>
-                      </td>
+              <div className="table-responsive-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>순번</th>
+                      <th>연월</th>
+                      <th>금리</th>
+                      <th>원리금(납부액)</th>
+                      <th>원금</th>
+                      <th>이자</th>
+                      <th>최초기준 이자차액</th>
+                      <th>우대금리 조건</th>
+                      <th>편집</th>
                     </tr>
-                  ))}
-                  <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff', fontWeight: 900, fontSize: '0.9rem' }}>
-                    <td colSpan={3}>누적 합계</td>
-                    <td style={{ textAlign: 'right', color: '#1e40af' }}>{formatMoney(kbPaymentTotal)}</td>
-                    <td style={{ textAlign: 'right' }}>{formatMoney(kbPrincipalTotal)}</td>
-                    <td style={{ textAlign: 'right' }}>{formatMoney(kbInterestTotal)}</td>
-                    <td colSpan={3}>-</td>
-                  </tr>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredKbLoans.map((row, idx) => (
+                      <tr key={idx}>
+                        <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                        <td style={{ fontWeight: 800 }}>{row.date}</td>
+                        <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, color: '#1e40af' }}>{formatMoney(row.payment)}</td>
+                        <td style={{ textAlign: 'right' }}>{formatMoney(row.principal)}</td>
+                        <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
+                        <td style={{ textAlign: 'right', color: row.diff > 0 ? '#ef4444' : '#10b981', fontWeight: 800 }}>
+                          {formatMoney(row.diff)}
+                        </td>
+                        <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.margin || row.condition || '-'}</td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenLoanModal('kb', idx)}
+                            title="수정"
+                            className="btn-action-icon"
+                            style={{ color: '#2563eb' }}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteLoanRow('kb', idx)}
+                            title="삭제"
+                            className="btn-action-icon"
+                            style={{ color: '#ef4444' }}
+                          >
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff', fontWeight: 900, fontSize: '0.9rem' }}>
+                      <td colSpan={3}>누적 합계</td>
+                      <td style={{ textAlign: 'right', color: '#1e40af' }}>{formatMoney(kbPaymentTotal)}</td>
+                      <td style={{ textAlign: 'right' }}>{formatMoney(kbPrincipalTotal)}</td>
+                      <td style={{ textAlign: 'right' }}>{formatMoney(kbInterestTotal)}</td>
+                      <td colSpan={3}>-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
@@ -967,61 +977,63 @@ export default function KnowledgeIndustryPage() {
                 </button>
               </div>
 
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>순번</th>
-                    <th>연월</th>
-                    <th>금리</th>
-                    <th>원리금(이자만)</th>
-                    <th>월세대비 추가부담금</th>
-                    <th>우대금리 / 특이사항 조건</th>
-                    <th>편집</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredNhLoans.map((row, idx) => (
-                    <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
-                      <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
-                      <td style={{ fontWeight: 800 }}>{row.date}</td>
-                      <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 900, color: row.isRefund ? '#d97706' : '#581c87' }}>
-                        {formatMoney(row.payment)}
-                      </td>
-                      <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 800 }}>
-                        {formatMoney(row.extra)}
-                      </td>
-                      <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.condition || '-'}</td>
-                      <td>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenLoanModal('nh', idx)}
-                          title="수정"
-                          className="btn-action-icon"
-                          style={{ color: '#a855f7' }}
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteLoanRow('nh', idx)}
-                          title="삭제"
-                          className="btn-action-icon"
-                          style={{ color: '#ef4444' }}
-                        >
-                          🗑️
-                        </button>
-                      </td>
+              <div className="table-responsive-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>순번</th>
+                      <th>연월</th>
+                      <th>금리</th>
+                      <th>원리금(이자만)</th>
+                      <th>월세대비 추가부담금</th>
+                      <th>우대금리 / 특이사항 조건</th>
+                      <th>편집</th>
                     </tr>
-                  ))}
-                  <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff', fontWeight: 900, fontSize: '0.9rem' }}>
-                    <td colSpan={3}>누적 합계</td>
-                    <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
-                    <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(nhExtraTotal)}</td>
-                    <td colSpan={2}>-</td>
-                  </tr>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredNhLoans.map((row, idx) => (
+                      <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
+                        <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                        <td style={{ fontWeight: 800 }}>{row.date}</td>
+                        <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, color: row.isRefund ? '#d97706' : '#581c87' }}>
+                          {formatMoney(row.payment)}
+                        </td>
+                        <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 800 }}>
+                          {formatMoney(row.extra)}
+                        </td>
+                        <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.condition || '-'}</td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenLoanModal('nh', idx)}
+                            title="수정"
+                            className="btn-action-icon"
+                            style={{ color: '#a855f7' }}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteLoanRow('nh', idx)}
+                            title="삭제"
+                            className="btn-action-icon"
+                            style={{ color: '#ef4444' }}
+                          >
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff', fontWeight: 900, fontSize: '0.9rem' }}>
+                      <td colSpan={3}>누적 합계</td>
+                      <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
+                      <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(nhExtraTotal)}</td>
+                      <td colSpan={2}>-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
