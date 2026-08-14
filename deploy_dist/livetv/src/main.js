@@ -1458,10 +1458,12 @@ async function showYouTubeIframePlayback(ch) {
       ytIframe.src = `https://www.youtube.com/embed/${liveVideoId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
       // 스크래핑 성공 시 v5 로컬스토리지 캐시에 한 번 더 최신 저장
       localStorage.setItem('yt_live_videoid_v5_' + ch.id, JSON.stringify({ videoId: liveVideoId, timestamp: Date.now() }));
+    } else if (ch.ytChannelId) {
+      // 실시간 비디오 ID를 직접 구하지 못했을 경우 공식 채널 라이브 스트림 임베드 주소로 폴백
+      console.warn(`[YouTube Live Playback] 실시간 라이브 비디오 ID 획득 실패. 채널 ID 기반 라이브 스트림으로 폴백합니다.`);
+      ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${ch.ytChannelId}&autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1`;
     } else {
-      // 유튜브 임베드 차단 정책으로 인해 채널ID 기반 live_stream iframe은 더이상 지원하지 않음
-      // 실시간 비디오 ID를 직접 구하지 못했을 경우 즉시 수동 폴백 UI로 유도
-      console.warn(`[YouTube Live Playback] 실시간 라이브 비디오 ID 획득 실패. 폴백 UI 표시.`);
+      console.warn(`[YouTube Live Playback] 실시간 라이브 비디오 ID 및 채널 ID 획득 실패. 폴백 UI 표시.`);
       showLoading(false);
       showYouTubeFallback(ch);
       return;

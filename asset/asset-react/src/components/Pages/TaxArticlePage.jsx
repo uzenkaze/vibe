@@ -862,6 +862,21 @@ export default function TaxArticlePage() {
         .article-callout.info { background: ${dark ? 'rgba(139, 92, 246, 0.12)' : '#f5f3ff'}; border-left: 4px solid #8b5cf6; }
         .article-callout.green { background: ${dark ? 'rgba(16, 185, 129, 0.12)' : '#ecfdf5'}; border-left: 4px solid #10b981; }
         .article-callout.highlight { background: ${dark ? 'rgba(236, 72, 153, 0.12)' : '#fdf2f8'}; border-left: 4px solid #ec4899; }
+
+        /* 🖍️ 형광펜 하이라이트 스타일 (파스텔톤 6종) */
+        .article-body mark {
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: 700;
+          box-decoration-break: clone;
+          -webkit-box-decoration-break: clone;
+        }
+        .article-body mark.yellow { background-color: ${dark ? 'rgba(234, 179, 8, 0.35)' : '#fef08a'}; color: ${dark ? '#fef08a' : '#713f12'}; }
+        .article-body mark.green { background-color: ${dark ? 'rgba(34, 197, 94, 0.35)' : '#bbf7d0'}; color: ${dark ? '#bbf7d0' : '#14532d'}; }
+        .article-body mark.blue { background-color: ${dark ? 'rgba(59, 130, 246, 0.35)' : '#bfdbfe'}; color: ${dark ? '#bfdbfe' : '#1e3a8a'}; }
+        .article-body mark.pink { background-color: ${dark ? 'rgba(236, 72, 153, 0.35)' : '#fbcfe8'}; color: ${dark ? '#fbcfe8' : '#831843'}; }
+        .article-body mark.purple { background-color: ${dark ? 'rgba(168, 85, 247, 0.35)' : '#e9d5ff'}; color: ${dark ? '#e9d5ff' : '#581c87'}; }
+        .article-body mark.orange { background-color: ${dark ? 'rgba(249, 115, 22, 0.35)' : '#fed7aa'}; color: ${dark ? '#fed7aa' : '#7c2d12'}; }
       `}</style>
 
       {/* 상단 헤더 섹션 */}
@@ -1664,6 +1679,42 @@ export default function TaxArticlePage() {
                       <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '• ')} title="불릿 목록" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         • 불릿
                       </button>
+
+                      <span style={{ borderLeft: '1px solid var(--border)', height: '16px', margin: '0 4px' }} />
+
+                      {/* 🖍️ 형광펜 폰트 영역 하이라이터 색상 팔레트 */}
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', background: dark ? 'rgba(255,255,255,0.06)' : 'var(--surface)', padding: '2px 6px', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-primary)', marginRight: '1px' }}>🖍️ 형광펜:</span>
+                        {[
+                          { id: 'yellow', label: '노랑', bg: '#fef08a', color: '#713f12' },
+                          { id: 'green', label: '연두', bg: '#bbf7d0', color: '#14532d' },
+                          { id: 'blue', label: '하늘', bg: '#bfdbfe', color: '#1e3a8a' },
+                          { id: 'pink', label: '분홍', bg: '#fbcfe8', color: '#831843' },
+                          { id: 'purple', label: '보라', bg: '#e9d5ff', color: '#581c87' },
+                          { id: 'orange', label: '주황', bg: '#fed7aa', color: '#7c2d12' }
+                        ].map(hl => (
+                          <button
+                            key={hl.id}
+                            type="button"
+                            onMouseDown={e => e.preventDefault()}
+                            onClick={e => handleInsertFormat(e, `<mark class="${hl.id}">`, `</mark>`)}
+                            title={`${hl.label} 형광펜 색상 (드래그한 텍스트에 하이라이트 적용)`}
+                            style={{
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              border: 'none',
+                              background: hl.bg,
+                              color: hl.color,
+                              fontSize: '0.7rem',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                            }}
+                          >
+                            {hl.label}
+                          </button>
+                        ))}
+                      </div>
 
                       <span style={{ borderLeft: '1px solid var(--border)', height: '16px', margin: '0 4px' }} />
 
