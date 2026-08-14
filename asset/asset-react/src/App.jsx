@@ -23,6 +23,7 @@ import CardPaymentsPage from './components/Pages/CardPaymentsPage';
 import PensionPage from './components/Pages/PensionPage';
 import InsurancePage from './components/Pages/InsurancePage';
 import TaxArticlePage from './components/Pages/TaxArticlePage';
+import KnowledgeIndustryPage from './components/Pages/KnowledgeIndustryPage';
 
 // UI
 import Toast from './components/UI/Toast';
@@ -237,6 +238,11 @@ function Dashboard() {
             {/* 세금 · 자산 지식 아티클 관리 */}
             {navSection === 'taxArticles' && (
               <TaxArticlePage />
+            )}
+
+            {/* 지식산업센터 부동산 자산 관리 */}
+            {navSection === 'knowledgeIndustry' && (
+              <KnowledgeIndustryPage />
             )}
           </div>
         </PullToRefresh>
