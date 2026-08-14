@@ -230,6 +230,18 @@ function formatSmartArticleContent(rawContent) {
 export default function TaxArticlePage() {
   const { dark } = useApp();
   const contentTextareaRef = useRef(null);
+  const mouseDownTargetRef = useRef(null);
+
+  // 마우스 드래그 이탈 시 레이어 닫힘 방지 헬퍼
+  const handleOverlayMouseDown = (e) => {
+    mouseDownTargetRef.current = e.target;
+  };
+
+  const handleOverlayClick = (e, closeFn) => {
+    if (e.target === e.currentTarget && mouseDownTargetRef.current === e.currentTarget) {
+      closeFn();
+    }
+  };
 
   const [articles, setArticles] = useState(() => {
     try {
@@ -261,11 +273,33 @@ export default function TaxArticlePage() {
 
   const [editorTab, setEditorTab] = useState('write'); // 'write' | 'preview'
 
-  // 에디터 서식 툴바 삽입 헬퍼 함수 (스크롤 위치 및 커서 완전 보존)
+  // 실행 취소 (Ctrl+Z) 헬퍼
+  const handleUndo = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const textarea = contentTextareaRef.current;
+    if (textarea) {
+      textarea.focus({ preventScroll: true });
+      document.execCommand('undo');
+      setFormData(prev => ({ ...prev, content: textarea.value }));
+    }
+  };
+
+  // 다시 실행 (Ctrl+Y) 헬퍼
+  const handleRedo = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const textarea = contentTextareaRef.current;
+    if (textarea) {
+      textarea.focus({ preventScroll: true });
+      document.execCommand('redo');
+      setFormData(prev => ({ ...prev, content: textarea.value }));
+    }
+  };
+
+  // 에디터 서식 툴바 삽입 헬퍼 함수 (Native Undo Ctrl+Z 히스토리 완벽 연동)
   const handleInsertFormat = (e, prefix, suffix = '') => {
-    if (e && e.preventDefault) {
-      e.preventDefault();
-      e.stopPropagation();
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
     }
 
     const textarea = contentTextareaRef.current;
@@ -278,26 +312,46 @@ export default function TaxArticlePage() {
     const modalContainer = textarea.closest('.modal-container');
     const savedModalScrollTop = modalContainer ? modalContainer.scrollTop : 0;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = formData.content;
+    textarea.focus({ preventScroll: true });
+
+    const start = textarea.selectionStart ?? 0;
+    const end = textarea.selectionEnd ?? 0;
+    const text = textarea.value || '';
     const selectedText = text.substring(start, end);
 
     const replacement = prefix + (selectedText || '') + suffix;
-    const newContent = text.substring(0, start) + replacement + text.substring(end);
 
-    setFormData(prev => ({ ...prev, content: newContent }));
+    // 브라우저 Native Undo(Ctrl+Z) 스택에 기록이 쌓이는 insertText Web API 사용
+    const isInserted = document.execCommand('insertText', false, replacement);
 
-    // 포커스 복원 및 스크롤 튀는 현상 원천 차단 (preventScroll 사용)
-    requestAnimationFrame(() => {
+    if (!isInserted) {
+      // Fallback
+      const newContent = text.substring(0, start) + replacement + text.substring(end);
+      setFormData(prev => ({ ...prev, content: newContent }));
+    } else {
+      setFormData(prev => ({ ...prev, content: textarea.value }));
+    }
+
+    // 커서 위치 산출: 선택 영역이 없었던 경우 태그 사이(prefix 직후)로 이동
+    let newCursorPos;
+    if (selectedText.length > 0) {
+      newCursorPos = start + replacement.length;
+    } else {
+      newCursorPos = start + prefix.length;
+    }
+
+    const applyCursor = () => {
+      if (!textarea) return;
       textarea.focus({ preventScroll: true });
-      const newCursorPos = start + prefix.length + selectedText.length + suffix.length;
       textarea.setSelectionRange(newCursorPos, newCursorPos);
       textarea.scrollTop = savedScrollTop;
       if (modalContainer) {
         modalContainer.scrollTop = savedModalScrollTop;
       }
-    });
+    };
+
+    requestAnimationFrame(applyCursor);
+    setTimeout(applyCursor, 10);
   };
 
   // 상단 타이틀 & 설명 설정 (localStorage 동기화)
@@ -852,7 +906,8 @@ export default function TaxArticlePage() {
       {activeArticle && (
         <div 
           className="modal-overlay" 
-          onClick={() => setActiveArticle(null)} 
+          onMouseDown={handleOverlayMouseDown}
+          onClick={e => handleOverlayClick(e, () => setActiveArticle(null))} 
           style={{ 
             position: 'fixed',
             inset: 0,
@@ -960,7 +1015,8 @@ export default function TaxArticlePage() {
       {editorModal && (
         <div 
           className="modal-overlay" 
-          onClick={() => setEditorModal(false)} 
+          onMouseDown={handleOverlayMouseDown}
+          onClick={e => handleOverlayClick(e, () => setEditorModal(false))} 
           style={{ 
             position: 'fixed',
             inset: 0,
@@ -1111,28 +1167,36 @@ export default function TaxArticlePage() {
                       borderRadius: '10px',
                       border: '1px solid var(--border)'
                     }}>
-                      <button type="button" onClick={e => handleInsertFormat(e, '\n\n')} title="줄바꿈 (엔터)" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={handleUndo} title="실행 취소 (Ctrl+Z)" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                        ↩️ 취소 (Ctrl+Z)
+                      </button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={handleRedo} title="다시 실행 (Ctrl+Y)" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                        ↪️ 다시
+                      </button>
+
+                      <span style={{ borderLeft: '1px solid var(--border)', height: '16px', margin: '0 4px' }} />
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '\n\n')} title="줄바꿈 (엔터)" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         ↵ 줄바꿈
                       </button>
-                      <button type="button" onClick={e => handleInsertFormat(e, '<b>', '</b>')} title="굵게" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 900, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<b>', '</b>')} title="굵게" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 900, cursor: 'pointer' }}>
                         B
                       </button>
-                      <button type="button" onClick={e => handleInsertFormat(e, '<h2>', '</h2>\n')} title="큰 제목 H2" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<h2>', '</h2>\n')} title="큰 제목 H2" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         H2 제목
                       </button>
-                      <button type="button" onClick={e => handleInsertFormat(e, '<h3>', '</h3>\n')} title="소제목 H3" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<h3>', '</h3>\n')} title="소제목 H3" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         H3 소제목
                       </button>
-                      <button type="button" onClick={e => handleInsertFormat(e, '1. ')} title="숫자 목록" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '1. ')} title="숫자 목록" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         1. 번호
                       </button>
-                      <button type="button" onClick={e => handleInsertFormat(e, '• ')} title="불릿 목록" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '• ')} title="불릿 목록" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         • 불릿
                       </button>
-                      <button type="button" onClick={e => handleInsertFormat(e, '\n💡 ')} title="💡 팁 문단" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '\n💡 ')} title="💡 팁 문단" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         💡 팁
                       </button>
-                      <button type="button" onClick={e => handleInsertFormat(e, '\n⚠️ ')} title="⚠️ 주의 문단" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '\n⚠️ ')} title="⚠️ 주의 문단" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         ⚠️ 주의
                       </button>
 
@@ -1143,6 +1207,7 @@ export default function TaxArticlePage() {
                         <button
                           key={emoji}
                           type="button"
+                          onMouseDown={e => e.preventDefault()}
                           onClick={e => handleInsertFormat(e, ` ${emoji} `)}
                           style={{ padding: '2px 5px', fontSize: '0.9rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
                         >
@@ -1195,7 +1260,8 @@ export default function TaxArticlePage() {
       {categoryModal && (
         <div 
           className="modal-overlay" 
-          onClick={() => setCategoryModal(false)} 
+          onMouseDown={handleOverlayMouseDown}
+          onClick={e => handleOverlayClick(e, () => setCategoryModal(false))} 
           style={{ 
             position: 'fixed',
             inset: 0,

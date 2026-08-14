@@ -78,7 +78,7 @@ const NAV_ITEMS = [
   },
   {
     id: 'taxArticles',
-    label: '세금 · 자산 지식',
+    label: '아티클',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />

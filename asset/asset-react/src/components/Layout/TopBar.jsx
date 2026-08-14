@@ -6,9 +6,11 @@ const PAGE_TITLES = {
   dashboard: '대시보드',
   assets: '자산 · 수입',
   expenses: '부채 · 지출',
-  installment: '카드',
-  cardPayments: '현금',
+  installment: '카드 내역',
+  cardPayments: '현금 납부',
   pension: '내 연금',
+  insurance: '내 보험',
+  taxArticles: '아티클',
 };
 
 // Custom Dropdown for premium selection UI (prevents native dropdown look)
