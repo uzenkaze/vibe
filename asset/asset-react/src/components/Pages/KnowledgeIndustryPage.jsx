@@ -745,7 +745,7 @@ export default function KnowledgeIndustryPage() {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  🏦 KB (생활안정) 대출 (전체화면 뷰)
+                  🏦 KB (생활안정)
                 </button>
                 <button
                   type="button"
@@ -762,7 +762,7 @@ export default function KnowledgeIndustryPage() {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  🏦 NH (기업성장론) 대출 (전체화면 뷰)
+                  🏦 NH (기업성장론)
                 </button>
                 <button
                   type="button"
@@ -868,7 +868,7 @@ export default function KnowledgeIndustryPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <div>
                   <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#2563eb', margin: 0 }}>
-                    🏦 KB (생활안정) 매달 상환 내역 ({data.loans.kb.length}건)
+                    🏦 KB 상환 내역 ({filteredKbLoans.length}건)
                   </h3>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     금리 4.16% ~ 5.85% 변동 수치 및 원금/이자/이자차액 상세 관리
@@ -951,7 +951,7 @@ export default function KnowledgeIndustryPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <div>
                   <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#7e22ce', margin: 0 }}>
-                    🏦 NH (기업성장론) 매달 상환 내역 ({data.loans.nh.length}건)
+                    🏦 NH (기업성장론) ({filteredNhLoans.length}건)
                   </h3>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     월세 대비 추가부담금 및 2024.02.07 이자환급(-2,685,805원) 상세 관리
