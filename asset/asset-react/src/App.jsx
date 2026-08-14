@@ -22,6 +22,7 @@ import InstallmentPage from './components/Pages/InstallmentPage';
 import CardPaymentsPage from './components/Pages/CardPaymentsPage';
 import PensionPage from './components/Pages/PensionPage';
 import InsurancePage from './components/Pages/InsurancePage';
+import TaxArticlePage from './components/Pages/TaxArticlePage';
 
 // UI
 import Toast from './components/UI/Toast';
@@ -231,6 +232,11 @@ function Dashboard() {
             {/* 보험 정보 관리 */}
             {navSection === 'insurance' && (
               <InsurancePage />
+            )}
+
+            {/* 세금 · 자산 지식 아티클 관리 */}
+            {navSection === 'taxArticles' && (
+              <TaxArticlePage />
             )}
           </div>
         </PullToRefresh>
