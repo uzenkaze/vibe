@@ -175,17 +175,32 @@ export default function KnowledgeIndustryPage() {
   const [activeTab, setActiveTab] = useState('investment'); // 'investment' | 'loans' | 'rent'
   const [loanSubTab, setLoanSubTab] = useState('kb'); // 'kb' | 'nh' | 'all'
 
-  // 데이터 상태 (localStorage 연동)
+  // 데이터 상태 (localStorage 연동 & 구버전 시 신규 48개 데이터 자동 마이그레이션)
   const [data, setData] = useState(() => {
     try {
       const saved = localStorage.getItem('asset_knowledge_industry');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.investment && parsed.loans && parsed.rent) return parsed;
+        if (parsed && parsed.investment && parsed.loans && parsed.rent) {
+          // KB 대출 데이터가 24개 이하인 구버전 저장 데이터인 경우 최신 INITIAL_DATA로 업그레이드
+          if (parsed.loans.kb && parsed.loans.kb.length <= 24) {
+            parsed.loans.kb = INITIAL_DATA.loans.kb;
+          }
+          return parsed;
+        }
       }
     } catch (e) {}
     return INITIAL_DATA;
   });
+
+  // 데이터 초기화 헬퍼
+  const handleResetData = () => {
+    if (window.confirm('모든 데이터를 최신 원본 데이터로 리셋하시겠습니까?')) {
+      setData(INITIAL_DATA);
+      localStorage.setItem('asset_knowledge_industry', JSON.stringify(INITIAL_DATA));
+      showToast('최신 원본 데이터로 리셋되었습니다.', 'info');
+    }
+  };
 
   // 대출상환 편집 모달 상태
   const [loanModal, setLoanModal] = useState({
@@ -466,6 +481,22 @@ export default function KnowledgeIndustryPage() {
               className={`tab-btn ${activeTab === 'rent' ? 'active' : 'inactive'}`}
             >
               🚪 3. 월세입금(호실별)
+            </button>
+            <button
+              onClick={handleResetData}
+              title="최신 원본 데이터로 초기화"
+              style={{
+                padding: '10px 14px',
+                borderRadius: '99px',
+                border: '1px solid var(--border)',
+                background: dark ? 'rgba(255,255,255,0.05)' : '#ffffff',
+                color: 'var(--text-muted)',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              🔄 초기화
             </button>
           </div>
         </div>
