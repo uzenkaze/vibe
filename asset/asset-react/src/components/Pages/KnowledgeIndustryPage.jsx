@@ -1077,7 +1077,7 @@ export default function KnowledgeIndustryPage() {
               <div className="section-card" style={{ padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2563eb', margin: 0 }}>
-                    🏦 KB (생활안정) 상환 내역
+                    🏦 KB 상환 내역
                   </h3>
                   <button
                     type="button"
@@ -1124,7 +1124,7 @@ export default function KnowledgeIndustryPage() {
               <div className="section-card" style={{ padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#7e22ce', margin: 0 }}>
-                    🏦 NH (기업성장론) 상환 내역
+                    🏦 NH 상환 내역
                   </h3>
                   <button
                     type="button"
@@ -1305,7 +1305,7 @@ export default function KnowledgeIndustryPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
-                {loanModal.bank === 'kb' ? '🏦 KB' : '🏦 NH (기업성장론)'} {loanModal.editIndex !== null ? '상환 내역 수정' : '신규 등록'}
+                {loanModal.bank === 'kb' ? '🏦 KB' : '🏦 NH (기업성장론)'} {loanModal.editIndex !== null ? '상환 내역 수정' : '상환 내역 등록'}
               </h3>
               <button
                 type="button"
@@ -1462,7 +1462,7 @@ export default function KnowledgeIndustryPage() {
                   type="submit"
                   style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: loanModal.bank === 'kb' ? '#2563eb' : '#a855f7', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
                 >
-                  저장 완료
+                  저장
                 </button>
               </div>
             </form>
