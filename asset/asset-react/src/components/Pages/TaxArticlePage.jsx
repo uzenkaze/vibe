@@ -389,6 +389,17 @@ export default function TaxArticlePage() {
     setEditorModal(true);
   };
 
+  // 아티클 제목 이모지 아이콘 자동 추가 헬퍼
+  const handleInsertTitleEmoji = (emoji) => {
+    setFormData(prev => {
+      const current = (prev.title || '').trim();
+      return {
+        ...prev,
+        title: current ? `${emoji} ${current}` : `${emoji} `
+      };
+    });
+  };
+
   // 아티클 저장
   const handleSaveArticle = (e) => {
     e.preventDefault();
@@ -1231,7 +1242,7 @@ export default function TaxArticlePage() {
             <div
               style={{
                 position: 'sticky',
-                top: '1rem',
+                top: '5.5rem',
                 float: 'right',
                 marginRight: '-0.75rem',
                 marginBottom: '-120px',
@@ -1404,7 +1415,7 @@ export default function TaxArticlePage() {
             <div
               style={{
                 position: 'sticky',
-                top: '1rem',
+                top: '7rem',
                 float: 'right',
                 marginRight: '-0.75rem',
                 marginBottom: '-135px',
@@ -1521,10 +1532,45 @@ export default function TaxArticlePage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>아티클 제목</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)' }}>
+                      아티클 제목
+                    </label>
+                    {/* 세금/자산 관련 추천 이모지 아이콘 선택 버튼 7종 */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginRight: '1px' }}>아이콘 선택:</span>
+                      {[
+                        { icon: '💰', label: '돈주머니' },
+                        { icon: '📄', label: '신고서' },
+                        { icon: '🏛️', label: '국세청' },
+                        { icon: '📊', label: '절세차트' },
+                        { icon: '🧮', label: '계산기' },
+                        { icon: '🧾', label: '영수증' },
+                        { icon: '💸', label: '환급' }
+                      ].map(item => (
+                        <button
+                          key={item.icon}
+                          type="button"
+                          onClick={() => handleInsertTitleEmoji(item.icon)}
+                          title={`제목에 ${item.label}(${item.icon}) 아이콘 추가`}
+                          style={{
+                            background: dark ? 'rgba(255,255,255,0.08)' : '#f1f5f9',
+                            border: '1px solid var(--border)',
+                            borderRadius: '4px',
+                            padding: '1px 5px',
+                            fontSize: '0.82rem',
+                            cursor: 'pointer',
+                            transition: 'transform 0.1s ease'
+                          }}
+                        >
+                          {item.icon}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <input
                     type="text"
-                    placeholder="예: 2026 연말정산 환급금 극대화 가이드"
+                    placeholder="예: 💰 2026 연말정산 환급금 극대화 가이드"
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
