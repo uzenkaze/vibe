@@ -914,7 +914,6 @@ export default function KnowledgeIndustryPage() {
                       <th>원금</th>
                       <th>이자</th>
                       <th>최초기준 이자차액</th>
-                      <th>우대금리 조건</th>
                       <th>편집</th>
                     </tr>
                   </thead>
@@ -930,7 +929,6 @@ export default function KnowledgeIndustryPage() {
                         <td style={{ textAlign: 'right', color: row.diff > 0 ? '#ef4444' : '#10b981', fontWeight: 800 }}>
                           {formatMoney(row.diff)}
                         </td>
-                        <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.margin || row.condition || '-'}</td>
                         <td>
                           <button
                             type="button"
@@ -958,7 +956,7 @@ export default function KnowledgeIndustryPage() {
                       <td style={{ textAlign: 'right', color: '#1e40af' }}>{formatMoney(kbPaymentTotal)}</td>
                       <td style={{ textAlign: 'right' }}>{formatMoney(kbPrincipalTotal)}</td>
                       <td style={{ textAlign: 'right' }}>{formatMoney(kbInterestTotal)}</td>
-                      <td colSpan={3}>-</td>
+                      <td colSpan={2}>-</td>
                     </tr>
                   </tbody>
                 </table>
@@ -997,7 +995,6 @@ export default function KnowledgeIndustryPage() {
                       <th>금리</th>
                       <th>원리금(이자만)</th>
                       <th>월세대비 추가부담금</th>
-                      <th>우대금리 / 특이사항 조건</th>
                       <th>편집</th>
                     </tr>
                   </thead>
@@ -1013,7 +1010,6 @@ export default function KnowledgeIndustryPage() {
                         <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 800 }}>
                           {formatMoney(row.extra)}
                         </td>
-                        <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.condition || '-'}</td>
                         <td>
                           <button
                             type="button"
@@ -1040,7 +1036,7 @@ export default function KnowledgeIndustryPage() {
                       <td colSpan={3}>누적 합계</td>
                       <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
                       <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(nhExtraTotal)}</td>
-                      <td colSpan={2}>-</td>
+                      <td>-</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1275,7 +1271,7 @@ export default function KnowledgeIndustryPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
-                {loanModal.bank === 'kb' ? '🏦 KB 생활안정 대출' : '🏦 NH 기업성장론 대출'} {loanModal.editIndex !== null ? '상환 내역 수정' : '신규 상환 내역 등록'}
+                {loanModal.bank === 'kb' ? '🏦 KB' : '🏦 NH (기업성장론)'} {loanModal.editIndex !== null ? '상환 내역 수정' : '신규 등록'}
               </h3>
               <button
                 type="button"
