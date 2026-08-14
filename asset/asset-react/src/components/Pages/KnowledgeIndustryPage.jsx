@@ -918,39 +918,42 @@ export default function KnowledgeIndustryPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredKbLoans.map((row, idx) => (
-                      <tr key={idx}>
-                        <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
-                        <td style={{ fontWeight: 800 }}>{row.date}</td>
-                        <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 900, color: '#1e40af' }}>{formatMoney(row.payment)}</td>
-                        <td style={{ textAlign: 'right' }}>{formatMoney(row.principal)}</td>
-                        <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
-                        <td style={{ textAlign: 'right', color: row.diff > 0 ? '#ef4444' : '#10b981', fontWeight: 800 }}>
-                          {formatMoney(row.diff)}
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => handleOpenLoanModal('kb', idx)}
-                            title="수정"
-                            className="btn-action-icon"
-                            style={{ color: '#2563eb' }}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteLoanRow('kb', idx)}
-                            title="삭제"
-                            className="btn-action-icon"
-                            style={{ color: '#ef4444' }}
-                          >
-                            🗑️
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredKbLoans.map((row, idx) => {
+                      const originalIdx = data.loans.kb.indexOf(row);
+                      return (
+                        <tr key={idx}>
+                          <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                          <td style={{ fontWeight: 800 }}>{row.date}</td>
+                          <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 900, color: '#1e40af' }}>{formatMoney(row.payment)}</td>
+                          <td style={{ textAlign: 'right' }}>{formatMoney(row.principal)}</td>
+                          <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
+                          <td style={{ textAlign: 'right', color: row.diff > 0 ? '#ef4444' : '#10b981', fontWeight: 800 }}>
+                            {formatMoney(row.diff)}
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenLoanModal('kb', originalIdx >= 0 ? originalIdx : idx)}
+                              title="수정"
+                              className="btn-action-icon"
+                              style={{ color: '#2563eb' }}
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteLoanRow('kb', originalIdx >= 0 ? originalIdx : idx)}
+                              title="삭제"
+                              className="btn-action-icon"
+                              style={{ color: '#ef4444' }}
+                            >
+                              🗑️
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                     <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff', fontWeight: 900, fontSize: '0.9rem' }}>
                       <td colSpan={3}>누적 합계</td>
                       <td style={{ textAlign: 'right', color: '#1e40af' }}>{formatMoney(kbPaymentTotal)}</td>
@@ -999,39 +1002,42 @@ export default function KnowledgeIndustryPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredNhLoans.map((row, idx) => (
-                      <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
-                        <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
-                        <td style={{ fontWeight: 800 }}>{row.date}</td>
-                        <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 900, color: row.isRefund ? '#d97706' : '#581c87' }}>
-                          {formatMoney(row.payment)}
-                        </td>
-                        <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 800 }}>
-                          {formatMoney(row.extra)}
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => handleOpenLoanModal('nh', idx)}
-                            title="수정"
-                            className="btn-action-icon"
-                            style={{ color: '#a855f7' }}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteLoanRow('nh', idx)}
-                            title="삭제"
-                            className="btn-action-icon"
-                            style={{ color: '#ef4444' }}
-                          >
-                            🗑️
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredNhLoans.map((row, idx) => {
+                      const originalIdx = data.loans.nh.indexOf(row);
+                      return (
+                        <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
+                          <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                          <td style={{ fontWeight: 800 }}>{row.date}</td>
+                          <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 900, color: row.isRefund ? '#d97706' : '#581c87' }}>
+                            {formatMoney(row.payment)}
+                          </td>
+                          <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 800 }}>
+                            {formatMoney(row.extra)}
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenLoanModal('nh', originalIdx >= 0 ? originalIdx : idx)}
+                              title="수정"
+                              className="btn-action-icon"
+                              style={{ color: '#a855f7' }}
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteLoanRow('nh', originalIdx >= 0 ? originalIdx : idx)}
+                              title="삭제"
+                              className="btn-action-icon"
+                              style={{ color: '#ef4444' }}
+                            >
+                              🗑️
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                     <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff', fontWeight: 900, fontSize: '0.9rem' }}>
                       <td colSpan={3}>누적 합계</td>
                       <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
@@ -1073,18 +1079,22 @@ export default function KnowledgeIndustryPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredKbLoans.map((row, idx) => (
-                        <tr key={idx}>
-                          <td style={{ fontWeight: 700 }}>{row.date}</td>
-                          <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatMoney(row.payment)}</td>
-                          <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
-                          <td>
-                            <button type="button" onClick={() => handleOpenLoanModal('kb', idx)} className="btn-action-icon" style={{ color: '#2563eb' }}>✏️</button>
-                            <button type="button" onClick={() => handleDeleteLoanRow('kb', idx)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
-                          </td>
-                        </tr>
-                      ))}
+                      {filteredKbLoans.map((row, idx) => {
+                        const originalIdx = data.loans.kb.indexOf(row);
+                        const targetIdx = originalIdx >= 0 ? originalIdx : idx;
+                        return (
+                          <tr key={idx}>
+                            <td style={{ fontWeight: 700 }}>{row.date}</td>
+                            <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
+                            <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatMoney(row.payment)}</td>
+                            <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
+                            <td>
+                              <button type="button" onClick={() => handleOpenLoanModal('kb', targetIdx)} className="btn-action-icon" style={{ color: '#2563eb' }}>✏️</button>
+                              <button type="button" onClick={() => handleDeleteLoanRow('kb', targetIdx)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1116,18 +1126,22 @@ export default function KnowledgeIndustryPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredNhLoans.map((row, idx) => (
-                        <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
-                          <td style={{ fontWeight: 700 }}>{row.date}</td>
-                          <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatMoney(row.payment)}</td>
-                          <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(row.extra)}</td>
-                          <td>
-                            <button type="button" onClick={() => handleOpenLoanModal('nh', idx)} className="btn-action-icon" style={{ color: '#a855f7' }}>✏️</button>
-                            <button type="button" onClick={() => handleDeleteLoanRow('nh', idx)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
-                          </td>
-                        </tr>
-                      ))}
+                      {filteredNhLoans.map((row, idx) => {
+                        const originalIdx = data.loans.nh.indexOf(row);
+                        const targetIdx = originalIdx >= 0 ? originalIdx : idx;
+                        return (
+                          <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
+                            <td style={{ fontWeight: 700 }}>{row.date}</td>
+                            <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
+                            <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatMoney(row.payment)}</td>
+                            <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(row.extra)}</td>
+                            <td>
+                              <button type="button" onClick={() => handleOpenLoanModal('nh', targetIdx)} className="btn-action-icon" style={{ color: '#a855f7' }}>✏️</button>
+                              <button type="button" onClick={() => handleDeleteLoanRow('nh', targetIdx)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
