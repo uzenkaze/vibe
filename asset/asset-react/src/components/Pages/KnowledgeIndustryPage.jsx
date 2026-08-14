@@ -1149,14 +1149,14 @@ export default function KnowledgeIndustryPage() {
 
             <form onSubmit={handleSaveLoanRow}>
               <div style={{ marginBottom: '0.85rem' }}>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>상환 연월 (텍스트 입력 또는 우측 달력 선택)</label>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>상환 연월</label>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <input
                     type="text"
                     placeholder="예: 2024. 10. 15"
                     value={loanModal.formData.date}
                     onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }))}
-                    style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '8px 36px 8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                     required
                   />
                   <input
@@ -1169,16 +1169,19 @@ export default function KnowledgeIndustryPage() {
                       }
                     }}
                     style={{
-                      padding: '7px 8px',
-                      borderRadius: '8px',
-                      border: '1px solid var(--border)',
-                      background: 'var(--surface)',
-                      color: 'var(--text-primary)',
-                      fontSize: '0.85rem',
-                      cursor: 'pointer'
+                      position: 'absolute',
+                      right: '6px',
+                      width: '28px',
+                      height: '28px',
+                      opacity: 0,
+                      cursor: 'pointer',
+                      zIndex: 2
                     }}
-                    title="달력에서 날짜 선택"
+                    title="달력 선택"
                   />
+                  <span style={{ position: 'absolute', right: '10px', pointerEvents: 'none', fontSize: '1rem', zIndex: 1 }}>
+                    📅
+                  </span>
                 </div>
               </div>
 
