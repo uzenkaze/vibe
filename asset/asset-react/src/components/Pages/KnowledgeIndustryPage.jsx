@@ -220,14 +220,7 @@ export default function KnowledgeIndustryPage() {
     return INITIAL_DATA;
   });
 
-  // 데이터 초기화 헬퍼
-  const handleResetData = () => {
-    if (window.confirm('모든 데이터를 최신 원본 데이터로 리셋하시겠습니까?')) {
-      setData(INITIAL_DATA);
-      localStorage.setItem('asset_knowledge_industry', JSON.stringify(INITIAL_DATA));
-      showToast('최신 원본 데이터로 리셋되었습니다.', 'info');
-    }
-  };
+
 
   // 대출상환 편집 모달 상태
   const [loanModal, setLoanModal] = useState({
@@ -559,22 +552,6 @@ export default function KnowledgeIndustryPage() {
               className={`tab-btn ${activeTab === 'rent' ? 'active' : 'inactive'}`}
             >
               🚪 3. 월세현황
-            </button>
-            <button
-              onClick={handleResetData}
-              title="최신 원본 데이터로 초기화"
-              style={{
-                padding: '10px 14px',
-                borderRadius: '99px',
-                border: '1px solid var(--border)',
-                background: dark ? 'rgba(255,255,255,0.05)' : '#ffffff',
-                color: 'var(--text-muted)',
-                fontSize: '0.85rem',
-                fontWeight: 800,
-                cursor: 'pointer'
-              }}
-            >
-              🔄 초기화
             </button>
           </div>
         </div>
