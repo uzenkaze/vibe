@@ -267,7 +267,7 @@ export default function KnowledgeIndustryPage() {
   const ca557Sum = data.investment.interiorCA557.reduce((s, i) => s + (Number(i.amount) || 0), 0);
   const interiorTotal = ca520Sum + ca557Sum;
 
-  const [loanYearFilter, setLoanYearFilter] = useState('ALL'); // 'ALL' | '2022' | '2023' | '2024' | '2025' | '2026'
+  const [loanYearFilter, setLoanYearFilter] = useState('2026'); // 기본 당해연도(2026) 필터링
 
   // --- 탭 2: 대출 상환 연도 필터링 및 자동 계산 ---
   const filteredKbLoans = data.loans.kb.filter(item => loanYearFilter === 'ALL' || (item.date && item.date.startsWith(loanYearFilter)));
