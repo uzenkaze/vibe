@@ -934,7 +934,7 @@ export default function KnowledgeIndustryPage() {
                     </tr>
                   ))}
                   <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff', fontWeight: 900, fontSize: '0.9rem' }}>
-                    <td colSpan={3}>전체 상환 누적 합계</td>
+                    <td colSpan={3}>누적 합계</td>
                     <td style={{ textAlign: 'right', color: '#1e40af' }}>{formatMoney(kbPaymentTotal)}</td>
                     <td style={{ textAlign: 'right' }}>{formatMoney(kbPrincipalTotal)}</td>
                     <td style={{ textAlign: 'right' }}>{formatMoney(kbInterestTotal)}</td>
@@ -1015,7 +1015,7 @@ export default function KnowledgeIndustryPage() {
                     </tr>
                   ))}
                   <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff', fontWeight: 900, fontSize: '0.9rem' }}>
-                    <td colSpan={3}>전체 상환 누적 합계</td>
+                    <td colSpan={3}>누적 합계</td>
                     <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
                     <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(nhExtraTotal)}</td>
                     <td colSpan={2}>-</td>
