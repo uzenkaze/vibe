@@ -767,15 +767,16 @@ export default function KnowledgeIndustryPage() {
                   type="button"
                   onClick={() => setLoanSubTab('kb')}
                   style={{
-                    padding: '7px 14px',
-                    borderRadius: '99px',
-                    border: `1px solid ${loanSubTab === 'kb' ? '#3b82f6' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
-                    background: loanSubTab === 'kb' ? (dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
-                    color: loanSubTab === 'kb' ? (dark ? '#60a5fa' : '#1d4ed8') : 'var(--text-muted)',
-                    fontSize: '0.82rem',
-                    fontWeight: 800,
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: loanSubTab === 'kb' ? '1px solid #1d4ed8' : (dark ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid #bfdbfe'),
+                    background: loanSubTab === 'kb' ? '#2563eb' : (dark ? 'rgba(37, 99, 235, 0.15)' : '#eff6ff'),
+                    color: loanSubTab === 'kb' ? '#ffffff' : (dark ? '#60a5fa' : '#1d4ed8'),
+                    fontSize: '0.85rem',
+                    fontWeight: 900,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
+                    boxShadow: loanSubTab === 'kb' ? '0 4px 12px rgba(37, 99, 235, 0.35)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
                 >
@@ -785,15 +786,16 @@ export default function KnowledgeIndustryPage() {
                   type="button"
                   onClick={() => setLoanSubTab('nh')}
                   style={{
-                    padding: '7px 14px',
-                    borderRadius: '99px',
-                    border: `1px solid ${loanSubTab === 'nh' ? '#a855f7' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
-                    background: loanSubTab === 'nh' ? (dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
-                    color: loanSubTab === 'nh' ? (dark ? '#c084fc' : '#7e22ce') : 'var(--text-muted)',
-                    fontSize: '0.82rem',
-                    fontWeight: 800,
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: loanSubTab === 'nh' ? '1px solid #7e22ce' : (dark ? '1px solid rgba(168, 85, 247, 0.4)' : '1px solid #e9d5ff'),
+                    background: loanSubTab === 'nh' ? '#9333ea' : (dark ? 'rgba(147, 51, 234, 0.15)' : '#faf5ff'),
+                    color: loanSubTab === 'nh' ? '#ffffff' : (dark ? '#c084fc' : '#7e22ce'),
+                    fontSize: '0.85rem',
+                    fontWeight: 900,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
+                    boxShadow: loanSubTab === 'nh' ? '0 4px 12px rgba(147, 51, 234, 0.35)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
                 >
@@ -803,15 +805,16 @@ export default function KnowledgeIndustryPage() {
                   type="button"
                   onClick={() => setLoanSubTab('all')}
                   style={{
-                    padding: '7px 14px',
-                    borderRadius: '99px',
-                    border: `1px solid ${loanSubTab === 'all' ? '#10b981' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
-                    background: loanSubTab === 'all' ? (dark ? 'rgba(16, 185, 129, 0.25)' : '#ecfdf5') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
-                    color: loanSubTab === 'all' ? (dark ? '#34d399' : '#047857') : 'var(--text-muted)',
-                    fontSize: '0.82rem',
-                    fontWeight: 800,
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: loanSubTab === 'all' ? '1px solid #047857' : (dark ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid #a7f3d0'),
+                    background: loanSubTab === 'all' ? '#059669' : (dark ? 'rgba(5, 150, 105, 0.15)' : '#ecfdf5'),
+                    color: loanSubTab === 'all' ? '#ffffff' : (dark ? '#34d399' : '#047857'),
+                    fontSize: '0.85rem',
+                    fontWeight: 900,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
+                    boxShadow: loanSubTab === 'all' ? '0 4px 12px rgba(5, 150, 105, 0.35)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
                 >
