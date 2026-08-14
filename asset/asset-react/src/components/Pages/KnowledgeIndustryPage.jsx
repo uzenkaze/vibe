@@ -478,6 +478,9 @@ export default function KnowledgeIndustryPage() {
           .data-table th, .data-table td {
             padding: 6px 8px;
           }
+          .loan-compare-title-sub {
+            display: none;
+          }
         }
         .data-table th {
           background: ${dark ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
@@ -1039,19 +1042,15 @@ export default function KnowledgeIndustryPage() {
                           <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
                           <td style={{ fontWeight: 800 }}>{row.date}</td>
                           <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 900, color: row.isRefund ? '#d97706' : '#581c87' }}>
-                            {formatMoney(row.payment)}
-                          </td>
-                          <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 800 }}>
-                            {formatMoney(row.extra)}
-                          </td>
+                          <td style={{ textAlign: 'right', fontWeight: 900, color: row.isRefund ? '#d97706' : '#581c87' }}>{formatMoney(row.payment)}</td>
+                          <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(row.extra)}</td>
                           <td>
                             <button
                               type="button"
                               onClick={() => handleOpenLoanModal('nh', originalIdx >= 0 ? originalIdx : idx)}
                               title="수정"
                               className="btn-action-icon"
-                              style={{ color: '#a855f7' }}
+                              style={{ color: '#7e22ce' }}
                             >
                               ✏️
                             </button>
@@ -1068,12 +1067,6 @@ export default function KnowledgeIndustryPage() {
                         </tr>
                       );
                     })}
-                    <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff', fontWeight: 900, fontSize: '0.9rem' }}>
-                      <td colSpan={3}>누적 합계</td>
-                      <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
-                      <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(nhExtraTotal)}</td>
-                      <td>-</td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1082,17 +1075,17 @@ export default function KnowledgeIndustryPage() {
 
           {/* 3. 대출 2종 나란히 비교 뷰 (loanSubTab === 'all') */}
           {loanSubTab === 'all' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               {/* KB 대출 */}
-              <div className="section-card" style={{ padding: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2563eb', margin: 0 }}>
-                    🏦 KB 상환 내역
+              <div className="section-card" style={{ padding: '1rem 1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', gap: '6px' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2563eb', margin: 0, whiteSpace: 'nowrap' }}>
+                    🏦 KB <span className="loan-compare-title-sub" style={{ fontSize: '0.9rem', fontWeight: 800 }}>상환 내역</span>
                   </h3>
                   <button
                     type="button"
                     onClick={() => handleOpenLoanModal('kb')}
-                    style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '4px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: 800, cursor: 'pointer' }}
+                    style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
                   >
                     + 추가
                   </button>
@@ -1130,16 +1123,18 @@ export default function KnowledgeIndustryPage() {
                 </div>
               </div>
 
+
+
               {/* NH 대출 */}
-              <div className="section-card" style={{ padding: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#7e22ce', margin: 0 }}>
-                    🏦 NH 상환 내역
+              <div className="section-card" style={{ padding: '1rem 1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', gap: '8px' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#7e22ce', margin: 0, whiteSpace: 'nowrap' }}>
+                    🏦 NH <span className="loan-compare-title-sub" style={{ fontSize: '0.9rem', fontWeight: 800 }}>상환 내역</span>
                   </h3>
                   <button
                     type="button"
                     onClick={() => handleOpenLoanModal('nh')}
-                    style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '4px', border: 'none', background: '#a855f7', color: '#fff', fontWeight: 800, cursor: 'pointer' }}
+                    style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '6px', border: 'none', background: '#a855f7', color: '#fff', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
                   >
                     + 추가
                   </button>
