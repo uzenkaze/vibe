@@ -323,13 +323,13 @@ export default function KnowledgeIndustryPage() {
         editIndex: null,
         formData: {
           date: dateStr,
-          rate: bank === 'kb' ? '5.75' : '5.63',
-          payment: formatComma(bank === 'kb' ? 551403 : 1297053),
-          principal: formatComma(bank === 'kb' ? 80000 : 0),
-          interest: formatComma(bank === 'kb' ? 470403 : 1297053),
-          extra: formatComma(bank === 'nh' ? 147053 : 0),
+          rate: '',
+          payment: '',
+          principal: '',
+          interest: '',
+          extra: '',
           diff: 0,
-          margin: '0.00%',
+          margin: '',
           condition: ''
         }
       });
