@@ -506,7 +506,7 @@ export default function KnowledgeIndustryPage() {
               🏢 지식산업센터
             </h1>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px', margin: 0 }}>
-              지식산업센터 2개 호실(CA520, CA557)의 투자 비용, 은행별 대출 원리금 상환 내역 및 월세 입금을 한눈에 통합 관리하세요.
+              투자 비용, 은행별 대출 원리금 상환 내역 및 월세 입금을 한눈에 통합 관리하세요.
             </p>
           </div>
 
