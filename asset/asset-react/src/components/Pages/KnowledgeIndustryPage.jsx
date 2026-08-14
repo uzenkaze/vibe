@@ -882,7 +882,7 @@ export default function KnowledgeIndustryPage() {
                   gap: '6px'
                 }}
               >
-                + {loanSubTab === 'kb' ? 'KB' : 'NH'} 상환 내역 등록/추가
+                + 추가
               </button>
             )}
           </div>
@@ -932,7 +932,7 @@ export default function KnowledgeIndustryPage() {
                   onClick={() => handleOpenLoanModal('kb')}
                   style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#ffffff', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
                 >
-                  + KB 납부 내역 추가
+                  + 추가
                 </button>
               </div>
 
@@ -1018,7 +1018,7 @@ export default function KnowledgeIndustryPage() {
                   onClick={() => handleOpenLoanModal('nh')}
                   style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', background: '#a855f7', color: '#ffffff', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
                 >
-                  + NH 납부 내역 추가
+                  + 추가
                 </button>
               </div>
 
