@@ -528,7 +528,7 @@ export default function KnowledgeIndustryPage() {
               onClick={() => setActiveTab('rent')}
               className={`tab-btn ${activeTab === 'rent' ? 'active' : 'inactive'}`}
             >
-              🚪 3. 월세입금(호실별)
+              🚪 3. 월세현황
             </button>
             <button
               onClick={handleResetData}
