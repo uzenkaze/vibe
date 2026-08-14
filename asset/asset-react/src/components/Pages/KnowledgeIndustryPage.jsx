@@ -280,21 +280,35 @@ export default function KnowledgeIndustryPage() {
   const nhPaymentTotal = filteredNhLoans.reduce((s, i) => s + (Number(i.payment) || 0), 0);
   const nhExtraTotal = filteredNhLoans.reduce((s, i) => s + (Number(i.extra) || 0), 0);
 
+  // --- 콤마 포맷팅 스마트 헬퍼 ---
+  const formatComma = (val) => {
+    if (val === null || val === undefined || val === '') return '';
+    const str = String(val).replace(/,/g, '').trim();
+    if (isNaN(str) || str === '') return str;
+    return Number(str).toLocaleString('ko-KR');
+  };
+
+  const unformatComma = (val) => {
+    if (val === null || val === undefined || val === '') return '';
+    return String(val).replace(/,/g, '').trim();
+  };
+
   // --- 대출상환 CRUD 헬퍼 ---
   const handleOpenLoanModal = (bank, index = null) => {
     if (index !== null) {
       const row = data.loans[bank][index];
+      const cleanRateStr = String(row.rate || '').replace('%', '').trim();
       setLoanModal({
         open: true,
         bank,
         editIndex: index,
         formData: {
           date: row.date || '',
-          rate: row.rate || '',
-          payment: row.payment || '',
-          principal: row.principal || '',
-          interest: row.interest || '',
-          extra: row.extra || '',
+          rate: cleanRateStr,
+          payment: formatComma(row.payment),
+          principal: formatComma(row.principal),
+          interest: formatComma(row.interest),
+          extra: formatComma(row.extra),
           diff: row.diff || 0,
           margin: row.margin || '',
           condition: row.condition || ''
@@ -309,11 +323,11 @@ export default function KnowledgeIndustryPage() {
         editIndex: null,
         formData: {
           date: dateStr,
-          rate: bank === 'kb' ? '5.75%' : '5.63%',
-          payment: bank === 'kb' ? 551403 : 1297053,
-          principal: bank === 'kb' ? 80000 : 0,
-          interest: bank === 'kb' ? 470403 : 1297053,
-          extra: bank === 'nh' ? 147053 : 0,
+          rate: bank === 'kb' ? '5.75' : '5.63',
+          payment: formatComma(bank === 'kb' ? 551403 : 1297053),
+          principal: formatComma(bank === 'kb' ? 80000 : 0),
+          interest: formatComma(bank === 'kb' ? 470403 : 1297053),
+          extra: formatComma(bank === 'nh' ? 147053 : 0),
           diff: 0,
           margin: '0.00%',
           condition: ''
@@ -325,21 +339,24 @@ export default function KnowledgeIndustryPage() {
   const handleSaveLoanRow = (e) => {
     e.preventDefault();
     const { bank, editIndex, formData } = loanModal;
-    const payment = Number(formData.payment) || 0;
-    const principal = Number(formData.principal) || 0;
-    const interest = Number(formData.interest) || (payment - principal);
-    const extra = Number(formData.extra) || 0;
+    const payment = Number(unformatComma(formData.payment)) || 0;
+    const principal = Number(unformatComma(formData.principal)) || 0;
+    const interest = Number(unformatComma(formData.interest)) || (payment - principal);
+    const extra = Number(unformatComma(formData.extra)) || 0;
+
+    const cleanRate = unformatComma(formData.rate);
+    const rate = cleanRate ? (cleanRate.endsWith('%') ? cleanRate : `${cleanRate}%`) : '';
 
     const newRow = {
       date: formData.date.trim(),
-      rate: formData.rate.trim(),
+      rate,
       payment,
       principal,
       interest,
       extra,
       diff: Number(formData.diff) || 0,
-      margin: formData.margin.trim(),
-      condition: formData.condition.trim()
+      margin: formData.margin ? formData.margin.trim() : '',
+      condition: formData.condition ? formData.condition.trim() : ''
     };
 
     setData(prev => {
@@ -1336,23 +1353,44 @@ export default function KnowledgeIndustryPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>금리 (예: 5.63%)</label>
-                  <input
-                    type="text"
-                    value={loanModal.formData.rate}
-                    onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, rate: e.target.value } }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
-                    required
-                  />
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>금리 (%)</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="예: 5.635"
+                      value={loanModal.formData.rate}
+                      onChange={e => {
+                        let val = e.target.value.replace(/[^0-9.]/g, '');
+                        // 소수점 1개만 허용
+                        const parts = val.split('.');
+                        if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                        // 소수점 이하 3자리까지 제한
+                        if (parts[1] && parts[1].length > 3) {
+                          val = parts[0] + '.' + parts[1].slice(0, 3);
+                        }
+                        setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, rate: val } }));
+                      }}
+                      style={{ width: '100%', padding: '8px 28px 8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                      required
+                    />
+                    <span style={{ position: 'absolute', right: '10px', pointerEvents: 'none', fontSize: '0.85rem', fontWeight: 900, color: 'var(--text-muted)' }}>
+                      %
+                    </span>
+                  </div>
                 </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>원리금 납부액 (원)</label>
                   <input
-                    type="number"
+                    type="text"
                     value={loanModal.formData.payment}
-                    onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, payment: e.target.value } }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    onFocus={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, payment: unformatComma(prev.formData.payment) } }))}
+                    onBlur={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, payment: formatComma(prev.formData.payment) } }))}
+                    onChange={e => {
+                      const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                      setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, payment: cleanVal } }));
+                    }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
                     required
                   />
                 </div>
@@ -1363,20 +1401,30 @@ export default function KnowledgeIndustryPage() {
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>원금 (원)</label>
                     <input
-                      type="number"
+                      type="text"
                       value={loanModal.formData.principal}
-                      onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, principal: e.target.value } }))}
-                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                      onFocus={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, principal: unformatComma(prev.formData.principal) } }))}
+                      onBlur={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, principal: formatComma(prev.formData.principal) } }))}
+                      onChange={e => {
+                        const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                        setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, principal: cleanVal } }));
+                      }}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
                     />
                   </div>
 
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>이자 (원)</label>
                     <input
-                      type="number"
+                      type="text"
                       value={loanModal.formData.interest}
-                      onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, interest: e.target.value } }))}
-                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                      onFocus={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, interest: unformatComma(prev.formData.interest) } }))}
+                      onBlur={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, interest: formatComma(prev.formData.interest) } }))}
+                      onChange={e => {
+                        const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                        setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, interest: cleanVal } }));
+                      }}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
                     />
                   </div>
                 </div>
@@ -1384,10 +1432,15 @@ export default function KnowledgeIndustryPage() {
                 <div style={{ marginBottom: '0.85rem' }}>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>월세 대비 추가부담금 (원)</label>
                   <input
-                    type="number"
+                    type="text"
                     value={loanModal.formData.extra}
-                    onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, extra: e.target.value } }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    onFocus={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, extra: unformatComma(prev.formData.extra) } }))}
+                    onBlur={() => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, extra: formatComma(prev.formData.extra) } }))}
+                    onChange={e => {
+                      const cleanVal = e.target.value.replace(/[^0-9-]/g, '');
+                      setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, extra: cleanVal } }));
+                    }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
                   />
                 </div>
               )}
