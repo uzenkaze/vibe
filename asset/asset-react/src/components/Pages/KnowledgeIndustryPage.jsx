@@ -149,6 +149,7 @@ const INITIAL_DATA = {
 export default function KnowledgeIndustryPage() {
   const { dark, showToast } = useApp();
   const [activeTab, setActiveTab] = useState('investment'); // 'investment' | 'loans' | 'rent'
+  const [loanSubTab, setLoanSubTab] = useState('kb'); // 'kb' | 'nh' | 'all'
 
   // 데이터 상태 (localStorage 연동)
   const [data, setData] = useState(() => {
@@ -160,6 +161,24 @@ export default function KnowledgeIndustryPage() {
       }
     } catch (e) {}
     return INITIAL_DATA;
+  });
+
+  // 대출상환 편집 모달 상태
+  const [loanModal, setLoanModal] = useState({
+    open: false,
+    bank: 'kb', // 'kb' | 'nh'
+    editIndex: null,
+    formData: {
+      date: '',
+      rate: '',
+      payment: '',
+      principal: '',
+      interest: '',
+      extra: '',
+      diff: '',
+      margin: '',
+      condition: ''
+    }
   });
 
   // 데이터 변경 시 저장
@@ -177,18 +196,112 @@ export default function KnowledgeIndustryPage() {
     return isNeg ? `-${absVal}원` : `${absVal}원`;
   };
 
-  // --- 탭 1: 투자 비용 관리 ---
+  // --- 탭 1: 투자 비용 계산 ---
   const ca520Sum = data.investment.interiorCA520.reduce((s, i) => s + (Number(i.amount) || 0), 0);
   const ca557Sum = data.investment.interiorCA557.reduce((s, i) => s + (Number(i.amount) || 0), 0);
   const interiorTotal = ca520Sum + ca557Sum;
 
-  // --- 탭 2: 대출 상환 관리 ---
+  // --- 탭 2: 대출 상환 계산 ---
   const kbPaymentTotal = data.loans.kb.reduce((s, i) => s + (Number(i.payment) || 0), 0);
   const kbPrincipalTotal = data.loans.kb.reduce((s, i) => s + (Number(i.principal) || 0), 0);
   const kbInterestTotal = data.loans.kb.reduce((s, i) => s + (Number(i.interest) || 0), 0);
 
   const nhPaymentTotal = data.loans.nh.reduce((s, i) => s + (Number(i.payment) || 0), 0);
   const nhExtraTotal = data.loans.nh.reduce((s, i) => s + (Number(i.extra) || 0), 0);
+
+  // --- 대출상환 CRUD 헬퍼 ---
+  const handleOpenLoanModal = (bank, index = null) => {
+    if (index !== null) {
+      const row = data.loans[bank][index];
+      setLoanModal({
+        open: true,
+        bank,
+        editIndex: index,
+        formData: {
+          date: row.date || '',
+          rate: row.rate || '',
+          payment: row.payment || '',
+          principal: row.principal || '',
+          interest: row.interest || '',
+          extra: row.extra || '',
+          diff: row.diff || 0,
+          margin: row.margin || '',
+          condition: row.condition || ''
+        }
+      });
+    } else {
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}. ${today.getMonth() + 1}. 15`;
+      setLoanModal({
+        open: true,
+        bank,
+        editIndex: null,
+        formData: {
+          date: dateStr,
+          rate: bank === 'kb' ? '5.75%' : '5.63%',
+          payment: bank === 'kb' ? 551403 : 1297053,
+          principal: bank === 'kb' ? 80000 : 0,
+          interest: bank === 'kb' ? 470403 : 1297053,
+          extra: bank === 'nh' ? 147053 : 0,
+          diff: 0,
+          margin: '0.00%',
+          condition: ''
+        }
+      });
+    }
+  };
+
+  const handleSaveLoanRow = (e) => {
+    e.preventDefault();
+    const { bank, editIndex, formData } = loanModal;
+    const payment = Number(formData.payment) || 0;
+    const principal = Number(formData.principal) || 0;
+    const interest = Number(formData.interest) || (payment - principal);
+    const extra = Number(formData.extra) || 0;
+
+    const newRow = {
+      date: formData.date.trim(),
+      rate: formData.rate.trim(),
+      payment,
+      principal,
+      interest,
+      extra,
+      diff: Number(formData.diff) || 0,
+      margin: formData.margin.trim(),
+      condition: formData.condition.trim()
+    };
+
+    setData(prev => {
+      const nextBankList = [...prev.loans[bank]];
+      if (editIndex !== null) {
+        nextBankList[editIndex] = newRow;
+      } else {
+        nextBankList.push(newRow);
+      }
+      return {
+        ...prev,
+        loans: {
+          ...prev.loans,
+          [bank]: nextBankList
+        }
+      };
+    });
+
+    setLoanModal(prev => ({ ...prev, open: false }));
+    showToast(`${bank.toUpperCase()} 대출 상환 내역이 저장되었습니다.`, 'success');
+  };
+
+  const handleDeleteLoanRow = (bank, index) => {
+    if (!window.confirm('해당 대출 상환 내역을 삭제하시겠습니까?')) return;
+    setData(prev => ({
+      ...prev,
+      loans: {
+        ...prev.loans,
+        [bank]: prev.loans[bank].filter((_, i) => i !== index)
+      }
+    }));
+    showToast('삭제되었습니다.', 'info');
+  };
 
   // --- 탭 3: 월세 입금 여부 토글 헬퍼 ---
   const handleToggleRentPaid = (contractId, paymentId) => {
@@ -213,7 +326,7 @@ export default function KnowledgeIndustryPage() {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3rem' }}>
       <style>{`
         .tab-btn {
           padding: 10px 22px;
@@ -259,6 +372,19 @@ export default function KnowledgeIndustryPage() {
         }
         .data-table tr:hover {
           background: ${dark ? 'rgba(255,255,255,0.02)' : '#f1f5f9'};
+        }
+
+        .btn-action-icon {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          fontSize: 0.8rem;
+          padding: 2px 4px;
+          border-radius: 4px;
+          transition: transform 0.1s ease;
+        }
+        .btn-action-icon:hover {
+          transform: scale(1.15);
         }
 
         .badge-paid {
@@ -508,10 +634,91 @@ export default function KnowledgeIndustryPage() {
       )}
 
       {/* ========================================================================================= */}
-      {/* 탭 2: 대출 상환 관리 */}
+      {/* 탭 2: 대출 상환 관리 (서브 탭 적용으로 100% Full Width 시원한 화면 구성 & 편집 기능) */}
       {/* ========================================================================================= */}
       {activeTab === 'loans' && (
         <div>
+          {/* 대출 상환 상단 서브 탭 스위처 & 추가 버튼 */}
+          <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setLoanSubTab('kb')}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '99px',
+                  border: `1px solid ${loanSubTab === 'kb' ? '#3b82f6' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
+                  background: loanSubTab === 'kb' ? (dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
+                  color: loanSubTab === 'kb' ? (dark ? '#60a5fa' : '#1d4ed8') : 'var(--text-muted)',
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                🏦 KB (생활안정) 대출 (전체화면 뷰)
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoanSubTab('nh')}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '99px',
+                  border: `1px solid ${loanSubTab === 'nh' ? '#a855f7' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
+                  background: loanSubTab === 'nh' ? (dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
+                  color: loanSubTab === 'nh' ? (dark ? '#c084fc' : '#7e22ce') : 'var(--text-muted)',
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                🏦 NH (기업성장론) 대출 (전체화면 뷰)
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoanSubTab('all')}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '99px',
+                  border: `1px solid ${loanSubTab === 'all' ? '#10b981' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
+                  background: loanSubTab === 'all' ? (dark ? 'rgba(16, 185, 129, 0.25)' : '#ecfdf5') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
+                  color: loanSubTab === 'all' ? (dark ? '#34d399' : '#047857') : 'var(--text-muted)',
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                📊 대출 2종 나란히 비교
+              </button>
+            </div>
+
+            {/* 신규 납부 행 추가 버튼 */}
+            {loanSubTab !== 'all' && (
+              <button
+                type="button"
+                onClick={() => handleOpenLoanModal(loanSubTab)}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: loanSubTab === 'kb' ? '#2563eb' : '#a855f7',
+                  color: '#ffffff',
+                  fontSize: '0.85rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                + {loanSubTab === 'kb' ? 'KB' : 'NH'} 상환 내역 등록/추가
+              </button>
+            )}
+          </div>
+
           {/* 상환 요약 카드 */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             <div className="section-card" style={{ padding: '1.25rem', background: dark ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff', border: '1px solid #93c5fd' }}>
@@ -539,97 +746,259 @@ export default function KnowledgeIndustryPage() {
             </div>
           </div>
 
-          {/* 대출 상환 내역 테이블 (KB & NH 나란히) */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            {/* KB 생활안정 대출 */}
+          {/* 1. KB (생활안정) 대출 - 넓은 화면 뷰 (loanSubTab === 'kb') */}
+          {loanSubTab === 'kb' && (
             <div className="section-card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2563eb', margin: 0 }}>
-                  🏦 KB (생활안정) 상환 내역
-                </h3>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)' }}>기준: 4.16% ~ 5.85%</span>
-              </div>
-              <div style={{ overflowX: 'auto', maxHeight: '550px' }}>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>연월</th>
-                      <th>금리</th>
-                      <th>원리금</th>
-                      <th>원금</th>
-                      <th>이자</th>
-                      <th>이자차액</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.loans.kb.map((row, idx) => (
-                      <tr key={idx}>
-                        <td style={{ fontWeight: 700 }}>{row.date}</td>
-                        <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatMoney(row.payment)}</td>
-                        <td style={{ textAlign: 'right' }}>{formatMoney(row.principal)}</td>
-                        <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
-                        <td style={{ textAlign: 'right', color: row.diff > 0 ? '#ef4444' : '#10b981', fontWeight: 700 }}>
-                          {formatMoney(row.diff)}
-                        </td>
-                      </tr>
-                    ))}
-                    <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.2)' : '#eff6ff', fontWeight: 900 }}>
-                      <td colSpan={2}>합계</td>
-                      <td style={{ textAlign: 'right', color: '#1e40af' }}>{formatMoney(kbPaymentTotal)}</td>
-                      <td style={{ textAlign: 'right' }}>{formatMoney(kbPrincipalTotal)}</td>
-                      <td style={{ textAlign: 'right' }}>{formatMoney(kbInterestTotal)}</td>
-                      <td>-</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#2563eb', margin: 0 }}>
+                    🏦 KB (생활안정) 매달 상환 내역 ({data.loans.kb.length}건)
+                  </h3>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    금리 4.16% ~ 5.85% 변동 수치 및 원금/이자/이자차액 상세 관리
+                  </div>
+                </div>
 
-            {/* NH 기업성장론 대출 */}
-            <div className="section-card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#7e22ce', margin: 0 }}>
-                  🏦 NH (기업성장론) 상환 내역
-                </h3>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)' }}>우대금리 조건 보유</span>
+                <button
+                  type="button"
+                  onClick={() => handleOpenLoanModal('kb')}
+                  style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#ffffff', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  + KB 납부 내역 추가
+                </button>
               </div>
-              <div style={{ overflowX: 'auto', maxHeight: '550px' }}>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>연월</th>
-                      <th>금리</th>
-                      <th>원리금(이자만)</th>
-                      <th>월세대비 추가부담</th>
-                      <th>우대조건</th>
+
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>순번</th>
+                    <th>연월</th>
+                    <th>금리</th>
+                    <th>원리금(납부액)</th>
+                    <th>원금</th>
+                    <th>이자</th>
+                    <th>최초기준 이자차액</th>
+                    <th>우대금리 조건</th>
+                    <th>편집</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.loans.kb.map((row, idx) => (
+                    <tr key={idx}>
+                      <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                      <td style={{ fontWeight: 800 }}>{row.date}</td>
+                      <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 900, color: '#1e40af' }}>{formatMoney(row.payment)}</td>
+                      <td style={{ textAlign: 'right' }}>{formatMoney(row.principal)}</td>
+                      <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
+                      <td style={{ textAlign: 'right', color: row.diff > 0 ? '#ef4444' : '#10b981', fontWeight: 800 }}>
+                        {formatMoney(row.diff)}
+                      </td>
+                      <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.margin || row.condition || '-'}</td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenLoanModal('kb', idx)}
+                          title="수정"
+                          className="btn-action-icon"
+                          style={{ color: '#2563eb' }}
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteLoanRow('kb', idx)}
+                          title="삭제"
+                          className="btn-action-icon"
+                          style={{ color: '#ef4444' }}
+                        >
+                          🗑️
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {data.loans.nh.map((row, idx) => (
-                      <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
-                        <td style={{ fontWeight: 700 }}>{row.date}</td>
-                        <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 800, color: row.isRefund ? '#d97706' : 'inherit' }}>
-                          {formatMoney(row.payment)}
-                        </td>
-                        <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 700 }}>
-                          {formatMoney(row.extra)}
-                        </td>
-                        <td style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{row.condition || '-'}</td>
+                  ))}
+                  <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff', fontWeight: 900, fontSize: '0.9rem' }}>
+                    <td colSpan={3}>전체 상환 누적 합계</td>
+                    <td style={{ textAlign: 'right', color: '#1e40af' }}>{formatMoney(kbPaymentTotal)}</td>
+                    <td style={{ textAlign: 'right' }}>{formatMoney(kbPrincipalTotal)}</td>
+                    <td style={{ textAlign: 'right' }}>{formatMoney(kbInterestTotal)}</td>
+                    <td colSpan={3}>-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* 2. NH (기업성장론) 대출 - 넓은 화면 뷰 (loanSubTab === 'nh') */}
+          {loanSubTab === 'nh' && (
+            <div className="section-card" style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#7e22ce', margin: 0 }}>
+                    🏦 NH (기업성장론) 매달 상환 내역 ({data.loans.nh.length}건)
+                  </h3>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    월세 대비 추가부담금 및 2024.02.07 이자환급(-2,685,805원) 상세 관리
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenLoanModal('nh')}
+                  style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', background: '#a855f7', color: '#ffffff', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  + NH 납부 내역 추가
+                </button>
+              </div>
+
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>순번</th>
+                    <th>연월</th>
+                    <th>금리</th>
+                    <th>원리금(이자만)</th>
+                    <th>월세대비 추가부담금</th>
+                    <th>우대금리 / 특이사항 조건</th>
+                    <th>편집</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.loans.nh.map((row, idx) => (
+                    <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
+                      <td style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                      <td style={{ fontWeight: 800 }}>{row.date}</td>
+                      <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 900, color: row.isRefund ? '#d97706' : '#581c87' }}>
+                        {formatMoney(row.payment)}
+                      </td>
+                      <td style={{ textAlign: 'right', color: '#ef4444', fontWeight: 800 }}>
+                        {formatMoney(row.extra)}
+                      </td>
+                      <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{row.condition || '-'}</td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenLoanModal('nh', idx)}
+                          title="수정"
+                          className="btn-action-icon"
+                          style={{ color: '#a855f7' }}
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteLoanRow('nh', idx)}
+                          title="삭제"
+                          className="btn-action-icon"
+                          style={{ color: '#ef4444' }}
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff', fontWeight: 900, fontSize: '0.9rem' }}>
+                    <td colSpan={3}>전체 상환 누적 합계</td>
+                    <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
+                    <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(nhExtraTotal)}</td>
+                    <td colSpan={2}>-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* 3. 대출 2종 나란히 비교 뷰 (loanSubTab === 'all') */}
+          {loanSubTab === 'all' && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              {/* KB 대출 */}
+              <div className="section-card" style={{ padding: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2563eb', margin: 0 }}>
+                    🏦 KB (생활안정) 상환 내역
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenLoanModal('kb')}
+                    style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '4px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: 800, cursor: 'pointer' }}
+                  >
+                    + 추가
+                  </button>
+                </div>
+                <div style={{ overflowX: 'auto', maxHeight: '550px' }}>
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>연월</th>
+                        <th>금리</th>
+                        <th>원리금</th>
+                        <th>이자</th>
+                        <th>편집</th>
                       </tr>
-                    ))}
-                    <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.2)' : '#f3e8ff', fontWeight: 900 }}>
-                      <td colSpan={2}>합계</td>
-                      <td style={{ textAlign: 'right', color: '#581c87' }}>{formatMoney(nhPaymentTotal)}</td>
-                      <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(nhExtraTotal)}</td>
-                      <td>-</td>
-                    </tr>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {data.loans.kb.map((row, idx) => (
+                        <tr key={idx}>
+                          <td style={{ fontWeight: 700 }}>{row.date}</td>
+                          <td style={{ color: '#2563eb', fontWeight: 800 }}>{row.rate}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatMoney(row.payment)}</td>
+                          <td style={{ textAlign: 'right' }}>{formatMoney(row.interest)}</td>
+                          <td>
+                            <button type="button" onClick={() => handleOpenLoanModal('kb', idx)} className="btn-action-icon" style={{ color: '#2563eb' }}>✏️</button>
+                            <button type="button" onClick={() => handleDeleteLoanRow('kb', idx)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* NH 대출 */}
+              <div className="section-card" style={{ padding: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#7e22ce', margin: 0 }}>
+                    🏦 NH (기업성장론) 상환 내역
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenLoanModal('nh')}
+                    style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '4px', border: 'none', background: '#a855f7', color: '#fff', fontWeight: 800, cursor: 'pointer' }}
+                  >
+                    + 추가
+                  </button>
+                </div>
+                <div style={{ overflowX: 'auto', maxHeight: '550px' }}>
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>연월</th>
+                        <th>금리</th>
+                        <th>원리금</th>
+                        <th>추가부담금</th>
+                        <th>편집</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.loans.nh.map((row, idx) => (
+                        <tr key={idx} style={{ background: row.isRefund ? (dark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7') : 'inherit' }}>
+                          <td style={{ fontWeight: 700 }}>{row.date}</td>
+                          <td style={{ color: row.isRefund ? '#d97706' : '#7e22ce', fontWeight: 800 }}>{row.rate}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatMoney(row.payment)}</td>
+                          <td style={{ textAlign: 'right', color: '#ef4444' }}>{formatMoney(row.extra)}</td>
+                          <td>
+                            <button type="button" onClick={() => handleOpenLoanModal('nh', idx)} className="btn-action-icon" style={{ color: '#a855f7' }}>✏️</button>
+                            <button type="button" onClick={() => handleDeleteLoanRow('nh', idx)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -733,6 +1102,148 @@ export default function KnowledgeIndustryPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* --- 대출 상환 내역 등록/수정 모달 --- */}
+      {loanModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setLoanModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                {loanModal.bank === 'kb' ? '🏦 KB 생활안정 대출' : '🏦 NH 기업성장론 대출'} {loanModal.editIndex !== null ? '상환 내역 수정' : '신규 상환 내역 등록'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setLoanModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveLoanRow}>
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>상환 연월 (예: 2024. 10. 15)</label>
+                <input
+                  type="text"
+                  value={loanModal.formData.date}
+                  onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>금리 (예: 5.63%)</label>
+                  <input
+                    type="text"
+                    value={loanModal.formData.rate}
+                    onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, rate: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>원리금 납부액 (원)</label>
+                  <input
+                    type="number"
+                    value={loanModal.formData.payment}
+                    onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, payment: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    required
+                  />
+                </div>
+              </div>
+
+              {loanModal.bank === 'kb' ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>원금 (원)</label>
+                    <input
+                      type="number"
+                      value={loanModal.formData.principal}
+                      onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, principal: e.target.value } }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>이자 (원)</label>
+                    <input
+                      type="number"
+                      value={loanModal.formData.interest}
+                      onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, interest: e.target.value } }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div style={{ marginBottom: '0.85rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>월세 대비 추가부담금 (원)</label>
+                  <input
+                    type="number"
+                    value={loanModal.formData.extra}
+                    onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, extra: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  />
+                </div>
+              )}
+
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>우대금리 / 특이사항 조건</label>
+                <input
+                  type="text"
+                  placeholder="예: 기준: 3.66%, 가산: 1.97%"
+                  value={loanModal.formData.condition}
+                  onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, condition: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setLoanModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: loanModal.bank === 'kb' ? '#2563eb' : '#a855f7', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장 완료
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
