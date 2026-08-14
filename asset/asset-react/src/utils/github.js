@@ -64,11 +64,12 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
       // Upload
       if (!dataStr) return false;
 
-      // 헬퍼: 캐시 없이 최신 SHA 가져오기
+      // 헬퍼: 캐시 무효화 적용된 최신 SHA 가져오기
       const getLatestSha = async () => {
         try {
           const timestamp = Date.now();
-          const getUrlWithCacheBuster = `${getUrl}&t=${timestamp}`;
+          const rand = Math.random().toString(36).substring(2, 8);
+          const getUrlWithCacheBuster = `${getUrl}&_t=${timestamp}&_r=${rand}`;
           
           const checkRes = await fetch(getUrlWithCacheBuster, {
             headers,
@@ -79,7 +80,6 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
             return checkJson.sha;
           }
           if (checkRes.status === 404) {
-            // 파일이 존재하지 않는 경우 (처음 저장할 때)
             return null;
           }
           const checkErr = await checkRes.json().catch(() => ({}));
@@ -99,7 +99,6 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
         try {
           sha = await getLatestSha();
         } catch (shaErr) {
-          // SHA 조회 자체가 실패한 경우 더이상 진행하지 않고 실패 처리
           throw shaErr;
         }
 
@@ -122,17 +121,40 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
             success = true;
           } else {
             const err = await putRes.json().catch(() => ({}));
-            console.error(`GitHub Sync Attempt Failed (Retries left: ${retries - 1}):`, err);
+            console.warn(`GitHub Sync Attempt Failed (HTTP ${putRes.status}, Retries left: ${retries - 1}):`, err);
             lastError = new Error(err.message || '알 수 없는 오류');
 
-            // 409 Conflict, 412 Precondition Failed, 423 Locked 등 리트라이 가능 대상인 경우 대기 후 시도
-            if (putRes.status === 409 || putRes.status === 412 || putRes.status === 423) {
+            // 409 Conflict 발생 시 에러 메시지("is at <sha>")에서 실제 최신 SHA 추출 시도
+            if (putRes.status === 409) {
+              retries--;
+              if (err.message && typeof err.message === 'string') {
+                const match = err.message.match(/is at ([a-f0-9]{40})/i);
+                if (match && match[1]) {
+                  const actualSha = match[1];
+                  console.log(`[GitHub API] 409 Conflict auto-resolved! Extracted latest SHA: ${actualSha}`);
+                  // 바로 최신 SHA로 재시도
+                  const retryBody = { ...body, sha: actualSha };
+                  const retryRes = await fetch(putUrl, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(retryBody)
+                  });
+                  if (retryRes.ok) {
+                    console.log("[GitHub API] Retry with extracted SHA succeeded!");
+                    success = true;
+                    break;
+                  }
+                }
+              }
+              if (retries > 0) {
+                await new Promise(resolve => setTimeout(resolve, 800));
+              }
+            } else if (putRes.status === 412 || putRes.status === 423) {
               retries--;
               if (retries > 0) {
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 800));
               }
             } else {
-              // 기타 복구 불가능한 에러는 즉시 에러 발생
               throw lastError;
             }
           }
@@ -141,7 +163,7 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
           lastError = fetchErr;
           retries--;
           if (retries > 0) {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 800));
           }
         }
       }

@@ -122,8 +122,8 @@ export default function TopBar({ onHamburger, onSaveSync, onDataModal, onManual,
       </div>
 
       <div className="topbar-center">
-        {/* Month Selector */}
-        <div className="month-selector">
+        {/* Month Selector (아티클 메뉴 시 독립 관리 안내 툴팁) */}
+        <div className="month-selector" title={navSection === 'taxArticles' ? "아티클 메뉴는 연월 조건과 상관없이 전체 아티클이 조회됩니다." : "조회 연월 선택"}>
           <CustomDropdown 
             value={year} 
             onChange={setYear} 

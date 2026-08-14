@@ -71,15 +71,11 @@ export async function saveData(year, plainData) {
       console.warn('[Storage] GitHub auto-sync import failed', ghErr);
     }
 
-    // 3. 서버 API — 반드시 평문(plainData) 전달 (암호화 제외)
+    // 3. 서버 API — 백엔드 서빙 환경일 때만 선택적 전송
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const apiUrls = ['/api/save-asset'];
-    if (isLocalhost) {
-      apiUrls.push(
-        'http://localhost:5500/api/save-asset',
-        'http://127.0.0.1:5500/api/save-asset'
-      );
-    }
+    const apiUrls = isLocalhost 
+      ? ['http://localhost:5500/api/save-asset', 'http://127.0.0.1:5500/api/save-asset']
+      : ['/api/save-asset'];
 
     let apiSaved = false;
     for (const url of apiUrls) {
@@ -88,20 +84,20 @@ export async function saveData(year, plainData) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ year, data: dataWithTs }),
-          timeout: 1000
+          timeout: 800
         });
-        if (response.ok) {
+        if (response && response.ok) {
           console.log(`[Storage] Successfully saved data to server via API: ${url}`);
           apiSaved = true;
           break;
         }
       } catch (err) {
-        // Silent fallback — 서버가 꺼져 있거나 GitHub Pages 환경에서는 정상
+        // Silent fallback — 별도 서버 미운영 클라이언트 환경에서는 무시
       }
     }
 
     if (!apiSaved) {
-      console.warn('[Storage] Server API not reachable. Data saved to localStorage & GitHub auto-sync.');
+      console.log('[Storage] Saved to localStorage & GitHub auto-sync.');
     }
     return apiSaved;
   } catch (e) {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
 
 // 초기 샘플 아티클 데이터
@@ -227,10 +227,21 @@ function formatSmartArticleContent(rawContent) {
   return htmlResult;
 }
 
+const CARD_COLORS = [
+  { id: 'default', label: '기본', lightBg: '#ffffff', darkBg: 'rgba(15, 23, 42, 0.75)', border: 'var(--border)', dotColor: '#94a3b8' },
+  { id: 'blue', label: '블루', lightBg: '#eff6ff', darkBg: 'rgba(30, 58, 138, 0.35)', border: '#93c5fd', dotColor: '#3b82f6' },
+  { id: 'purple', label: '퍼플', lightBg: '#f3e8ff', darkBg: 'rgba(88, 28, 135, 0.35)', border: '#c084fc', dotColor: '#a855f7' },
+  { id: 'green', label: '민트', lightBg: '#ecfdf5', darkBg: 'rgba(6, 78, 59, 0.35)', border: '#6ee7b7', dotColor: '#10b981' },
+  { id: 'yellow', label: '옐로우', lightBg: '#fefce8', darkBg: 'rgba(113, 63, 18, 0.35)', border: '#fde047', dotColor: '#eab308' },
+  { id: 'rose', label: '코랄', lightBg: '#fff1f2', darkBg: 'rgba(136, 19, 55, 0.35)', border: '#fca5a5', dotColor: '#f43f5e' }
+];
+
 export default function TaxArticlePage() {
-  const { dark } = useApp();
+  const { dark, showToast, triggerSaveSuccessBlink } = useApp();
   const contentTextareaRef = useRef(null);
   const mouseDownTargetRef = useRef(null);
+
+  const [colorPickerOpenId, setColorPickerOpenId] = useState(null); // 카드 색상 픽커 팝오버 열림 상태
 
   // 마우스 드래그 이탈 시 레이어 닫힘 방지 헬퍼
   const handleOverlayMouseDown = (e) => {
@@ -241,6 +252,13 @@ export default function TaxArticlePage() {
     if (e.target === e.currentTarget && mouseDownTargetRef.current === e.currentTarget) {
       closeFn();
     }
+  };
+
+  // 카드 배경색 변경
+  const handleUpdateCardColor = (e, artId, colorId) => {
+    e.stopPropagation();
+    setArticles(prev => prev.map(a => a.id === artId ? { ...a, cardColor: colorId } : a));
+    setColorPickerOpenId(null);
   };
 
   const [articles, setArticles] = useState(() => {
@@ -261,6 +279,66 @@ export default function TaxArticlePage() {
   const [activeArticle, setActiveArticle] = useState(null); // 읽기 모달 레이어
   const [editorModal, setEditorModal] = useState(false); // 등록/수정 모달
   const [editTarget, setEditTarget] = useState(null); // 수정 대상
+  const [categoryModal, setCategoryModal] = useState(false); // 카테고리 관리 모달
+  const [newCategoryInput, setNewCategoryInput] = useState('');
+  const [draggedCatIdx, setDraggedCatIdx] = useState(null); // 드래그 중인 카테고리 인덱스
+  const [dragOverCatIdx, setDragOverCatIdx] = useState(null); // 드래그 오버 카테고리 인덱스
+
+  // 카테고리 드래그 앤 드롭 순서 변경 헬퍼
+  const handleCatDragStart = (idx) => {
+    setDraggedCatIdx(idx);
+  };
+
+  const handleCatDragOver = (e, idx) => {
+    e.preventDefault();
+    setDragOverCatIdx(idx);
+  };
+
+  const handleCatDrop = (targetIdx) => {
+    if (draggedCatIdx === null || draggedCatIdx === targetIdx) {
+      setDraggedCatIdx(null);
+      setDragOverCatIdx(null);
+      return;
+    }
+    const updated = [...categories];
+    const [movedItem] = updated.splice(draggedCatIdx, 1);
+    updated.splice(targetIdx, 0, movedItem);
+
+    setCategories(updated);
+    setDraggedCatIdx(null);
+    setDragOverCatIdx(null);
+  };
+
+  const handleCatDragEnd = () => {
+    setDraggedCatIdx(null);
+    setDragOverCatIdx(null);
+  };
+
+  // ESC 키 감지 시 최상단 열려 있는 레이어 모달 닫기
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        if (editorModal) {
+          setEditorModal(false);
+          return;
+        }
+        if (categoryModal) {
+          setCategoryModal(false);
+          return;
+        }
+        if (activeArticle) {
+          setActiveArticle(null);
+          return;
+        }
+        if (colorPickerOpenId) {
+          setColorPickerOpenId(null);
+          return;
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [editorModal, categoryModal, activeArticle, colorPickerOpenId]);
 
   // 폼 필드
   const [formData, setFormData] = useState({
@@ -268,31 +346,104 @@ export default function TaxArticlePage() {
     category: '연말정산',
     summary: '',
     tags: '',
-    content: ''
+    content: '',
+    fontFamily: '',
+    fontSize: '15px'
   });
 
   const [editorTab, setEditorTab] = useState('write'); // 'write' | 'preview'
 
-  // 실행 취소 (Ctrl+Z) 헬퍼
-  const handleUndo = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    const textarea = contentTextareaRef.current;
-    if (textarea) {
-      textarea.focus({ preventScroll: true });
-      document.execCommand('undo');
-      setFormData(prev => ({ ...prev, content: textarea.value }));
+  // ... (Undo/Redo helpers removed)
+
+  // 등록/수정 모달 열기
+  const handleOpenEditor = (article = null) => {
+    if (article) {
+      setEditTarget(article);
+      setFormData({
+        title: article.title || '',
+        category: article.category || '기타',
+        summary: article.summary || '',
+        tags: Array.isArray(article.tags) ? article.tags.join(', ') : '',
+        content: article.content || '',
+        fontFamily: article.fontFamily || '',
+        fontSize: article.fontSize || '15px'
+      });
+    } else {
+      // 현재 선택된 필터 카테고리가 '전체'인 경우 콤보박스의 첫번째(categories[0]), 특정 필터 선택 시 해당 필터값 자동 반영
+      const defaultCategory = (selectedCategory && selectedCategory !== '전체') 
+        ? selectedCategory 
+        : (categories && categories.length > 0 ? categories[0] : '연말정산');
+
+      setEditTarget(null);
+      setFormData({
+        title: '',
+        category: defaultCategory,
+        summary: '',
+        tags: '',
+        content: HTML_TEMPLATES.template1,
+        fontFamily: '',
+        fontSize: '15px'
+      });
     }
+    setEditorTab('write');
+    setEditorModal(true);
   };
 
-  // 다시 실행 (Ctrl+Y) 헬퍼
-  const handleRedo = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    const textarea = contentTextareaRef.current;
-    if (textarea) {
-      textarea.focus({ preventScroll: true });
-      document.execCommand('redo');
-      setFormData(prev => ({ ...prev, content: textarea.value }));
+  // 아티클 저장
+  const handleSaveArticle = (e) => {
+    e.preventDefault();
+    if (!formData.title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
     }
+    if (!formData.content.trim()) {
+      alert('본문 HTML 내용을 입력해주세요.');
+      return;
+    }
+
+    const tagArray = formData.tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean);
+
+    const today = new Date().toISOString().split('T')[0];
+
+    let nextArticles = [];
+    if (editTarget) {
+      // 수정
+      nextArticles = articles.map(a => a.id === editTarget.id ? {
+        ...a,
+        title: formData.title,
+        category: formData.category,
+        summary: formData.summary,
+        tags: tagArray,
+        content: formData.content,
+        fontFamily: formData.fontFamily,
+        fontSize: formData.fontSize,
+        updatedAt: today
+      } : a);
+    } else {
+      // 신규
+      const newArt = {
+        id: `art-${Date.now()}`,
+        title: formData.title,
+        category: formData.category,
+        summary: formData.summary,
+        tags: tagArray,
+        content: formData.content,
+        fontFamily: formData.fontFamily,
+        fontSize: formData.fontSize,
+        createdAt: today,
+        updatedAt: today
+      };
+      nextArticles = [newArt, ...articles];
+    }
+
+    setArticles(nextArticles);
+    setEditorModal(false);
+
+    // 상단 저장 버튼과 동일하게 명시적 GitHub 동기화 토스트 팝업 트리거
+    syncArticlesWithGit(nextArticles, null, true);
   };
 
   // 에디터 서식 툴바 삽입 헬퍼 함수 (Native Undo Ctrl+Z 히스토리 완벽 연동)
@@ -399,9 +550,6 @@ export default function TaxArticlePage() {
     return ['연말정산', '종합소득세', '부가가치세', '자산/절세', '기타'];
   });
 
-  const [categoryModal, setCategoryModal] = useState(false); // 카테고리 관리 모달
-  const [newCategoryInput, setNewCategoryInput] = useState('');
-
   // 카테고리 변경 시 저장
   useEffect(() => {
     try {
@@ -441,107 +589,127 @@ export default function TaxArticlePage() {
     }
   };
 
-  // articles 변경 시 저장
+  // GitHub 데이터 자동 동기화 헬퍼
+  const syncArticlesWithGit = useCallback(async (targetArticles, targetCategories, isExplicitSave = false) => {
+    try {
+      const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
+      const ghConfig = getGithubConfig();
+      if (ghConfig.token && ghConfig.repo) {
+        if (isExplicitSave && showToast) {
+          showToast('아티클 저장 및 GitHub 동기화 진행 중...', 'info');
+        }
+        let articleSuccess = false;
+        if (targetArticles) {
+          try {
+            articleSuccess = await syncWithGitHub('upload', 'asset_tax_articles', JSON.stringify(targetArticles));
+          } catch (err) {
+            console.warn('[TaxArticlePage] GitHub sync failed for articles:', err);
+          }
+        }
+        if (targetCategories) {
+          try {
+            await syncWithGitHub('upload', 'asset_tax_article_categories', JSON.stringify(targetCategories));
+          } catch (err) {
+            console.warn('[TaxArticlePage] GitHub sync failed for categories:', err);
+          }
+        }
+
+        if (isExplicitSave) {
+          if (articleSuccess) {
+            if (showToast) showToast('🔑 GitHub 서버 동기화 저장 완료!', 'success', true);
+            if (triggerSaveSuccessBlink) triggerSaveSuccessBlink();
+          } else {
+            if (showToast) showToast('⚠️ 아티클 로컬 저장 완료 (GitHub 동기화 확인 필요)', 'warning');
+          }
+        }
+      } else if (isExplicitSave) {
+        if (showToast) showToast('⚠️ GitHub 토큰이 설정되지 않아 로컬에만 저장되었습니다.', 'warning');
+      }
+    } catch (err) {
+      console.warn('[TaxArticlePage] Git sync import failed:', err);
+      if (isExplicitSave && showToast) {
+        showToast('⚠️ 동기화 처리 중 오류가 발생했습니다. (로컬 백업 완료)', 'warning');
+      }
+    }
+  }, [showToast, triggerSaveSuccessBlink]);
+
+  // 초기 마운트 시 GitHub 최신 아티클 데이터 원격 다운로드 복원
+  useEffect(() => {
+    async function loadGitArticles() {
+      try {
+        const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
+        const ghConfig = getGithubConfig();
+        if (ghConfig.token && ghConfig.repo) {
+          const remoteArticles = await syncWithGitHub('download', 'asset_tax_articles');
+          if (Array.isArray(remoteArticles) && remoteArticles.length > 0) {
+            setArticles(remoteArticles);
+            localStorage.setItem('asset_tax_articles', JSON.stringify(remoteArticles));
+          }
+          const remoteCategories = await syncWithGitHub('download', 'asset_tax_article_categories');
+          if (Array.isArray(remoteCategories) && remoteCategories.length > 0) {
+            setCategories(remoteCategories);
+            localStorage.setItem('asset_tax_article_categories', JSON.stringify(remoteCategories));
+          }
+        }
+      } catch (err) {
+        console.warn('[TaxArticlePage] Initial GitHub load error:', err);
+      }
+    }
+    loadGitArticles();
+  }, []);
+
+  // articles 변경 시 로컬 저장 및 GitHub 자동 동기화 (디바운스 500ms 적용)
   useEffect(() => {
     try {
       localStorage.setItem('asset_tax_articles', JSON.stringify(articles));
     } catch (e) {
       console.error(e);
     }
-  }, [articles]);
+    const timer = setTimeout(() => {
+      syncArticlesWithGit(articles, null);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [articles, syncArticlesWithGit]);
 
-  // 필터링된 아티클 목록
+  // categories 변경 시 로컬 저장 및 GitHub 자동 동기화 (디바운스 500ms 적용)
+  useEffect(() => {
+    try {
+      localStorage.setItem('asset_tax_article_categories', JSON.stringify(categories));
+    } catch (e) {
+      console.error(e);
+    }
+    const timer = setTimeout(() => {
+      syncArticlesWithGit(null, categories);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [categories, syncArticlesWithGit]);
+
+  // 필터링된 아티클 목록 (HTML 태그를 제거한 순수 텍스트 본문 검색)
   const filteredArticles = useMemo(() => {
     return articles.filter(art => {
       const matchCat = selectedCategory === '전체' || art.category === selectedCategory;
       const q = searchQuery.trim().toLowerCase();
       if (!q) return matchCat;
 
-      const matchTitle = art.title.toLowerCase().includes(q);
+      const matchTitle = (art.title || '').toLowerCase().includes(q);
       const matchSummary = (art.summary || '').toLowerCase().includes(q);
-      const matchContent = (art.content || '').toLowerCase().includes(q);
+      
+      // 본문 HTML 태그 및 엔티티를 제거하여 순수 텍스트 텍스트만 검색
+      const plainContent = (art.content || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/\s+/g, ' ');
+      const matchContent = plainContent.toLowerCase().includes(q);
+      
       const matchTags = (art.tags || []).some(t => t.toLowerCase().includes(q));
 
       return matchCat && (matchTitle || matchSummary || matchContent || matchTags);
     });
   }, [articles, selectedCategory, searchQuery]);
 
-  // 등록/수정 모달 열기
-  const handleOpenEditor = (article = null) => {
-    if (article) {
-      setEditTarget(article);
-      setFormData({
-        title: article.title || '',
-        category: article.category || '기타',
-        summary: article.summary || '',
-        tags: Array.isArray(article.tags) ? article.tags.join(', ') : '',
-        content: article.content || ''
-      });
-    } else {
-      setEditTarget(null);
-      setFormData({
-        title: '',
-        category: '연말정산',
-        summary: '',
-        tags: '',
-        content: HTML_TEMPLATES.template1
-      });
-    }
-    setEditorTab('write');
-    setEditorModal(true);
-  };
-
-  // 아티클 저장
-  const handleSaveArticle = (e) => {
-    e.preventDefault();
-    if (!formData.title.trim()) {
-      alert('제목을 입력해주세요.');
-      return;
-    }
-    if (!formData.content.trim()) {
-      alert('본문 HTML 내용을 입력해주세요.');
-      return;
-    }
-
-    const tagArray = formData.tags
-      .split(',')
-      .map(t => t.trim())
-      .filter(Boolean);
-
-    const today = new Date().toISOString().split('T')[0];
-
-    if (editTarget) {
-      // 수정
-      setArticles(prev => prev.map(a => a.id === editTarget.id ? {
-        ...a,
-        title: formData.title,
-        category: formData.category,
-        summary: formData.summary,
-        tags: tagArray,
-        content: formData.content,
-        updatedAt: today
-      } : a));
-    } else {
-      // 신규
-      const newArt = {
-        id: `art-${Date.now()}`,
-        title: formData.title,
-        category: formData.category,
-        summary: formData.summary,
-        tags: tagArray,
-        content: formData.content,
-        createdAt: today,
-        updatedAt: today
-      };
-      setArticles(prev => [newArt, ...prev]);
-    }
-
-    setEditorModal(false);
-  };
-
   // 아티클 삭제
   const handleDeleteArticle = (id, title) => {
-    if (confirm(`'${title}' 아티클을 삭제하시겠습니까?`)) {
+    if (window.confirm('삭제하시겠습니까?')) {
       setArticles(prev => prev.filter(a => a.id !== id));
       if (activeArticle && activeArticle.id === id) {
         setActiveArticle(null);
@@ -593,59 +761,79 @@ export default function TaxArticlePage() {
         }
 
         .article-badge {
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
           padding: 3px 10px;
           border-radius: 99px;
           font-size: 0.72rem;
           font-weight: 800;
           letter-spacing: -0.01em;
+          background: ${dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff'};
+          color: ${dark ? '#c084fc' : '#7e22ce'};
+          border: 1px solid ${dark ? 'rgba(192, 132, 252, 0.4)' : 'rgba(168, 85, 247, 0.35)'};
+          box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
 
-        .article-badge.연말정산 { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-        .article-badge.종합소득세 { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
-        .article-badge.부가가치세 { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
-        .article-badge.자산절세 { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .article-badge.기타 { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+        .article-badge.연말정산 { background: ${dark ? 'rgba(59, 130, 246, 0.2)' : '#eff6ff'}; color: ${dark ? '#60a5fa' : '#2563eb'}; border-color: ${dark ? 'rgba(96, 165, 250, 0.4)' : '#93c5fd'}; }
+        .article-badge.종합소득세 { background: ${dark ? 'rgba(168, 85, 247, 0.2)' : '#f3e8ff'}; color: ${dark ? '#c084fc' : '#7e22ce'}; border-color: ${dark ? 'rgba(192, 132, 252, 0.4)' : '#c084fc'}; }
+        .article-badge.부가가치세 { background: ${dark ? 'rgba(236, 72, 153, 0.2)' : '#fce7f3'}; color: ${dark ? '#f472b6' : '#db2777'}; border-color: ${dark ? 'rgba(244, 114, 182, 0.4)' : '#fbcfe8'}; }
+        .article-badge.자산절세 { background: ${dark ? 'rgba(16, 185, 129, 0.2)' : '#ecfdf5'}; color: ${dark ? '#34d399' : '#059669'}; border-color: ${dark ? 'rgba(52, 211, 153, 0.4)' : '#6ee7b7'}; }
+        .article-badge.기타 { background: ${dark ? 'rgba(148, 163, 184, 0.2)' : '#f1f5f9'}; color: ${dark ? '#cbd5e1' : '#475569'}; border-color: ${dark ? 'rgba(203, 213, 225, 0.35)' : '#cbd5e1'}; }
 
         /* 블로그 기사 렌더링 스타일 (HTML 및 일반 엔터 줄바꿈 완벽 지원) */
         .article-body {
           font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          line-height: 1.7;
+          line-height: 1.6;
           color: ${dark ? '#e2e8f0' : '#1e293b'};
-          font-size: 0.98rem;
+          font-size: 0.95rem;
           white-space: pre-wrap;
           word-break: break-word;
         }
         .article-body h1, .article-body h2, .article-body h3 {
           color: ${dark ? '#ffffff' : '#0f172a'};
           font-weight: 800;
-          margin-top: 1.5rem;
-          margin-bottom: 0.75rem;
+          line-height: 1.2;
           letter-spacing: -0.02em;
         }
+        .article-body h1 {
+          font-size: 1.25rem;
+          margin-top: 0.35rem;
+          margin-bottom: 0.15rem;
+        }
         .article-body h2 {
-          font-size: 1.3rem;
-          padding-bottom: 0.4rem;
+          font-size: 1.12rem;
+          padding-bottom: 0.15rem;
           border-bottom: 2px solid ${dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'};
+          margin-top: 0.35rem;
+          margin-bottom: 0.15rem;
+        }
+        .article-body h3 {
+          font-size: 1rem;
+          margin-top: 0.25rem;
+          margin-bottom: 0.1rem;
+          line-height: 1.2;
         }
         .article-body p {
-          margin-bottom: 1rem;
+          margin-bottom: 0.3rem;
+          line-height: 1.55;
         }
         .article-body ul, .article-body ol {
-          margin-bottom: 1.2rem;
-          padding-left: 1.5rem;
+          margin-top: 0.2rem;
+          margin-bottom: 0.35rem;
+          padding-left: 1.25rem;
         }
         .article-body li {
-          margin-bottom: 0.4rem;
+          margin-bottom: 0.18rem;
+          line-height: 1.5;
         }
         .article-body table {
           width: 100%;
           border-collapse: collapse;
-          margin: 1.25rem 0;
+          margin: 0.5rem 0;
           font-size: 0.88rem;
         }
         .article-body th, .article-body td {
-          padding: 10px 14px;
+          padding: 6px 10px;
           border: 1px solid ${dark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
           text-align: left;
         }
@@ -657,18 +845,23 @@ export default function TaxArticlePage() {
         .article-body img {
           max-width: 100%;
           border-radius: 12px;
-          margin: 1rem 0;
+          margin: 0.4rem 0;
           box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .article-callout {
-          padding: 1rem 1.25rem;
+          padding: 0.5rem 0.85rem;
           border-radius: 12px;
-          margin: 1.25rem 0;
-          font-size: 0.9rem;
+          margin: 0.35rem 0;
+          font-size: inherit;
+          font-family: inherit;
+          line-height: 1.5;
+          box-shadow: ${dark ? 'none' : '0 2px 10px rgba(0,0,0,0.02)'};
         }
         .article-callout.tip { background: ${dark ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff'}; border-left: 4px solid #3b82f6; }
         .article-callout.warning { background: ${dark ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2'}; border-left: 4px solid #ef4444; }
-        .article-callout.info { background: ${dark ? 'rgba(16, 185, 129, 0.12)' : '#ecfdf5'}; border-left: 4px solid #10b981; }
+        .article-callout.info { background: ${dark ? 'rgba(139, 92, 246, 0.12)' : '#f5f3ff'}; border-left: 4px solid #8b5cf6; }
+        .article-callout.green { background: ${dark ? 'rgba(16, 185, 129, 0.12)' : '#ecfdf5'}; border-left: 4px solid #10b981; }
+        .article-callout.highlight { background: ${dark ? 'rgba(236, 72, 153, 0.12)' : '#fdf2f8'}; border-left: 4px solid #ec4899; }
       `}</style>
 
       {/* 상단 헤더 섹션 */}
@@ -748,32 +941,54 @@ export default function TaxArticlePage() {
             )}
           </div>
 
-          <button
-            onClick={() => handleOpenEditor()}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 18px',
-              borderRadius: '99px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
-              color: '#ffffff',
-              fontSize: '0.85rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(168, 85, 247, 0.3)',
-              transition: 'transform 0.2s ease',
-              flexShrink: 0
-            }}
-          >
-            ✏️ 신규 아티클 등록
-          </button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+            <button
+              onClick={() => handleOpenEditor()}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 18px',
+                borderRadius: '99px',
+                border: 'none',
+                background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
+                color: '#ffffff',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(168, 85, 247, 0.3)',
+                transition: 'transform 0.2s ease'
+              }}
+            >
+              ✏️ 아티클 등록
+            </button>
+            <button
+              onClick={() => setCategoryModal(true)}
+              title="카테고리 추가/삭제 설정"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 18px',
+                borderRadius: '99px',
+                border: `1px solid ${dark ? 'rgba(168, 85, 247, 0.4)' : '#c084fc'}`,
+                background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff',
+                color: dark ? '#c084fc' : '#7e22ce',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(168, 85, 247, 0.12)',
+                transition: 'transform 0.2s ease'
+              }}
+            >
+              ⚙️ 카테고리 설정
+            </button>
+          </div>
         </div>
 
         {/* 검색 및 카테고리 필터 */}
         <div style={{ marginTop: '1.25rem', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'space-between', alignItems: 'center' }}>
-          {/* 동적 카테고리 필터 칩스 + 관리 버튼 */}
+          {/* 동적 카테고리 필터 칩스 */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center' }}>
             {['전체', ...categories].map(cat => {
               const isActive = selectedCategory === cat;
@@ -797,28 +1012,6 @@ export default function TaxArticlePage() {
                 </button>
               );
             })}
-
-            {/* ⚙️ 카테고리 관리 버튼 */}
-            <button
-              onClick={() => setCategoryModal(true)}
-              title="카테고리 추가/삭제 설정"
-              style={{
-                padding: '5px 12px',
-                borderRadius: '99px',
-                border: dark ? '1px dashed rgba(168, 85, 247, 0.4)' : '1px dashed #c084fc',
-                background: dark ? 'rgba(168, 85, 247, 0.08)' : '#faf5ff',
-                color: dark ? '#c084fc' : '#9333ea',
-                fontSize: '0.75rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              ⚙️ 카테고리 설정
-            </button>
           </div>
 
           {/* 검색창 */}
@@ -857,36 +1050,114 @@ export default function TaxArticlePage() {
         <div className="article-card-grid">
           {filteredArticles.map(art => {
             const badgeClass = art.category === '자산/절세' ? '자산절세' : art.category;
+            const cardTheme = CARD_COLORS.find(c => c.id === art.cardColor) || CARD_COLORS[0];
+            const customBg = dark ? cardTheme.darkBg : cardTheme.lightBg;
+            const customBorder = cardTheme.id === 'default' ? 'var(--border)' : cardTheme.border;
+            const isPickerOpen = colorPickerOpenId === art.id;
+
             return (
               <div
                 key={art.id}
                 className="article-card"
                 onClick={() => setActiveArticle(art)}
+                style={{
+                  background: customBg,
+                  borderColor: customBorder,
+                  position: 'relative'
+                }}
               >
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', position: 'relative' }}>
                     <span className={`article-badge ${badgeClass}`}>
                       {art.category}
                     </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                      {art.createdAt}
-                    </span>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+                        {art.createdAt}
+                      </span>
+
+                      {/* 카드 색상 변경 팔레트 버튼 & 팝오버 */}
+                      <div style={{ position: 'relative' }}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setColorPickerOpenId(prev => prev === art.id ? null : art.id);
+                          }}
+                          title="카드 배경 색상 변경"
+                          style={{
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            fontSize: '0.9rem',
+                            padding: '2px',
+                            borderRadius: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            opacity: 0.8,
+                            transition: 'transform 0.15s ease'
+                          }}
+                        >
+                          🎨
+                        </button>
+
+                        {isPickerOpen && (
+                          <div
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                              position: 'absolute',
+                              top: '100%',
+                              right: 0,
+                              marginTop: '6px',
+                              padding: '6px 8px',
+                              background: dark ? '#1e293b' : '#ffffff',
+                              border: '1px solid var(--border)',
+                              borderRadius: '12px',
+                              boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+                              display: 'flex',
+                              gap: '6px',
+                              zIndex: 100
+                            }}
+                          >
+                            {CARD_COLORS.map(c => (
+                              <button
+                                key={c.id}
+                                type="button"
+                                title={c.label}
+                                onClick={(e) => handleUpdateCardColor(e, art.id, c.id)}
+                                style={{
+                                  width: '18px',
+                                  height: '18px',
+                                  borderRadius: '50%',
+                                  background: c.dotColor,
+                                  border: (art.cardColor === c.id || (!art.cardColor && c.id === 'default')) ? '2px solid var(--text-primary)' : '1px solid rgba(0,0,0,0.15)',
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                  boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: dark ? '#ffffff' : '#0f172a', lineHeight: 1.4, marginBottom: '0.5rem' }}>
                     {art.title}
                   </h3>
 
-                  <p style={{ fontSize: '0.82rem', color: dark ? 'rgba(255,255,255,0.65)' : '#475569', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p style={{ fontSize: '0.82rem', color: dark ? 'rgba(255,255,255,0.75)' : '#475569', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {art.summary}
                   </p>
                 </div>
 
-                <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: `1px stroke ${dark ? 'rgba(255,255,255,0.06)' : '#f1f5f9'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   {/* 태그 */}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                     {(art.tags || []).slice(0, 3).map((t, idx) => (
-                      <span key={idx} style={{ fontSize: '0.68rem', color: dark ? '#38bdf8' : '#2563eb', background: dark ? 'rgba(56,189,248,0.1)' : '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
+                      <span key={idx} style={{ fontSize: '0.68rem', color: dark ? '#38bdf8' : '#2563eb', background: dark ? 'rgba(56,189,248,0.15)' : '#eff6ff', padding: '1px 6px', borderRadius: '4px' }}>
                         #{t}
                       </span>
                     ))}
@@ -941,35 +1212,102 @@ export default function TaxArticlePage() {
               animation: 'modalCenterPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards'
             }}
           >
-            {/* 상단 닫기 & 관리 버튼 */}
+            {/* 스크롤 시 위아래(상하 양방향)로 부드럽게 따라다니는 동적 추적 세로형 미니 아이콘 툴바 (수정, 삭제, 닫기) */}
+            <div
+              style={{
+                position: 'sticky',
+                top: '1rem',
+                float: 'right',
+                marginRight: '-0.75rem',
+                marginBottom: '-120px',
+                zIndex: 200,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                background: dark ? 'rgba(15, 23, 42, 0.92)' : 'rgba(255, 255, 255, 0.92)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                padding: '8px 6px',
+                borderRadius: '99px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                border: `1px solid ${dark ? 'rgba(255,255,255,0.18)' : '#cbd5e1'}`
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  handleOpenEditor(activeArticle);
+                  setActiveArticle(null);
+                }}
+                title="글 수정"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(168, 85, 247, 0.5)',
+                  background: dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff',
+                  color: dark ? '#c084fc' : '#7e22ce',
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(168, 85, 247, 0.2)',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                ✏️
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDeleteArticle(activeArticle.id, activeArticle.title)}
+                title="글 삭제"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(239, 68, 68, 0.5)',
+                  background: dark ? 'rgba(239, 68, 68, 0.2)' : '#fef2f2',
+                  color: '#ef4444',
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.2)',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                🗑️
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveArticle(null)}
+                title="닫기"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: `1px solid ${dark ? 'rgba(255,255,255,0.2)' : '#cbd5e1'}`,
+                  background: dark ? 'rgba(255,255,255,0.12)' : '#f1f5f9',
+                  color: 'var(--text-primary)',
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            {/* 상단 뱃지 헤더 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <span className={`article-badge ${activeArticle.category === '자산/절세' ? '자산절세' : activeArticle.category}`}>
                 {activeArticle.category}
               </span>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <button
-                  onClick={() => {
-                    handleOpenEditor(activeArticle);
-                    setActiveArticle(null);
-                  }}
-                  style={{ fontSize: '0.78rem', padding: '4px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-muted)', cursor: 'pointer' }}
-                >
-                  ✏️ 수정
-                </button>
-                <button
-                  onClick={() => handleDeleteArticle(activeArticle.id, activeArticle.title)}
-                  style={{ fontSize: '0.78rem', padding: '4px 12px', borderRadius: '6px', border: '1px solid rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', cursor: 'pointer' }}
-                >
-                  🗑️ 삭제
-                </button>
-                <button
-                  onClick={() => setActiveArticle(null)}
-                  style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
-                >
-                  ✕
-                </button>
-              </div>
             </div>
 
             {/* 타이틀 및 메타 */}
@@ -987,10 +1325,14 @@ export default function TaxArticlePage() {
             {/* HTML 본문 콘텐츠 (스마트 자동 정돈 & 블로그 스타일 프리미엄 뷰) */}
             <div
               className="article-body"
+              style={{
+                fontFamily: activeArticle.fontFamily || 'inherit',
+                fontSize: activeArticle.fontSize || '15px'
+              }}
               dangerouslySetInnerHTML={{ __html: formatSmartArticleContent(activeArticle.content) }}
             />
 
-            {/* 태그 보람 및 하단 닫기 */}
+            {/* 태그 목록 하단 섹션 */}
             <div style={{ marginTop: '2.5rem', paddingTop: '1.25rem', borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {(activeArticle.tags || []).map((t, idx) => (
@@ -999,13 +1341,6 @@ export default function TaxArticlePage() {
                   </span>
                 ))}
               </div>
-
-              <button
-                onClick={() => setActiveArticle(null)}
-                style={{ padding: '8px 24px', borderRadius: '99px', border: 'none', background: dark ? '#334155' : '#0f172a', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
-              >
-                닫기
-              </button>
             </div>
           </div>
         </div>
@@ -1050,11 +1385,103 @@ export default function TaxArticlePage() {
               animation: 'modalCenterPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards'
             }}
           >
+            {/* 아티클 등록/수정 시 스크롤을 부드럽게 따라다니는 동적 추적 세로형 미니 아이콘 툴바 */}
+            <div
+              style={{
+                position: 'sticky',
+                top: '1rem',
+                float: 'right',
+                marginRight: '-0.75rem',
+                marginBottom: '-135px',
+                zIndex: 200,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                background: dark ? 'rgba(15, 23, 42, 0.92)' : 'rgba(255, 255, 255, 0.92)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                padding: '8px 6px',
+                borderRadius: '99px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                border: `1px solid ${dark ? 'rgba(255,255,255,0.18)' : '#cbd5e1'}`
+              }}
+            >
+              {/* 에디터 작성/미리보기 전환 버튼 */}
+              <button
+                type="button"
+                onClick={() => setEditorTab(prev => prev === 'write' ? 'preview' : 'write')}
+                title={editorTab === 'write' ? "미리보기 화면으로 전환" : "에디터 편집 화면으로 전환"}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(59, 130, 246, 0.5)',
+                  background: dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff',
+                  color: dark ? '#60a5fa' : '#2563eb',
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(59, 130, 246, 0.2)',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                {editorTab === 'write' ? '👁️' : '✏️'}
+              </button>
+              <button
+                type="submit"
+                form="article-form"
+                onClick={handleSaveArticle}
+                title="저장 완료"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: 'none',
+                  background: '#a855f7',
+                  color: '#ffffff',
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(168, 85, 247, 0.3)',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                💾
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditorModal(false)}
+                title="수정 취소"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: `1px solid ${dark ? 'rgba(255,255,255,0.2)' : '#cbd5e1'}`,
+                  background: dark ? 'rgba(255,255,255,0.12)' : '#f1f5f9',
+                  color: 'var(--text-primary)',
+                  fontSize: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            {/* 기본 상단 헤더 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
                 {editTarget ? '✏️ 아티클 수정' : '📝 신규 아티클 등록'}
               </h2>
               <button
+                type="button"
                 onClick={() => setEditorModal(false)}
                 style={{ width: 30, height: 30, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer' }}
               >
@@ -1123,7 +1550,7 @@ export default function TaxArticlePage() {
                       onClick={() => setEditorTab('write')}
                       style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: editorTab === 'write' ? '#a855f7' : 'var(--surface)', color: editorTab === 'write' ? '#ffffff' : 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}
                     >
-                      ✏️ 글 작성 / 서식 에디터
+                      ✏️ 에디터
                     </button>
                     <button
                       type="button"
@@ -1167,12 +1594,56 @@ export default function TaxArticlePage() {
                       borderRadius: '10px',
                       border: '1px solid var(--border)'
                     }}>
-                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={handleUndo} title="실행 취소 (Ctrl+Z)" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                        ↩️ 취소 (Ctrl+Z)
-                      </button>
-                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={handleRedo} title="다시 실행 (Ctrl+Y)" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                        ↪️ 다시
-                      </button>
+
+                      {/* 글 전체 폰트(글꼴) 선택 */}
+                      <select
+                        value={formData.fontFamily}
+                        onChange={e => setFormData(prev => ({ ...prev, fontFamily: e.target.value }))}
+                        title="글 전체에 적용할 폰트를 선택하세요"
+                        style={{
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid var(--border)',
+                          background: 'var(--surface)',
+                          color: 'var(--text-primary)',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="">🔤 글 전체 폰트 (기본)</option>
+                        <option value="'Plus Jakarta Sans', 'Noto Sans KR', sans-serif">기본체 (Sans-Serif)</option>
+                        <option value="'Malgun Gothic', '맑은 고딕', sans-serif">맑은 고딕</option>
+                        <option value="'Nanum Gothic', '나눔고딕', sans-serif">나눔고딕</option>
+                        <option value="'Nanum Myeongjo', '나눔명조', '바탕', serif">명조 / 바탕체</option>
+                        <option value="'Courier New', monospace">가인 / 고정폭체</option>
+                      </select>
+
+                      {/* 글 전체 크기 선택 */}
+                      <select
+                        value={formData.fontSize}
+                        onChange={e => setFormData(prev => ({ ...prev, fontSize: e.target.value }))}
+                        title="글 전체에 적용할 크기를 선택하세요"
+                        style={{
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid var(--border)',
+                          background: 'var(--surface)',
+                          color: 'var(--text-primary)',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="12px">📏 12px (작게)</option>
+                        <option value="14px">📏 14px (보통)</option>
+                        <option value="15px">📏 15px (기본)</option>
+                        <option value="16px">📏 16px (본문)</option>
+                        <option value="18px">📏 18px (강조)</option>
+                        <option value="20px">📏 20px (소제목)</option>
+                        <option value="24px">📏 24px (제목)</option>
+                        <option value="28px">📏 28px (특대)</option>
+                      </select>
 
                       <span style={{ borderLeft: '1px solid var(--border)', height: '16px', margin: '0 4px' }} />
                       <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '\n\n')} title="줄바꿈 (엔터)" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
@@ -1181,10 +1652,10 @@ export default function TaxArticlePage() {
                       <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<b>', '</b>')} title="굵게" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 900, cursor: 'pointer' }}>
                         B
                       </button>
-                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<h2>', '</h2>\n')} title="큰 제목 H2" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<h2>', '</h2>')} title="큰 제목 H2" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         H2 제목
                       </button>
-                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<h3>', '</h3>\n')} title="소제목 H3" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<h3>', '</h3>')} title="소제목 H3" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         H3 소제목
                       </button>
                       <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '1. ')} title="숫자 목록" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
@@ -1193,11 +1664,21 @@ export default function TaxArticlePage() {
                       <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '• ')} title="불릿 목록" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
                         • 불릿
                       </button>
-                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '\n💡 ')} title="💡 팁 문단" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                        💡 팁
+
+                      <span style={{ borderLeft: '1px solid var(--border)', height: '16px', margin: '0 4px' }} />
+
+                      {/* 영역 감싸기 (콜아웃 박스) 서식 버튼 */}
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<div class="article-callout info">\n', '\n</div>')} title="선택 영역을 박스로 감싸기" style={{ padding: '3px 9px', borderRadius: '6px', border: '1px solid #8b5cf6', background: dark ? 'rgba(139, 92, 246, 0.15)' : '#f5f3ff', color: dark ? '#c084fc' : '#7c3aed', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                        📦 영역 감싸기
                       </button>
-                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '\n⚠️ ')} title="⚠️ 주의 문단" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                        ⚠️ 주의
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<div class="article-callout tip">\n💡 ', '\n</div>')} title="💡 팁 영역 감싸기" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid #3b82f6', background: dark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff', color: '#2563eb', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                        💡 팁 영역
+                      </button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<div class="article-callout warning">\n⚠️ ', '\n</div>')} title="⚠️ 주의 영역 감싸기" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid #ef4444', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', color: '#dc2626', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                        ⚠️ 주의 영역
+                      </button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={e => handleInsertFormat(e, '<div class="article-callout green">\n✅ ', '\n</div>')} title="✅ 체크 영역 감싸기" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid #10b981', background: dark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
+                        ✅ 체크 영역
                       </button>
 
                       <span style={{ borderLeft: '1px solid var(--border)', height: '16px', margin: '0 4px' }} />
@@ -1230,12 +1711,19 @@ export default function TaxArticlePage() {
                   <div
                     style={{ minHeight: '280px', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)', background: dark ? '#090d16' : '#f8fafc', overflowY: 'auto' }}
                   >
-                    <div className="article-body" dangerouslySetInnerHTML={{ __html: formatSmartArticleContent(formData.content) }} />
+                    <div
+                      className="article-body"
+                      style={{
+                        fontFamily: formData.fontFamily || 'inherit',
+                        fontSize: formData.fontSize || '15px'
+                      }}
+                      dangerouslySetInnerHTML={{ __html: formatSmartArticleContent(formData.content) }}
+                    />
                   </div>
                 )}
               </div>
 
-              {/* 하단 버튼 */}
+              {/* 기본 하단 버튼 */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                 <button
                   type="button"
@@ -1324,47 +1812,76 @@ export default function TaxArticlePage() {
               </button>
             </div>
 
-            {/* 기존 카테고리 목록 & 삭제 */}
+            {/* 기존 카테고리 목록 & 삭제 & 드래그 순서 변경 */}
             <div style={{ marginBottom: '1.25rem' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '8px' }}>
-                현재 등록된 카테고리 ({categories.length}개)
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)' }}>
+                  현재 등록된 카테고리 ({categories.length}개)
+                </span>
+                <span style={{ fontSize: '0.7rem', color: '#a855f7', fontWeight: 700 }}>
+                  💡 드래그하여 순서 변경 가능
+                </span>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '200px', overflowY: 'auto', padding: '4px' }}>
-                {categories.map(cat => (
-                  <div
-                    key={cat}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '5px 10px 5px 12px',
-                      borderRadius: '99px',
-                      background: dark ? 'rgba(255,255,255,0.06)' : '#f1f5f9',
-                      border: '1px solid var(--border)',
-                      fontSize: '0.8rem',
-                      fontWeight: 700,
-                      color: 'var(--text-primary)'
-                    }}
-                  >
-                    <span>{cat}</span>
-                    <button
-                      onClick={() => handleDeleteCategory(cat)}
-                      title={`${cat} 카테고리 삭제`}
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '220px', overflowY: 'auto', padding: '4px' }}>
+                {categories.map((cat, idx) => {
+                  const isDragging = draggedCatIdx === idx;
+                  const isOver = dragOverCatIdx === idx;
+
+                  return (
+                    <div
+                      key={cat}
+                      draggable
+                      onDragStart={() => handleCatDragStart(idx)}
+                      onDragOver={(e) => handleCatDragOver(e, idx)}
+                      onDrop={() => handleCatDrop(idx)}
+                      onDragEnd={handleCatDragEnd}
                       style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#ef4444',
-                        cursor: 'pointer',
-                        fontSize: '0.75rem',
-                        fontWeight: 900,
-                        padding: '0 2px',
-                        lineHeight: 1
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '6px 12px',
+                        borderRadius: '99px',
+                        background: isDragging 
+                          ? (dark ? 'rgba(168, 85, 247, 0.3)' : '#f3e8ff')
+                          : (dark ? 'rgba(255,255,255,0.06)' : '#f1f5f9'),
+                        border: isOver
+                          ? '2px solid #a855f7'
+                          : `1px solid ${dark ? 'rgba(255,255,255,0.15)' : '#cbd5e1'}`,
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        color: 'var(--text-primary)',
+                        cursor: 'grab',
+                        opacity: isDragging ? 0.4 : 1,
+                        transition: 'transform 0.15s ease, border-color 0.15s ease',
+                        boxShadow: isOver ? '0 0 10px rgba(168, 85, 247, 0.4)' : 'none',
+                        userSelect: 'none'
                       }}
                     >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+                      <span style={{ cursor: 'grab', opacity: 0.5, fontSize: '0.75rem', marginRight: '-2px' }} title="드래그 순서 변경">
+                        ⣿
+                      </span>
+                      <span>{cat}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCategory(cat)}
+                        title={`${cat} 카테고리 삭제`}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#ef4444',
+                          cursor: 'pointer',
+                          fontSize: '0.75rem',
+                          fontWeight: 900,
+                          padding: '0 2px',
+                          lineHeight: 1
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
