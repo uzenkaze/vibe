@@ -1149,14 +1149,37 @@ export default function KnowledgeIndustryPage() {
 
             <form onSubmit={handleSaveLoanRow}>
               <div style={{ marginBottom: '0.85rem' }}>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>상환 연월 (예: 2024. 10. 15)</label>
-                <input
-                  type="text"
-                  value={loanModal.formData.date}
-                  onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
-                  required
-                />
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>상환 연월 (텍스트 입력 또는 우측 달력 선택)</label>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    placeholder="예: 2024. 10. 15"
+                    value={loanModal.formData.date}
+                    onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }))}
+                    style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    required
+                  />
+                  <input
+                    type="date"
+                    onChange={e => {
+                      if (e.target.value) {
+                        const [y, m, d] = e.target.value.split('-');
+                        const formatted = `${y}. ${parseInt(m, 10)}. ${parseInt(d, 10)}`;
+                        setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, date: formatted } }));
+                      }
+                    }}
+                    style={{
+                      padding: '7px 8px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      background: 'var(--surface)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer'
+                    }}
+                    title="달력에서 날짜 선택"
+                  />
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
