@@ -1378,16 +1378,7 @@ export default function KnowledgeIndustryPage() {
                 </div>
               )}
 
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>우대금리 / 특이사항 조건</label>
-                <input
-                  type="text"
-                  placeholder="예: 기준: 3.66%, 가산: 1.97%"
-                  value={loanModal.formData.condition}
-                  onChange={e => setLoanModal(prev => ({ ...prev, formData: { ...prev.formData, condition: e.target.value } }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
-                />
-              </div>
+
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                 <button
