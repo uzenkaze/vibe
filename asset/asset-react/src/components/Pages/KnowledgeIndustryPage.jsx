@@ -409,7 +409,15 @@ export default function KnowledgeIndustryPage() {
           transition: all 0.2s ease;
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 6px;
+          white-space: nowrap;
+        }
+        @media (max-width: 600px) {
+          .tab-btn {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+          }
         }
         .tab-btn.active {
           background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
@@ -736,54 +744,57 @@ export default function KnowledgeIndustryPage() {
           {/* 대출 상환 상단 서브 탭 스위처 & 연도 필터 & 추가 버튼 */}
           <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-              {/* 은행 서브 탭 */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {/* 은행 서브 탭 (모바일에서도 1줄 슬림 정렬) */}
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'nowrap', alignItems: 'center' }}>
                 <button
                   type="button"
                   onClick={() => setLoanSubTab('kb')}
                   style={{
-                    padding: '8px 18px',
+                    padding: '7px 14px',
                     borderRadius: '99px',
                     border: `1px solid ${loanSubTab === 'kb' ? '#3b82f6' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
                     background: loanSubTab === 'kb' ? (dark ? 'rgba(59, 130, 246, 0.25)' : '#eff6ff') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
                     color: loanSubTab === 'kb' ? (dark ? '#60a5fa' : '#1d4ed8') : 'var(--text-muted)',
-                    fontSize: '0.88rem',
+                    fontSize: '0.82rem',
                     fontWeight: 800,
                     cursor: 'pointer',
+                    whiteSpace: 'nowrap',
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  🏦 KB (생활안정)
+                  🏦 KB
                 </button>
                 <button
                   type="button"
                   onClick={() => setLoanSubTab('nh')}
                   style={{
-                    padding: '8px 18px',
+                    padding: '7px 14px',
                     borderRadius: '99px',
                     border: `1px solid ${loanSubTab === 'nh' ? '#a855f7' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
                     background: loanSubTab === 'nh' ? (dark ? 'rgba(168, 85, 247, 0.25)' : '#f3e8ff') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
                     color: loanSubTab === 'nh' ? (dark ? '#c084fc' : '#7e22ce') : 'var(--text-muted)',
-                    fontSize: '0.88rem',
+                    fontSize: '0.82rem',
                     fontWeight: 800,
                     cursor: 'pointer',
+                    whiteSpace: 'nowrap',
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  🏦 NH (기업성장론)
+                  🏦 NH
                 </button>
                 <button
                   type="button"
                   onClick={() => setLoanSubTab('all')}
                   style={{
-                    padding: '8px 18px',
+                    padding: '7px 14px',
                     borderRadius: '99px',
                     border: `1px solid ${loanSubTab === 'all' ? '#10b981' : (dark ? 'rgba(255,255,255,0.1)' : '#cbd5e1')}`,
                     background: loanSubTab === 'all' ? (dark ? 'rgba(16, 185, 129, 0.25)' : '#ecfdf5') : (dark ? 'rgba(255,255,255,0.05)' : '#ffffff'),
                     color: loanSubTab === 'all' ? (dark ? '#34d399' : '#047857') : 'var(--text-muted)',
-                    fontSize: '0.88rem',
+                    fontSize: '0.82rem',
                     fontWeight: 800,
                     cursor: 'pointer',
+                    whiteSpace: 'nowrap',
                     transition: 'all 0.15s ease'
                   }}
                 >
