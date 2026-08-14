@@ -349,13 +349,14 @@ $1`);let r=n.split(`
           border-radius: 8px;
         }
         .data-table {
-          width: 100%;
-          min-width: 720px;
+          width: auto;
+          min-width: min-content;
+          max-width: 100%;
           border-collapse: collapse;
-          font-size: 0.88rem;
+          font-size: 0.85rem;
         }
         .data-table th, .data-table td {
-          padding: 10px 12px;
+          padding: 6px 10px;
           border: 1px solid ${e?`rgba(255,255,255,0.1)`:`#e2e8f0`};
           text-align: center;
           white-space: nowrap;

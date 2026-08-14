@@ -458,17 +458,26 @@ export default function KnowledgeIndustryPage() {
           border-radius: 8px;
         }
         .data-table {
-          width: auto;
-          min-width: min-content;
-          max-width: 100%;
+          width: 100%;
           border-collapse: collapse;
-          font-size: 0.85rem;
+          font-size: 0.88rem;
         }
         .data-table th, .data-table td {
-          padding: 6px 10px;
+          padding: 9px 12px;
           border: 1px solid ${dark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
           text-align: center;
           white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+          .data-table {
+            width: auto;
+            min-width: max-content;
+            font-size: 0.82rem;
+          }
+          .data-table th, .data-table td {
+            padding: 6px 8px;
+          }
         }
         .data-table th {
           background: ${dark ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
