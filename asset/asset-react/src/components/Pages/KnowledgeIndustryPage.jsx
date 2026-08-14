@@ -114,7 +114,31 @@ const INITIAL_DATA = {
       { date: '2024. 5. 13', rate: '5.63%', payment: 1255213, extra: 105213 },
       { date: '2024. 6. 13', rate: '5.63%', payment: 1297053, extra: 147053 },
       { date: '2024. 7. 15', rate: '5.63%', payment: 1255213, extra: 105213 },
-      { date: '2024. 8. 13', rate: '5.63%', payment: 1297053, extra: 147053 }
+      { date: '2024. 8. 13', rate: '5.63%', payment: 1297053, extra: 147053 },
+      { date: '2024. 9. 13', rate: '5.63%', payment: 1297053, extra: 147053 },
+      { date: '2024. 10. 14', rate: '5.39%', payment: 1201704, extra: 51704, condition: '기준: 3.42%, 가산: 1.97%' },
+      { date: '2024. 11. 13', rate: '5.39%', payment: 1241761, extra: 91761 },
+      { date: '2024. 12. 13', rate: '5.39%', payment: 1201704, extra: 51704 },
+      { date: '2025. 1. 13', rate: '5.39%', payment: 1243077, extra: 93077 },
+      { date: '2025. 2. 13', rate: '5.39%', payment: 1245163, extra: 95163 },
+      { date: '2025. 3. 13', rate: '5.39%', payment: 1124664, extra: -25336 },
+      { date: '2025. 4. 14', rate: '5.05%', payment: 1166619, extra: 16619, condition: '기준: 3.08%, 가산: 1.97%' },
+      { date: '2025. 5. 13', rate: '5.05%', payment: 1128986, extra: -21014 },
+      { date: '2025. 6. 13', rate: '5.05%', payment: 1166619, extra: -33381 },
+      { date: '2025. 7. 14', rate: '5.05%', payment: 1128986, extra: -71014 },
+      { date: '2025. 8. 13', rate: '5.05%', payment: 1166619, extra: -33381 },
+      { date: '2025. 9. 13', rate: '5.05%', payment: 1166619, extra: -33381 },
+      { date: '2025. 10. 13', rate: '4.14%', payment: 925545, extra: -274455, condition: '기준: 2.54%, 가산: 1.6%' },
+      { date: '2025. 11. 13', rate: '4.14%', payment: 956396, extra: -243604 },
+      { date: '2025. 12. 15', rate: '4.14%', payment: 925545, extra: -274455 },
+      { date: '2026. 1. 13', rate: '4.14%', payment: 956396, extra: -243604 },
+      { date: '2026. 2. 13', rate: '4.14%', payment: 956396, extra: -243604 },
+      { date: '2026. 3. 13', rate: '4.45%', payment: 863842, extra: -336158, condition: '기준: 2.85%, 가산: 1.6%' },
+      { date: '2026. 4. 13', rate: '4.45%', payment: 1028010, extra: -171990 },
+      { date: '2026. 5. 13', rate: '4.45%', payment: 994849, extra: -205151 },
+      { date: '2026. 6. 15', rate: '4.45%', payment: 1028010, extra: -171990 },
+      { date: '2026. 7. 15', rate: '4.45%', payment: 994849, extra: -205151 },
+      { date: '2026. 8. 13', rate: '4.45%', payment: 1028010, extra: -171990 }
     ]
   },
   rent: {
@@ -182,9 +206,12 @@ export default function KnowledgeIndustryPage() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.investment && parsed.loans && parsed.rent) {
-          // KB 대출 데이터가 24개 이하인 구버전 저장 데이터인 경우 최신 INITIAL_DATA로 업그레이드
+          // KB / NH 대출 데이터가 24개 이하인 구버전 저장 데이터인 경우 최신 INITIAL_DATA로 업그레이드
           if (parsed.loans.kb && parsed.loans.kb.length <= 24) {
             parsed.loans.kb = INITIAL_DATA.loans.kb;
+          }
+          if (parsed.loans.nh && parsed.loans.nh.length <= 24) {
+            parsed.loans.nh = INITIAL_DATA.loans.nh;
           }
           return parsed;
         }
