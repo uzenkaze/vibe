@@ -651,7 +651,7 @@ html.dark .nav-item.active {
 @media (max-width: 900px) {
   .bottom-nav {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
     position: fixed;
     bottom: 12px;
@@ -665,8 +665,19 @@ html.dark .nav-item.active {
     padding: 0.35rem 0.4rem;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
     z-index: 1000;
-    width: 92%;
-    max-width: 420px;
+    width: 94%;
+    max-width: 480px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 4px;
+  }
+  .bottom-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .bottom-nav-item {
+    flex: 0 0 auto;
+    min-width: 52px;
   }
   .mobile-floating-calc-fab {
     bottom: 80px;
