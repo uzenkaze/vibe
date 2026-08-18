@@ -1561,45 +1561,62 @@ export default function KnowledgeIndustryPage() {
             const now = new Date();
             const currentYearMonth = now.getFullYear() * 100 + (now.getMonth() + 1);
 
-            // 해당 계약이 특정 조회 연도에 걸쳐 있는지(계약일자, 입금 일정 등) 판별
+            // 해당 계약이 특정 조회 연도에 걸쳐 있는지(기본 1년 계약 기간, 계약일자, 입금 일정 등) 판별
             const isContractInYear = (c, targetYear) => {
               if (!c) return false;
               if (targetYear === 'ALL') return true;
 
+              const tYear = Number(targetYear);
+              if (isNaN(tYear)) return true;
+
               const yStr = String(targetYear);
 
-              // 1. 계약일자(contractDate)에 해당 연도가 포함된 경우 (예: "2025. 12. 1" -> 2025년 조회 시 true)
-              if (c.contractDate && String(c.contractDate).includes(yStr)) {
-                return true;
-              }
-
-              // 2. 월세 입금 내역(payments) 중 해당 연도에 입금 예정/실입금 내역이 있는 경우 (예: "2026. 1. 19" -> 2026년 조회 시 true)
-              if (Array.isArray(c.payments) && c.payments.some(p => p.date && String(p.date).startsWith(yStr))) {
-                return true;
-              }
-
-              // 3. 계약일자 ~ 입금 내역의 전체 연도 범위(Span) 사이에 targetYear가 포함되는 경우
-              // (예: 2025년 12월 계약/입주 ~ 2026년 12월 만기 시, 2025년과 2026년 모두 조회 가능)
-              const years = [];
+              // 1. 계약일자(contractDate)에서 시작 연도 파싱
+              let startYear = null;
               if (c.contractDate) {
                 const match = String(c.contractDate).match(/(\d{4})/);
-                if (match) years.push(Number(match[1]));
+                if (match) startYear = Number(match[1]);
               }
+
+              // 2. 월세 입금 내역(payments)에서 연도 수집
+              const paymentYears = [];
               if (Array.isArray(c.payments)) {
                 c.payments.forEach(p => {
                   const match = String(p.date || '').match(/(\d{4})/);
-                  if (match) years.push(Number(match[1]));
+                  if (match) paymentYears.push(Number(match[1]));
                 });
               }
 
-              if (years.length > 0) {
-                const minYear = Math.min(...years);
-                const maxYear = Math.max(...years);
-                const tYear = Number(targetYear);
+              // 3. 임대차 계약 기간 범위 판별
+              // 임대차 계약은 일반적으로 12개월(1년) 이상 지속되므로, 시작연도(예: 2025년) 기준 최소 다음 연도(2026년)까지 유효 범위로 계산
+              if (startYear !== null) {
+                const minYear = startYear;
+                // 기본 12개월 계약 기준 최소 startYear + 1년까지 포함
+                let maxYear = startYear + 1;
+
+                if (paymentYears.length > 0) {
+                  maxYear = Math.max(maxYear, ...paymentYears);
+                }
+
+                // 현재 '계약중' 상태라면 당해연도(현재 연도)까지도 유효한 계약으로 포함
+                if (c.status === '계약중') {
+                  maxYear = Math.max(maxYear, new Date().getFullYear());
+                }
+
+                if (tYear >= minYear && tYear <= maxYear) {
+                  return true;
+                }
+              } else if (paymentYears.length > 0) {
+                const minYear = Math.min(...paymentYears);
+                const maxYear = Math.max(...paymentYears);
                 if (tYear >= minYear && tYear <= maxYear) {
                   return true;
                 }
               }
+
+              // 직접 문자열 매칭 보조
+              if (c.contractDate && String(c.contractDate).includes(yStr)) return true;
+              if (Array.isArray(c.payments) && c.payments.some(p => p.date && String(p.date).startsWith(yStr))) return true;
 
               return false;
             };
