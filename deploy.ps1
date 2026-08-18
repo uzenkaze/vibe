@@ -58,9 +58,10 @@ try {
     Set-Location asset/asset-react
     npm.cmd run build
     Set-Location ../..
-    if (Test-Path "asset/asset-react/dist/index.html") {
-        Copy-Item -Path "asset/asset-react/dist/index.html" -Destination "asset/index.html" -Force
-        Write-Host "> Synced asset/asset-react/dist/index.html -> asset/index.html" -ForegroundColor Green
+    if (Test-Path "asset/asset-react/dist") {
+        if (Test-Path "asset/assets") { Remove-Item -Recurse -Force "asset/assets" }
+        Copy-Item -Path "asset/asset-react/dist/*" -Destination "asset/" -Recurse -Force
+        Write-Host "> Synced asset/asset-react/dist/* -> asset/ (index.html, assets, etc.)" -ForegroundColor Green
     }
 } catch {
     Write-Host "> 'asset/asset-react' 프로젝트 빌드 실패" -ForegroundColor Red
