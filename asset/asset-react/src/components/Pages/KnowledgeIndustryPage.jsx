@@ -170,7 +170,7 @@ const INITIAL_DATA = {
       },
       {
         id: 'c2',
-        room: 'CA520',
+        room: 'CA557',
         tenant: '이주훈',
         contact: '',
         contractDate: '2026. 7. 20',
@@ -546,36 +546,33 @@ export default function KnowledgeIndustryPage() {
     e.preventDefault();
     const { contractId, paymentId, formData } = rentModal;
     const amount = Number(unformatComma(formData.amount)) || 0;
+    const parsedDate = formData.date.trim();
+    const parsedActualDate = formData.actualDate.trim();
+    const parsedNote = formData.note.trim();
 
     setData(prev => {
       const nextRent = { ...prev.rent };
-      nextRent.contracts = nextRent.contracts.map(c => {
-        if (c.id === contractId) {
-          const nextPayments = [...c.payments];
-          if (paymentId) {
-            // 수정
-            const idx = nextPayments.findIndex(p => p.id === paymentId);
-            if (idx >= 0) {
-              nextPayments[idx] = {
-                ...nextPayments[idx],
-                date: formData.date.trim(),
-                actualDate: formData.actualDate.trim(),
+      
+      if (paymentId) {
+        // 기존 입금 내역 수정 (만약 다른 계약으로 호실이 변경된 경우 기존 계약에서 제거 후 대상 계약으로 이동)
+        nextRent.contracts = nextRent.contracts.map(c => ({
+          ...c,
+          payments: c.payments.filter(p => p.id !== paymentId)
+        }));
+
+        nextRent.contracts = nextRent.contracts.map(c => {
+          if (c.id === contractId) {
+            const nextPayments = [
+              ...c.payments,
+              {
+                id: paymentId,
+                date: parsedDate,
+                actualDate: parsedActualDate,
                 amount,
                 isPaid: formData.isPaid,
-                note: formData.note.trim()
-              };
-            }
-          } else {
-            // 신규 추가
-            nextPayments.push({
-              id: `p-${Date.now()}`,
-              date: formData.date.trim(),
-              actualDate: formData.actualDate.trim(),
-              amount,
-              isPaid: formData.isPaid,
-              note: formData.note.trim()
-            });
-            // 일자순 정렬
+                note: parsedNote
+              }
+            ];
             nextPayments.sort((a, b) => {
               const parseDate = s => {
                 if (!s) return 0;
@@ -584,11 +581,38 @@ export default function KnowledgeIndustryPage() {
               };
               return parseDate(a.date) - parseDate(b.date);
             });
+            return { ...c, payments: nextPayments };
           }
-          return { ...c, payments: nextPayments };
-        }
-        return c;
-      });
+          return c;
+        });
+      } else {
+        // 신규 월세 입금 등록: 선택된 contractId 계약에 정확히 추가
+        nextRent.contracts = nextRent.contracts.map(c => {
+          if (c.id === contractId) {
+            const nextPayments = [
+              ...c.payments,
+              {
+                id: `p-${Date.now()}`,
+                date: parsedDate,
+                actualDate: parsedActualDate,
+                amount,
+                isPaid: formData.isPaid,
+                note: parsedNote
+              }
+            ];
+            nextPayments.sort((a, b) => {
+              const parseDate = s => {
+                if (!s) return 0;
+                const parts = s.replace(/[^0-9.]/g, '').split('.').filter(Boolean).map(Number);
+                return (parts[0] || 0) * 10000 + (parts[1] || 0) * 100 + (parts[2] || 0);
+              };
+              return parseDate(a.date) - parseDate(b.date);
+            });
+            return { ...c, payments: nextPayments };
+          }
+          return c;
+        });
+      }
       return { ...prev, rent: nextRent };
     });
 
@@ -1967,7 +1991,18 @@ export default function KnowledgeIndustryPage() {
                 <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>대상 호실 및 계약자</label>
                 <select
                   value={rentModal.contractId}
-                  onChange={e => setRentModal(prev => ({ ...prev, contractId: e.target.value }))}
+                  onChange={e => {
+                    const nextCId = e.target.value;
+                    const nextContract = data.rent.contracts.find(c => c.id === nextCId);
+                    setRentModal(prev => ({
+                      ...prev,
+                      contractId: nextCId,
+                      formData: {
+                        ...prev.formData,
+                        amount: (!prev.paymentId && nextContract) ? formatComma(nextContract.rent) : prev.formData.amount
+                      }
+                    }));
+                  }}
                   style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
                   required
                 >
