@@ -170,6 +170,11 @@ git push -f https://github.com/uzenkaze/vibe.git master:gh-pages
 Set-Location ..
 
 Write-Host "> Vercel Production 동기화 중 (main 및 master 브랜치 푸시)..." -ForegroundColor Green
+$postStatus = git status --porcelain
+if ($postStatus) {
+    git add -A
+    git commit -m "build: sync dist and build artifacts ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))"
+}
 git push origin master -f
 git push origin master:main -f
 
