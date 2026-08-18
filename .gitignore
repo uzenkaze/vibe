@@ -3,8 +3,11 @@ Asset/*.json
 Asset/data/*.json
 *.json
 
-# Keep JSON files inside asset-react project
+# Keep JSON files inside asset and asset-react
+!asset/data/*.json
+!Asset/data/*.json
 !Asset/asset-react/**/*.json
+!asset/asset-react/**/*.json
 
 # Keep learn package-lock.json and data.json for CI/CD and sync
 !learn/package-lock.json
