@@ -169,29 +169,18 @@ git commit -m "Integrated deploy: learn, asset, task, and others"
 git push -f https://github.com/uzenkaze/vibe.git master:gh-pages
 Set-Location ..
 
-Write-Host "> Vercel Production 동기화 중 (main 및 master 브랜치 푸시)..." -ForegroundColor Green
+Write-Host "> Git 저장소(master) 동기화 중..." -ForegroundColor Green
 $postStatus = git status --porcelain
 if ($postStatus) {
     git add -A
     git commit -m "build: sync dist and build artifacts ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))"
 }
 git push origin master -f
-git push origin master:main -f
 
-if ($env:VERCEL_DEPLOY_HOOK_URL) {
-    Write-Host "> Vercel Deploy Hook 호출 중..." -ForegroundColor Cyan
-    try {
-        Invoke-RestMethod -Uri $env:VERCEL_DEPLOY_HOOK_URL -Method Post | Out-Null
-        Write-Host "> Vercel Deploy Hook 호출 성공!" -ForegroundColor Green
-    } catch {
-        Write-Host "> Vercel Deploy Hook 호출 실패 (경고)" -ForegroundColor Yellow
-    }
-}
-
-Write-Host ">>> 모든 사이트 배포 완료!" -ForegroundColor Green
+Write-Host ">>> Git 및 GitHub Pages 배포 완료! (Vercel 자동 배포 비활성화됨)" -ForegroundColor Green
 Write-Host "접속 주소:"
-Write-Host "- Vercel: https://vibe-kaze.vercel.app/"
 Write-Host "- Learn: https://uzenkaze.github.io/vibe/learn/"
 Write-Host "- Task: https://uzenkaze.github.io/vibe/task/task-manager.html"
 Write-Host "- Asset: https://uzenkaze.github.io/vibe/asset/asset-react/dist/index.html"
 Write-Host "- CarRep: https://uzenkaze.github.io/vibe/carrep/"
+
