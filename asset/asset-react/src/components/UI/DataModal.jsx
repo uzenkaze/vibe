@@ -154,7 +154,7 @@ export default function DataModal({ onClose }) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('자산, 지식산업센터, 아티클 통합 데이터를 내보냈습니다.', 'success');
+    showToast('자산, Knowledge Industry Center, 아티클 통합 데이터를 내보냈습니다.', 'success');
   };
 
   const handleCopyClipboard = () => {
@@ -192,7 +192,7 @@ export default function DataModal({ onClose }) {
     const json = JSON.stringify(backupData, null, 2);
     navigator.clipboard.writeText(json)
       .then(() => {
-        alert('통합 데이터(자산, 지식산업센터, 아티클)가 클립보드에 복사되었습니다. (JSON 형식)');
+        alert('통합 데이터(자산, Knowledge Industry Center, 아티클)가 클립보드에 복사되었습니다. (JSON 형식)');
       })
       .catch(err => {
         alert('복사 실패: ' + err);
@@ -400,7 +400,7 @@ export default function DataModal({ onClose }) {
       await loadYearData(targetYear);
 
       let extraMsg = '';
-      if (uploaded.asset_knowledge_industry) extraMsg += '\n- 지식산업센터 데이터 복원 완료';
+      if (uploaded.asset_knowledge_industry) extraMsg += '\n- Knowledge Industry Center 데이터 복원 완료';
       if (uploaded.asset_tax_articles) extraMsg += '\n- 세무/절세 아티클 데이터 복원 완료';
 
       alert(`${targetYear}년 자산 데이터를 성공적으로 가져왔습니다.${extraMsg}`);

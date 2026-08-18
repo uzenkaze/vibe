@@ -293,7 +293,7 @@ export default function GitHubModal({ onClose }) {
                   )}
                   {downloadResults.knowledgeIndustry && (
                     <div>
-                      🏢 <strong>지식산업센터:</strong> 계약 {downloadResults.knowledgeIndustry.contractCount}건, 대출내역 KB({downloadResults.knowledgeIndustry.kbLoanCount}건) / NH({downloadResults.knowledgeIndustry.nhLoanCount}건)
+                      🏢 <strong>Knowledge Industry Center:</strong> 계약 {downloadResults.knowledgeIndustry.contractCount}건, 대출내역 KB({downloadResults.knowledgeIndustry.kbLoanCount}건) / NH({downloadResults.knowledgeIndustry.nhLoanCount}건)
                     </div>
                   )}
                   {downloadResults.articles && (

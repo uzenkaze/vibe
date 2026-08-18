@@ -918,7 +918,7 @@ export default function KnowledgeIndustryPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              🏢 지식산업센터
+              🏢 Knowledge Industry Center
             </h1>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px', margin: 0 }}>
               투자비용, 대출 원리금 상환 내역 및 월세입금 현황 관리
