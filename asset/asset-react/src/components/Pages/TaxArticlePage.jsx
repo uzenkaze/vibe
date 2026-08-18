@@ -571,10 +571,10 @@ export default function TaxArticlePage() {
     }
   }, [showToast, triggerSaveSuccessBlink]);
 
-  // 초기 마운트 시 GitHub 최신 아티클 데이터 원격 다운로드 복원
+  // 초기 마운트 시 서버(GitHub) 최신 데이터 우선 조회 및 동기화 (서버가 단일 진실 원천)
   useEffect(() => {
     async function loadGitArticles() {
-      // 1. GitHub API 연동 데이터 다운로드
+      // 1. GitHub API 연동 설정이 있는 경우: 서버 데이터 기준 최신화
       try {
         const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
         const ghConfig = getGithubConfig();
@@ -595,8 +595,23 @@ export default function TaxArticlePage() {
         console.warn('[TaxArticlePage] Initial GitHub load error:', err);
       }
 
-      // 2. localStorage에 없는 경우 정적 JSON 파일 로드
+      // 2. 오프라인 또는 GitHub 미설정 시: localStorage 보존 데이터 로드
       const savedArticles = localStorage.getItem('asset_tax_articles');
+      if (savedArticles) {
+        try {
+          const parsed = JSON.parse(savedArticles);
+          if (Array.isArray(parsed)) setArticles(parsed);
+        } catch (e) {}
+      }
+      const savedCategories = localStorage.getItem('asset_tax_article_categories');
+      if (savedCategories) {
+        try {
+          const parsed = JSON.parse(savedCategories);
+          if (Array.isArray(parsed)) setCategories(parsed);
+        } catch (e) {}
+      }
+
+      // 3. 둘 다 없는 경우: 기본 정적 JSON 파일 로드
       if (!savedArticles) {
         try {
           const res = await fetch('./data/asset_tax_articles.json');
@@ -609,8 +624,6 @@ export default function TaxArticlePage() {
           }
         } catch (e) {}
       }
-
-      const savedCategories = localStorage.getItem('asset_tax_article_categories');
       if (!savedCategories) {
         try {
           const res = await fetch('./data/asset_tax_article_categories.json');

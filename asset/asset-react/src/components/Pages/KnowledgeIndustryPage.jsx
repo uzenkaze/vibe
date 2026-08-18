@@ -301,37 +301,48 @@ export default function KnowledgeIndustryPage() {
     }
   }, [showToast]);
 
-  // 초기 마운트 시 GitHub 최신 데이터 또는 정적 JSON 파일 데이터 로드
+  // 초기 마운트 시 서버(GitHub) 최신 데이터 우선 조회 및 동기화 (서버가 단일 진실 원천)
   useEffect(() => {
     async function loadInitialData() {
-      // 1. GitHub API 토큰이 설정되어 있으면 최신 원격 데이터 다운로드
+      // 1. GitHub API 연동 설정이 있는 경우: 서버 데이터 기준으로 최신화
       try {
         const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
         const ghConfig = getGithubConfig();
         if (ghConfig.token && ghConfig.repo) {
           const remoteData = await syncWithGitHub('download', 'asset_knowledge_industry');
-          if (remoteData && remoteData.investment && remoteData.loans && remoteData.rent) {
+          if (remoteData && (remoteData.investment || remoteData.loans || remoteData.rent)) {
             setData(remoteData);
             localStorage.setItem('asset_knowledge_industry', JSON.stringify(remoteData));
             return;
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[KnowledgeIndustryPage] Server fetch failed, falling back to local', e);
+      }
 
-      // 2. localStorage에 저장된 데이터가 없는 경우 정적 JSON 파일 로드
+      // 2. 오프라인 또는 GitHub 미설정 시: localStorage 보존 데이터 로드
       const saved = localStorage.getItem('asset_knowledge_industry');
-      if (!saved) {
+      if (saved) {
         try {
-          const res = await fetch('./data/asset_knowledge_industry.json');
-          if (res.ok) {
-            const fetched = await res.json();
-            if (fetched && fetched.investment && fetched.loans && fetched.rent) {
-              setData(fetched);
-              localStorage.setItem('asset_knowledge_industry', JSON.stringify(fetched));
-            }
+          const parsed = JSON.parse(saved);
+          if (parsed && (parsed.investment || parsed.loans || parsed.rent)) {
+            setData(parsed);
+            return;
           }
         } catch (e) {}
       }
+
+      // 3. GitHub 및 localStorage 둘 다 없는 경우: 기본 정적 JSON 로드
+      try {
+        const res = await fetch('./data/asset_knowledge_industry.json');
+        if (res.ok) {
+          const fetched = await res.json();
+          if (fetched && (fetched.investment || fetched.loans || fetched.rent)) {
+            setData(fetched);
+            localStorage.setItem('asset_knowledge_industry', JSON.stringify(fetched));
+          }
+        }
+      } catch (e) {}
     }
     loadInitialData();
   }, []);
