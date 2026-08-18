@@ -336,14 +336,12 @@ export default function KnowledgeIndustryPage() {
     loadInitialData();
   }, []);
 
-  // 데이터 변경 시 로컬스토리지 저장 및 GitHub 자동 동기화
+  // 데이터 변경 시 로컬스토리지 저장 (상단 저장 버튼 클릭 시 GitHub 일괄 동기화)
   useEffect(() => {
     try {
       localStorage.setItem('asset_knowledge_industry', JSON.stringify(data));
-      // GitHub 자동 동기화
-      syncKnowledgeIndustryWithGit(data, false);
     } catch (e) {}
-  }, [data, syncKnowledgeIndustryWithGit]);
+  }, [data]);
 
   // 숫자를 한국 원화 금액 포맷으로 변환
   const formatMoney = (num) => {

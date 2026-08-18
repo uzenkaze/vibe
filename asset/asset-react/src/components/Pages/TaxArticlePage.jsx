@@ -627,31 +627,23 @@ export default function TaxArticlePage() {
     loadGitArticles();
   }, []);
 
-  // articles 변경 시 로컬 저장 및 GitHub 자동 동기화 (디바운스 500ms 적용)
+  // articles 변경 시 로컬 저장 (상단 저장 버튼 클릭 시 GitHub 일괄 동기화)
   useEffect(() => {
     try {
       localStorage.setItem('asset_tax_articles', JSON.stringify(articles));
     } catch (e) {
       console.error(e);
     }
-    const timer = setTimeout(() => {
-      syncArticlesWithGit(articles, null);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [articles, syncArticlesWithGit]);
+  }, [articles]);
 
-  // categories 변경 시 로컬 저장 및 GitHub 자동 동기화 (디바운스 500ms 적용)
+  // categories 변경 시 로컬 저장 (상단 저장 버튼 클릭 시 GitHub 일괄 동기화)
   useEffect(() => {
     try {
       localStorage.setItem('asset_tax_article_categories', JSON.stringify(categories));
     } catch (e) {
       console.error(e);
     }
-    const timer = setTimeout(() => {
-      syncArticlesWithGit(null, categories);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [categories, syncArticlesWithGit]);
+  }, [categories]);
 
   // 필터링된 아티클 목록 (HTML 태그를 제거한 순수 텍스트 본문 검색)
   const filteredArticles = useMemo(() => {
@@ -1013,25 +1005,7 @@ export default function TaxArticlePage() {
               accept=".json"
               style={{ display: 'none' }}
             />
-            <button
-              onClick={() => syncArticlesWithGit(articles, categories, true)}
-              title="아티클 및 카테고리를 GitHub 서버로 즉시 동기화 업로드"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 14px',
-                borderRadius: '99px',
-                border: `1px solid ${dark ? 'rgba(56, 189, 248, 0.4)' : '#38bdf8'}`,
-                background: dark ? 'rgba(56, 189, 248, 0.15)' : '#e0f2fe',
-                color: dark ? '#38bdf8' : '#0369a1',
-                fontSize: '0.85rem',
-                fontWeight: 800,
-                cursor: 'pointer'
-              }}
-            >
-              ☁️ GitHub 동기화
-            </button>
+
           </div>
         </div>
 
