@@ -108,7 +108,7 @@ export default function DataModal({ onClose }) {
   const handleDownload = () => {
     const backupData = JSON.parse(JSON.stringify(yearData[selectedYear] || { year: String(selectedYear), months: {} }));
     
-    // Encrypt and append accountsData (Option A)
+    // 1. Encrypt and append accountsData (Option A)
     if (accounts && accounts.length > 0) {
       try {
         backupData._secureAccounts = btoa(encodeURIComponent(JSON.stringify(accounts)));
@@ -117,15 +117,44 @@ export default function DataModal({ onClose }) {
       }
     }
 
+    // 2. Append Knowledge Industry Data (지식산업센터)
+    try {
+      const kiData = localStorage.getItem('asset_knowledge_industry');
+      if (kiData) {
+        backupData.asset_knowledge_industry = JSON.parse(kiData);
+      }
+    } catch (e) {
+      console.warn("Knowledge Industry export failed", e);
+    }
+
+    // 3. Append Tax Articles & Categories (세무/절세 아티클)
+    try {
+      const articles = localStorage.getItem('asset_tax_articles');
+      if (articles) {
+        backupData.asset_tax_articles = JSON.parse(articles);
+      }
+      const categories = localStorage.getItem('asset_tax_article_categories');
+      if (categories) {
+        backupData.asset_tax_article_categories = JSON.parse(categories);
+      }
+    } catch (e) {
+      console.warn("Articles export failed", e);
+    }
+
+    backupData._exportedAt = new Date().toISOString();
+    backupData._appVersion = "2.0";
+
     const json = JSON.stringify(backupData, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `assetData_${selectedYear}.json`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('데이터 파일을 성공적으로 내보냈습니다.', 'success');
+    showToast('자산, 지식산업센터, 아티클 통합 데이터를 내보냈습니다.', 'success');
   };
 
   const handleCopyClipboard = () => {
@@ -139,10 +168,31 @@ export default function DataModal({ onClose }) {
       }
     }
 
+    try {
+      const kiData = localStorage.getItem('asset_knowledge_industry');
+      if (kiData) {
+        backupData.asset_knowledge_industry = JSON.parse(kiData);
+      }
+    } catch (e) {}
+
+    try {
+      const articles = localStorage.getItem('asset_tax_articles');
+      if (articles) {
+        backupData.asset_tax_articles = JSON.parse(articles);
+      }
+      const categories = localStorage.getItem('asset_tax_article_categories');
+      if (categories) {
+        backupData.asset_tax_article_categories = JSON.parse(categories);
+      }
+    } catch (e) {}
+
+    backupData._exportedAt = new Date().toISOString();
+    backupData._appVersion = "2.0";
+
     const json = JSON.stringify(backupData, null, 2);
     navigator.clipboard.writeText(json)
       .then(() => {
-        alert('연도 데이터가 클립보드에 복사되었습니다. (JSON 형식)');
+        alert('통합 데이터(자산, 지식산업센터, 아티클)가 클립보드에 복사되었습니다. (JSON 형식)');
       })
       .catch(err => {
         alert('복사 실패: ' + err);
@@ -274,6 +324,46 @@ export default function DataModal({ onClose }) {
         }
       }
 
+      // Restore Knowledge Industry Data (지식산업센터 복원)
+      if (uploaded.asset_knowledge_industry) {
+        try {
+          localStorage.setItem('asset_knowledge_industry', JSON.stringify(uploaded.asset_knowledge_industry));
+          const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
+          const ghConfig = getGithubConfig();
+          if (ghConfig.token && ghConfig.repo) {
+            syncWithGitHub('upload', 'asset_knowledge_industry', JSON.stringify(uploaded.asset_knowledge_industry));
+          }
+        } catch (e) {
+          console.warn("Knowledge Industry restore failed", e);
+        }
+      }
+
+      // Restore Tax Articles & Categories (세무/절세 아티클 및 카테고리 복원)
+      if (uploaded.asset_tax_articles) {
+        try {
+          localStorage.setItem('asset_tax_articles', JSON.stringify(uploaded.asset_tax_articles));
+          const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
+          const ghConfig = getGithubConfig();
+          if (ghConfig.token && ghConfig.repo) {
+            syncWithGitHub('upload', 'asset_tax_articles', JSON.stringify(uploaded.asset_tax_articles));
+          }
+        } catch (e) {
+          console.warn("Articles restore failed", e);
+        }
+      }
+      if (uploaded.asset_tax_article_categories) {
+        try {
+          localStorage.setItem('asset_tax_article_categories', JSON.stringify(uploaded.asset_tax_article_categories));
+          const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
+          const ghConfig = getGithubConfig();
+          if (ghConfig.token && ghConfig.repo) {
+            syncWithGitHub('upload', 'asset_tax_article_categories', JSON.stringify(uploaded.asset_tax_article_categories));
+          }
+        } catch (e) {
+          console.warn("Categories restore failed", e);
+        }
+      }
+
       let targetYear = "";
       let targetMonth = "";
       let updatedYearData = null;
@@ -309,7 +399,11 @@ export default function DataModal({ onClose }) {
       setMonth(targetMonth);
       await loadYearData(targetYear);
 
-      alert(`${targetYear}년 데이터를 성공적으로 가져왔습니다.`);
+      let extraMsg = '';
+      if (uploaded.asset_knowledge_industry) extraMsg += '\n- 지식산업센터 데이터 복원 완료';
+      if (uploaded.asset_tax_articles) extraMsg += '\n- 세무/절세 아티클 데이터 복원 완료';
+
+      alert(`${targetYear}년 자산 데이터를 성공적으로 가져왔습니다.${extraMsg}`);
       onClose();
     } catch (err) {
       alert("가져오기 실패: " + err.message);
