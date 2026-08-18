@@ -35,7 +35,7 @@ import CalculatorModal from './components/UI/CalculatorModal';
 import PullToRefresh from './components/UI/PullToRefresh';
 
 function Dashboard() {
-  const { navSection, showToast, persistSections, getCurrentSections, updateRow, triggerSaveSuccessBlink } = useApp();
+  const { navSection, showToast, persistSections, getCurrentSections, updateRow, triggerSaveSuccessBlink, yearData, year } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [summaryModal, setSummaryModal] = useState(null); // 'assets' | 'expenses' | null
   const [dataModal, setDataModal] = useState(false);
@@ -98,26 +98,29 @@ function Dashboard() {
       const { getGithubConfig, syncWithGitHub } = await import('./utils/github');
       const ghConfig = getGithubConfig();
 
-      // 1. 현재 화면의 자산 관리 데이터 저장
+      // 1. 현재 화면의 자산 관리 데이터 저장 (현재 연도 assetData_YYYY 저장 및 GitHub 동기화)
       const sections = getCurrentSections();
       await persistSections(sections, true);
 
-      // 2. GitHub 설정이 있는 경우 모든 페이지 데이터셋 일괄 서버 업로드 동기화
+      // 2. GitHub 설정이 있는 경우 다른 페이지 데이터셋 및 기타 연도 자산 데이터 동기화
       if (ghConfig.token && ghConfig.repo) {
         const uploadPromises = [];
+        const currentYearKey = `assetData_${year}`;
 
-        // 2-1. 모든 자산 연도별 데이터 (state 및 localStorage)
-        const savedYearKeys = new Set();
-        Object.keys(yearData || {}).forEach(y => savedYearKeys.add(`assetData_${y}`));
+        // 2-1. 현재 활성 연도를 제외한 기타 연도 자산 데이터만 동기화 (중복 업로드 및 409 Conflict 방지)
+        const otherYearKeys = new Set();
+        Object.keys(yearData || {}).forEach(y => {
+          if (String(y) !== String(year)) otherYearKeys.add(`assetData_${y}`);
+        });
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
-          if (key && key.startsWith('assetData_') && !key.endsWith('_updatedAt')) {
-            savedYearKeys.add(key);
+          if (key && key.startsWith('assetData_') && !key.endsWith('_updatedAt') && key !== currentYearKey) {
+            otherYearKeys.add(key);
           }
         }
-        savedYearKeys.forEach(yearKey => {
+        otherYearKeys.forEach(yearKey => {
           const y = yearKey.replace('assetData_', '');
-          const yData = yearData[y] || (() => {
+          const yData = (yearData && yearData[y]) || (() => {
             try { return JSON.parse(localStorage.getItem(yearKey)); } catch { return null; }
           })();
           if (yData) {
