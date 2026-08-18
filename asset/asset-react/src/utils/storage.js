@@ -53,11 +53,14 @@ export async function saveData(year, plainData) {
     localStorage.setItem(`${getDataKey(year)}_updatedAt`, String(updatedAt));
 
 
-    // 3. 서버 API — 백엔드 서빙 환경일 때만 선택적 전송
+    // 3. 서버 API — 백엔드 서빙 환경(로컬/자체서버)일 때만 선택적 전송 (GitHub Pages 정적 호스팅에서는 405 방지)
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isGhPages = window.location.hostname.endsWith('github.io');
     const apiUrls = isLocalhost 
       ? ['http://localhost:5500/api/save-asset', 'http://127.0.0.1:5500/api/save-asset']
-      : ['/api/save-asset'];
+      : isGhPages 
+        ? [] 
+        : ['/api/save-asset'];
 
     let apiSaved = false;
     for (const url of apiUrls) {
