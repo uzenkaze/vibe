@@ -35,20 +35,15 @@ function b64EncodeUnicode(str) {
   }));
 }
 
-const fileUploadLocks = new Map();
+let globalUploadQueue = Promise.resolve();
 
 export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
   if (action === 'upload') {
-    const prevLock = fileUploadLocks.get(yearKey) || Promise.resolve();
-    const curTask = prevLock.then(() => _executeSyncWithGitHub(action, yearKey, dataStr)).catch(() => _executeSyncWithGitHub(action, yearKey, dataStr));
-    fileUploadLocks.set(yearKey, curTask);
-    try {
-      return await curTask;
-    } finally {
-      if (fileUploadLocks.get(yearKey) === curTask) {
-        fileUploadLocks.delete(yearKey);
-      }
-    }
+    // 모든 GitHub 커밋은 브랜치(master)의 HEAD를 갱신하므로 직렬(Sequential) 큐로 실행하여 409 Conflict 방지
+    const runTask = () => _executeSyncWithGitHub(action, yearKey, dataStr);
+    const nextQueue = globalUploadQueue.then(runTask, runTask);
+    globalUploadQueue = nextQueue;
+    return nextQueue;
   }
   return _executeSyncWithGitHub(action, yearKey, dataStr);
 }

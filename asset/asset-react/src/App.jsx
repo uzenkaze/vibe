@@ -102,12 +102,11 @@ function Dashboard() {
       const sections = getCurrentSections();
       await persistSections(sections, true);
 
-      // 2. GitHub 설정이 있는 경우 다른 페이지 데이터셋 및 기타 연도 자산 데이터 동기화
+      // 2. GitHub 설정이 있는 경우 다른 페이지 데이터셋 및 기타 연도 자산 데이터 순차 동기화
       if (ghConfig.token && ghConfig.repo) {
-        const uploadPromises = [];
         const currentYearKey = `assetData_${year}`;
 
-        // 2-1. 현재 활성 연도를 제외한 기타 연도 자산 데이터만 동기화 (중복 업로드 및 409 Conflict 방지)
+        // 2-1. 현재 활성 연도를 제외한 기타 연도 자산 데이터 동기화
         const otherYearKeys = new Set();
         Object.keys(yearData || {}).forEach(y => {
           if (String(y) !== String(year)) otherYearKeys.add(`assetData_${y}`);
@@ -118,51 +117,59 @@ function Dashboard() {
             otherYearKeys.add(key);
           }
         }
-        otherYearKeys.forEach(yearKey => {
+        for (const yearKey of otherYearKeys) {
           const y = yearKey.replace('assetData_', '');
           const yData = (yearData && yearData[y]) || (() => {
             try { return JSON.parse(localStorage.getItem(yearKey)); } catch { return null; }
           })();
           if (yData) {
-            uploadPromises.push(
-              syncWithGitHub('upload', yearKey, JSON.stringify(yData)).catch(e => console.warn(`[Sync] ${yearKey} failed`, e))
-            );
+            try {
+              await syncWithGitHub('upload', yearKey, JSON.stringify(yData));
+            } catch (e) {
+              console.warn(`[Sync] ${yearKey} failed`, e);
+            }
           }
-        });
+        }
 
         // 2-2. 지식산업센터 데이터 동기화
         const savedKi = localStorage.getItem('asset_knowledge_industry');
         if (savedKi) {
-          uploadPromises.push(
-            syncWithGitHub('upload', 'asset_knowledge_industry', savedKi).catch(e => console.warn('[Sync] KI failed', e))
-          );
+          try {
+            await syncWithGitHub('upload', 'asset_knowledge_industry', savedKi);
+          } catch (e) {
+            console.warn('[Sync] KI failed', e);
+          }
         }
 
         // 2-3. 세무/절세 아티클 데이터 동기화
         const savedArt = localStorage.getItem('asset_tax_articles');
         if (savedArt) {
-          uploadPromises.push(
-            syncWithGitHub('upload', 'asset_tax_articles', savedArt).catch(e => console.warn('[Sync] Articles failed', e))
-          );
+          try {
+            await syncWithGitHub('upload', 'asset_tax_articles', savedArt);
+          } catch (e) {
+            console.warn('[Sync] Articles failed', e);
+          }
         }
 
         // 2-4. 세무 아티클 카테고리 동기화
         const savedCats = localStorage.getItem('asset_tax_article_categories');
         if (savedCats) {
-          uploadPromises.push(
-            syncWithGitHub('upload', 'asset_tax_article_categories', savedCats).catch(e => console.warn('[Sync] Categories failed', e))
-          );
+          try {
+            await syncWithGitHub('upload', 'asset_tax_article_categories', savedCats);
+          } catch (e) {
+            console.warn('[Sync] Categories failed', e);
+          }
         }
 
         // 2-5. 보안 계좌 데이터 동기화
         const savedSec = localStorage.getItem('_secureAccounts');
         if (savedSec) {
-          uploadPromises.push(
-            syncWithGitHub('upload', '_secureAccounts', savedSec).catch(e => console.warn('[Sync] SecureAccounts failed', e))
-          );
+          try {
+            await syncWithGitHub('upload', '_secureAccounts', savedSec);
+          } catch (e) {
+            console.warn('[Sync] SecureAccounts failed', e);
+          }
         }
-
-        await Promise.all(uploadPromises);
 
         triggerSaveSuccessBlink();
         showToast('🔑 모든 페이지 데이터가 서버(GitHub)에 성공적으로 저장되었습니다!', 'success', true);
