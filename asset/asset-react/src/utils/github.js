@@ -51,9 +51,12 @@ export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
 
   try {
     if (action === 'download') {
-      const res = await fetch(getUrl, { headers });
+      const timestamp = Date.now();
+      const rand = Math.random().toString(36).substring(2, 8);
+      const getUrlWithCacheBuster = `${getUrl}&_t=${timestamp}&_r=${rand}`;
+      const res = await fetch(getUrlWithCacheBuster, { headers, cache: 'no-store' });
       if (res.status === 404) {
-        console.log("GitHub data not found.");
+        console.log("GitHub data not found for:", filePath);
         return null;
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
