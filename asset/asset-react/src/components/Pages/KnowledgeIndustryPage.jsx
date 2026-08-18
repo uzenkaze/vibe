@@ -667,6 +667,7 @@ export default function KnowledgeIndustryPage() {
         }
       });
     } else {
+      const currentYear = rentYearFilter === 'ALL' ? '2026' : rentYearFilter;
       setContractModal({
         open: true,
         contractId: null,
@@ -674,7 +675,7 @@ export default function KnowledgeIndustryPage() {
           room: 'CA520',
           tenant: '',
           contact: '',
-          contractDate: '2026. 1. 1',
+          contractDate: `${currentYear}. 1. 1`,
           status: '계약중',
           terms: '500/60',
           deposit: '5,000,000',
@@ -1556,12 +1557,26 @@ export default function KnowledgeIndustryPage() {
             const now = new Date();
             const currentYearMonth = now.getFullYear() * 100 + (now.getMonth() + 1);
 
+            const getContractYear = (c) => {
+              if (!c || !c.contractDate) return '';
+              const dateStr = String(c.contractDate).trim();
+              const match = dateStr.match(/(\d{4})/);
+              return match ? match[1] : '';
+            };
+
+            // 조회 연도에 따른 계약/호실 필터링 (계약일자 연도 기준)
+            const displayedContracts = (data.rent.contracts || []).filter(c => {
+              if (rentYearFilter === 'ALL') return true;
+              const cYear = getContractYear(c);
+              return cYear === rentYearFilter;
+            });
+
             let totalYearPaid = 0;
             let totalYearScheduled = 0;
             let totalPaidCount = 0;
             let totalUnpaidCount = 0;
 
-            data.rent.contracts.forEach(c => {
+            displayedContracts.forEach(c => {
               const pList = c.payments.filter(p => rentYearFilter === 'ALL' || (p.date && p.date.startsWith(rentYearFilter)));
               pList.forEach(p => {
                 if (p.isPaid) {
@@ -1580,186 +1595,207 @@ export default function KnowledgeIndustryPage() {
             });
 
             return (
-              <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'var(--text-primary)' }}>📅 조회 연도:</span>
-                    <select
-                      value={rentYearFilter}
-                      onChange={e => setRentYearFilter(e.target.value)}
-                      style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 800, cursor: 'pointer' }}
-                    >
-                      <option value="2024">2024년</option>
-                      <option value="2025">2025년</option>
-                      <option value="2026">2026년 (당해연도)</option>
-                      <option value="2027">2027년</option>
-                      <option value="2028">2028년</option>
-                      <option value="ALL">전체보기 (ALL)</option>
-                    </select>
-                  </div>
+              <>
+                <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'var(--text-primary)' }}>📅 조회 연도:</span>
+                      <select
+                        value={rentYearFilter}
+                        onChange={e => setRentYearFilter(e.target.value)}
+                        style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 800, cursor: 'pointer' }}
+                      >
+                        <option value="2024">2024년</option>
+                        <option value="2025">2025년</option>
+                        <option value="2026">2026년 (당해연도)</option>
+                        <option value="2027">2027년</option>
+                        <option value="2028">2028년</option>
+                        <option value="ALL">전체보기 (ALL)</option>
+                      </select>
+                    </div>
 
-                  {/* 통계 뱃지 */}
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.8rem', padding: '4px 12px', borderRadius: '99px', background: dark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5', color: '#10b981', fontWeight: 800, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                      수령 완료: {formatMoney(totalYearPaid)} ({totalPaidCount}건)
-                    </span>
-                    {totalUnpaidCount > 0 && (
-                      <span style={{ fontSize: '0.8rem', padding: '4px 12px', borderRadius: '99px', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', color: '#ef4444', fontWeight: 800, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-                        미납: {totalUnpaidCount}건
+                    {/* 통계 뱃지 */}
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.8rem', padding: '4px 12px', borderRadius: '99px', background: dark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5', color: '#10b981', fontWeight: 800, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                        수령 완료: {formatMoney(totalYearPaid)} ({totalPaidCount}건)
                       </span>
-                    )}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    onClick={() => handleOpenRentModal(data.rent.contracts[0]?.id)}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 16px', borderRadius: '99px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#fff', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(168, 85, 247, 0.3)' }}
-                  >
-                    ➕ 월세 입금 등록
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleOpenContractModal()}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 16px', borderRadius: '99px', border: `1px solid ${dark ? 'rgba(168, 85, 247, 0.4)' : '#c084fc'}`, background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', color: dark ? '#c084fc' : '#7e22ce', fontWeight: 800, cursor: 'pointer' }}
-                  >
-                    🏢 계약/호실 추가
-                  </button>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* 2개 호실/계약자 테이블 나란히 렌더링 */}
-          <div className="ki-grid-2col">
-            {data.rent.contracts.map(contract => {
-              const filteredPayments = contract.payments.filter(p => rentYearFilter === 'ALL' || (p.date && p.date.startsWith(rentYearFilter)));
-              const totalPaidAmount = filteredPayments.reduce((s, p) => s + (p.isPaid ? (Number(p.amount) || 0) : 0), 0);
-
-              return (
-                <div key={contract.id} className="section-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    {/* 계약자 / 호실 헤더 */}
-                    <div style={{ borderBottom: `2px solid ${dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'}`, paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#a855f7' }}>
-                            📍 {contract.room} ({contract.tenant})
-                          </span>
-                          <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: '99px', background: dark ? 'rgba(168,85,247,0.2)' : '#f3e8ff', color: '#7e22ce', fontWeight: 800 }}>
-                            {contract.status}
-                          </span>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                          <button
-                            type="button"
-                            onClick={() => handleOpenContractModal(contract)}
-                            title="계약 정보 수정"
-                            className="btn-action-icon"
-                            style={{ color: '#a855f7', fontSize: '0.85rem' }}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteContract(contract.id)}
-                            title="계약 삭제"
-                            className="btn-action-icon"
-                            style={{ color: '#ef4444', fontSize: '0.85rem' }}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-                        <div>계약일: <strong>{contract.contractDate}</strong></div>
-                        <div>계약조건: <strong>{contract.terms}</strong> (월 {formatMoney(contract.rent)})</div>
-                        <div>보증금: <strong>{formatMoney(contract.deposit)}</strong></div>
-                        <div>연장정보: <strong>{contract.extendStatus || '없음'}</strong></div>
-                      </div>
-
-                      {contract.memo && (
-                        <div style={{ fontSize: '0.72rem', color: '#ef4444', marginTop: '6px', fontWeight: 700 }}>
-                          {contract.memo}
-                        </div>
+                      {totalUnpaidCount > 0 && (
+                        <span style={{ fontSize: '0.8rem', padding: '4px 12px', borderRadius: '99px', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', color: '#ef4444', fontWeight: 800, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                          미납: {totalUnpaidCount}건
+                        </span>
                       )}
                     </div>
-
-                    {/* 입금 일정 내역 테이블 */}
-                    <div className="table-responsive-container">
-                      <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th>입금예정일</th>
-                            <th>실입금일</th>
-                            <th>입금액</th>
-                            <th>입금여부</th>
-                            <th>비고</th>
-                            <th>관리</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredPayments.length > 0 ? (
-                            filteredPayments.map(p => (
-                              <tr key={p.id}>
-                                <td style={{ fontWeight: 700 }}>{p.date}</td>
-                                <td>{p.actualDate || '-'}</td>
-                                <td style={{ textAlign: 'right', fontWeight: 800 }}>
-                                  {formatMoney(p.amount)}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleToggleRentPaid(contract.id, p.id)}
-                                    className={p.isPaid ? 'badge-paid' : 'badge-unpaid'}
-                                    title="클릭 시 완납/미납 전환"
-                                  >
-                                    {p.isPaid ? '⭕ 완납' : '❌ 미납'}
-                                  </button>
-                                </td>
-                                <td style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 700 }}>
-                                  {p.note || '-'}
-                                </td>
-                                <td>
-                                  <button type="button" onClick={() => handleOpenRentModal(contract.id, p)} className="btn-action-icon" style={{ color: '#a855f7' }}>✏️</button>
-                                  <button type="button" onClick={() => handleDeleteRentPayment(contract.id, p.id)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan={6} style={{ padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                                {rentYearFilter}년 등록된 입금 내역이 없습니다.
-                              </td>
-                            </tr>
-                          )}
-                          <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', fontWeight: 900 }}>
-                            <td colSpan={2}>{rentYearFilter === 'ALL' ? '전체' : `${rentYearFilter}년`} 입금 총액</td>
-                            <td style={{ textAlign: 'right', color: '#7e22ce' }}>{formatMoney(totalPaidAmount)}</td>
-                            <td colSpan={3}>-</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
                   </div>
 
-                  {/* 호실별 빠른 입금 등록 버튼 */}
-                  <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <button
                       type="button"
-                      onClick={() => handleOpenRentModal(contract.id)}
-                      style={{ fontSize: '0.78rem', padding: '6px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                      onClick={() => handleOpenRentModal(displayedContracts[0]?.id || data.rent.contracts[0]?.id)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 16px', borderRadius: '99px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#fff', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(168, 85, 247, 0.3)' }}
                     >
-                      + {contract.room} 입금 내역 추가
+                      ➕ 월세 입금 등록
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenContractModal()}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 16px', borderRadius: '99px', border: `1px solid ${dark ? 'rgba(168, 85, 247, 0.4)' : '#c084fc'}`, background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', color: dark ? '#c084fc' : '#7e22ce', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      🏢 계약/호실 추가
                     </button>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+
+                {/* 호실/계약자 테이블 렌더링 */}
+                <div className="ki-grid-2col">
+                  {displayedContracts.length > 0 ? (
+                    displayedContracts.map(contract => {
+                      const filteredPayments = contract.payments.filter(p => rentYearFilter === 'ALL' || (p.date && p.date.startsWith(rentYearFilter)));
+                      const totalPaidAmount = filteredPayments.reduce((s, p) => s + (p.isPaid ? (Number(p.amount) || 0) : 0), 0);
+
+                      return (
+                        <div key={contract.id} className="section-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                          <div>
+                            {/* 계약자 / 호실 헤더 */}
+                            <div style={{ borderBottom: `2px solid ${dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'}`, paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#a855f7' }}>
+                                    📍 {contract.room} ({contract.tenant})
+                                  </span>
+                                  <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: '99px', background: dark ? 'rgba(168,85,247,0.2)' : '#f3e8ff', color: '#7e22ce', fontWeight: 800 }}>
+                                    {contract.status}
+                                  </span>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenContractModal(contract)}
+                                    title="계약 정보 수정"
+                                    className="btn-action-icon"
+                                    style={{ color: '#a855f7', fontSize: '0.85rem' }}
+                                  >
+                                    ✏️
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteContract(contract.id)}
+                                    title="계약 삭제"
+                                    className="btn-action-icon"
+                                    style={{ color: '#ef4444', fontSize: '0.85rem' }}
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                                <div>계약일: <strong>{contract.contractDate}</strong></div>
+                                <div>계약조건: <strong>{contract.terms}</strong> (월 {formatMoney(contract.rent)})</div>
+                                <div>보증금: <strong>{formatMoney(contract.deposit)}</strong></div>
+                                <div>연장정보: <strong>{contract.extendStatus || '없음'}</strong></div>
+                              </div>
+
+                              {contract.memo && (
+                                <div style={{ fontSize: '0.72rem', color: '#ef4444', marginTop: '6px', fontWeight: 700 }}>
+                                  {contract.memo}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* 입금 일정 내역 테이블 */}
+                            <div className="table-responsive-container">
+                              <table className="data-table">
+                                <thead>
+                                  <tr>
+                                    <th>입금예정일</th>
+                                    <th>실입금일</th>
+                                    <th>입금액</th>
+                                    <th>입금여부</th>
+                                    <th>비고</th>
+                                    <th>관리</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {filteredPayments.length > 0 ? (
+                                    filteredPayments.map(p => (
+                                      <tr key={p.id}>
+                                        <td style={{ fontWeight: 700 }}>{p.date}</td>
+                                        <td>{p.actualDate || '-'}</td>
+                                        <td style={{ textAlign: 'right', fontWeight: 800 }}>
+                                          {formatMoney(p.amount)}
+                                        </td>
+                                        <td>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleToggleRentPaid(contract.id, p.id)}
+                                            className={p.isPaid ? 'badge-paid' : 'badge-unpaid'}
+                                            title="클릭 시 완납/미납 전환"
+                                          >
+                                            {p.isPaid ? '⭕ 완납' : '❌ 미납'}
+                                          </button>
+                                        </td>
+                                        <td style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 700 }}>
+                                          {p.note || '-'}
+                                        </td>
+                                        <td>
+                                          <button type="button" onClick={() => handleOpenRentModal(contract.id, p)} className="btn-action-icon" style={{ color: '#a855f7' }}>✏️</button>
+                                          <button type="button" onClick={() => handleDeleteRentPayment(contract.id, p.id)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
+                                        </td>
+                                      </tr>
+                                    ))
+                                  ) : (
+                                    <tr>
+                                      <td colSpan={6} style={{ padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                        {rentYearFilter}년 등록된 입금 내역이 없습니다.
+                                      </td>
+                                    </tr>
+                                  )}
+                                  <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', fontWeight: 900 }}>
+                                    <td colSpan={2}>{rentYearFilter === 'ALL' ? '전체' : `${rentYearFilter}년`} 입금 총액</td>
+                                    <td style={{ textAlign: 'right', color: '#7e22ce' }}>{formatMoney(totalPaidAmount)}</td>
+                                    <td colSpan={3}>-</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          {/* 호실별 빠른 입금 등록 버튼 */}
+                          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenRentModal(contract.id)}
+                              style={{ fontSize: '0.78rem', padding: '6px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                            >
+                              + {contract.room} 입금 내역 추가
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="section-card" style={{ gridColumn: '1 / -1', padding: '3.5rem 1.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🏢</div>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                        {rentYearFilter}년에 등록된 계약/호실 정보가 없습니다.
+                      </div>
+                      <p style={{ fontSize: '0.85rem', marginBottom: '1.25rem', color: 'var(--text-muted)' }}>
+                        조회 연도를 변경하시거나, 새로운 계약을 등록해 주세요.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenContractModal()}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 20px', borderRadius: '99px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#fff', fontWeight: 800, cursor: 'pointer' }}
+                      >
+                        🏢 {rentYearFilter === 'ALL' ? '2026' : rentYearFilter}년 신규 계약/호실 추가
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
         </div>
       )}
 
