@@ -240,6 +240,7 @@ export default function TaxArticlePage() {
   const { dark, showToast, triggerSaveSuccessBlink } = useApp();
   const contentTextareaRef = useRef(null);
   const mouseDownTargetRef = useRef(null);
+  const backupFileInputRef = useRef(null);
 
   const [colorPickerOpenId, setColorPickerOpenId] = useState(null); // 카드 색상 픽커 팝오버 열림 상태
 
@@ -307,6 +308,7 @@ export default function TaxArticlePage() {
     setCategories(updated);
     setDraggedCatIdx(null);
     setDragOverCatIdx(null);
+    syncArticlesWithGit(articles, updated, true);
   };
 
   const handleCatDragEnd = () => {
@@ -580,8 +582,10 @@ export default function TaxArticlePage() {
       alert("이미 존재하는 카테고리입니다.");
       return;
     }
-    setCategories(prev => [...prev, trimmed]);
+    const updatedCats = [...categories, trimmed];
+    setCategories(updatedCats);
     setNewCategoryInput('');
+    syncArticlesWithGit(articles, updatedCats, true);
   };
 
   // 카테고리 삭제
@@ -591,13 +595,69 @@ export default function TaxArticlePage() {
       return;
     }
     if (confirm(`'${catName}' 카테고리를 삭제하시겠습니까?\n해당 카테고리의 기존 글들은 '기타' 카테고리로 변경됩니다.`)) {
-      setCategories(prev => prev.filter(c => c !== catName));
-      // 해당 카테고리를 사용하는 아티클 '기타'로 전환
-      setArticles(prev => prev.map(art => art.category === catName ? { ...art, category: '기타' } : art));
+      const updatedCats = categories.filter(c => c !== catName);
+      const updatedArts = articles.map(art => art.category === catName ? { ...art, category: '기타' } : art);
+      setCategories(updatedCats);
+      setArticles(updatedArts);
       if (selectedCategory === catName) {
         setSelectedCategory('전체');
       }
+      syncArticlesWithGit(updatedArts, updatedCats, true);
     }
+  };
+
+  // 아티클 전체 백업 파일 다운로드 (JSON 내보내기)
+  const handleExportBackup = () => {
+    const backupData = {
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      categories,
+      articles
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    a.href = url;
+    a.download = `tax_articles_backup_${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('💾 아티클 전체 데이터 백업 파일이 다운로드되었습니다.', 'success');
+  };
+
+  // 아티클 백업 파일에서 복원 (JSON 가져오기)
+  const handleImportBackup = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        if (parsed && Array.isArray(parsed.articles)) {
+          if (window.confirm(`백업 파일에서 아티클 ${parsed.articles.length}건을 복원하시겠습니까?\n(기존 데이터에 덮어쓰기 되며 GitHub 서버에도 즉시 동기화됩니다.)`)) {
+            const newArticles = parsed.articles;
+            const newCategories = Array.isArray(parsed.categories) && parsed.categories.length > 0
+              ? parsed.categories
+              : categories;
+            setArticles(newArticles);
+            setCategories(newCategories);
+            localStorage.setItem('asset_tax_articles', JSON.stringify(newArticles));
+            localStorage.setItem('asset_tax_article_categories', JSON.stringify(newCategories));
+            await syncArticlesWithGit(newArticles, newCategories, true);
+            showToast('✅ 아티클 및 카테고리가 성공적으로 복원되었습니다!', 'success', true);
+          }
+        } else {
+          alert('올바른 아티클 백업 JSON 파일 형식이 아닙니다.');
+        }
+      } catch (err) {
+        alert('파일 복원 중 오류가 발생했습니다: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   // GitHub 데이터 자동 동기화 헬퍼
@@ -607,9 +667,10 @@ export default function TaxArticlePage() {
       const ghConfig = getGithubConfig();
       if (ghConfig.token && ghConfig.repo) {
         if (isExplicitSave && showToast) {
-          showToast('아티클 저장 및 GitHub 동기화 진행 중...', 'info');
+          showToast('☁️ GitHub 서버 동기화 진행 중...', 'info');
         }
         let articleSuccess = false;
+        let catSuccess = false;
         if (targetArticles) {
           try {
             articleSuccess = await syncWithGitHub('upload', 'asset_tax_articles', JSON.stringify(targetArticles));
@@ -619,22 +680,22 @@ export default function TaxArticlePage() {
         }
         if (targetCategories) {
           try {
-            await syncWithGitHub('upload', 'asset_tax_article_categories', JSON.stringify(targetCategories));
+            catSuccess = await syncWithGitHub('upload', 'asset_tax_article_categories', JSON.stringify(targetCategories));
           } catch (err) {
             console.warn('[TaxArticlePage] GitHub sync failed for categories:', err);
           }
         }
 
         if (isExplicitSave) {
-          if (articleSuccess) {
+          if (articleSuccess || catSuccess) {
             if (showToast) showToast('🔑 GitHub 서버 동기화 저장 완료!', 'success', true);
             if (triggerSaveSuccessBlink) triggerSaveSuccessBlink();
           } else {
-            if (showToast) showToast('⚠️ 아티클 로컬 저장 완료 (GitHub 동기화 확인 필요)', 'warning');
+            if (showToast) showToast('⚠️ 로컬 저장 완료 (GitHub 동기화 확인 필요)', 'warning');
           }
         }
       } else if (isExplicitSave) {
-        if (showToast) showToast('⚠️ GitHub 토큰이 설정되지 않아 로컬에만 저장되었습니다.', 'warning');
+        if (showToast) showToast('⚠️ GitHub 토큰이 설정되지 않아 로컬 브라우저에만 저장되었습니다.', 'warning');
       }
     } catch (err) {
       console.warn('[TaxArticlePage] Git sync import failed:', err);
@@ -647,6 +708,7 @@ export default function TaxArticlePage() {
   // 초기 마운트 시 GitHub 최신 아티클 데이터 원격 다운로드 복원
   useEffect(() => {
     async function loadGitArticles() {
+      // 1. GitHub API 연동 데이터 다운로드
       try {
         const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
         const ghConfig = getGithubConfig();
@@ -661,9 +723,39 @@ export default function TaxArticlePage() {
             setCategories(remoteCategories);
             localStorage.setItem('asset_tax_article_categories', JSON.stringify(remoteCategories));
           }
+          return;
         }
       } catch (err) {
         console.warn('[TaxArticlePage] Initial GitHub load error:', err);
+      }
+
+      // 2. localStorage에 없는 경우 정적 JSON 파일 로드
+      const savedArticles = localStorage.getItem('asset_tax_articles');
+      if (!savedArticles) {
+        try {
+          const res = await fetch('./data/asset_tax_articles.json');
+          if (res.ok) {
+            const fetched = await res.json();
+            if (Array.isArray(fetched) && fetched.length > 0) {
+              setArticles(fetched);
+              localStorage.setItem('asset_tax_articles', JSON.stringify(fetched));
+            }
+          }
+        } catch (e) {}
+      }
+
+      const savedCategories = localStorage.getItem('asset_tax_article_categories');
+      if (!savedCategories) {
+        try {
+          const res = await fetch('./data/asset_tax_article_categories.json');
+          if (res.ok) {
+            const fetched = await res.json();
+            if (Array.isArray(fetched) && fetched.length > 0) {
+              setCategories(fetched);
+              localStorage.setItem('asset_tax_article_categories', JSON.stringify(fetched));
+            }
+          }
+        } catch (e) {}
       }
     }
     loadGitArticles();
@@ -968,7 +1060,7 @@ export default function TaxArticlePage() {
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0, flexWrap: 'wrap' }}>
             <button
               onClick={() => handleOpenEditor()}
               style={{
@@ -1009,6 +1101,70 @@ export default function TaxArticlePage() {
               }}
             >
               ⚙️ 카테고리 설정
+            </button>
+            <button
+              onClick={handleExportBackup}
+              title="현재 아티클 및 카테고리를 JSON 백업 파일로 다운로드"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '99px',
+                border: `1px solid ${dark ? 'rgba(255,255,255,0.15)' : '#cbd5e1'}`,
+                background: dark ? 'rgba(255,255,255,0.06)' : '#f8fafc',
+                color: 'var(--text-primary)',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              💾 백업
+            </button>
+            <button
+              onClick={() => backupFileInputRef.current?.click()}
+              title="JSON 백업 파일에서 아티클 데이터 복원"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '99px',
+                border: `1px solid ${dark ? 'rgba(255,255,255,0.15)' : '#cbd5e1'}`,
+                background: dark ? 'rgba(255,255,255,0.06)' : '#f8fafc',
+                color: 'var(--text-primary)',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              📂 복원
+            </button>
+            <input
+              type="file"
+              ref={backupFileInputRef}
+              onChange={handleImportBackup}
+              accept=".json"
+              style={{ display: 'none' }}
+            />
+            <button
+              onClick={() => syncArticlesWithGit(articles, categories, true)}
+              title="아티클 및 카테고리를 GitHub 서버로 즉시 동기화 업로드"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '99px',
+                border: `1px solid ${dark ? 'rgba(56, 189, 248, 0.4)' : '#38bdf8'}`,
+                background: dark ? 'rgba(56, 189, 248, 0.15)' : '#e0f2fe',
+                color: dark ? '#38bdf8' : '#0369a1',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              ☁️ GitHub 동기화
             </button>
           </div>
         </div>
