@@ -484,12 +484,13 @@ export default function KnowledgeIndustryPage() {
 
   // --- 탭 3: 월세 입금 여부 토글 헬퍼 ---
   const handleToggleRentPaid = (contractId, paymentId) => {
+    const targetCId = String(contractId);
     setData(prev => {
       const nextRent = { ...prev.rent };
       nextRent.contracts = nextRent.contracts.map(c => {
-        if (c.id === contractId) {
+        if (String(c.id) === targetCId) {
           const nextPayments = c.payments.map(p => {
-            if (p.id === paymentId) {
+            if (String(p.id) === String(paymentId)) {
               const nextPaid = !p.isPaid;
               return { ...p, isPaid: nextPaid, amount: nextPaid ? (c.rent || 600000) : 0 };
             }
@@ -505,14 +506,21 @@ export default function KnowledgeIndustryPage() {
   };
 
   // --- 탭 3: 월세 입금 내역 CRUD 헬퍼 ---
-  const handleOpenRentModal = (contractId, payment = null) => {
-    const targetContract = data.rent.contracts.find(c => c.id === contractId) || data.rent.contracts[0];
+  const handleOpenRentModal = (contractId = null, payment = null) => {
+    let targetContract = null;
+    if (contractId) {
+      targetContract = data.rent.contracts.find(c => String(c.id) === String(contractId));
+    }
+    if (!targetContract) {
+      targetContract = data.rent.contracts[0];
+    }
     const defaultAmount = targetContract ? targetContract.rent : 600000;
+    const finalContractId = targetContract ? String(targetContract.id) : (data.rent.contracts[0]?.id ? String(data.rent.contracts[0].id) : 'c1');
     
     if (payment) {
       setRentModal({
         open: true,
-        contractId: targetContract ? targetContract.id : 'c1',
+        contractId: finalContractId,
         paymentId: payment.id,
         formData: {
           date: payment.date || '',
@@ -529,7 +537,7 @@ export default function KnowledgeIndustryPage() {
       const defaultDateStr = `${currentYear}. ${currentMonth}. 19`;
       setRentModal({
         open: true,
-        contractId: targetContract ? targetContract.id : (data.rent.contracts[0]?.id || 'c1'),
+        contractId: finalContractId,
         paymentId: null,
         formData: {
           date: defaultDateStr,
@@ -545,6 +553,7 @@ export default function KnowledgeIndustryPage() {
   const handleSaveRentPayment = (e) => {
     e.preventDefault();
     const { contractId, paymentId, formData } = rentModal;
+    const targetCId = String(contractId);
     const amount = Number(unformatComma(formData.amount)) || 0;
     const parsedDate = formData.date.trim();
     const parsedActualDate = formData.actualDate.trim();
@@ -557,11 +566,11 @@ export default function KnowledgeIndustryPage() {
         // 기존 입금 내역 수정 (만약 다른 계약으로 호실이 변경된 경우 기존 계약에서 제거 후 대상 계약으로 이동)
         nextRent.contracts = nextRent.contracts.map(c => ({
           ...c,
-          payments: c.payments.filter(p => p.id !== paymentId)
+          payments: c.payments.filter(p => String(p.id) !== String(paymentId))
         }));
 
         nextRent.contracts = nextRent.contracts.map(c => {
-          if (c.id === contractId) {
+          if (String(c.id) === targetCId) {
             const nextPayments = [
               ...c.payments,
               {
@@ -588,7 +597,7 @@ export default function KnowledgeIndustryPage() {
       } else {
         // 신규 월세 입금 등록: 선택된 contractId 계약에 정확히 추가
         nextRent.contracts = nextRent.contracts.map(c => {
-          if (c.id === contractId) {
+          if (String(c.id) === targetCId) {
             const nextPayments = [
               ...c.payments,
               {
@@ -622,11 +631,12 @@ export default function KnowledgeIndustryPage() {
 
   const handleDeleteRentPayment = (contractId, paymentId) => {
     if (!window.confirm('해당 월세 입금 내역을 삭제하시겠습니까?')) return;
+    const targetCId = String(contractId);
     setData(prev => {
       const nextRent = { ...prev.rent };
       nextRent.contracts = nextRent.contracts.map(c => {
-        if (c.id === contractId) {
-          return { ...c, payments: c.payments.filter(p => p.id !== paymentId) };
+        if (String(c.id) === targetCId) {
+          return { ...c, payments: c.payments.filter(p => String(p.id) !== String(paymentId)) };
         }
         return c;
       });
