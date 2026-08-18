@@ -93,25 +93,83 @@ function Dashboard() {
   };
 
   const handleSaveSync = async () => {
-    const sections = getCurrentSections();
-    showToast('저장 및 동기화 진행 중...', 'info');
-    const res = await persistSections(sections, true);
-    if (res && res.success) {
-      if (res.target === 'github' || res.target === 'server') {
+    showToast('모든 페이지 데이터 서버(GitHub) 동기화 진행 중...', 'info');
+    try {
+      const { getGithubConfig, syncWithGitHub } = await import('./utils/github');
+      const ghConfig = getGithubConfig();
+
+      // 1. 현재 화면의 자산 관리 데이터 저장
+      const sections = getCurrentSections();
+      await persistSections(sections, true);
+
+      // 2. GitHub 설정이 있는 경우 모든 페이지 데이터셋 일괄 서버 업로드 동기화
+      if (ghConfig.token && ghConfig.repo) {
+        const uploadPromises = [];
+
+        // 2-1. 모든 자산 연도별 데이터 (state 및 localStorage)
+        const savedYearKeys = new Set();
+        Object.keys(yearData || {}).forEach(y => savedYearKeys.add(`assetData_${y}`));
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('assetData_') && !key.endsWith('_updatedAt')) {
+            savedYearKeys.add(key);
+          }
+        }
+        savedYearKeys.forEach(yearKey => {
+          const y = yearKey.replace('assetData_', '');
+          const yData = yearData[y] || (() => {
+            try { return JSON.parse(localStorage.getItem(yearKey)); } catch { return null; }
+          })();
+          if (yData) {
+            uploadPromises.push(
+              syncWithGitHub('upload', yearKey, JSON.stringify(yData)).catch(e => console.warn(`[Sync] ${yearKey} failed`, e))
+            );
+          }
+        });
+
+        // 2-2. 지식산업센터 데이터 동기화
+        const savedKi = localStorage.getItem('asset_knowledge_industry');
+        if (savedKi) {
+          uploadPromises.push(
+            syncWithGitHub('upload', 'asset_knowledge_industry', savedKi).catch(e => console.warn('[Sync] KI failed', e))
+          );
+        }
+
+        // 2-3. 세무/절세 아티클 데이터 동기화
+        const savedArt = localStorage.getItem('asset_tax_articles');
+        if (savedArt) {
+          uploadPromises.push(
+            syncWithGitHub('upload', 'asset_tax_articles', savedArt).catch(e => console.warn('[Sync] Articles failed', e))
+          );
+        }
+
+        // 2-4. 세무 아티클 카테고리 동기화
+        const savedCats = localStorage.getItem('asset_tax_article_categories');
+        if (savedCats) {
+          uploadPromises.push(
+            syncWithGitHub('upload', 'asset_tax_article_categories', savedCats).catch(e => console.warn('[Sync] Categories failed', e))
+          );
+        }
+
+        // 2-5. 보안 계좌 데이터 동기화
+        const savedSec = localStorage.getItem('_secureAccounts');
+        if (savedSec) {
+          uploadPromises.push(
+            syncWithGitHub('upload', '_secureAccounts', savedSec).catch(e => console.warn('[Sync] SecureAccounts failed', e))
+          );
+        }
+
+        await Promise.all(uploadPromises);
+
         triggerSaveSuccessBlink();
-        showToast('🔑 GitHub 서버 동기화 저장 완료!', 'success', true);
-      } else if (res.target === 'no_github_token') {
-        setGithubModal(true);
-        showToast('⚠️ GitHub 토큰이 설정되지 않아 서버 동기화에 실패했습니다. 토큰을 입력해주세요.', 'warning');
-      } else if (res.target === 'local_only_sync_fail') {
-        const errMsg = res.error ? ` 사유: ${res.error}` : '';
-        showToast(`⚠️ 로컬 저장 완료 (GitHub 동기화 실패.${errMsg})`, 'warning');
+        showToast('🔑 모든 페이지 데이터가 서버(GitHub)에 성공적으로 저장되었습니다!', 'success', true);
       } else {
         setGithubModal(true);
-        showToast('⚠️ 타 기기 동기화를 위해 GitHub 토큰 설정을 진행해 주세요.', 'warning');
+        showToast('⚠️ 타 기기/브라우저 동기화를 위해 GitHub 토큰 설정을 진행해 주세요.', 'warning');
       }
-    } else {
-      showToast('저장 중 오류가 발생했습니다.', 'danger');
+    } catch (e) {
+      console.error('Failed to sync all pages data', e);
+      showToast('저장 중 오류가 발생했습니다: ' + e.message, 'danger');
     }
   };
 
