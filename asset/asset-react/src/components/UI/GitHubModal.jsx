@@ -41,16 +41,42 @@ export default function GitHubModal({ onClose }) {
     
     setIsSyncing(true);
     try {
+      let downloadCount = 0;
+
+      // 1. 자산 데이터
       const yearKey = `assetData_${year}`;
       const data = await syncWithGitHub('download', yearKey);
       if (data) {
-        // Save to local storage and reload
         localStorage.setItem(yearKey, JSON.stringify(data));
         await loadYearData(year);
+        downloadCount++;
+      }
+
+      // 2. 지식산업센터 데이터
+      const kiData = await syncWithGitHub('download', 'asset_knowledge_industry');
+      if (kiData) {
+        localStorage.setItem('asset_knowledge_industry', JSON.stringify(kiData));
+        downloadCount++;
+      }
+
+      // 3. 아티클 및 카테고리 데이터
+      const artData = await syncWithGitHub('download', 'asset_tax_articles');
+      if (artData) {
+        localStorage.setItem('asset_tax_articles', JSON.stringify(artData));
+        downloadCount++;
+      }
+      const catData = await syncWithGitHub('download', 'asset_tax_article_categories');
+      if (catData) {
+        localStorage.setItem('asset_tax_article_categories', JSON.stringify(catData));
+      }
+
+      if (downloadCount > 0) {
         showToast('GitHub에서 데이터를 성공적으로 불러왔습니다.', 'success');
         onClose();
+        // 페이지 새로고침하여 최신 상태 즉시 반영
+        window.location.reload();
       } else {
-        showToast('GitHub에 해당 연도의 데이터가 없습니다.', 'error');
+        showToast('GitHub에 저장된 데이터가 없습니다.', 'error');
       }
     } catch (e) {
       showToast('동기화 실패: ' + e.message, 'error');
@@ -65,20 +91,33 @@ export default function GitHubModal({ onClose }) {
       return;
     }
 
-    const data = yearData[year];
-    if (!data) {
-      showToast('내보낼 데이터가 없습니다.', 'error');
-      return;
-    }
-
     setIsSyncing(true);
     try {
+      // 1. 자산 데이터
       const yearKey = `assetData_${year}`;
-      const success = await syncWithGitHub('upload', yearKey, JSON.stringify(data));
-      if (success) {
-        showToast('저장되었습니다.', 'success', true);
-        onClose();
+      const data = yearData[year];
+      if (data) {
+        await syncWithGitHub('upload', yearKey, JSON.stringify(data));
       }
+
+      // 2. 지식산업센터 데이터
+      const savedKi = localStorage.getItem('asset_knowledge_industry');
+      if (savedKi) {
+        await syncWithGitHub('upload', 'asset_knowledge_industry', savedKi);
+      }
+
+      // 3. 아티클 및 카테고리 데이터
+      const savedArt = localStorage.getItem('asset_tax_articles');
+      if (savedArt) {
+        await syncWithGitHub('upload', 'asset_tax_articles', savedArt);
+      }
+      const savedCats = localStorage.getItem('asset_tax_article_categories');
+      if (savedCats) {
+        await syncWithGitHub('upload', 'asset_tax_article_categories', savedCats);
+      }
+
+      showToast('GitHub 서버로 모든 데이터가 저장되었습니다.', 'success', true);
+      onClose();
     } catch (e) {
       showToast('동기화 실패: ' + e.message, 'error');
     } finally {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
 
 // 초기 샘플 데이터 (첨부 이미지 3종 실 데이터 100% 정밀 복원)
@@ -276,12 +276,74 @@ export default function KnowledgeIndustryPage() {
     }
   });
 
-  // 데이터 변경 시 저장
+  // GitHub 데이터 자동 동기화 헬퍼
+  const syncKnowledgeIndustryWithGit = useCallback(async (targetData, isExplicit = false) => {
+    try {
+      const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
+      const ghConfig = getGithubConfig();
+      if (ghConfig.token && ghConfig.repo) {
+        if (isExplicit && showToast) {
+          showToast('☁️ GitHub 서버로 동기화 업로드 중...', 'info');
+        }
+        const success = await syncWithGitHub('upload', 'asset_knowledge_industry', JSON.stringify(targetData));
+        if (isExplicit) {
+          if (success) {
+            if (showToast) showToast('🔑 GitHub 서버 동기화 저장 완료!', 'success', true);
+          } else {
+            if (showToast) showToast('⚠️ 로컬 저장 완료 (GitHub 동기화 확인 필요)', 'warning');
+          }
+        }
+      } else if (isExplicit) {
+        if (showToast) showToast('⚠️ GitHub 토큰이 설정되지 않아 로컬 브라우저에만 저장되었습니다.', 'warning');
+      }
+    } catch (err) {
+      console.warn('[KnowledgeIndustryPage] Git sync error:', err);
+    }
+  }, [showToast]);
+
+  // 초기 마운트 시 GitHub 최신 데이터 또는 정적 JSON 파일 데이터 로드
+  useEffect(() => {
+    async function loadInitialData() {
+      // 1. GitHub API 토큰이 설정되어 있으면 최신 원격 데이터 다운로드
+      try {
+        const { getGithubConfig, syncWithGitHub } = await import('../../utils/github');
+        const ghConfig = getGithubConfig();
+        if (ghConfig.token && ghConfig.repo) {
+          const remoteData = await syncWithGitHub('download', 'asset_knowledge_industry');
+          if (remoteData && remoteData.investment && remoteData.loans && remoteData.rent) {
+            setData(remoteData);
+            localStorage.setItem('asset_knowledge_industry', JSON.stringify(remoteData));
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // 2. localStorage에 저장된 데이터가 없는 경우 정적 JSON 파일 로드
+      const saved = localStorage.getItem('asset_knowledge_industry');
+      if (!saved) {
+        try {
+          const res = await fetch('./data/asset_knowledge_industry.json');
+          if (res.ok) {
+            const fetched = await res.json();
+            if (fetched && fetched.investment && fetched.loans && fetched.rent) {
+              setData(fetched);
+              localStorage.setItem('asset_knowledge_industry', JSON.stringify(fetched));
+            }
+          }
+        } catch (e) {}
+      }
+    }
+    loadInitialData();
+  }, []);
+
+  // 데이터 변경 시 로컬스토리지 저장 및 GitHub 자동 동기화
   useEffect(() => {
     try {
       localStorage.setItem('asset_knowledge_industry', JSON.stringify(data));
+      // GitHub 자동 동기화
+      syncKnowledgeIndustryWithGit(data, false);
     } catch (e) {}
-  }, [data]);
+  }, [data, syncKnowledgeIndustryWithGit]);
 
   // 숫자를 한국 원화 금액 포맷으로 변환
   const formatMoney = (num) => {
@@ -822,6 +884,25 @@ export default function KnowledgeIndustryPage() {
               className={`tab-btn ${activeTab === 'rent' ? 'active' : 'inactive'}`}
             >
               🚪 3. 월세현황
+            </button>
+            <button
+              onClick={() => syncKnowledgeIndustryWithGit(data, true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                color: 'var(--text-primary)',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+              title="지식산업센터 데이터를 GitHub 저장소로 즉시 동기화합니다"
+            >
+              ☁️ GitHub 동기화
             </button>
           </div>
         </div>
@@ -2090,14 +2171,39 @@ export default function KnowledgeIndustryPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>계약일자</label>
-                  <input
-                    type="text"
-                    placeholder="예: 2026. 1. 15"
-                    value={contractModal.formData.contractDate}
-                    onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, contractDate: e.target.value } }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
-                    required
-                  />
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="예: 2026. 1. 15"
+                      value={contractModal.formData.contractDate}
+                      onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, contractDate: e.target.value } }))}
+                      style={{ width: '100%', padding: '8px 32px 8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                      required
+                    />
+                    <input
+                      type="date"
+                      onChange={e => {
+                        if (e.target.value) {
+                          const [y, m, d] = e.target.value.split('-');
+                          const formatted = `${y}. ${parseInt(m, 10)}. ${parseInt(d, 10)}`;
+                          setContractModal(prev => ({ ...prev, formData: { ...prev.formData, contractDate: formatted } }));
+                        }
+                      }}
+                      style={{
+                        position: 'absolute',
+                        right: '6px',
+                        width: '24px',
+                        height: '24px',
+                        opacity: 0,
+                        cursor: 'pointer',
+                        zIndex: 2
+                      }}
+                      title="달력 선택"
+                    />
+                    <span style={{ position: 'absolute', right: '8px', pointerEvents: 'none', fontSize: '0.9rem', zIndex: 1 }}>
+                      📅
+                    </span>
+                  </div>
                 </div>
 
                 <div>
