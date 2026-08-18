@@ -35,7 +35,25 @@ function b64EncodeUnicode(str) {
   }));
 }
 
+const fileUploadLocks = new Map();
+
 export async function syncWithGitHub(action = 'upload', yearKey, dataStr) {
+  if (action === 'upload') {
+    const prevLock = fileUploadLocks.get(yearKey) || Promise.resolve();
+    const curTask = prevLock.then(() => _executeSyncWithGitHub(action, yearKey, dataStr)).catch(() => _executeSyncWithGitHub(action, yearKey, dataStr));
+    fileUploadLocks.set(yearKey, curTask);
+    try {
+      return await curTask;
+    } finally {
+      if (fileUploadLocks.get(yearKey) === curTask) {
+        fileUploadLocks.delete(yearKey);
+      }
+    }
+  }
+  return _executeSyncWithGitHub(action, yearKey, dataStr);
+}
+
+async function _executeSyncWithGitHub(action = 'upload', yearKey, dataStr) {
   const config = getGithubConfig();
   if (!config.token || !config.repo) return null;
 

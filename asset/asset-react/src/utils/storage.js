@@ -52,24 +52,6 @@ export async function saveData(year, plainData) {
     localStorage.setItem(getDataKey(year), JSON.stringify(dataToSave));
     localStorage.setItem(`${getDataKey(year)}_updatedAt`, String(updatedAt));
 
-    // 2. GitHub API 자동 동기화 (설정된 경우 저장 즉시 백그라운드 자동 업로드)
-    try {
-      const { getGithubConfig, syncWithGitHub } = await import('./github');
-      const ghConfig = getGithubConfig();
-      if (ghConfig.token && ghConfig.repo) {
-        const yearKey = getDataKey(year);
-        // 비동기로 GitHub 업로드 시도 (백그라운드 진행)
-        syncWithGitHub('upload', yearKey, JSON.stringify(dataWithTs))
-          .then(res => {
-            if (res) console.log(`[Storage] Auto-synced data to GitHub: ${yearKey}`);
-          })
-          .catch(err => {
-            console.warn('[Storage] Auto-sync to GitHub failed silently', err);
-          });
-      }
-    } catch (ghErr) {
-      console.warn('[Storage] GitHub auto-sync import failed', ghErr);
-    }
 
     // 3. 서버 API — 백엔드 서빙 환경일 때만 선택적 전송
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
