@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/vibe/carrep/',
+  base: './',
   build: {
     outDir: 'dist',
   }

@@ -728,6 +728,7 @@ export default function TaxArticlePage() {
     }
   };
 
+
   return (
     <div style={{ padding: '1rem', maxWidth: '1200px', margin: '0 auto' }}>
       {/* 스타일 정의 */}

@@ -222,6 +222,8 @@ export default function KnowledgeIndustryPage() {
 
 
 
+  const [rentYearFilter, setRentYearFilter] = useState('2026'); // 기본 당해연도(2026) 필터링
+
   // 대출상환 편집 모달 상태
   const [loanModal, setLoanModal] = useState({
     open: false,
@@ -237,6 +239,40 @@ export default function KnowledgeIndustryPage() {
       diff: '',
       margin: '',
       condition: ''
+    }
+  });
+
+  // 월세 입금 내역 등록/수정 모달 상태
+  const [rentModal, setRentModal] = useState({
+    open: false,
+    contractId: '',
+    paymentId: null, // null: 신규, string: 수정
+    formData: {
+      date: '',
+      actualDate: '',
+      amount: '600,000',
+      isPaid: true,
+      note: ''
+    }
+  });
+
+  // 계약 정보 등록/수정 모달 상태
+  const [contractModal, setContractModal] = useState({
+    open: false,
+    contractId: null, // null: 신규, string: 수정
+    formData: {
+      room: 'CA520',
+      tenant: '',
+      contact: '',
+      contractDate: '',
+      status: '계약중',
+      terms: '500/60',
+      deposit: '5,000,000',
+      rent: '600,000',
+      extendRequest: '',
+      extendStatus: '',
+      note: '',
+      memo: ''
     }
   });
 
@@ -393,7 +429,7 @@ export default function KnowledgeIndustryPage() {
           const nextPayments = c.payments.map(p => {
             if (p.id === paymentId) {
               const nextPaid = !p.isPaid;
-              return { ...p, isPaid: nextPaid, amount: nextPaid ? 600000 : 0 };
+              return { ...p, isPaid: nextPaid, amount: nextPaid ? (c.rent || 600000) : 0 };
             }
             return p;
           });
@@ -404,6 +440,225 @@ export default function KnowledgeIndustryPage() {
       return { ...prev, rent: nextRent };
     });
     showToast('월세 입금 상태가 업데이트되었습니다.', 'success');
+  };
+
+  // --- 탭 3: 월세 입금 내역 CRUD 헬퍼 ---
+  const handleOpenRentModal = (contractId, payment = null) => {
+    const targetContract = data.rent.contracts.find(c => c.id === contractId) || data.rent.contracts[0];
+    const defaultAmount = targetContract ? targetContract.rent : 600000;
+    
+    if (payment) {
+      setRentModal({
+        open: true,
+        contractId: targetContract ? targetContract.id : 'c1',
+        paymentId: payment.id,
+        formData: {
+          date: payment.date || '',
+          actualDate: payment.actualDate || '',
+          amount: formatComma(payment.amount),
+          isPaid: payment.isPaid !== false,
+          note: payment.note || ''
+        }
+      });
+    } else {
+      const currentYear = rentYearFilter === 'ALL' ? '2026' : rentYearFilter;
+      const today = new Date();
+      const currentMonth = today.getMonth() + 1;
+      const defaultDateStr = `${currentYear}. ${currentMonth}. 19`;
+      setRentModal({
+        open: true,
+        contractId: targetContract ? targetContract.id : (data.rent.contracts[0]?.id || 'c1'),
+        paymentId: null,
+        formData: {
+          date: defaultDateStr,
+          actualDate: '',
+          amount: formatComma(defaultAmount),
+          isPaid: true,
+          note: ''
+        }
+      });
+    }
+  };
+
+  const handleSaveRentPayment = (e) => {
+    e.preventDefault();
+    const { contractId, paymentId, formData } = rentModal;
+    const amount = Number(unformatComma(formData.amount)) || 0;
+
+    setData(prev => {
+      const nextRent = { ...prev.rent };
+      nextRent.contracts = nextRent.contracts.map(c => {
+        if (c.id === contractId) {
+          const nextPayments = [...c.payments];
+          if (paymentId) {
+            // 수정
+            const idx = nextPayments.findIndex(p => p.id === paymentId);
+            if (idx >= 0) {
+              nextPayments[idx] = {
+                ...nextPayments[idx],
+                date: formData.date.trim(),
+                actualDate: formData.actualDate.trim(),
+                amount,
+                isPaid: formData.isPaid,
+                note: formData.note.trim()
+              };
+            }
+          } else {
+            // 신규 추가
+            nextPayments.push({
+              id: `p-${Date.now()}`,
+              date: formData.date.trim(),
+              actualDate: formData.actualDate.trim(),
+              amount,
+              isPaid: formData.isPaid,
+              note: formData.note.trim()
+            });
+            // 일자순 정렬
+            nextPayments.sort((a, b) => {
+              const parseDate = s => {
+                if (!s) return 0;
+                const parts = s.replace(/[^0-9.]/g, '').split('.').filter(Boolean).map(Number);
+                return (parts[0] || 0) * 10000 + (parts[1] || 0) * 100 + (parts[2] || 0);
+              };
+              return parseDate(a.date) - parseDate(b.date);
+            });
+          }
+          return { ...c, payments: nextPayments };
+        }
+        return c;
+      });
+      return { ...prev, rent: nextRent };
+    });
+
+    setRentModal(prev => ({ ...prev, open: false }));
+    showToast('월세 입금 내역이 저장되었습니다.', 'success');
+  };
+
+  const handleDeleteRentPayment = (contractId, paymentId) => {
+    if (!window.confirm('해당 월세 입금 내역을 삭제하시겠습니까?')) return;
+    setData(prev => {
+      const nextRent = { ...prev.rent };
+      nextRent.contracts = nextRent.contracts.map(c => {
+        if (c.id === contractId) {
+          return { ...c, payments: c.payments.filter(p => p.id !== paymentId) };
+        }
+        return c;
+      });
+      return { ...prev, rent: nextRent };
+    });
+    showToast('삭제되었습니다.', 'info');
+  };
+
+  // --- 계약/호실 정보 CRUD 헬퍼 ---
+  const handleOpenContractModal = (contract = null) => {
+    if (contract) {
+      setContractModal({
+        open: true,
+        contractId: contract.id,
+        formData: {
+          room: contract.room || '',
+          tenant: contract.tenant || '',
+          contact: contract.contact || '',
+          contractDate: contract.contractDate || '',
+          status: contract.status || '계약중',
+          terms: contract.terms || '500/60',
+          deposit: formatComma(contract.deposit),
+          rent: formatComma(contract.rent),
+          extendRequest: contract.extendRequest || '',
+          extendStatus: contract.extendStatus || '',
+          note: contract.note || '',
+          memo: contract.memo || ''
+        }
+      });
+    } else {
+      setContractModal({
+        open: true,
+        contractId: null,
+        formData: {
+          room: 'CA520',
+          tenant: '',
+          contact: '',
+          contractDate: '2026. 1. 1',
+          status: '계약중',
+          terms: '500/60',
+          deposit: '5,000,000',
+          rent: '600,000',
+          extendRequest: '',
+          extendStatus: '',
+          note: '',
+          memo: ''
+        }
+      });
+    }
+  };
+
+  const handleSaveContract = (e) => {
+    e.preventDefault();
+    const { contractId, formData } = contractModal;
+    const deposit = Number(unformatComma(formData.deposit)) || 0;
+    const rent = Number(unformatComma(formData.rent)) || 0;
+
+    setData(prev => {
+      const nextRent = { ...prev.rent };
+      if (contractId) {
+        // 수정
+        nextRent.contracts = nextRent.contracts.map(c => {
+          if (c.id === contractId) {
+            return {
+              ...c,
+              room: formData.room.trim(),
+              tenant: formData.tenant.trim(),
+              contact: formData.contact.trim(),
+              contractDate: formData.contractDate.trim(),
+              status: formData.status.trim(),
+              terms: formData.terms.trim(),
+              deposit,
+              rent,
+              extendRequest: formData.extendRequest.trim(),
+              extendStatus: formData.extendStatus.trim(),
+              note: formData.note.trim(),
+              memo: formData.memo.trim()
+            };
+          }
+          return c;
+        });
+      } else {
+        // 신규 계약 호실 추가
+        const newContract = {
+          id: `c-${Date.now()}`,
+          room: formData.room.trim(),
+          tenant: formData.tenant.trim(),
+          contact: formData.contact.trim(),
+          contractDate: formData.contractDate.trim(),
+          status: formData.status.trim(),
+          terms: formData.terms.trim(),
+          deposit,
+          rent,
+          extendRequest: formData.extendRequest.trim(),
+          extendStatus: formData.extendStatus.trim(),
+          note: formData.note.trim(),
+          memo: formData.memo.trim(),
+          payments: []
+        };
+        nextRent.contracts = [...nextRent.contracts, newContract];
+      }
+      return { ...prev, rent: nextRent };
+    });
+
+    setContractModal(prev => ({ ...prev, open: false }));
+    showToast('계약 정보가 저장되었습니다.', 'success');
+  };
+
+  const handleDeleteContract = (contractId) => {
+    if (!window.confirm('해당 계약/호실 및 포함된 모든 월세 입금 내역을 삭제하시겠습니까?')) return;
+    setData(prev => ({
+      ...prev,
+      rent: {
+        ...prev.rent,
+        contracts: prev.rent.contracts.filter(c => c.id !== contractId)
+      }
+    }));
+    showToast('계약이 삭제되었습니다.', 'info');
   };
 
   return (
@@ -463,13 +718,16 @@ export default function KnowledgeIndustryPage() {
         }
 
         @media (max-width: 768px) {
+          .section-card {
+            padding: 1.15rem 0.95rem !important;
+          }
           .data-table {
-            width: auto;
-            min-width: max-content;
+            width: 100% !important;
+            min-width: 100% !important;
             font-size: 0.82rem;
           }
           .data-table th, .data-table td {
-            padding: 6px 8px;
+            padding: 7px 8px;
           }
           .loan-compare-title-sub {
             display: none;
@@ -518,6 +776,18 @@ export default function KnowledgeIndustryPage() {
           font-size: 0.75rem;
           font-weight: 800;
           cursor: pointer;
+        }
+
+        .ki-grid-2col {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+        }
+        @media (max-width: 900px) {
+          .ki-grid-2col {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+          }
         }
       `}</style>
 
@@ -603,37 +873,39 @@ export default function KnowledgeIndustryPage() {
               🛠️ 호실별 인테리어 비용
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="ki-grid-2col">
               {/* CA520 호실 */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#a855f7' }}>📍 CA520 호실</span>
                   <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>합계: {formatMoney(ca520Sum)}</span>
                 </div>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>일자</th>
-                      <th>품목</th>
-                      <th>상세</th>
-                      <th>금액</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.investment.interiorCA520.map(item => (
-                      <tr key={item.id}>
-                        <td>{item.date}</td>
-                        <td>{item.item}</td>
-                        <td style={{ textAlign: 'left' }}>{item.detail}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(item.amount)}</td>
+                <div className="table-responsive-container">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>일자</th>
+                        <th>품목</th>
+                        <th>상세</th>
+                        <th>금액</th>
                       </tr>
-                    ))}
-                    <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', fontWeight: 800 }}>
-                      <td colSpan={3}>소계</td>
-                      <td style={{ textAlign: 'right', color: '#7e22ce' }}>{formatMoney(ca520Sum)}</td>
-                    </tr>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {data.investment.interiorCA520.map(item => (
+                        <tr key={item.id}>
+                          <td>{item.date}</td>
+                          <td>{item.item}</td>
+                          <td style={{ textAlign: 'left' }}>{item.detail}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(item.amount)}</td>
+                        </tr>
+                      ))}
+                      <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', fontWeight: 800 }}>
+                        <td colSpan={3}>소계</td>
+                        <td style={{ textAlign: 'right', color: '#7e22ce' }}>{formatMoney(ca520Sum)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {/* CA557 호실 */}
@@ -642,30 +914,32 @@ export default function KnowledgeIndustryPage() {
                   <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#3b82f6' }}>📍 CA557 호실</span>
                   <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>합계: {formatMoney(ca557Sum)}</span>
                 </div>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>일자</th>
-                      <th>품목</th>
-                      <th>상세</th>
-                      <th>금액</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.investment.interiorCA557.map(item => (
-                      <tr key={item.id}>
-                        <td>{item.date}</td>
-                        <td>{item.item}</td>
-                        <td style={{ textAlign: 'left' }}>{item.detail}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(item.amount)}</td>
+                <div className="table-responsive-container">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>일자</th>
+                        <th>품목</th>
+                        <th>상세</th>
+                        <th>금액</th>
                       </tr>
-                    ))}
-                    <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff', fontWeight: 800 }}>
-                      <td colSpan={3}>소계</td>
-                      <td style={{ textAlign: 'right', color: '#1d4ed8' }}>{formatMoney(ca557Sum)}</td>
-                    </tr>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {data.investment.interiorCA557.map(item => (
+                        <tr key={item.id}>
+                          <td>{item.date}</td>
+                          <td>{item.item}</td>
+                          <td style={{ textAlign: 'left' }}>{item.detail}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(item.amount)}</td>
+                        </tr>
+                      ))}
+                      <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff', fontWeight: 800 }}>
+                        <td colSpan={3}>소계</td>
+                        <td style={{ textAlign: 'right', color: '#1d4ed8' }}>{formatMoney(ca557Sum)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
@@ -677,34 +951,36 @@ export default function KnowledgeIndustryPage() {
           </div>
 
           {/* 투자상세내역 & 전체 투자 비용 상세 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="ki-grid-2col">
             {/* 투자 상세 내역 */}
             <div className="section-card" style={{ padding: '1.5rem' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
                 📋 투자 상세 내역
               </h3>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>항목</th>
-                    <th>대상/연월</th>
-                    <th>비고</th>
-                    <th>투자금액</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.investment.details.map(d => (
-                    <tr key={d.id} style={{ fontWeight: d.category === '총분양가' ? 900 : 400 }}>
-                      <td style={{ fontWeight: 800 }}>{d.category}</td>
-                      <td>{d.target}</td>
-                      <td>{d.note}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 800, color: d.category === '총분양가' ? '#a855f7' : 'inherit' }}>
-                        {formatMoney(d.amount)}
-                      </td>
+              <div className="table-responsive-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>항목</th>
+                      <th>대상/연월</th>
+                      <th>비고</th>
+                      <th>투자금액</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {data.investment.details.map(d => (
+                      <tr key={d.id} style={{ fontWeight: d.category === '총분양가' ? 900 : 400 }}>
+                        <td style={{ fontWeight: 800 }}>{d.category}</td>
+                        <td>{d.target}</td>
+                        <td>{d.note}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 800, color: d.category === '총분양가' ? '#a855f7' : 'inherit' }}>
+                          {formatMoney(d.amount)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* 전체 투자 비용 요약 및 호실별 회수 분석 */}
@@ -712,26 +988,28 @@ export default function KnowledgeIndustryPage() {
               <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
                 📊 호실별 공급가 & 매각 회수 분석
               </h3>
-              <table className="data-table" style={{ marginBottom: '1rem' }}>
-                <thead>
-                  <tr>
-                    <th>호실별 공급가</th>
-                    <th>공급 금액</th>
-                    <th>차액 (투자금 포함)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.investment.breakEven.map(b => (
-                    <tr key={b.id}>
-                      <td style={{ fontWeight: 800 }}>{b.unit}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(b.supplyPrice)}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 800, color: '#10b981' }}>{formatMoney(b.diff)}</td>
+              <div className="table-responsive-container" style={{ marginBottom: '1rem' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>호실별 공급가</th>
+                      <th>공급 금액</th>
+                      <th>차액 (투자금 포함)</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {data.investment.breakEven.map(b => (
+                      <tr key={b.id}>
+                        <td style={{ fontWeight: 800 }}>{b.unit}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(b.supplyPrice)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 800, color: '#10b981' }}>{formatMoney(b.diff)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-              <div style={{ padding: '12px', borderRadius: '12px', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', border: '1px solid #fca5a5' }}>
+              <div style={{ padding: '14px 12px', borderRadius: '12px', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', border: '1px solid #fca5a5', textAlign: 'center' }}>
                 <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#ef4444' }}>💡 손해 안 보고 호실별로 팔아야 하는 평균 금액</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 900, color: dark ? '#ffffff' : '#991b1b', marginTop: '4px' }}>
                   각 호실별 {formatMoney(173674929)}
@@ -1158,98 +1436,211 @@ export default function KnowledgeIndustryPage() {
       {/* ========================================================================================= */}
       {activeTab === 'rent' && (
         <div>
-          {/* 연도 및 호실 정보 필터 툴바 */}
-          <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'var(--text-primary)' }}>📅 조회 연도:</span>
-              <select
-                value={data.rent.year}
-                onChange={e => setData(prev => ({ ...prev, rent: { ...prev.rent, year: e.target.value } }))}
-                style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 800 }}
-              >
-                <option value="2025">2025년</option>
-                <option value="2026">2026년</option>
-                <option value="2027">2027년</option>
-              </select>
-            </div>
+          {/* 상단 툴바: 연도 필터 & 종합 통계 & 추가 버튼 */}
+          {(() => {
+            const now = new Date();
+            const currentYearMonth = now.getFullYear() * 100 + (now.getMonth() + 1);
 
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              💡 입금 여부(⭕/❌) 뱃지를 클릭하면 입금 처리 상태가 즉시 토글 반영됩니다.
-            </div>
-          </div>
+            let totalYearPaid = 0;
+            let totalYearScheduled = 0;
+            let totalPaidCount = 0;
+            let totalUnpaidCount = 0;
 
-          {/* 2개 호실/계약자 테이블 나란히 렌더링 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-            {data.rent.contracts.map(contract => {
-              const totalPaidAmount = contract.payments.reduce((s, p) => s + (p.isPaid ? (Number(p.amount) || 0) : 0), 0);
+            data.rent.contracts.forEach(c => {
+              const pList = c.payments.filter(p => rentYearFilter === 'ALL' || (p.date && p.date.startsWith(rentYearFilter)));
+              pList.forEach(p => {
+                if (p.isPaid) {
+                  totalYearPaid += (Number(p.amount) || 0);
+                  totalPaidCount += 1;
+                } else {
+                  totalYearScheduled += (Number(p.amount) || 0);
+                  // 해당월(현재 연월)을 포함하여 이전 데이터 중 미입금된 건만 미납으로 집계
+                  const pDateParts = String(p.date || '').replace(/[^0-9.]/g, '').split('.').filter(Boolean).map(Number);
+                  const pYearMonth = (pDateParts[0] || 0) * 100 + (pDateParts[1] || 0);
+                  if (pYearMonth > 0 && pYearMonth <= currentYearMonth) {
+                    totalUnpaidCount += 1;
+                  }
+                }
+              });
+            });
 
-              return (
-                <div key={contract.id} className="section-card" style={{ padding: '1.5rem' }}>
-                  {/* 계약자 / 호실 헤더 */}
-                  <div style={{ borderBottom: `2px solid ${dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'}`, paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#a855f7' }}>
-                        📍 {contract.room} ({contract.tenant})
-                      </span>
-                      <span style={{ fontSize: '0.78rem', padding: '3px 10px', borderRadius: '99px', background: dark ? 'rgba(168,85,247,0.2)' : '#f3e8ff', color: '#7e22ce', fontWeight: 800 }}>
-                        {contract.status}
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-                      <div>계약일: <strong>{contract.contractDate}</strong></div>
-                      <div>계약조건: <strong>{contract.terms}</strong> (월 {formatMoney(contract.rent)})</div>
-                      <div>보증금: <strong>{formatMoney(contract.deposit)}</strong></div>
-                      <div>연장정보: <strong>{contract.extendStatus || '없음'}</strong></div>
-                    </div>
-
-                    {contract.memo && (
-                      <div style={{ fontSize: '0.72rem', color: '#ef4444', marginTop: '6px', fontWeight: 700 }}>
-                        {contract.memo}
-                      </div>
-                    )}
+            return (
+              <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'var(--text-primary)' }}>📅 조회 연도:</span>
+                    <select
+                      value={rentYearFilter}
+                      onChange={e => setRentYearFilter(e.target.value)}
+                      style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      <option value="2024">2024년</option>
+                      <option value="2025">2025년</option>
+                      <option value="2026">2026년 (당해연도)</option>
+                      <option value="2027">2027년</option>
+                      <option value="2028">2028년</option>
+                      <option value="ALL">전체보기 (ALL)</option>
+                    </select>
                   </div>
 
-                  {/* 입금 일정 내역 테이블 */}
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>입금예정일</th>
-                        <th>실입금일</th>
-                        <th>입금액</th>
-                        <th>입금여부</th>
-                        <th>비고</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {contract.payments.map(p => (
-                        <tr key={p.id}>
-                          <td style={{ fontWeight: 700 }}>{p.date}</td>
-                          <td>{p.actualDate || '-'}</td>
-                          <td style={{ textAlign: 'right', fontWeight: 800 }}>
-                            {formatMoney(p.amount)}
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              onClick={() => handleToggleRentPaid(contract.id, p.id)}
-                              className={p.isPaid ? 'badge-paid' : 'badge-unpaid'}
-                            >
-                              {p.isPaid ? '⭕ 완납' : '❌ 미납'}
-                            </button>
-                          </td>
-                          <td style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 700 }}>
-                            {p.note || '-'}
-                          </td>
-                        </tr>
-                      ))}
-                      <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', fontWeight: 900 }}>
-                        <td colSpan={2}>입금 총액</td>
-                        <td style={{ textAlign: 'right', color: '#7e22ce' }}>{formatMoney(totalPaidAmount)}</td>
-                        <td colSpan={2}>-</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {/* 통계 뱃지 */}
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.8rem', padding: '4px 12px', borderRadius: '99px', background: dark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5', color: '#10b981', fontWeight: 800, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                      수령 완료: {formatMoney(totalYearPaid)} ({totalPaidCount}건)
+                    </span>
+                    {totalUnpaidCount > 0 && (
+                      <span style={{ fontSize: '0.8rem', padding: '4px 12px', borderRadius: '99px', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', color: '#ef4444', fontWeight: 800, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                        미납: {totalUnpaidCount}건
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenRentModal(data.rent.contracts[0]?.id)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 16px', borderRadius: '99px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#fff', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(168, 85, 247, 0.3)' }}
+                  >
+                    ➕ 월세 입금 등록
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenContractModal()}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 16px', borderRadius: '99px', border: `1px solid ${dark ? 'rgba(168, 85, 247, 0.4)' : '#c084fc'}`, background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', color: dark ? '#c084fc' : '#7e22ce', fontWeight: 800, cursor: 'pointer' }}
+                  >
+                    🏢 계약/호실 추가
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* 2개 호실/계약자 테이블 나란히 렌더링 */}
+          <div className="ki-grid-2col">
+            {data.rent.contracts.map(contract => {
+              const filteredPayments = contract.payments.filter(p => rentYearFilter === 'ALL' || (p.date && p.date.startsWith(rentYearFilter)));
+              const totalPaidAmount = filteredPayments.reduce((s, p) => s + (p.isPaid ? (Number(p.amount) || 0) : 0), 0);
+
+              return (
+                <div key={contract.id} className="section-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    {/* 계약자 / 호실 헤더 */}
+                    <div style={{ borderBottom: `2px solid ${dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'}`, paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#a855f7' }}>
+                            📍 {contract.room} ({contract.tenant})
+                          </span>
+                          <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: '99px', background: dark ? 'rgba(168,85,247,0.2)' : '#f3e8ff', color: '#7e22ce', fontWeight: 800 }}>
+                            {contract.status}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenContractModal(contract)}
+                            title="계약 정보 수정"
+                            className="btn-action-icon"
+                            style={{ color: '#a855f7', fontSize: '0.85rem' }}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteContract(contract.id)}
+                            title="계약 삭제"
+                            className="btn-action-icon"
+                            style={{ color: '#ef4444', fontSize: '0.85rem' }}
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                        <div>계약일: <strong>{contract.contractDate}</strong></div>
+                        <div>계약조건: <strong>{contract.terms}</strong> (월 {formatMoney(contract.rent)})</div>
+                        <div>보증금: <strong>{formatMoney(contract.deposit)}</strong></div>
+                        <div>연장정보: <strong>{contract.extendStatus || '없음'}</strong></div>
+                      </div>
+
+                      {contract.memo && (
+                        <div style={{ fontSize: '0.72rem', color: '#ef4444', marginTop: '6px', fontWeight: 700 }}>
+                          {contract.memo}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 입금 일정 내역 테이블 */}
+                    <div className="table-responsive-container">
+                      <table className="data-table">
+                        <thead>
+                          <tr>
+                            <th>입금예정일</th>
+                            <th>실입금일</th>
+                            <th>입금액</th>
+                            <th>입금여부</th>
+                            <th>비고</th>
+                            <th>관리</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredPayments.length > 0 ? (
+                            filteredPayments.map(p => (
+                              <tr key={p.id}>
+                                <td style={{ fontWeight: 700 }}>{p.date}</td>
+                                <td>{p.actualDate || '-'}</td>
+                                <td style={{ textAlign: 'right', fontWeight: 800 }}>
+                                  {formatMoney(p.amount)}
+                                </td>
+                                <td>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleRentPaid(contract.id, p.id)}
+                                    className={p.isPaid ? 'badge-paid' : 'badge-unpaid'}
+                                    title="클릭 시 완납/미납 전환"
+                                  >
+                                    {p.isPaid ? '⭕ 완납' : '❌ 미납'}
+                                  </button>
+                                </td>
+                                <td style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 700 }}>
+                                  {p.note || '-'}
+                                </td>
+                                <td>
+                                  <button type="button" onClick={() => handleOpenRentModal(contract.id, p)} className="btn-action-icon" style={{ color: '#a855f7' }}>✏️</button>
+                                  <button type="button" onClick={() => handleDeleteRentPayment(contract.id, p.id)} className="btn-action-icon" style={{ color: '#ef4444' }}>🗑️</button>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={6} style={{ padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                {rentYearFilter}년 등록된 입금 내역이 없습니다.
+                              </td>
+                            </tr>
+                          )}
+                          <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', fontWeight: 900 }}>
+                            <td colSpan={2}>{rentYearFilter === 'ALL' ? '전체' : `${rentYearFilter}년`} 입금 총액</td>
+                            <td style={{ textAlign: 'right', color: '#7e22ce' }}>{formatMoney(totalPaidAmount)}</td>
+                            <td colSpan={3}>-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* 호실별 빠른 입금 등록 버튼 */}
+                  <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenRentModal(contract.id)}
+                      style={{ fontSize: '0.78rem', padding: '6px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      + {contract.room} 입금 내역 추가
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -1346,10 +1737,8 @@ export default function KnowledgeIndustryPage() {
                       value={loanModal.formData.rate}
                       onChange={e => {
                         let val = e.target.value.replace(/[^0-9.]/g, '');
-                        // 소수점 1개만 허용
                         const parts = val.split('.');
                         if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
-                        // 소수점 이하 3자리까지 제한
                         if (parts[1] && parts[1].length > 3) {
                           val = parts[0] + '.' + parts[1].slice(0, 3);
                         }
@@ -1430,8 +1819,6 @@ export default function KnowledgeIndustryPage() {
                 </div>
               )}
 
-
-
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                 <button
                   type="button"
@@ -1445,6 +1832,368 @@ export default function KnowledgeIndustryPage() {
                   style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: loanModal.bank === 'kb' ? '#2563eb' : '#a855f7', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
                 >
                   저장
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- 월세 입금 내역 등록/수정 모달 --- */}
+      {rentModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setRentModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                💰 {rentModal.paymentId ? '월세 입금 내역 수정' : '월세 입금 내역 등록'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setRentModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveRentPayment}>
+              {/* 호실/계약 선택 */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>대상 호실 및 계약자</label>
+                <select
+                  value={rentModal.contractId}
+                  onChange={e => setRentModal(prev => ({ ...prev, contractId: e.target.value }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  required
+                >
+                  {data.rent.contracts.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.room} - {c.tenant} (월 {formatMoney(c.rent)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 입금 예정일 & 실입금일 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>입금 예정일</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="예: 2026. 8. 19"
+                      value={rentModal.formData.date}
+                      onChange={e => setRentModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }))}
+                      style={{ width: '100%', padding: '8px 32px 8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                      required
+                    />
+                    <input
+                      type="date"
+                      onChange={e => {
+                        if (e.target.value) {
+                          const [y, m, d] = e.target.value.split('-');
+                          const formatted = `${y}. ${parseInt(m, 10)}. ${parseInt(d, 10)}`;
+                          setRentModal(prev => ({ ...prev, formData: { ...prev.formData, date: formatted } }));
+                        }
+                      }}
+                      style={{ position: 'absolute', right: '6px', width: '24px', height: '24px', opacity: 0, cursor: 'pointer', zIndex: 2 }}
+                      title="달력 선택"
+                    />
+                    <span style={{ position: 'absolute', right: '8px', pointerEvents: 'none', fontSize: '0.9rem', zIndex: 1 }}>📅</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>실입금일 (선택)</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="예: 2026. 8. 20"
+                      value={rentModal.formData.actualDate}
+                      onChange={e => setRentModal(prev => ({ ...prev, formData: { ...prev.formData, actualDate: e.target.value } }))}
+                      style={{ width: '100%', padding: '8px 32px 8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    />
+                    <input
+                      type="date"
+                      onChange={e => {
+                        if (e.target.value) {
+                          const [y, m, d] = e.target.value.split('-');
+                          const formatted = `${y}. ${parseInt(m, 10)}. ${parseInt(d, 10)}`;
+                          setRentModal(prev => ({ ...prev, formData: { ...prev.formData, actualDate: formatted } }));
+                        }
+                      }}
+                      style={{ position: 'absolute', right: '6px', width: '24px', height: '24px', opacity: 0, cursor: 'pointer', zIndex: 2 }}
+                      title="달력 선택"
+                    />
+                    <span style={{ position: 'absolute', right: '8px', pointerEvents: 'none', fontSize: '0.9rem', zIndex: 1 }}>📅</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 입금액 & 입금 상태 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>입금액 (원)</label>
+                  <input
+                    type="text"
+                    value={rentModal.formData.amount}
+                    onFocus={() => setRentModal(prev => ({ ...prev, formData: { ...prev.formData, amount: unformatComma(prev.formData.amount) } }))}
+                    onBlur={() => setRentModal(prev => ({ ...prev, formData: { ...prev.formData, amount: formatComma(prev.formData.amount) } }))}
+                    onChange={e => {
+                      const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                      setRentModal(prev => ({ ...prev, formData: { ...prev.formData, amount: cleanVal } }));
+                    }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>입금 여부</label>
+                  <select
+                    value={rentModal.formData.isPaid ? 'paid' : 'unpaid'}
+                    onChange={e => setRentModal(prev => ({ ...prev, formData: { ...prev.formData, isPaid: e.target.value === 'paid' } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  >
+                    <option value="paid">⭕ 완납</option>
+                    <option value="unpaid">❌ 미납</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* 비고 */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>비고 (특이사항)</label>
+                <input
+                  type="text"
+                  placeholder="예: 계약만료, 정산, 선납 등"
+                  value={rentModal.formData.note}
+                  onChange={e => setRentModal(prev => ({ ...prev, formData: { ...prev.formData, note: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setRentModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#a855f7', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장 완료
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- 계약 정보 등록/수정 모달 --- */}
+      {contractModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setContractModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '480px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                🏢 {contractModal.contractId ? '계약 정보 수정' : '신규 계약/호실 등록'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setContractModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveContract}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>호실명</label>
+                  <input
+                    type="text"
+                    placeholder="예: CA520, CA557"
+                    value={contractModal.formData.room}
+                    onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, room: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>계약자명</label>
+                  <input
+                    type="text"
+                    placeholder="예: 홍길동"
+                    value={contractModal.formData.tenant}
+                    onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, tenant: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>계약일자</label>
+                  <input
+                    type="text"
+                    placeholder="예: 2026. 1. 15"
+                    value={contractModal.formData.contractDate}
+                    onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, contractDate: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>계약상태</label>
+                  <input
+                    type="text"
+                    placeholder="예: 계약중, 계약만료"
+                    value={contractModal.formData.status}
+                    onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, status: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>보증금 (원)</label>
+                  <input
+                    type="text"
+                    value={contractModal.formData.deposit}
+                    onFocus={() => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, deposit: unformatComma(prev.formData.deposit) } }))}
+                    onBlur={() => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, deposit: formatComma(prev.formData.deposit) } }))}
+                    onChange={e => {
+                      const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                      setContractModal(prev => ({ ...prev, formData: { ...prev.formData, deposit: cleanVal } }));
+                    }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>월세 (원)</label>
+                  <input
+                    type="text"
+                    value={contractModal.formData.rent}
+                    onFocus={() => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, rent: unformatComma(prev.formData.rent) } }))}
+                    onBlur={() => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, rent: formatComma(prev.formData.rent) } }))}
+                    onChange={e => {
+                      const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                      setContractModal(prev => ({ ...prev, formData: { ...prev.formData, rent: cleanVal } }));
+                    }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>계약조건 텍스트</label>
+                  <input
+                    type="text"
+                    placeholder="예: 500/60"
+                    value={contractModal.formData.terms}
+                    onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, terms: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>연장정보</label>
+                  <input
+                    type="text"
+                    placeholder="예: 6개월 연장"
+                    value={contractModal.formData.extendStatus}
+                    onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, extendStatus: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>메모 / 특이사항</label>
+                <input
+                  type="text"
+                  placeholder="예: 1차 계약금(350), 2차 계약금(150)"
+                  value={contractModal.formData.memo}
+                  onChange={e => setContractModal(prev => ({ ...prev, formData: { ...prev.formData, memo: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setContractModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#a855f7', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장 완료
                 </button>
               </div>
             </form>
