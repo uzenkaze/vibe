@@ -122,6 +122,7 @@ export default function GitHubModal({ onClose }) {
 
       if (hasAnyData) {
         setDownloadResults(results);
+        window.dispatchEvent(new CustomEvent('app-data-reloaded', { detail: results }));
         showToast('🔑 GitHub 서버 실제 데이터 조회 및 화면 적용 완료!', 'success', true);
       } else {
         showToast('⚠️ GitHub 저장소에 저장된 JSON 데이터가 없습니다.', 'error');

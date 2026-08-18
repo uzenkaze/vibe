@@ -627,6 +627,32 @@ export default function TaxArticlePage() {
     loadGitArticles();
   }, []);
 
+  // 서버 데이터 불러오기(GitHubModal) 완료 시 또는 타 탭/창 스토리지 변경 시 즉시 상태 동기화
+  useEffect(() => {
+    const handleReload = () => {
+      try {
+        const savedArts = localStorage.getItem('asset_tax_articles');
+        if (savedArts) {
+          const parsedArts = JSON.parse(savedArts);
+          if (Array.isArray(parsedArts)) setArticles(parsedArts);
+        }
+        const savedCats = localStorage.getItem('asset_tax_article_categories');
+        if (savedCats) {
+          const parsedCats = JSON.parse(savedCats);
+          if (Array.isArray(parsedCats)) setCategories(parsedCats);
+        }
+      } catch (err) {
+        console.warn('[TaxArticlePage] Storage sync error:', err);
+      }
+    };
+    window.addEventListener('app-data-reloaded', handleReload);
+    window.addEventListener('storage', handleReload);
+    return () => {
+      window.removeEventListener('app-data-reloaded', handleReload);
+      window.removeEventListener('storage', handleReload);
+    };
+  }, []);
+
   // articles 변경 시 로컬 저장 (상단 저장 버튼 클릭 시 GitHub 일괄 동기화)
   useEffect(() => {
     try {

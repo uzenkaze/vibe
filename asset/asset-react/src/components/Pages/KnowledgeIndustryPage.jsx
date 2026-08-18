@@ -336,6 +336,29 @@ export default function KnowledgeIndustryPage() {
     loadInitialData();
   }, []);
 
+  // 서버 데이터 불러오기(GitHubModal) 완료 시 또는 타 탭/창 스토리지 변경 시 즉시 상태 동기화
+  useEffect(() => {
+    const handleReload = () => {
+      try {
+        const saved = localStorage.getItem('asset_knowledge_industry');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && (parsed.investment || parsed.loans || parsed.rent)) {
+            setData(parsed);
+          }
+        }
+      } catch (err) {
+        console.warn('[KnowledgeIndustryPage] Storage sync error:', err);
+      }
+    };
+    window.addEventListener('app-data-reloaded', handleReload);
+    window.addEventListener('storage', handleReload);
+    return () => {
+      window.removeEventListener('app-data-reloaded', handleReload);
+      window.removeEventListener('storage', handleReload);
+    };
+  }, []);
+
   // 데이터 변경 시 로컬스토리지 저장 (상단 저장 버튼 클릭 시 GitHub 일괄 동기화)
   useEffect(() => {
     try {
