@@ -45,10 +45,8 @@ export default function LoginModal({ onClose }) {
         // 로컬 스토리지에 가입 정보가 없는 최초 실행 시, 서버의 JSON 백업으로부터 계정 정보 복원 시도
         const currentYear = new Date().getFullYear();
         const urls = [
-          `../../data/assetData_${currentYear}.json`,
-          `http://localhost:5500/asset/data/assetData_${currentYear}.json`,
-          `http://127.0.0.1:5500/asset/data/assetData_${currentYear}.json`,
-          `/asset/data/assetData_${currentYear}.json`
+          `./data/assetData_${currentYear}.json`,
+          `./data/assetData_2026.json`
         ];
 
         for (const url of urls) {

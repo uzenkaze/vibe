@@ -51,6 +51,10 @@ try {
 # 2-2. 'asset/asset-react' 프로젝트 빌드
 Write-Host "> 'asset/asset-react' 프로젝트 빌드 중..." -ForegroundColor Yellow
 try {
+    if (Test-Path "asset/data") {
+        New-Item -ItemType Directory -Path "asset/asset-react/public/data" -Force | Out-Null
+        Copy-Item -Path "asset/data/*" -Destination "asset/asset-react/public/data/" -Recurse -Force
+    }
     Set-Location asset/asset-react
     npm.cmd run build
     Set-Location ../..

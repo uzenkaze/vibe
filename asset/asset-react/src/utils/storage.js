@@ -134,22 +134,11 @@ export async function loadData(year) {
       console.warn('[Storage] GitHub auto-download failed, falling back to server/local', ghLoadErr);
     }
 
-    // 1. 서버의 JSON 파일들로부터 데이터 로드 시도 (GitHub 데이터가 없는 경우)
+    // 1. 서버의 JSON 파일로부터 데이터 로드 시도 (GitHub 데이터가 없는 경우)
     if (!data) {
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const urls = [
-        `./data/assetData_${year}.json?t=${timestamp}`,
-        `data/assetData_${year}.json?t=${timestamp}`,
-        `/vibe/asset/data/assetData_${year}.json?t=${timestamp}`,
-        `/asset/data/assetData_${year}.json?t=${timestamp}`,
-        `../../data/assetData_${year}.json?t=${timestamp}`
+        `./data/assetData_${year}.json?t=${timestamp}`
       ];
-      if (isLocalhost) {
-        urls.push(
-          `http://localhost:5500/asset/data/assetData_${year}.json?t=${timestamp}`,
-          `http://127.0.0.1:5500/asset/data/assetData_${year}.json?t=${timestamp}`
-        );
-      }
 
       for (const url of urls) {
         try {
