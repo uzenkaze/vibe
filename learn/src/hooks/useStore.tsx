@@ -255,8 +255,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     async function loadLocalSeed() {
       try {
-        const pathPrefix = window.location.pathname.includes('/learn') ? '/learn' : '';
-        const res = await fetch(`${pathPrefix}/data.json?t=${Date.now()}`);
+        const isGitHubPages = window.location.pathname.startsWith('/vibe/');
+        const pathPrefix = isGitHubPages ? '/vibe/learn' : (window.location.pathname.includes('/learn') ? '/learn' : '.');
+        const res = await fetch(`${pathPrefix}/data.json?t=${Date.now()}`).catch(() => fetch(`./data.json?t=${Date.now()}`));
         if (res.ok) {
           const seed = await res.json();
           if (seed && Array.isArray(seed.categories) && Array.isArray(seed.articles)) {
