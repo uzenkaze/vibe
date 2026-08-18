@@ -924,25 +924,6 @@ export default function KnowledgeIndustryPage() {
             >
               🚪 3. 월세현황
             </button>
-            <button
-              onClick={() => syncKnowledgeIndustryWithGit(data, true)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 14px',
-                borderRadius: '10px',
-                border: '1px solid var(--border)',
-                background: 'var(--surface)',
-                color: 'var(--text-primary)',
-                fontSize: '0.85rem',
-                fontWeight: 800,
-                cursor: 'pointer'
-              }}
-              title="지식산업센터 데이터를 GitHub 저장소로 즉시 동기화합니다"
-            >
-              ☁️ GitHub 동기화
-            </button>
           </div>
         </div>
       </div>
