@@ -1130,6 +1130,13 @@ export default function KnowledgeIndustryPage() {
                   </tbody>
                 </table>
               </div>
+
+              <div style={{ padding: '14px 12px', borderRadius: '12px', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', border: '1px solid #fca5a5', textAlign: 'center' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: dark ? '#ffffff' : '#991b1b' }}>
+                  각 호실별 {formatMoney(173674929)}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>※ 최소 이 금액 이상 매각 시 전체 투자금 완전 회수</div>
+              </div>
             </div>
           </div>
         </div>
