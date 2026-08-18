@@ -700,7 +700,7 @@ export default function KnowledgeIndustryPage() {
       if (contractId) {
         // 수정
         nextRent.contracts = nextRent.contracts.map(c => {
-          if (c.id === contractId) {
+          if (String(c.id) === String(contractId)) {
             return {
               ...c,
               room: formData.room.trim(),
@@ -739,7 +739,11 @@ export default function KnowledgeIndustryPage() {
         };
         nextRent.contracts = [...nextRent.contracts, newContract];
       }
-      return { ...prev, rent: nextRent };
+      const nextData = { ...prev, rent: nextRent };
+      try {
+        localStorage.setItem('asset_knowledge_industry', JSON.stringify(nextData));
+      } catch (err) {}
+      return nextData;
     });
 
     setContractModal(prev => ({ ...prev, open: false }));
@@ -1557,19 +1561,51 @@ export default function KnowledgeIndustryPage() {
             const now = new Date();
             const currentYearMonth = now.getFullYear() * 100 + (now.getMonth() + 1);
 
-            const getContractYear = (c) => {
-              if (!c || !c.contractDate) return '';
-              const dateStr = String(c.contractDate).trim();
-              const match = dateStr.match(/(\d{4})/);
-              return match ? match[1] : '';
+            // 해당 계약이 특정 조회 연도에 걸쳐 있는지(계약일자, 입금 일정 등) 판별
+            const isContractInYear = (c, targetYear) => {
+              if (!c) return false;
+              if (targetYear === 'ALL') return true;
+
+              const yStr = String(targetYear);
+
+              // 1. 계약일자(contractDate)에 해당 연도가 포함된 경우 (예: "2025. 12. 1" -> 2025년 조회 시 true)
+              if (c.contractDate && String(c.contractDate).includes(yStr)) {
+                return true;
+              }
+
+              // 2. 월세 입금 내역(payments) 중 해당 연도에 입금 예정/실입금 내역이 있는 경우 (예: "2026. 1. 19" -> 2026년 조회 시 true)
+              if (Array.isArray(c.payments) && c.payments.some(p => p.date && String(p.date).startsWith(yStr))) {
+                return true;
+              }
+
+              // 3. 계약일자 ~ 입금 내역의 전체 연도 범위(Span) 사이에 targetYear가 포함되는 경우
+              // (예: 2025년 12월 계약/입주 ~ 2026년 12월 만기 시, 2025년과 2026년 모두 조회 가능)
+              const years = [];
+              if (c.contractDate) {
+                const match = String(c.contractDate).match(/(\d{4})/);
+                if (match) years.push(Number(match[1]));
+              }
+              if (Array.isArray(c.payments)) {
+                c.payments.forEach(p => {
+                  const match = String(p.date || '').match(/(\d{4})/);
+                  if (match) years.push(Number(match[1]));
+                });
+              }
+
+              if (years.length > 0) {
+                const minYear = Math.min(...years);
+                const maxYear = Math.max(...years);
+                const tYear = Number(targetYear);
+                if (tYear >= minYear && tYear <= maxYear) {
+                  return true;
+                }
+              }
+
+              return false;
             };
 
-            // 조회 연도에 따른 계약/호실 필터링 (계약일자 연도 기준)
-            const displayedContracts = (data.rent.contracts || []).filter(c => {
-              if (rentYearFilter === 'ALL') return true;
-              const cYear = getContractYear(c);
-              return cYear === rentYearFilter;
-            });
+            // 조회 연도에 따른 계약/호실 필터링
+            const displayedContracts = (data.rent.contracts || []).filter(c => isContractInYear(c, rentYearFilter));
 
             let totalYearPaid = 0;
             let totalYearScheduled = 0;
