@@ -65,16 +65,20 @@ jobs:
           cp README.md deploy_out/ 2>/dev/null || true
           cp *.apk deploy_out/ 2>/dev/null || true
 
-          # Copy learn dist
+          # Copy learn dist (with fallback)
+          mkdir -p deploy_out/learn
           if [ -d "learn/dist" ]; then
-            mkdir -p deploy_out/learn
             cp -r learn/dist/* deploy_out/learn/
+          else
+            cp -r learn/* deploy_out/learn/ 2>/dev/null || true
           fi
 
-          # Copy carrep dist
+          # Copy carrep dist (with fallback)
+          mkdir -p deploy_out/carrep
           if [ -d "carrep/dist" ]; then
-            mkdir -p deploy_out/carrep
             cp -r carrep/dist/* deploy_out/carrep/
+          else
+            cp -r carrep/* deploy_out/carrep/ 2>/dev/null || true
           fi
 
           # Copy asset dist and data
