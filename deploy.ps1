@@ -43,11 +43,6 @@ try {
     if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
     npm run build
     Pop-Location
-    if (Test-Path "learn/dist") {
-        if (Test-Path "learn/assets") { Remove-Item -Recurse -Force "learn/assets" }
-        Copy-Item -Path "learn/dist/*" -Destination "learn/" -Recurse -Force
-        Write-Host "> Synced learn/dist/* -> learn/ (index.html, assets, etc.)" -ForegroundColor Green
-    }
 } catch {
     Write-Host "> 'learn' 프로젝트 빌드 실패: $_" -ForegroundColor Red
     Pop-Location
@@ -64,11 +59,6 @@ try {
     if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
     npm run build
     Pop-Location
-    if (Test-Path "asset/asset-react/dist") {
-        if (Test-Path "asset/assets") { Remove-Item -Recurse -Force "asset/assets" }
-        Copy-Item -Path "asset/asset-react/dist/*" -Destination "asset/" -Recurse -Force
-        Write-Host "> Synced asset/asset-react/dist/* -> asset/ (index.html, assets, etc.)" -ForegroundColor Green
-    }
 } catch {
     Write-Host "> 'asset/asset-react' 프로젝트 빌드 실패: $_" -ForegroundColor Red
     Pop-Location
@@ -81,11 +71,6 @@ try {
     if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
     npm run build
     Pop-Location
-    if (Test-Path "carrep/dist") {
-        if (Test-Path "carrep/assets") { Remove-Item -Recurse -Force "carrep/assets" }
-        Copy-Item -Path "carrep/dist/*" -Destination "carrep/" -Recurse -Force
-        Write-Host "> Synced carrep/dist/* -> carrep/ (index.html, assets, etc.)" -ForegroundColor Green
-    }
 } catch {
     Write-Host "> 'carrep' 프로젝트 빌드 실패: $_" -ForegroundColor Red
     Pop-Location
