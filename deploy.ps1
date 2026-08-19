@@ -39,13 +39,13 @@ New-Item -ItemType Directory -Path $deployDir | Out-Null
 # 2. 'learn' 프로젝트 빌드
 Write-Host "> 'learn' 프로젝트 빌드 중..." -ForegroundColor Yellow
 try {
-    Set-Location learn
-    npm.cmd run build
-    if (Test-Path "dist/.git") { Remove-Item -Recurse -Force "dist/.git" }
-    Set-Location ..
+    Push-Location learn
+    if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
+    npm run build
+    Pop-Location
 } catch {
-    Write-Host "> 'learn' 프로젝트 빌드 실패" -ForegroundColor Red
-    Set-Location ..
+    Write-Host "> 'learn' 프로젝트 빌드 실패: $_" -ForegroundColor Red
+    Pop-Location
 }
 
 # 2-2. 'asset/asset-react' 프로젝트 빌드
@@ -55,28 +55,30 @@ try {
         New-Item -ItemType Directory -Path "asset/asset-react/public/data" -Force | Out-Null
         Copy-Item -Path "asset/data/*" -Destination "asset/asset-react/public/data/" -Recurse -Force
     }
-    Set-Location asset/asset-react
-    npm.cmd run build
-    Set-Location ../..
+    Push-Location asset/asset-react
+    if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
+    npm run build
+    Pop-Location
     if (Test-Path "asset/asset-react/dist") {
         if (Test-Path "asset/assets") { Remove-Item -Recurse -Force "asset/assets" }
         Copy-Item -Path "asset/asset-react/dist/*" -Destination "asset/" -Recurse -Force
         Write-Host "> Synced asset/asset-react/dist/* -> asset/ (index.html, assets, etc.)" -ForegroundColor Green
     }
 } catch {
-    Write-Host "> 'asset/asset-react' 프로젝트 빌드 실패" -ForegroundColor Red
-    Set-Location ../..
+    Write-Host "> 'asset/asset-react' 프로젝트 빌드 실패: $_" -ForegroundColor Red
+    Pop-Location
 }
 
 # 2-3. 'carrep' 프로젝트 빌드
 Write-Host "> 'carrep' 프로젝트 빌드 중..." -ForegroundColor Yellow
 try {
-    Set-Location carrep
-    npm.cmd run build
-    Set-Location ..
+    Push-Location carrep
+    if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
+    npm run build
+    Pop-Location
 } catch {
-    Write-Host "> 'carrep' 프로젝트 빌드 실패" -ForegroundColor Red
-    Set-Location ..
+    Write-Host "> 'carrep' 프로젝트 빌드 실패: $_" -ForegroundColor Red
+    Pop-Location
 }
 
 # 3. 'learn' 빌드 결과물 복사
