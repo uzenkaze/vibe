@@ -48,13 +48,11 @@ export async function downloadFromGitHub<T>(config: GitHubConfig, path: string =
     const url = `https://api.github.com/repos/${repoTrimmed}/contents/${path}?ref=${branchTrimmed}&t=${Date.now()}`;
     const headers: Record<string, string> = {
       'Accept': 'application/vnd.github.v3+json',
-      'Cache-Control': 'no-cache',
-      'Pragma': 'no-cache',
       'Authorization': getAuthHeader(config.token),
     };
 
     try {
-      const res = await fetch(url, { headers });
+      const res = await fetch(url, { headers, cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         if (!Array.isArray(json)) {
@@ -62,7 +60,7 @@ export async function downloadFromGitHub<T>(config: GitHubConfig, path: string =
           if (!json.content || json.size > 1000000) {
             if (json.sha) {
               const blobUrl = `https://api.github.com/repos/${repoTrimmed}/git/blobs/${json.sha}`;
-              const blobRes = await fetch(blobUrl, { headers: { 'Authorization': getAuthHeader(config.token) } });
+              const blobRes = await fetch(blobUrl, { headers: { 'Authorization': getAuthHeader(config.token) }, cache: 'no-store' });
               if (blobRes.ok) {
                 const blobJson = await blobRes.json();
                 base64 = blobJson.content;
@@ -92,7 +90,7 @@ export async function downloadFromGitHub<T>(config: GitHubConfig, path: string =
   // Fallback: raw.githubusercontent.com 퍼블릭 URL로 시도
   try {
     const rawUrl = `https://raw.githubusercontent.com/${repoTrimmed}/${branchTrimmed}/${path}?t=${Date.now()}`;
-    const rawHeaders: Record<string, string> = { 'Cache-Control': 'no-cache' };
+    const rawHeaders: Record<string, string> = {};
     if (config.token && config.token.trim()) {
       rawHeaders['Authorization'] = getAuthHeader(config.token);
     }

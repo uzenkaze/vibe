@@ -51,7 +51,7 @@ function buildApp(appName, dir) {
   // Replacing with clean dev script tag ONLY IF compiled asset is present.
   if (fs.existsSync(sourceIndexPath)) {
     let content = fs.readFileSync(sourceIndexPath, 'utf-8');
-    if (content.includes('/assets/index-') || content.includes('assets/index-')) {
+    if (content.includes('/assets/index') || content.includes('assets/index') || content.includes('./assets/')) {
       console.log(`> Restoring dev script tag in ${sourceIndexPath} before build...`);
       if (appName === 'learn') {
         content = content.replace(/<script type="module" crossorigin src="[^"]+"><\/script>/, '<script type="module" src="/src/main.tsx"></script>')
