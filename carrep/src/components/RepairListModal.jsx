@@ -1,6 +1,6 @@
-﻿import styles from './RepairListModal.module.css'
+import styles from './RepairListModal.module.css'
 
-export default function RepairListModal({ isOpen, onClose, reports = [], onSelectReport, onDeleteReport }) {
+export default function RepairListModal({ isOpen, onClose, reports = [], onSelectReport, onEditReport, onDeleteReport }) {
   if (!isOpen) return null
 
   const sorted = [...reports].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -25,8 +25,7 @@ export default function RepairListModal({ isOpen, onClose, reports = [], onSelec
           ) : (
             <div className={styles.list}>
               {sorted.map(r => {
-                const total = (r.repairItems || []).reduce((s, i) => s + (Number(i.partsCost)||0) + (Number(i.laborCost)||0), 0)
-                const grandTotal = total + Math.round(total * 0.1)
+                const grandTotal = (r.repairItems || []).reduce((s, i) => s + (Number(i.partsCost)||0) + (Number(i.laborCost)||0), 0)
                 const names = (r.repairItems || []).map(i => i.name).filter(Boolean)
                 const title = names.length > 0 ? names.join(', ') : '정비 항목'
                 const dates = (r.repairItems || []).map(i => i.repairDate).filter(Boolean)
@@ -46,6 +45,17 @@ export default function RepairListModal({ isOpen, onClose, reports = [], onSelec
                     </div>
 
                     <div className={styles.cardActions} onClick={e => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        className={styles.btnEdit}
+                        onClick={() => {
+                          if (onEditReport) onEditReport(r)
+                          onClose()
+                        }}
+                        title="정비 내역 수정"
+                      >
+                        ✏️ 수정
+                      </button>
                       <button className={styles.btnView} onClick={() => { onSelectReport(r); onClose(); }}>
                         상세보기 →
                       </button>

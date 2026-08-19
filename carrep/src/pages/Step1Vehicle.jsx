@@ -727,9 +727,7 @@ export default function Step1Vehicle({
           </div>
           <div className={styles.reportGrid}>
             {sortedReports.map(r => {
-              const total = r.repairItems.reduce((sum, item) => sum + (Number(item.partsCost) || 0) + (Number(item.laborCost) || 0), 0)
-              const vat = Math.round(total * 0.1)
-              const grandTotal = total + vat
+              const grandTotal = r.repairItems.reduce((sum, item) => sum + (Number(item.partsCost) || 0) + (Number(item.laborCost) || 0), 0)
               const itemNames = (r.repairItems || []).map(it => it.name).filter(Boolean)
               const displayTitle = itemNames.length > 0 ? itemNames.join(', ') : '정비 항목 없음'
               const itemDates = (r.repairItems || []).map(it => it.repairDate).filter(Boolean)

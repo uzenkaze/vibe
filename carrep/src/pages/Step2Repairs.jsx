@@ -357,9 +357,8 @@ export default function Step2Repairs({
 
   const totalParts = repairItems.reduce((s, it) => s + (Number(it.partsCost) || 0), 0)
   const totalLabor = repairItems.reduce((s, it) => s + (Number(it.laborCost) || 0), 0)
-  const totalSupply = totalParts + totalLabor
-  const vat = Math.round(totalSupply * 0.1)
-  const grandTotal = totalSupply + vat
+  const grandTotal = totalParts + totalLabor
+  const totalSupply = grandTotal
 
   const catColor = (cat) => {
     if (cat === '조향계') return '#ff3b30'
@@ -677,16 +676,8 @@ export default function Step2Repairs({
               <span>공임비 합계</span>
               <span>{totalLabor.toLocaleString()} 원</span>
             </div>
-            <div className={styles.summaryRow}>
-              <span>공급가액 소계</span>
-              <span>{totalSupply.toLocaleString()} 원</span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span>부가가치세 (10%)</span>
-              <span>{vat.toLocaleString()} 원</span>
-            </div>
             <div className={`${styles.summaryRow} ${styles.summaryTotal}`}>
-              <span>합계금액</span>
+              <span>총 정비 금액</span>
               <span className={styles.totalValue}>{grandTotal.toLocaleString()} 원</span>
             </div>
           </div>

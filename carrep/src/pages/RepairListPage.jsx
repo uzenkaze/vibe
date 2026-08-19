@@ -10,7 +10,9 @@ export default function RepairListPage({
   vehicleInfo,
   initialTab = 'list',
   onSelectReport,
+  onEditReport,
   onDeleteReport,
+  onQuickSaveReport,
   onGoRepair,
   onNext,
   repairItems,
@@ -28,7 +30,17 @@ export default function RepairListPage({
   const [historyMap, setHistoryMap] = useState(() => {
     try {
       const saved = localStorage.getItem('carrep_maintenance_history')
-      if (saved) return JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const cleaned = {}
+        Object.entries(parsed).forEach(([k, list]) => {
+          if (Array.isArray(list)) {
+            const valid = list.filter(it => it && (it.date || (it.km && Number(it.km) > 0) || (it.cost && Number(it.cost) > 0)))
+            if (valid.length > 0) cleaned[k] = valid
+          }
+        })
+        return cleaned
+      }
     } catch (e) {}
     return {}
   })
@@ -53,36 +65,66 @@ export default function RepairListPage({
     : maintenanceItems.filter(i => i.status === consumableFilter)
 
   // ── 정비 이력 등록 ──
-  const handleSaveDiagOverride = (itemName, data) => {
+  const handleSaveDiagOverride = (nameOrData, maybeData) => {
+    const itemName = typeof nameOrData === 'string' ? nameOrData : selectedDiagItem
+    const data = typeof nameOrData === 'object' && nameOrData !== null ? nameOrData : (maybeData || {})
+    if (!itemName || !data) return
+
+    const repairDateStr = data.date || new Date().toISOString().split('T')[0]
+    const parsedKm = Number(data.km) || 0
+    const parsedCost = Number(data.cost) || 0
+
     const currentList = historyMap[itemName] || []
     const newRecord = {
       id: Date.now(),
-      date: data.date,
-      km: data.km,
-      cost: data.cost,
+      date: repairDateStr,
+      km: parsedKm,
+      cost: parsedCost,
       notes: data.notes || ''
     }
     const updatedHistory = { ...historyMap, [itemName]: [...currentList, newRecord] }
     setHistoryMap(updatedHistory)
     localStorage.setItem('carrep_maintenance_history', JSON.stringify(updatedHistory))
     setIsDiagModalOpen(false)
-    if (data.addToReport && setRepairItems) {
-      let category = '기타'
-      if (['엔진', '오일', '부동액', '냉각수'].some(k => itemName.includes(k))) category = '오일류'
-      else if (['쇼바', '서스', '미미', '마운트', '타이어', '얼라인'].some(k => itemName.includes(k))) category = '현가계'
-      else if (['미션', '구동'].some(k => itemName.includes(k))) category = '구동계'
-      else if (['브레이크', '패드'].some(k => itemName.includes(k))) category = '제동계'
-      else if (['조향', '벨트', '점화'].some(k => itemName.includes(k))) category = '조향계'
-      const newRepair = {
+
+    let category = '기타'
+    if (['엔진', '오일', '부동액', '냉각수'].some(k => itemName.includes(k))) category = '오일류'
+    else if (['쇼바', '서스', '미미', '마운트', '타이어', '얼라인'].some(k => itemName.includes(k))) category = '현가계'
+    else if (['미션', '구동'].some(k => itemName.includes(k))) category = '구동계'
+    else if (['브레이크', '패드'].some(k => itemName.includes(k))) category = '제동계'
+    else if (['조향', '벨트', '점화'].some(k => itemName.includes(k))) category = '조향계'
+
+    const newRepairItem = {
+      id: Date.now(),
+      category,
+      name: `${itemName} 교환`,
+      partsCost: parsedCost,
+      laborCost: 0,
+      repairDate: repairDateStr,
+      note: parsedKm > 0 ? `${parsedKm.toLocaleString()}km 시점 정비 등록` : ''
+    }
+
+    // 서버(GitHub DB) 및 전체 정비목록에 즉시 저장
+    if (onQuickSaveReport) {
+      const newReport = {
         id: Date.now(),
-        category,
-        name: `${itemName} 교환`,
-        partsCost: Number(data.cost) || 0,
-        laborCost: 0,
-        repairDate: data.date,
-        details: `${data.date} 주행거리 ${Number(data.km).toLocaleString()}km 시점에 정비 등록.${data.notes ? ' ' + data.notes : ''}`
+        createdAt: new Date().toISOString(),
+        vehicleInfo: {
+          ...(vehicleInfo || myCar || {}),
+          mileage: parsedKm > 0 ? String(parsedKm) : (vehicleInfo?.mileage || myCar?.mileage || ''),
+          repairDate: repairDateStr
+        },
+        repairItems: [newRepairItem],
+        attachedImages: []
       }
-      setRepairItems(prev => [newRepair, ...prev])
+      onQuickSaveReport({
+        report: newReport,
+        myCarUpdates: parsedKm > 0 ? { mileage: String(parsedKm) } : null
+      })
+    }
+
+    if (data.addToReport && setRepairItems) {
+      setRepairItems(prev => [newRepairItem, ...prev])
     }
   }
 
@@ -128,8 +170,7 @@ export default function RepairListPage({
   }, {})
 
   const renderRepairCard = (r) => {
-    const total = (r.repairItems || []).reduce((s, i) => s + (Number(i.partsCost)||0) + (Number(i.laborCost)||0), 0)
-    const grandTotal = total + Math.round(total * 0.1)
+    const grandTotal = (r.repairItems || []).reduce((s, i) => s + (Number(i.partsCost)||0) + (Number(i.laborCost)||0), 0)
     const names = (r.repairItems || []).map(i => i.name).filter(Boolean)
     const title = names.length > 0 ? names.join(', ') : '정비 항목'
     const dates = (r.repairItems || []).map(i => i.repairDate).filter(Boolean)
@@ -138,29 +179,39 @@ export default function RepairListPage({
 
     return (
       <div key={r.id} className={styles.repairCard} onClick={() => onSelectReport(r)}>
-        <div className={styles.repairCardLeft}>
-          <div className={styles.repairDateTag}>{date}</div>
+        <div className={styles.repairCardTop}>
+          <div className={styles.repairDateTag}>📅 {date}</div>
+          <div className={styles.repairCardActions} onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.btnEdit}
+              onClick={() => onEditReport && onEditReport(r)}
+              title="정비 내역 수정"
+            >
+              ✏️ 수정
+            </button>
+            <button className={styles.btnView} onClick={() => onSelectReport(r)}>
+              보기 →
+            </button>
+            <button
+              className={styles.btnDelete}
+              onClick={() => onDeleteReport(r.id)}
+              title="삭제"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div className={styles.repairCardBottom}>
           <div className={styles.repairTitle}>{title}</div>
           <div className={styles.repairMeta}>
             <span className={styles.repairItemCount}>항목 {itemCount}개</span>
             <span className={styles.repairDot}>·</span>
             <span className={styles.repairPrice}>{grandTotal.toLocaleString()}원</span>
           </div>
-        </div>
-        <div className={styles.repairCardRight} onClick={e => e.stopPropagation()}>
-          <button className={styles.btnView} onClick={() => onSelectReport(r)}>
-            보기 →
-          </button>
-          <button
-            className={styles.btnDelete}
-            onClick={() => onDeleteReport(r.id)}
-            title="삭제"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-              <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-            </svg>
-          </button>
         </div>
       </div>
     )
@@ -415,7 +466,11 @@ export default function RepairListPage({
           isOpen={isDiagModalOpen}
           itemName={selectedDiagItem}
           currentMileage={carMileage}
-          onSave={(data) => handleSaveDiagOverride(selectedDiagItem, data)}
+          onSave={(arg1, arg2) => {
+            const actualData = arg2 || arg1
+            const actualName = arg2 ? arg1 : selectedDiagItem
+            handleSaveDiagOverride(actualName, actualData)
+          }}
           onClose={() => setIsDiagModalOpen(false)}
         />
       )}

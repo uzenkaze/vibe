@@ -9,6 +9,10 @@
   padding: 0 0 40px 0;
   font-family: 'Inter', 'Outfit', 'Pretendard', sans-serif;
   line-height: 1.6;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 /* Actions Bar */
@@ -22,6 +26,9 @@
   border-radius: 24px;
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .actionLeft, .actionRight {
@@ -41,6 +48,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btnGhost {
@@ -83,10 +92,12 @@
   align-items: center;
   justify-content: center;
   font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 .actionBtnText {
   font-weight: 800;
+  white-space: nowrap;
 }
 
 /* Floating Edit Button */
@@ -128,6 +139,10 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 /* Hero Header Card */
@@ -141,13 +156,17 @@
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .reportHeader {
     flex-direction: column;
     align-items: flex-start;
-    padding: 24px;
+    padding: 20px 16px;
+    border-radius: 20px;
   }
 }
 
@@ -182,11 +201,15 @@
   display: grid;
   grid-template-columns: 1.3fr 1fr;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
   .dashboardGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
   }
 }
 
@@ -200,6 +223,11 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .controlsRow {
@@ -247,17 +275,25 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .summaryCard {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border-radius: 28px;
-  padding: 28px;
+  padding: 24px 28px;
   color: #ffffff;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 [data-theme="light"] .summaryCard {
@@ -299,6 +335,22 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.ratioHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  width: 100%;
 }
 
 .ratioBar {
@@ -307,17 +359,63 @@
   background: var(--bg-input);
   display: flex;
   overflow: hidden;
+  width: 100%;
 }
 
-.ratioParts { background: var(--accent-blue); height: 100%; }
-.ratioLabor { background: var(--accent-green); height: 100%; }
+.ratioParts { background: #2563eb; height: 100%; }
+.ratioLabor { background: #10b981; height: 100%; }
 
-.ratioLegend {
+.ratioLabels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-sub);
+  width: 100%;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.dot.parts { background: #2563eb; }
+.dot.labor { background: #10b981; }
+
+.tableFilter {
+  display: flex;
+  background: var(--bg-input);
+  padding: 3px;
+  border-radius: 10px;
+  gap: 3px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.filterBtn {
+  background: transparent;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 8px;
+  color: var(--text-sub);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.filterBtnActive {
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Vehicle Specifications Grid */
@@ -330,6 +428,10 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .sectionTitle {
@@ -383,29 +485,101 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.tableWrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  margin-top: 8px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
 }
 
 .itemTable {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
 }
 
 .itemTable th {
-  padding: 14px 16px;
-  font-size: 0.78rem;
+  padding: 10px 8px;
+  font-size: 0.76rem;
   font-weight: 800;
   color: var(--text-muted);
   text-align: left;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-input);
+  white-space: nowrap;
 }
 
 .itemTable td {
-  padding: 16px;
-  font-size: 0.88rem;
+  padding: 10px 8px;
+  font-size: 0.82rem;
   color: var(--text-main);
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+}
+
+.itemTable tr:last-child td {
+  border-bottom: none;
+}
+
+.itemTable tr:hover td {
+  background: var(--bg-input-hover);
+}
+
+.dateCol {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.catCol {
+  white-space: nowrap;
+}
+
+.nameCol {
+  font-weight: 600;
+  word-break: keep-all;
+}
+
+.numCol {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Outfit', monospace;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.systemBadge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .sysTag {
@@ -416,6 +590,7 @@
   font-weight: 800;
   background: rgba(37, 99, 235, 0.12);
   color: var(--accent-blue);
+  white-space: nowrap;
 }
 
 .sysSteering { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
@@ -538,6 +713,92 @@
 }
 
 @media (max-width: 600px) {
+  .actionsBar {
+    padding: 10px 12px;
+    border-radius: 18px;
+  }
+  .actionLeft,
+  .actionRight {
+    gap: 6px;
+  }
+  .btn {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    border-radius: 12px;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .actionBadgeIcon {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+  }
+  .actionBtnText {
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+  .wrapper {
+    gap: 16px;
+    padding-bottom: 24px;
+  }
+  .reportHeader {
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .visualizerPanel {
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .summaryCard {
+    padding: 20px 16px;
+    border-radius: 20px;
+  }
+  .summaryCard .value {
+    font-size: 1.8rem;
+  }
+  .ratioSection {
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .ratioHeader {
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+  .ratioLabels {
+    font-size: 0.74rem;
+    gap: 6px;
+  }
+  .controlsRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .tableFilter {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .filterBtn {
+    flex: 1;
+    text-align: center;
+    padding: 6px 2px;
+  }
+  .specsSection,
+  .tableSection {
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .itemTable th,
+  .itemTable td {
+    padding: 8px 5px;
+    font-size: 0.74rem;
+  }
+  .dateCol {
+    font-size: 0.7rem;
+  }
+  .systemBadge {
+    padding: 2px 5px;
+    font-size: 0.65rem;
+  }
   .reportFooter {
     padding: 20px 16px;
   }

@@ -106,7 +106,9 @@ export default function AuthPage({ currentUser, onLogin, onLogout, onGoHome }) {
 
       // GitHub Pages 정적 배포본/원격 계정 데이터가 있는 경우 페치 시도
       try {
-        const basePath = window.location.pathname.includes('/vibe') ? '/vibe/carrep' : '/carrep'
+        const basePath = window.location.pathname.includes('/vibe/carrep')
+          ? '/vibe/carrep'
+          : (window.location.pathname.includes('/carrep') ? '/carrep' : '')
         const remoteUsersRes = await fetch(`${basePath}/data/users.json?t=${Date.now()}`).catch(() => null)
         if (remoteUsersRes && remoteUsersRes.ok) {
           const remoteUsers = await remoteUsersRes.json()

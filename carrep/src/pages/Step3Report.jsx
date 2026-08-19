@@ -35,9 +35,8 @@ export default function Step3Report({
 
   const totalParts = repairItems.reduce((s, it) => s + (Number(it.partsCost) || 0), 0)
   const totalLabor = repairItems.reduce((s, it) => s + (Number(it.laborCost) || 0), 0)
-  const totalSupply = totalParts + totalLabor
-  const vat = Math.round(totalSupply * 0.1)
-  const grandTotal = totalSupply + vat
+  const grandTotal = totalParts + totalLabor
+  const totalSupply = grandTotal
 
   // Calculate parts and labor ratios for the gauge bar
   const partsRatio = totalSupply > 0 ? (totalParts / totalSupply) * 100 : 0
@@ -325,7 +324,7 @@ function getTechDocForItem(item) {
         {/* Dashboard Header */}
         <header className={styles.reportHeader}>
           <div className={styles.headerTitle}>
-            <h1>{vehicleInfo.year || '2009'} {vehicleInfo.maker || '기아'} {vehicleInfo.model || '모하비'} 정비 & 수리 보고서</h1>
+            <h1>정비 & 수리 보고서</h1>
             <p className={styles.headerSubtitle}>
               Auto Service Inspection & Technical Maintenance Report
             </p>
@@ -341,7 +340,7 @@ function getTechDocForItem(item) {
           <div className={styles.visualizerPanel}>
             <div className={styles.controlsRow}>
               <div className={styles.tabs}>
-                <span style={{ fontSize: '14px', fontWeight: 800 }}>🔧 정비 시스템 모니터</span>
+                <span style={{ fontSize: '14px', fontWeight: 800 }}>🔧 정비 부위</span>
               </div>
               {!isSingleCategory && (
                 <div className={styles.viewModes} id="diagramTabs">
@@ -383,15 +382,14 @@ function getTechDocForItem(item) {
                 {grandTotal.toLocaleString()} 원
               </div>
               <div className="meta" style={{ color: '#a0a8b3', fontSize: '11px', marginTop: '8px', lineHeight: 1.5 }}>
-                공급가액: {totalSupply.toLocaleString()}원 (공임 {totalLabor.toLocaleString()}원 + 부품 {totalParts.toLocaleString()}원) <br />
-                부가가치세 (10%): {vat.toLocaleString()}원
+                합계: {grandTotal.toLocaleString()}원 (공임 {totalLabor.toLocaleString()}원 + 부품 {totalParts.toLocaleString()}원)
               </div>
             </div>
 
             {/* Parts vs Labor Ratio Bar */}
             <div className={styles.ratioSection}>
               <div className={styles.ratioHeader}>
-                <span>공급가 비중 분석</span>
+                <span>비용 비중</span>
                 <span style={{ fontWeight: 700, color: '#45f3ff' }}>
                   {partsRatio >= laborRatio
                     ? `부품비 비중 우세 (${partsRatio.toFixed(1)}%)`
@@ -416,7 +414,7 @@ function getTechDocForItem(item) {
 
             {/* Table Filters and Item Table */}
             <div className={styles.controlsRow} style={{ border: 'none', paddingBottom: 0 }}>
-              <span style={{ fontSize: '14px', fontWeight: 700 }}>세부 부품 및 공임 내역 (공급가 기준)</span>
+              <span style={{ fontSize: '14px', fontWeight: 700 }}>부품 및 공임</span>
               <div className={styles.tableFilter}>
                 <button
                   type="button"
@@ -463,15 +461,15 @@ function getTechDocForItem(item) {
                 <tbody>
                   {filteredItems.map(item => (
                     <tr key={item.id}>
-                      <td style={{ fontSize: '0.8rem', color: '#a0a8b3', whiteSpace: 'nowrap' }}>
-                        📅 {item.repairDate || vehicleInfo.repairDate || new Date().toISOString().split('T')[0]}
+                      <td className={styles.dateCol}>
+                        {item.repairDate || vehicleInfo.repairDate || new Date().toISOString().split('T')[0]}
                       </td>
-                      <td>
+                      <td className={styles.catCol}>
                         <span className={`${styles.systemBadge} ${getBadgeClass(item.category)}`}>
                           {getBadgeLabel(item.category)}
                         </span>
                       </td>
-                      <td>{item.name}</td>
+                      <td className={styles.nameCol}>{item.name}</td>
                       <td className={styles.numCol}>{(Number(item.partsCost) || 0).toLocaleString()}</td>
                       <td className={styles.numCol}>{(Number(item.laborCost) || 0).toLocaleString()}</td>
                     </tr>
@@ -502,7 +500,7 @@ function getTechDocForItem(item) {
 
         {/* Footer */}
         <div className={styles.reportFooter}>
-          <div className={styles.footerLine1}>본 보고서는 CarRep 차량 정비 관리 시스템에 의해 자동 생성되었습니다.</div>
+          <div className={styles.footerLine1}>CarRep 차량 관리 시스템으로 생성</div>
           <div className={styles.footerLine2}>보고서 생성일시: {new Date().toLocaleString('ko-KR')}</div>
         </div>
       </div>

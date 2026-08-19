@@ -53,8 +53,10 @@ export default function MaintenanceRegisterModal({
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.header}>
-          <span className={styles.icon}>🔧</span>
-          <h2 className={styles.title}>'{itemName}' 정비 이력 등록</h2>
+          <div className={styles.titleWrapper}>
+            <span className={styles.icon}>🔧</span>
+            <h2 className={styles.title}>'{itemName}' 정비 이력 등록</h2>
+          </div>
           <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
 

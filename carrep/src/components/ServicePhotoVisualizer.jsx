@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react'
 import styles from './ServicePhotoVisualizer.module.css'
 
 const DEFAULT_PART_PHOTOS = {
+  '타이어': {
+    url: '/mohave_tire_wheel_real.jpg',
+    pinX: 50,
+    pinY: 50,
+    label: '휠 & 타이어 교체 및 마모도 점검 부위'
+  },
   '엔진': {
     url: '/mohave_repair_real_04_engine_1783410132117.png',
     pinX: 52,
@@ -89,6 +95,14 @@ function getPhotoConfigForItem(item) {
   const name = (item?.name || '').toLowerCase().replace(/\s/g, '')
 
   // 1. High-priority exact component matching BEFORE broad category checks
+  if (name.includes('타이어') || name.includes('tire') || name.includes('휠') || name.includes('얼라이먼트') || name.includes('위치교환') || name.includes('공기압') || name.includes('tpms')) {
+    return {
+      url: '/mohave_tire_wheel_real.jpg',
+      pinX: 52,
+      pinY: 48,
+      label: '휠 & 타이어 교체 / 휠 얼라이먼트 밸런스 점검 부위'
+    }
+  }
   if (name.includes('데후') || name.includes('디퍼런셜') || name.includes('디퍼렌셜') || name.includes('differential')) {
     return {
       url: '/mohave_rear_suspension_1783466979850.png',
@@ -378,7 +392,7 @@ export default function ServicePhotoVisualizer({ attachedImages = [], repairItem
 
         <div className={styles.infoArea}>
           <div className={styles.thumbnailCard}>
-            <div className={styles.sectionTitle}>📷 정비 부위 사진 목록</div>
+            <div className={styles.sectionTitle}>📷 정비 사진 목록</div>
             <div className={styles.thumbnailsGrid}>
               {allPhotos.map((photo, idx) => {
                 const isActive = idx === activeImgIdx

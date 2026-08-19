@@ -43,27 +43,38 @@
 .header {
   display: flex;
   align-items: center;
-  padding: 18px 24px;
+  justify-content: space-between;
+  padding: 14px 16px;
   background: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid var(--border);
-  position: relative;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .icon {
-  font-size: 1.25rem;
-  margin-right: 10px;
+  font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .title {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--text-main);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .closeBtn {
-  position: absolute;
-  right: 20px;
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -74,6 +85,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .closeBtn:hover {

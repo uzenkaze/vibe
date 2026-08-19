@@ -68,6 +68,12 @@ const ANNOTATIONS = {
     subtitle: 'Brake System (Disc Rotor, Caliper & Fluid) Service Detail (Real Photo)',
     image: '/brake_disc_caliper_clean.png',
     labels: []
+  },
+  tire: {
+    title: '휠 및 타이어 (전륜/후륜) 교체 & 정렬 내역 (실사)',
+    subtitle: 'Wheel & Tire Replacement & Wheel Alignment Detail (Real Photo)',
+    image: '/mohave_tire_wheel_real.jpg',
+    labels: []
   }
 }
 
@@ -101,7 +107,13 @@ function getItemPinConfig(item) {
   let color = '#45f3ff'
   let labelTitle = item.name
 
-  if (name.includes('데후') || name.includes('디퍼런셜') || name.includes('디퍼렌셜') || name.includes('differential')) {
+  if (name.includes('타이어') || name.includes('tire') || name.includes('얼라이먼트') || name.includes('휠') || name.includes('위치교환') || name.includes('공기압') || name.includes('tpms')) {
+    viewTab = 'tire'
+    x = 420
+    y = 520
+    color = '#3498db'
+    labelTitle = `${item.name} (휠 & 타이어)`
+  } else if (name.includes('데후') || name.includes('디퍼런셜') || name.includes('디퍼렌셜') || name.includes('differential')) {
     viewTab = 'rear_suspension'
     x = 500
     y = 650
@@ -277,6 +289,7 @@ export default function RealCarDiagram({ repairItems, vehicleInfo, attachedImage
     const itemTabKeys = [...new Set(itemConfigs.map(c => c.viewTab))].filter(Boolean)
 
     const TAB_LABELS = {
+      tire: { icon: '🛞', title: '휠 & 타이어' },
       brake: { icon: '🛑', title: '제동계 (브레이크 디스크/오일)' },
       engine_oil: { icon: '🛢️', title: '엔진룸 및 오일류' },
       transmission: { icon: '⚙️', title: '자동변속기 미션' },

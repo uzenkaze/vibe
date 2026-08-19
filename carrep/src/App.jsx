@@ -14,16 +14,15 @@ import InspectionModal from './components/InspectionModal'
 import BottomNav from './components/BottomNav'
 import { getGithubJson, saveGithubJson, validateGithubToken } from './utils/githubDb'
 
-const API_BASE = 'http://localhost:5500'
-
 // 회원 아이디(이메일 ID)를 포함한 회원별 데이터 경로 생성 함수
 const getUserIdKey = (user) => {
   if (!user || !user.email) return 'default'
   return user.email.split('@')[0].replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-const getReportsPath = (user) => `carrep/public/data/reports_${getUserIdKey(user)}.json`
-const getMyCarPath = (user) => `carrep/public/data/mycar_${getUserIdKey(user)}.json`
+const getReportsPath = (user) => `carrep/data/reports_${getUserIdKey(user)}.json`
+const getMyCarPath = (user) => `carrep/data/mycar_${getUserIdKey(user)}.json`
+const getFuelPath = (user) => `carrep/data/fuel_${getUserIdKey(user)}.json`
 
 export default function App() {
   const [step, setStep] = useState(1)
@@ -254,7 +253,7 @@ export default function App() {
     setStep(1)
   }
 
-  const handleSaveFuel = (newItem) => {
+  const handleSaveFuel = async (newItem) => {
     const exists = fuelHistory.some(f => f.id === newItem.id)
     let updated
     if (exists) {
@@ -263,14 +262,54 @@ export default function App() {
       updated = [newItem, ...fuelHistory]
     }
     setFuelHistory(updated)
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_fuel_history_${userIdKey}`, JSON.stringify(updated))
+    }
     localStorage.setItem('carrep_fuel_history', JSON.stringify(updated))
-    showToast('주유 정보가 저장되었습니다.', 'success')
+
+    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
+    if (tokenVal && currentUser) {
+      try {
+        await saveGithubJson(
+          getFuelPath(currentUser),
+          updated,
+          tokenVal,
+          'chore(data): sync fuel history'
+        )
+        showToast('저장되었습니다.', 'success', 3000, 'git')
+        return
+      } catch (err) {
+        console.error('Save fuel via GitHub API failed', err)
+      }
+    }
+    showToast('저장되었습니다.', 'success', 3000)
   }
 
-  const handleDeleteFuel = (fuelId) => {
+  const handleDeleteFuel = async (fuelId) => {
     const updated = fuelHistory.filter(f => f.id !== fuelId)
     setFuelHistory(updated)
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_fuel_history_${userIdKey}`, JSON.stringify(updated))
+    }
     localStorage.setItem('carrep_fuel_history', JSON.stringify(updated))
+
+    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
+    if (tokenVal && currentUser) {
+      try {
+        await saveGithubJson(
+          getFuelPath(currentUser),
+          updated,
+          tokenVal,
+          'chore(data): delete fuel history item'
+        )
+        showToast('🗑️ 주유 기록이 Git(서버)에서 삭제되었습니다.', 'info')
+        return
+      } catch (err) {
+        console.error('Delete fuel via GitHub API failed', err)
+      }
+    }
     showToast('주유 기록이 삭제되었습니다.', 'info')
   }
 
@@ -285,8 +324,8 @@ export default function App() {
     }, duration)
   }
 
-  // Hybrid Fast Parallel Data Loading Chain
-  const loadData = async () => {
+  // Hybrid Fast Parallel Data Loading Chain (Always queries Git server first for real-time data across all devices/browsers)
+  const loadData = async (overrideToken) => {
     const savedUser = localStorage.getItem('carrep_current_user')
     const activeUser = currentUser || (savedUser ? JSON.parse(savedUser) : null)
 
@@ -302,76 +341,71 @@ export default function App() {
       return null
     }
 
-    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    const userIdKey = getUserIdKey(activeUser)
+    const tokenVal = overrideToken !== undefined ? overrideToken : (githubToken || localStorage.getItem('carrep_github_token'))
 
-    // 1. Try loading from Live Local API Server ONLY if on localhost (Avoid 5s timeout on web)
-    if (isLocalhost) {
-      try {
-        const reportsRes = await fetch(`${API_BASE}/api/carrep/reports`)
-        if (reportsRes.ok) {
-          const reportsData = await reportsRes.json()
-          setReports(reportsData)
-          localStorage.setItem('carrep_cached_reports', JSON.stringify(reportsData))
-          
-          let loadedMyCar = null
-          const myCarRes = await fetch(`${API_BASE}/api/carrep/mycar`)
-          if (myCarRes.ok) {
-            loadedMyCar = await myCarRes.json()
-            setMyCar(loadedMyCar)
-            if (loadedMyCar) localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
-          }
-          setDbStatus('local')
-          console.log('[CarRep] Loaded data from local backend server JSON.')
-          return loadedMyCar
-        }
-      } catch (e) {
-        console.warn('[CarRep] Local API server not reachable.')
+    // 1. Direct Git (GitHub) Fetch - Always query Git master branch first for real-time data across all devices/browsers
+    try {
+      const [reportsRes, myCarRes, fuelRes] = await Promise.all([
+        getGithubJson(getReportsPath(activeUser), tokenVal),
+        getGithubJson(getMyCarPath(activeUser), tokenVal),
+        getGithubJson(getFuelPath(activeUser), tokenVal)
+      ])
+
+      let loadedReports = reportsRes ? reportsRes.content : null
+      let loadedMyCar = myCarRes ? myCarRes.content : null
+      let loadedFuel = fuelRes ? fuelRes.content : null
+
+      if (!loadedReports && userIdKey !== 'default') {
+        const defaultReportsRes = await getGithubJson('carrep/data/reports.json', tokenVal)
+        if (defaultReportsRes) loadedReports = defaultReportsRes.content
       }
-    }
 
-    // 2. Direct GitHub Contents API Mode (Parallel fetch with Promise.all for speed)
-    if (tokenVal) {
-      try {
-        const [reportsRes, myCarRes] = await Promise.all([
-          getGithubJson(getReportsPath(activeUser), tokenVal).catch(() => null),
-          getGithubJson(getMyCarPath(activeUser), tokenVal).catch(() => null)
-        ])
+      if (!loadedMyCar && userIdKey !== 'default') {
+        const defaultMyCarRes = await getGithubJson('carrep/data/mycar.json', tokenVal)
+        if (defaultMyCarRes) loadedMyCar = defaultMyCarRes.content
+      }
 
-        const reportsContent = reportsRes ? (reportsRes.content || []) : []
-        const loadedMyCar = myCarRes ? (myCarRes.content || null) : null
-
-        setReports(reportsContent)
-        localStorage.setItem('carrep_cached_reports', JSON.stringify(reportsContent))
-
-        if (loadedMyCar) {
+      if (loadedReports !== null || loadedMyCar !== null || loadedFuel !== null) {
+        if (loadedReports !== null) {
+          setReports(loadedReports)
+          localStorage.setItem(`carrep_reports_${userIdKey}`, JSON.stringify(loadedReports))
+          localStorage.setItem('carrep_cached_reports', JSON.stringify(loadedReports))
+        }
+        if (loadedMyCar !== null) {
           setMyCar(loadedMyCar)
+          localStorage.setItem(`carrep_mycar_${userIdKey}`, JSON.stringify(loadedMyCar))
           localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
         }
-
-        setDbStatus('cloud')
-        console.log('[CarRep] GitHub Cloud DB connection established (Parallel API Mode).')
+        if (loadedFuel !== null) {
+          setFuelHistory(loadedFuel)
+          localStorage.setItem(`carrep_fuel_history_${userIdKey}`, JSON.stringify(loadedFuel))
+          localStorage.setItem('carrep_fuel_history', JSON.stringify(loadedFuel))
+        }
+        setDbStatus(tokenVal ? 'cloud' : 'remote')
+        console.log('[CarRep] GitHub Cloud DB connection established.')
         return loadedMyCar
-      } catch (e) {
-        console.warn('[CarRep] GitHub API read error, falling back to static Pages...', e)
       }
+    } catch (e) {
+      console.warn('[CarRep] Git remote fetch failed, falling back to static/cached data...', e)
     }
 
-    // 3. GitHub Pages Deployed Static JSON Mode (Parallel fetch)
+    // 2. Static JSON / LocalStorage Fallback
     try {
-      const basePath = window.location.pathname.includes('/vibe') ? '/vibe/carrep' : '/carrep'
-      const activeUser = currentUser || (savedUser ? JSON.parse(savedUser) : null)
-      const userIdKey = getUserIdKey(activeUser)
+      const basePath = window.location.pathname.includes('/vibe/carrep')
+        ? '/vibe/carrep'
+        : (window.location.pathname.includes('/carrep') ? '/carrep' : '')
 
-      // 로그인한 사용자별 전용 JSON 파일(예: reports_uzenkaze.json, mycar_uzenkaze.json) 우선 동적 페치
       const userReportsUrl = `${basePath}/data/reports_${userIdKey}.json?t=${Date.now()}`
       const userMyCarUrl = `${basePath}/data/mycar_${userIdKey}.json?t=${Date.now()}`
+      const userFuelUrl = `${basePath}/data/fuel_${userIdKey}.json?t=${Date.now()}`
       const defaultReportsUrl = `${basePath}/data/reports.json?t=${Date.now()}`
       const defaultMyCarUrl = `${basePath}/data/mycar.json?t=${Date.now()}`
 
-      const [userReportsRes, userMyCarRes] = await Promise.all([
+      const [userReportsRes, userMyCarRes, userFuelRes] = await Promise.all([
         fetch(userReportsUrl).catch(() => null),
-        fetch(userMyCarUrl).catch(() => null)
+        fetch(userMyCarUrl).catch(() => null),
+        fetch(userFuelUrl).catch(() => null)
       ])
 
       let reportsRes = (userReportsRes && userReportsRes.ok) ? userReportsRes : await fetch(defaultReportsUrl).catch(() => null)
@@ -382,7 +416,6 @@ export default function App() {
 
       if (reportsRes && reportsRes.ok) {
         reportsData = await reportsRes.json()
-
         setReports(reportsData)
         localStorage.setItem(`carrep_reports_${userIdKey}`, JSON.stringify(reportsData))
         localStorage.setItem('carrep_cached_reports', JSON.stringify(reportsData))
@@ -395,6 +428,13 @@ export default function App() {
           localStorage.setItem(`carrep_mycar_${userIdKey}`, JSON.stringify(loadedMyCar))
           localStorage.setItem('carrep_cached_mycar', JSON.stringify(loadedMyCar))
         }
+      }
+
+      if (userFuelRes && userFuelRes.ok) {
+        const fuelData = await userFuelRes.json()
+        setFuelHistory(fuelData)
+        localStorage.setItem(`carrep_fuel_history_${userIdKey}`, JSON.stringify(fuelData))
+        localStorage.setItem('carrep_fuel_history', JSON.stringify(fuelData))
       }
 
       if (reportsRes?.ok || myCarRes?.ok) {
@@ -543,33 +583,31 @@ export default function App() {
     const updatedReports = reports.filter(r => String(r.id) !== targetIdStr)
 
     setReports(updatedReports)
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_reports_${userIdKey}`, JSON.stringify(updatedReports))
+    }
     localStorage.setItem('carrep_cached_reports', JSON.stringify(updatedReports))
     if (String(savedReportId) === targetIdStr) handleReset()
 
-    // Scenario A: Local backend server is active
-    if (dbStatus === 'local') {
-      try {
-        await fetch(`${API_BASE}/api/carrep/reports/${id}`, { method: 'DELETE' })
-      } catch (err) {
-        console.error('Delete via server failed', err)
-      }
-    }
+    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
 
-    // Scenario B: Client-side direct GitHub Cloud DB commit
-    if (githubToken) {
+    if (tokenVal && currentUser) {
       try {
         await saveGithubJson(
           getReportsPath(currentUser),
           updatedReports,
-          githubToken,
+          tokenVal,
           `chore(data): delete repair report ${id}`
         )
+        showToast('🗑️ 정비 내역이 Git(서버)에서 정상 삭제되었습니다.', 'info', 3000)
+        return
       } catch (err) {
         console.error('Delete via GitHub API failed', err)
       }
     }
 
-    showToast('🗑️ 정비 내역 보고서가 정상 삭제되었습니다.', 'info', 3000)
+    showToast('🗑️ 정비 내역 보고서가 삭제되었습니다.', 'info', 3000)
   }
 
   const handleSaveReport = async (itemsToSave) => {
@@ -602,52 +640,97 @@ export default function App() {
       updatedReports = [newReport, ...reports]
     }
 
-    // Always update React state and LocalStorage cache immediately!
     setReports(updatedReports)
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_reports_${userIdKey}`, JSON.stringify(updatedReports))
+    }
     localStorage.setItem('carrep_cached_reports', JSON.stringify(updatedReports))
     setSavedReportId(newReport.id)
 
-    // Scenario A: Local backend server is active
-    if (dbStatus === 'local') {
-      try {
-        const res = await fetch(`${API_BASE}/api/carrep/reports`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newReport)
-        })
-        if (res.ok) {
-          showToast('✨ 정비내역 보고서가 성공적으로 저장되었습니다!', 'success', 4000)
-          setStep(3)
-          return
-        }
-      } catch (err) {
-        console.error('Save via server failed', err)
-      }
-    }
+    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
 
-    // Scenario B: Client-side direct GitHub Cloud DB commit
-    if (githubToken) {
+    if (tokenVal && currentUser) {
       try {
         await saveGithubJson(
           getReportsPath(currentUser),
           updatedReports,
-          githubToken,
+          tokenVal,
           savedReportId ? `chore(data): update repair report ${newReport.id}` : `chore(data): create repair report ${newReport.id}`
         )
-        showToast('✨ 정비내역 보고서가 GitHub 및 저장소에 성공적으로 저장되었습니다!', 'success', 4000)
+        setDbStatus('cloud')
+        showToast('저장되었습니다.', 'success', 3000, 'git')
         setStep(3)
         return
       } catch (err) {
         console.error('Save via GitHub API failed', err)
-        showToast(`⚠️ GitHub 저장소 저장 오류: ${err.message} (로컬 캐시에 저장됨)`, 'warning', 5000)
+        showToast(`⚠️ Git 저장소 저장 실패: ${err.message}`, 'warning', 5000)
+        setIsModalOpen(true)
         setStep(3)
         return
       }
     }
 
-    // Scenario C: Web / Offline Mode (LocalStorage saved successfully!)
-    showToast('✨ 정비내역 보고서가 성공적으로 저장되었습니다!', 'success', 4000)
+    showToast('⚠️ Git 저장소에 영구 저장하려면 GitHub 토큰 설정이 필요합니다.', 'warning', 5000)
+    setIsModalOpen(true)
     setStep(3)
+  }
+
+  const handleQuickSaveReport = async ({ report, myCarUpdates }) => {
+    const updatedReports = [report, ...reports]
+    setReports(updatedReports)
+
+    if (currentUser) {
+      const userIdKey = getUserIdKey(currentUser)
+      localStorage.setItem(`carrep_reports_${userIdKey}`, JSON.stringify(updatedReports))
+    }
+    localStorage.setItem('carrep_cached_reports', JSON.stringify(updatedReports))
+
+    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
+
+    if (tokenVal && currentUser) {
+      try {
+        await saveGithubJson(
+          getReportsPath(currentUser),
+          updatedReports,
+          tokenVal,
+          `chore(data): quick add maintenance record ${report.id}`
+        )
+        setDbStatus('cloud')
+        showToast('저장되었습니다.', 'success', 3000, 'git')
+      } catch (err) {
+        console.error('Quick save via GitHub API failed', err)
+        showToast(`⚠️ Git 저장소 저장 실패: ${err.message}`, 'warning', 5000)
+      }
+    } else {
+      showToast('저장되었습니다.', 'info', 3000)
+    }
+
+    if (myCarUpdates && myCarUpdates.mileage) {
+      const newMileage = Number(myCarUpdates.mileage)
+      if (!isNaN(newMileage) && newMileage > (Number(myCar?.mileage) || 0)) {
+        const updatedMyCar = { ...myCar, mileage: String(newMileage) }
+        setMyCar(updatedMyCar)
+        setVehicleInfo(prev => ({ ...prev, mileage: String(newMileage) }))
+        if (currentUser) {
+          const userIdKey = getUserIdKey(currentUser)
+          localStorage.setItem(`carrep_mycar_${userIdKey}`, JSON.stringify(updatedMyCar))
+        }
+        localStorage.setItem('carrep_cached_mycar', JSON.stringify(updatedMyCar))
+        if (tokenVal && currentUser) {
+          try {
+            await saveGithubJson(
+              getMyCarPath(currentUser),
+              updatedMyCar,
+              tokenVal,
+              `chore(data): update mileage to ${newMileage}`
+            )
+          } catch (e) {
+            console.error('Update mileage to github failed', e)
+          }
+        }
+      }
+    }
   }
 
   const handleSaveMyCar = async (carInfo) => {
@@ -668,14 +751,12 @@ export default function App() {
       engineDisp: carInfo.engineDisp || ''
     }
 
-    // 1. 전역 myCar 및 vehicleInfo state 즉시 전체 업데이트
     setMyCar(myCarData)
     setVehicleInfo(prev => ({
       ...prev,
       ...myCarData
     }))
 
-    // 2. 로그인된 사용자가 있는 경우 해당 유저 전용 localStorage 키에도 동기화 저장
     if (currentUser) {
       const userIdKey = getUserIdKey(currentUser)
       localStorage.setItem(`carrep_mycar_${userIdKey}`, JSON.stringify(myCarData))
@@ -683,42 +764,28 @@ export default function App() {
     localStorage.setItem('carrep_cached_mycar', JSON.stringify(myCarData))
     localStorage.setItem('carrep_temp_mycar', JSON.stringify(myCarData))
 
-    // Scenario A: Local backend server is active
-    if (dbStatus === 'local') {
-      try {
-        const res = await fetch(`${API_BASE}/api/carrep/mycar`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(myCarData)
-        })
-        if (res.ok) {
-          showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
-          return
-        }
-      } catch (err) {
-        console.error('Save My Car via server failed', err)
-      }
-    }
+    const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
 
-    // Scenario B: Client-side direct GitHub Cloud DB commit
-    if (githubToken) {
+    if (tokenVal && currentUser) {
       try {
         await saveGithubJson(
           getMyCarPath(currentUser),
           myCarData,
-          githubToken,
+          tokenVal,
           'chore(data): update MyCar profile'
         )
-        showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
+        showToast('저장되었습니다.', 'success', 3000, 'git')
         return
       } catch (err) {
         console.error('Save My Car via GitHub API failed', err)
-        showToast(`내차 정보 저장 실패: ${err.message}`, 'warning', 5000)
+        showToast(`⚠️ 내차 정보 Git 저장 실패: ${err.message}`, 'warning', 5000)
+        setIsModalOpen(true)
         return
       }
     }
 
-    showToast('내차 정보가 저장되었습니다.', 'success', 4000, 'car')
+    showToast('⚠️ Git 저장소에 반영하려면 GitHub 토큰 설정이 필요합니다.', 'warning', 5000)
+    setIsModalOpen(true)
   }
 
   const handleSaveInsurance = (data) => {
@@ -788,7 +855,9 @@ export default function App() {
           vehicleInfo={vehicleInfo}
           initialTab={repairListTab}
           onSelectReport={handleSelectReportFromList}
+          onEditReport={handleEditReport}
           onDeleteReport={handleDeleteReport}
+          onQuickSaveReport={handleQuickSaveReport}
           onGoRepair={() => setStep(2)}
           onNext={handleGoToRepairStep}
           repairItems={repairItems}
