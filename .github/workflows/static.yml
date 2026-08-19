@@ -24,82 +24,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
-      - name: Build learn app
-        continue-on-error: true
-        run: |
-          cd learn
-          npm install
-          npm run build
-          cd ..
-
-      - name: Build carrep app
-        continue-on-error: true
-        run: |
-          cd carrep
-          npm install
-          npm run build
-          cd ..
-
-      - name: Build asset-react app
-        continue-on-error: true
-        run: |
-          cd asset/asset-react
-          npm install
-          npm run build
-          cd ../..
-
-      - name: Prepare deployment directory
+      - name: Prepare deployment directory from deploy_dist
         run: |
           mkdir -p deploy_out
+          if [ -d "deploy_dist" ]; then
+            cp -r deploy_dist/* deploy_out/
+          fi
           touch deploy_out/.nojekyll
-          # Copy root files
-          cp index.html deploy_out/ 2>/dev/null || true
-          cp home.html deploy_out/ 2>/dev/null || true
-          cp 404.html deploy_out/ 2>/dev/null || true
-          cp README.md deploy_out/ 2>/dev/null || true
-          cp *.apk deploy_out/ 2>/dev/null || true
-
-          # Copy learn dist (with fallback)
-          mkdir -p deploy_out/learn
-          if [ -d "learn/dist" ]; then
-            cp -r learn/dist/* deploy_out/learn/
-          else
-            cp -r learn/* deploy_out/learn/ 2>/dev/null || true
-          fi
-
-          # Copy carrep dist (with fallback)
-          mkdir -p deploy_out/carrep
-          if [ -d "carrep/dist" ]; then
-            cp -r carrep/dist/* deploy_out/carrep/
-          else
-            cp -r carrep/* deploy_out/carrep/ 2>/dev/null || true
-          fi
-
-          # Copy asset dist and data
-          mkdir -p deploy_out/asset
-          if [ -d "asset/data" ]; then cp -r asset/data deploy_out/asset/; fi
-          if [ -d "asset/asset-react/dist" ]; then
-            cp -r asset/asset-react/dist/* deploy_out/asset/
-            mkdir -p deploy_out/asset/asset-react/dist
-            cp -r asset/asset-react/dist/* deploy_out/asset/asset-react/dist/
-          fi
-          # Fallback legacy static files
-          cp asset/*.html deploy_out/asset/ 2>/dev/null || true
-          cp asset/*.js deploy_out/asset/ 2>/dev/null || true
-          cp asset/favicon.png deploy_out/asset/ 2>/dev/null || true
-
-          # Copy task, hobby, livetv
-          cp -r task deploy_out/ 2>/dev/null || true
-          cp -r hobby deploy_out/ 2>/dev/null || true
-          if [ -d "livetv" ]; then cp -r livetv deploy_out/; fi
-          if [ -d "livetv-app/dist" ]; then cp -r livetv-app/dist deploy_out/livetv-app; fi
-          if [ -d "vibe-hybrid-app/dist" ]; then cp -r vibe-hybrid-app/dist deploy_out/vibe-hybrid-app; fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
