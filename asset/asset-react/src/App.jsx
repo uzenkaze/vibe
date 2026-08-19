@@ -45,6 +45,22 @@ function Dashboard() {
   const [expenseDetail, setExpenseDetail] = useState(null); // { item, sectionKey } | null
   const [isSavingDetail, setIsSavingDetail] = useState(false);
 
+  // ESC 키 클릭 시 열려있는 전역 모달 닫기
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        if (expenseDetail) setExpenseDetail(null);
+        if (manualModal) setManualModal(false);
+        if (calcModal) setCalcModal(false);
+        if (githubModal) setGithubModal(false);
+        if (dataModal) setDataModal(false);
+        if (summaryModal) setSummaryModal(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [expenseDetail, manualModal, calcModal, githubModal, dataModal, summaryModal]);
+
   const handleExpenseDetailOpen = (item, sectionKey) => {
     setExpenseDetail({ item, sectionKey });
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Fragment, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 
 // 초기 샘플 데이터 (첨부 이미지 3종 실 데이터 100% 정밀 복원)
@@ -191,13 +191,51 @@ const INITIAL_DATA = {
         ]
       }
     ]
+  },
+  timeline: {
+    keyHandover: {
+      title: '입주\n잔금완납\n키불출',
+      date: '22.09.13',
+      memo: '분양 잔금 완납 및 키 불출 (CA520, CA557)'
+    },
+    ca520: [
+      { id: 't1', type: 'interior', title: '인테리어', detail: 'CA520', date: '22.10' },
+      { id: 't2', type: 'appliance', title: '가전', detail: '냉장고/세탁기', date: '22.09' },
+      { id: 't3', type: 'facility', title: '냉난방', detail: '', date: '23.01' },
+      { id: 't4', type: 'rent', title: '임대', detail: '500/50', date: '23.01' },
+      { id: 't5', type: 'rent', title: '임대', detail: '300/60', date: '24.02' },
+      { id: 't6', type: 'rent', title: '임대', detail: '300/60', date: '24.02' }
+    ],
+    ca557: [
+      { id: 't7', type: 'interior', title: '인테리어', detail: 'CA557', date: '22.10' },
+      { id: 't8', type: 'appliance', title: '가전', detail: '냉장고/세탁기', date: '23.02' },
+      { id: 't9', type: 'facility', title: '냉난방', detail: '', date: '23.02' },
+      { id: 't10', type: 'rent', title: '임대', detail: '500/50', date: '23.02' },
+      { id: 't11', type: 'rent', title: '임대', detail: '500/55', date: '24.02' },
+      { id: 't12', type: 'rent', title: '임대', detail: '500/55', date: '24.02' }
+    ]
   }
 };
 
 export default function KnowledgeIndustryPage() {
   const { dark, showToast } = useApp();
-  const [activeTab, setActiveTab] = useState('investment'); // 'investment' | 'loans' | 'rent'
+  const [activeTab, setActiveTab] = useState('investment'); // 'investment' | 'loans' | 'rent' | 'timeline'
   const [loanSubTab, setLoanSubTab] = useState('kb'); // 'kb' | 'nh' | 'all'
+  const timelineScrollRef = useRef(null);
+
+  const handleScrollTimeline = (offset) => {
+    if (timelineScrollRef.current) {
+      timelineScrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+  };
+
+  const handleTimelineWheel = (e) => {
+    if (timelineScrollRef.current) {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        timelineScrollRef.current.scrollLeft += e.deltaY;
+      }
+    }
+  };
 
   // 데이터 상태 (localStorage 연동 & 구버전 시 신규 48개 데이터 자동 마이그레이션)
   const [data, setData] = useState(() => {
@@ -212,6 +250,9 @@ export default function KnowledgeIndustryPage() {
           }
           if (parsed.loans.nh && parsed.loans.nh.length <= 24) {
             parsed.loans.nh = INITIAL_DATA.loans.nh;
+          }
+          if (!parsed.timeline) {
+            parsed.timeline = INITIAL_DATA.timeline;
           }
           return parsed;
         }
@@ -275,6 +316,85 @@ export default function KnowledgeIndustryPage() {
       memo: ''
     }
   });
+
+  // 인테리어 비용 모달 상태
+  const [interiorModal, setInteriorModal] = useState({
+    open: false,
+    unit: 'interiorCA520',
+    editId: null,
+    formData: {
+      date: '',
+      item: '',
+      detail: '',
+      amount: ''
+    }
+  });
+
+  // 투자 상세내역 모달 상태
+  const [investDetailModal, setInvestDetailModal] = useState({
+    open: false,
+    editId: null,
+    formData: {
+      category: '',
+      target: '',
+      note: '',
+      amount: ''
+    }
+  });
+
+  // 호실별 공급가 및 매각 회수 분석 모달 상태
+  const [breakEvenModal, setBreakEvenModal] = useState({
+    open: false,
+    editId: null,
+    formData: {
+      unit: '',
+      supplyPrice: '',
+      diff: ''
+    }
+  });
+
+  // 전체 투자 비용 요약 모달 상태
+  const [summaryModal, setSummaryModal] = useState({
+    open: false,
+    formData: {
+      deposit: '',
+      facility: '',
+      taxInterest: '',
+      totalInvestment: ''
+    }
+  });
+
+  // 연도별 흐름도 모달 상태
+  const [timelineModal, setTimelineModal] = useState({
+    open: false,
+    unit: 'ca520', // 'ca520' | 'ca557' | 'keyHandover'
+    editId: null,
+    formData: {
+      type: 'interior', // 'interior' | 'appliance' | 'facility' | 'rent'
+      title: '',
+      detail: '',
+      date: '',
+      memo: ''
+    }
+  });
+
+  // ESC 키 클릭 시 열려있는 모달창 닫기
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        setLoanModal(prev => prev.open ? { ...prev, open: false } : prev);
+        setRentModal(prev => prev.open ? { ...prev, open: false } : prev);
+        setContractModal(prev => prev.open ? { ...prev, open: false } : prev);
+        setInteriorModal(prev => prev.open ? { ...prev, open: false } : prev);
+        setInvestDetailModal(prev => prev.open ? { ...prev, open: false } : prev);
+        setBreakEvenModal(prev => prev.open ? { ...prev, open: false } : prev);
+        setSummaryModal(prev => prev.open ? { ...prev, open: false } : prev);
+        setTimelineModal(prev => prev.open ? { ...prev, open: false } : prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // GitHub 데이터 자동 동기화 헬퍼
   const syncKnowledgeIndustryWithGit = useCallback(async (targetData, isExplicit = false) => {
@@ -386,9 +506,12 @@ export default function KnowledgeIndustryPage() {
   };
 
   // --- 탭 1: 투자 비용 계산 ---
-  const ca520Sum = data.investment.interiorCA520.reduce((s, i) => s + (Number(i.amount) || 0), 0);
-  const ca557Sum = data.investment.interiorCA557.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+  const ca520Sum = (data.investment?.interiorCA520 || []).reduce((s, i) => s + (Number(i.amount) || 0), 0);
+  const ca557Sum = (data.investment?.interiorCA557 || []).reduce((s, i) => s + (Number(i.amount) || 0), 0);
   const interiorTotal = ca520Sum + ca557Sum;
+
+  const summaryData = data.investment?.summary || INITIAL_DATA.investment.summary;
+  const facilityAndTaxSum = (Number(summaryData.facility) || 0) + (Number(summaryData.taxInterest) || 0);
 
   const [loanYearFilter, setLoanYearFilter] = useState('2026'); // 기본 당해연도(2026) 필터링
 
@@ -534,7 +657,7 @@ export default function KnowledgeIndustryPage() {
       });
       return { ...prev, rent: nextRent };
     });
-    showToast('월세 입금 상태가 업데이트되었습니다.', 'success');
+    showToast('임대 입금 상태가 업데이트되었습니다.', 'success');
   };
 
   // --- 탭 3: 월세 입금 내역 CRUD 헬퍼 ---
@@ -658,11 +781,11 @@ export default function KnowledgeIndustryPage() {
     });
 
     setRentModal(prev => ({ ...prev, open: false }));
-    showToast('월세 입금 내역이 저장되었습니다.', 'success');
+    showToast('임대 입금 내역이 저장되었습니다.', 'success');
   };
 
   const handleDeleteRentPayment = (contractId, paymentId) => {
-    if (!window.confirm('해당 월세 입금 내역을 삭제하시겠습니까?')) return;
+    if (!window.confirm('해당 임대 입금 내역을 삭제하시겠습니까?')) return;
     const targetCId = String(contractId);
     setData(prev => {
       const nextRent = { ...prev.rent };
@@ -783,7 +906,7 @@ export default function KnowledgeIndustryPage() {
   };
 
   const handleDeleteContract = (contractId) => {
-    if (!window.confirm('해당 계약/호실 및 포함된 모든 월세 입금 내역을 삭제하시겠습니까?')) return;
+    if (!window.confirm('해당 계약/호실 및 포함된 모든 임대 입금 내역을 삭제하시겠습니까?')) return;
     setData(prev => ({
       ...prev,
       rent: {
@@ -794,27 +917,420 @@ export default function KnowledgeIndustryPage() {
     showToast('계약이 삭제되었습니다.', 'info');
   };
 
+  // --- 투자 탭 CRUD 핸들러 ---
+  // 1. 호실별 인테리어 비용 핸들러
+  const handleOpenInteriorModal = (unit = 'interiorCA520', item = null) => {
+    if (item) {
+      setInteriorModal({
+        open: true,
+        unit,
+        editId: item.id,
+        formData: {
+          date: item.date || '',
+          item: item.item || '',
+          detail: item.detail || '',
+          amount: formatComma(item.amount)
+        }
+      });
+    } else {
+      setInteriorModal({
+        open: true,
+        unit,
+        editId: null,
+        formData: {
+          date: new Date().toISOString().slice(0, 10),
+          item: '',
+          detail: '',
+          amount: ''
+        }
+      });
+    }
+  };
+
+  const handleSaveInterior = (e) => {
+    e.preventDefault();
+    const { unit, editId, formData } = interiorModal;
+    const numAmount = Number(unformatComma(formData.amount)) || 0;
+    const listKey = unit;
+
+    setData(prev => {
+      const prevList = prev.investment?.[listKey] || [];
+      let nextList;
+      if (editId) {
+        nextList = prevList.map(i => i.id === editId ? { ...i, date: formData.date, item: formData.item, detail: formData.detail, amount: numAmount } : i);
+      } else {
+        nextList = [
+          ...prevList,
+          {
+            id: String(Date.now()),
+            date: formData.date,
+            item: formData.item,
+            detail: formData.detail,
+            amount: numAmount
+          }
+        ];
+      }
+      return {
+        ...prev,
+        investment: {
+          ...prev.investment,
+          [listKey]: nextList
+        }
+      };
+    });
+
+    setInteriorModal(prev => ({ ...prev, open: false }));
+    showToast(editId ? '인테리어 내역이 수정되었습니다.' : '인테리어 내역이 등록되었습니다.', 'success');
+  };
+
+  const handleDeleteInterior = (unit, itemId) => {
+    if (!window.confirm('해당 인테리어 항목을 삭제하시겠습니까?')) return;
+    setData(prev => ({
+      ...prev,
+      investment: {
+        ...prev.investment,
+        [unit]: (prev.investment?.[unit] || []).filter(i => i.id !== itemId)
+      }
+    }));
+    showToast('인테리어 내역이 삭제되었습니다.', 'info');
+  };
+
+  // 2. 투자 상세내역 핸들러
+  const handleOpenInvestDetailModal = (item = null) => {
+    if (item) {
+      setInvestDetailModal({
+        open: true,
+        editId: item.id,
+        formData: {
+          category: item.category || '',
+          target: item.target || '',
+          note: item.note || '',
+          amount: formatComma(item.amount)
+        }
+      });
+    } else {
+      setInvestDetailModal({
+        open: true,
+        editId: null,
+        formData: {
+          category: '',
+          target: '',
+          note: '',
+          amount: ''
+        }
+      });
+    }
+  };
+
+  const handleSaveInvestDetail = (e) => {
+    e.preventDefault();
+    const { editId, formData } = investDetailModal;
+    const numAmount = Number(unformatComma(formData.amount)) || 0;
+
+    setData(prev => {
+      const prevList = prev.investment?.details || [];
+      let nextList;
+      if (editId) {
+        nextList = prevList.map(i => i.id === editId ? { ...i, category: formData.category, target: formData.target, note: formData.note, amount: numAmount } : i);
+      } else {
+        nextList = [
+          ...prevList,
+          {
+            id: 'd_' + Date.now(),
+            category: formData.category,
+            target: formData.target,
+            note: formData.note,
+            amount: numAmount
+          }
+        ];
+      }
+      return {
+        ...prev,
+        investment: {
+          ...prev.investment,
+          details: nextList
+        }
+      };
+    });
+
+    setInvestDetailModal(prev => ({ ...prev, open: false }));
+    showToast(editId ? '투자 상세내역이 수정되었습니다.' : '투자 상세내역이 등록되었습니다.', 'success');
+  };
+
+  const handleDeleteInvestDetail = (itemId) => {
+    if (!window.confirm('해당 투자 상세내역을 삭제하시겠습니까?')) return;
+    setData(prev => ({
+      ...prev,
+      investment: {
+        ...prev.investment,
+        details: (prev.investment?.details || []).filter(i => i.id !== itemId)
+      }
+    }));
+    showToast('투자 상세내역이 삭제되었습니다.', 'info');
+  };
+
+  // 3. 호실별 공급가 & 매각 회수 분석 핸들러
+  const handleOpenBreakEvenModal = (item = null) => {
+    if (item) {
+      setBreakEvenModal({
+        open: true,
+        editId: item.id,
+        formData: {
+          unit: item.unit || '',
+          supplyPrice: formatComma(item.supplyPrice),
+          diff: formatComma(item.diff)
+        }
+      });
+    } else {
+      setBreakEvenModal({
+        open: true,
+        editId: null,
+        formData: {
+          unit: '',
+          supplyPrice: '',
+          diff: ''
+        }
+      });
+    }
+  };
+
+  const handleSaveBreakEven = (e) => {
+    e.preventDefault();
+    const { editId, formData } = breakEvenModal;
+    const numSupplyPrice = Number(unformatComma(formData.supplyPrice)) || 0;
+    const numDiff = Number(unformatComma(formData.diff)) || 0;
+
+    setData(prev => {
+      const prevList = prev.investment?.breakEven || [];
+      let nextList;
+      if (editId) {
+        nextList = prevList.map(i => i.id === editId ? { ...i, unit: formData.unit, supplyPrice: numSupplyPrice, diff: numDiff } : i);
+      } else {
+        nextList = [
+          ...prevList,
+          {
+            id: 'b_' + Date.now(),
+            unit: formData.unit,
+            supplyPrice: numSupplyPrice,
+            diff: numDiff
+          }
+        ];
+      }
+      return {
+        ...prev,
+        investment: {
+          ...prev.investment,
+          breakEven: nextList
+        }
+      };
+    });
+
+    setBreakEvenModal(prev => ({ ...prev, open: false }));
+    showToast(editId ? '공급가 분석 내역이 수정되었습니다.' : '공급가 분석 내역이 등록되었습니다.', 'success');
+  };
+
+  const handleDeleteBreakEven = (itemId) => {
+    if (!window.confirm('해당 공급가 분석 내역을 삭제하시겠습니까?')) return;
+    setData(prev => ({
+      ...prev,
+      investment: {
+        ...prev.investment,
+        breakEven: (prev.investment?.breakEven || []).filter(i => i.id !== itemId)
+      }
+    }));
+    showToast('공급가 분석 내역이 삭제되었습니다.', 'info');
+  };
+
+  // 4. 전체 투자 비용 요약 핸들러
+  const handleOpenSummaryModal = () => {
+    const s = data.investment?.summary || INITIAL_DATA.investment.summary;
+    setSummaryModal({
+      open: true,
+      formData: {
+        deposit: formatComma(s.deposit),
+        facility: formatComma(s.facility),
+        taxInterest: formatComma(s.taxInterest),
+        totalInvestment: formatComma(s.totalInvestment)
+      }
+    });
+  };
+
+  const handleSaveSummary = (e) => {
+    e.preventDefault();
+    const numDeposit = Number(unformatComma(summaryModal.formData.deposit)) || 0;
+    const numFacility = Number(unformatComma(summaryModal.formData.facility)) || 0;
+    const numTaxInterest = Number(unformatComma(summaryModal.formData.taxInterest)) || 0;
+    const numTotal = Number(unformatComma(summaryModal.formData.totalInvestment)) || 0;
+    const numSumCost = numDeposit + numFacility + numTaxInterest;
+
+    setData(prev => ({
+      ...prev,
+      investment: {
+        ...prev.investment,
+        summary: {
+          deposit: numDeposit,
+          facility: numFacility,
+          taxInterest: numTaxInterest,
+          sumCost: numSumCost,
+          totalInvestment: numTotal
+        }
+      }
+    }));
+
+    setSummaryModal(prev => ({ ...prev, open: false }));
+    showToast('전체 투자 비용 요약이 수정되었습니다.', 'success');
+  };
+
+  // 5. 연도별 흐름도 CRUD 핸들러
+  const handleOpenTimelineModal = (unit = 'ca520', item = null) => {
+    if (unit === 'keyHandover') {
+      const keyInfo = data.timeline?.keyHandover || INITIAL_DATA.timeline.keyHandover;
+      setTimelineModal({
+        open: true,
+        unit: 'keyHandover',
+        editId: 'key',
+        formData: {
+          type: 'key',
+          title: keyInfo.title || '입주\n잔금완납\n키불출',
+          detail: keyInfo.memo || '',
+          date: keyInfo.date || '22.09.13',
+          memo: keyInfo.memo || ''
+        }
+      });
+      return;
+    }
+
+    if (item) {
+      setTimelineModal({
+        open: true,
+        unit,
+        editId: item.id,
+        formData: {
+          type: item.type || 'interior',
+          title: item.title || '',
+          detail: item.detail || '',
+          date: item.date || '',
+          memo: item.memo || ''
+        }
+      });
+    } else {
+      setTimelineModal({
+        open: true,
+        unit,
+        editId: null,
+        formData: {
+          type: 'rent',
+          title: '임대',
+          detail: '',
+          date: '',
+          memo: ''
+        }
+      });
+    }
+  };
+
+  const handleSaveTimelineItem = (e) => {
+    e.preventDefault();
+    const { unit, editId, formData } = timelineModal;
+
+    if (unit === 'keyHandover') {
+      setData(prev => ({
+        ...prev,
+        timeline: {
+          ...(prev.timeline || INITIAL_DATA.timeline),
+          keyHandover: {
+            title: formData.title,
+            date: formData.date,
+            memo: formData.detail || formData.memo
+          }
+        }
+      }));
+      setTimelineModal(prev => ({ ...prev, open: false }));
+      showToast('키불출 정보가 수정되었습니다.', 'success');
+      return;
+    }
+
+    setData(prev => {
+      const currentTimeline = prev.timeline || INITIAL_DATA.timeline;
+      const list = [...(currentTimeline[unit] || [])];
+      if (editId) {
+        const idx = list.findIndex(i => i.id === editId);
+        if (idx >= 0) {
+          list[idx] = {
+            ...list[idx],
+            type: formData.type,
+            title: formData.title,
+            detail: formData.detail,
+            date: formData.date,
+            memo: formData.memo
+          };
+        }
+      } else {
+        list.push({
+          id: 't_' + Date.now(),
+          type: formData.type,
+          title: formData.title,
+          detail: formData.detail,
+          date: formData.date,
+          memo: formData.memo
+        });
+      }
+      return {
+        ...prev,
+        timeline: {
+          ...currentTimeline,
+          [unit]: list
+        }
+      };
+    });
+
+    setTimelineModal(prev => ({ ...prev, open: false }));
+    showToast(editId ? '흐름도 단계가 수정되었습니다.' : '흐름도 단계가 추가되었습니다.', 'success');
+  };
+
+  const handleDeleteTimelineItem = (unit, itemId) => {
+    if (!window.confirm('해당 흐름도 단계를 삭제하시겠습니까?')) return;
+    setData(prev => {
+      const currentTimeline = prev.timeline || INITIAL_DATA.timeline;
+      return {
+        ...prev,
+        timeline: {
+          ...currentTimeline,
+          [unit]: (currentTimeline[unit] || []).filter(i => i.id !== itemId)
+        }
+      };
+    });
+    showToast('흐름도 단계가 삭제되었습니다.', 'info');
+  };
+
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '3rem', minWidth: 0, boxSizing: 'border-box' }}>
       <style>{`
+        .section-card {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+        }
+
         .tab-btn {
-          padding: 10px 22px;
+          padding: 8px 16px;
           border-radius: 99px;
           border: 1px solid transparent;
-          font-size: 0.9rem;
+          font-size: 0.88rem;
           font-weight: 800;
           cursor: pointer;
           transition: all 0.2s ease;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          gap: 5px;
           white-space: nowrap;
         }
         @media (max-width: 600px) {
           .tab-btn {
-            padding: 8px 14px;
-            font-size: 0.82rem;
+            padding: 6px 12px;
+            font-size: 0.8rem;
           }
         }
         .tab-btn.active {
@@ -841,31 +1357,118 @@ export default function KnowledgeIndustryPage() {
         .data-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 0.88rem;
+          font-size: 1.12rem;
         }
         .data-table th, .data-table td {
-          padding: 9px 12px;
+          padding: 8px 12px;
           border: 1px solid ${dark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
           text-align: center;
           white-space: nowrap;
+          line-height: 1.35;
         }
 
         @media (max-width: 768px) {
           .section-card {
-            padding: 1.15rem 0.95rem !important;
+            padding: 1rem 0.65rem !important;
           }
           .data-table {
             width: 100% !important;
             min-width: 100% !important;
-            font-size: 0.82rem;
+            font-size: 0.82rem !important;
           }
           .data-table th, .data-table td {
-            padding: 7px 8px;
+            padding: 6px 4px !important;
+            font-size: 0.82rem !important;
+            white-space: normal !important;
+            word-break: keep-all;
+          }
+          .data-table th:last-child, .data-table td:last-child {
+            width: 50px !important;
+            min-width: 50px !important;
+            padding: 6px 1px !important;
+          }
+          .btn-action-icon {
+            font-size: 0.9rem !important;
+            padding: 1px 2px !important;
           }
           .loan-compare-title-sub {
             display: none;
           }
         }
+
+        .summary-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+        .summary-card-item {
+          padding: 1.15rem 1.25rem;
+          border-radius: 14px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .summary-card-title {
+          font-size: 0.8rem;
+          font-weight: 800;
+          text-align: center;
+          width: 100%;
+        }
+        .summary-card-value {
+          font-size: 1.35rem;
+          font-weight: 900;
+          margin-top: 4px;
+          text-align: center;
+          width: 100%;
+        }
+        .summary-card-sub {
+          font-size: 0.72rem;
+          color: var(--text-muted);
+          margin-top: 4px;
+          text-align: center !important;
+          width: 100% !important;
+          display: block !important;
+        }
+
+        @media (max-width: 768px) {
+          .summary-cards-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem !important;
+            margin-bottom: 1rem !important;
+          }
+          .summary-card-item {
+            padding: 0.7rem 0.65rem !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+          }
+          .summary-card-title {
+            font-size: 0.7rem !important;
+            text-align: center !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .summary-card-value {
+            font-size: 1.05rem !important;
+            margin-top: 2px !important;
+            text-align: center !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .summary-card-sub {
+            font-size: 0.62rem !important;
+            margin-top: 2px !important;
+            text-align: center !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
         .data-table th {
           background: ${dark ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
           color: var(--text-primary);
@@ -879,7 +1482,7 @@ export default function KnowledgeIndustryPage() {
           background: transparent;
           border: none;
           cursor: pointer;
-          fontSize: 0.8rem;
+          font-size: 1.05rem;
           padding: 2px 4px;
           border-radius: 4px;
           transition: transform 0.1s ease;
@@ -922,39 +1525,209 @@ export default function KnowledgeIndustryPage() {
             gap: 1.25rem;
           }
         }
+
+        /* 연도별 흐름도 스타일 */
+        /* 연도별 흐름도 스타일 */
+        .timeline-scroll-container {
+          width: 100%;
+          max-width: 100%;
+          overflow-x: auto !important;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+          padding: 1.25rem 0.25rem 1.5rem 0.25rem;
+          scrollbar-width: thin;
+          scrollbar-color: #a855f7 ${dark ? '#1e293b' : '#f1f5f9'};
+        }
+        .timeline-scroll-container::-webkit-scrollbar {
+          height: 10px;
+        }
+        .timeline-scroll-container::-webkit-scrollbar-track {
+          background: ${dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9'};
+          border-radius: 8px;
+        }
+        .timeline-scroll-container::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+          border-radius: 8px;
+        }
+        .flow-diagram-table {
+          border-collapse: separate;
+          border-spacing: 0;
+          width: max-content;
+          min-width: max-content;
+          margin: 0;
+        }
+        .flow-diagram-table td {
+          padding: 6px 4px;
+          vertical-align: middle;
+          text-align: center;
+        }
+        .flow-box {
+          display: inline-flex;
+          flex-direction: column;
+          border: 2px solid ${dark ? '#475569' : '#000000'};
+          background: ${dark ? '#1e293b' : '#ffffff'};
+          border-radius: 4px;
+          width: 110px;
+          min-width: 110px;
+          text-align: center;
+          position: relative;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+          overflow: hidden;
+        }
+        .flow-box:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .flow-box-header {
+          padding: 5px 3px;
+          font-size: 0.88rem;
+          font-weight: 900;
+          border-bottom: 1.5px solid ${dark ? '#475569' : '#000000'};
+        }
+        .flow-box-header.prep {
+          background: ${dark ? '#701a75' : '#fae8ff'};
+          color: ${dark ? '#fdf4ff' : '#701a75'};
+        }
+        .flow-box-header.rent {
+          background: ${dark ? '#0369a1' : '#e0f2fe'};
+          color: ${dark ? '#f0f9ff' : '#0369a1'};
+        }
+        .flow-box-header.key {
+          background: ${dark ? '#334155' : '#f1f5f9'};
+          color: var(--text-primary);
+        }
+        .flow-box-body {
+          padding: 6px 3px;
+          min-height: 44px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 2px;
+          font-size: 0.82rem;
+          font-weight: 800;
+          color: var(--text-primary);
+        }
+        .flow-box-body .sub-date {
+          font-size: 0.76rem;
+          font-weight: 800;
+          color: var(--text-muted);
+        }
+        .flow-arrow-cell {
+          font-size: 1.25rem;
+          font-weight: 900;
+          color: ${dark ? '#94a3b8' : '#000000'};
+          padding: 0 6px !important;
+          user-select: none;
+        }
+        .flow-main-key-box {
+          border: 2.5px solid ${dark ? '#64748b' : '#000000'};
+          background: ${dark ? '#0f172a' : '#ffffff'};
+          border-radius: 4px;
+          padding: 10px 8px;
+          width: 115px;
+          min-width: 115px;
+          text-align: center;
+          font-size: 0.92rem;
+          font-weight: 900;
+          line-height: 1.35;
+          color: var(--text-primary);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          cursor: pointer;
+        }
+        .flow-main-key-box:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .flow-box-actions {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          display: none;
+          gap: 2px;
+          background: rgba(0,0,0,0.6);
+          border-radius: 4px;
+          padding: 1px 3px;
+        }
+        .flow-box:hover .flow-box-actions {
+          display: flex;
+        }
+        .flow-box-actions button {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-size: 0.75rem;
+          padding: 1px;
+        }
+
+        @media (max-width: 768px) {
+          .flow-box {
+            width: 86px !important;
+            min-width: 86px !important;
+          }
+          .flow-box-header {
+            font-size: 0.76rem !important;
+            padding: 4px 2px !important;
+          }
+          .flow-box-body {
+            font-size: 0.72rem !important;
+            padding: 4px 2px !important;
+            min-height: 38px !important;
+          }
+          .flow-box-body .sub-date {
+            font-size: 0.68rem !important;
+          }
+          .flow-arrow-cell {
+            font-size: 1rem !important;
+            padding: 0 3px !important;
+          }
+          .flow-main-key-box {
+            width: 88px !important;
+            min-width: 88px !important;
+            padding: 8px 4px !important;
+            font-size: 0.78rem !important;
+          }
+        }
       `}</style>
 
       {/* 대시보드 헤더 */}
-      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem 1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.85rem' }}>
           <div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
               🏢 Knowledge Industry Center
             </h1>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px', margin: 0 }}>
-              투자비용, 대출 원리금 상환 내역 및 월세입금 현황 관리
+              투자, 대출 원리금 상환 내역 및 임대 관리
             </p>
           </div>
 
-          {/* 3개 탭 스위처 */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {/* 4개 탭 스위처 */}
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               onClick={() => setActiveTab('investment')}
               className={`tab-btn ${activeTab === 'investment' ? 'active' : 'inactive'}`}
             >
-              💰 1. 투자비용
+              💰 1. 투자
             </button>
             <button
               onClick={() => setActiveTab('loans')}
               className={`tab-btn ${activeTab === 'loans' ? 'active' : 'inactive'}`}
             >
-              🏦 2. 대출상환
+              🏦 2. 대출
             </button>
             <button
               onClick={() => setActiveTab('rent')}
               className={`tab-btn ${activeTab === 'rent' ? 'active' : 'inactive'}`}
             >
-              🚪 3. 월세현황
+              🚪 3. 임대
+            </button>
+            <button
+              onClick={() => setActiveTab('timeline')}
+              className={`tab-btn ${activeTab === 'timeline' ? 'active' : 'inactive'}`}
+            >
+              🗓️ 4. 흐름도
             </button>
           </div>
         </div>
@@ -966,37 +1739,37 @@ export default function KnowledgeIndustryPage() {
       {activeTab === 'investment' && (
         <div>
           {/* 전체 투자 요약 카드 4종 */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-            <div className="section-card" style={{ padding: '1.25rem', background: dark ? 'rgba(168, 85, 247, 0.12)' : '#faf5ff', border: '1px solid #c084fc' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: dark ? '#c084fc' : '#7e22ce' }}>총 분양가 (2개 호실)</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: dark ? '#ffffff' : '#581c87', marginTop: '4px' }}>
+          <div className="summary-cards-grid">
+            <div className="section-card summary-card-item" style={{ background: dark ? 'rgba(168, 85, 247, 0.12)' : '#faf5ff', border: '1px solid #c084fc', textAlign: 'center' }}>
+              <div className="summary-card-title" style={{ color: dark ? '#c084fc' : '#7e22ce', textAlign: 'center', width: '100%' }}>총 분양가 (2개 호실)</div>
+              <div className="summary-card-value" style={{ color: dark ? '#ffffff' : '#581c87', textAlign: 'center', width: '100%' }}>
                 {formatMoney(326754100)}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>CA520 + CA557 분양 총액</div>
+              <div className="summary-card-sub" style={{ textAlign: 'center', width: '100%', display: 'block' }}>CA520 + CA557 분양 총액</div>
             </div>
 
-            <div className="section-card" style={{ padding: '1.25rem', background: dark ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff', border: '1px solid #93c5fd' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: dark ? '#60a5fa' : '#1d4ed8' }}>전체 실 투자비용</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: dark ? '#ffffff' : '#1e40af', marginTop: '4px' }}>
+            <div className="section-card summary-card-item" style={{ background: dark ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff', border: '1px solid #93c5fd', textAlign: 'center' }}>
+              <div className="summary-card-title" style={{ color: dark ? '#60a5fa' : '#1d4ed8', textAlign: 'center', width: '100%' }}>전체 실 투자비용</div>
+              <div className="summary-card-value" style={{ color: dark ? '#ffffff' : '#1e40af', textAlign: 'center', width: '100%' }}>
                 {formatMoney(data.investment.summary.sumCost)}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>계약금/잔금 + 시설비 + 등취득/이자</div>
+              <div className="summary-card-sub" style={{ textAlign: 'center', width: '100%', display: 'block' }}>계약금/잔금+시설비+이자</div>
             </div>
 
-            <div className="section-card" style={{ padding: '1.25rem', background: dark ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2', border: '1px solid #fca5a5' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: dark ? '#f87171' : '#b91c1c' }}>총 투자금 (모든 경비 포함)</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: dark ? '#ffffff' : '#991b1b', marginTop: '4px' }}>
+            <div className="section-card summary-card-item" style={{ background: dark ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2', border: '1px solid #fca5a5', textAlign: 'center' }}>
+              <div className="summary-card-title" style={{ color: dark ? '#f87171' : '#b91c1c', textAlign: 'center', width: '100%' }}>총 투자금 (경비 포함)</div>
+              <div className="summary-card-value" style={{ color: dark ? '#ffffff' : '#991b1b', textAlign: 'center', width: '100%' }}>
                 {formatMoney(data.investment.summary.totalInvestment)}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>복비 등 제외 전체 자금</div>
+              <div className="summary-card-sub" style={{ textAlign: 'center', width: '100%', display: 'block' }}>복비 제외 전체 자금</div>
             </div>
 
-            <div className="section-card" style={{ padding: '1.25rem', background: dark ? 'rgba(16, 185, 129, 0.12)' : '#ecfdf5', border: '1px solid #6ee7b7' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: dark ? '#34d399' : '#047857' }}>호실별 회수 목표 평균금액</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: dark ? '#ffffff' : '#065f46', marginTop: '4px' }}>
+            <div className="section-card summary-card-item" style={{ background: dark ? 'rgba(16, 185, 129, 0.12)' : '#ecfdf5', border: '1px solid #6ee7b7', textAlign: 'center' }}>
+              <div className="summary-card-title" style={{ color: dark ? '#34d399' : '#047857', textAlign: 'center', width: '100%' }}>호실별 회수 목표</div>
+              <div className="summary-card-value" style={{ color: dark ? '#ffffff' : '#065f46', textAlign: 'center', width: '100%' }}>
                 {formatMoney(173674929)}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>손해 안 보고 매각 가능한 호실당 금액</div>
+              <div className="summary-card-sub" style={{ textAlign: 'center', width: '100%', display: 'block' }}>호실당 손익분기 금액</div>
             </div>
           </div>
 
@@ -1009,9 +1782,30 @@ export default function KnowledgeIndustryPage() {
             <div className="ki-grid-2col">
               {/* CA520 호실 */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#a855f7' }}>📍 CA520 호실</span>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>합계: {formatMoney(ca520Sum)}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#a855f7' }}>📍 CA520 호실</span>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)' }}>합계: {formatMoney(ca520Sum)}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenInteriorModal('interiorCA520')}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
+                      color: '#ffffff',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    ➕ CA520 등록
+                  </button>
                 </div>
                 <div className="table-responsive-container">
                   <table className="data-table">
@@ -1021,20 +1815,44 @@ export default function KnowledgeIndustryPage() {
                         <th>품목</th>
                         <th>상세</th>
                         <th>금액</th>
+                        <th style={{ width: '60px' }}>관리</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {data.investment.interiorCA520.map(item => (
+                      {(data.investment?.interiorCA520 || []).map(item => (
                         <tr key={item.id}>
                           <td>{item.date}</td>
                           <td>{item.item}</td>
                           <td style={{ textAlign: 'left' }}>{item.detail}</td>
                           <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(item.amount)}</td>
+                          <td>
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenInteriorModal('interiorCA520', item)}
+                                className="btn-action-icon"
+                                title="수정"
+                                style={{ color: '#2563eb' }}
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteInterior('interiorCA520', item.id)}
+                                className="btn-action-icon"
+                                title="삭제"
+                                style={{ color: '#ef4444' }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                       <tr style={{ background: dark ? 'rgba(168, 85, 247, 0.15)' : '#f3e8ff', fontWeight: 800 }}>
                         <td colSpan={3}>소계</td>
                         <td style={{ textAlign: 'right', color: '#7e22ce' }}>{formatMoney(ca520Sum)}</td>
+                        <td></td>
                       </tr>
                     </tbody>
                   </table>
@@ -1043,9 +1861,30 @@ export default function KnowledgeIndustryPage() {
 
               {/* CA557 호실 */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#3b82f6' }}>📍 CA557 호실</span>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>합계: {formatMoney(ca557Sum)}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#3b82f6' }}>📍 CA557 호실</span>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)' }}>합계: {formatMoney(ca557Sum)}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenInteriorModal('interiorCA557')}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
+                      color: '#ffffff',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    ➕ CA557 등록
+                  </button>
                 </div>
                 <div className="table-responsive-container">
                   <table className="data-table">
@@ -1055,20 +1894,44 @@ export default function KnowledgeIndustryPage() {
                         <th>품목</th>
                         <th>상세</th>
                         <th>금액</th>
+                        <th style={{ width: '60px' }}>관리</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {data.investment.interiorCA557.map(item => (
+                      {(data.investment?.interiorCA557 || []).map(item => (
                         <tr key={item.id}>
                           <td>{item.date}</td>
                           <td>{item.item}</td>
                           <td style={{ textAlign: 'left' }}>{item.detail}</td>
                           <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(item.amount)}</td>
+                          <td>
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenInteriorModal('interiorCA557', item)}
+                                className="btn-action-icon"
+                                title="수정"
+                                style={{ color: '#2563eb' }}
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteInterior('interiorCA557', item.id)}
+                                className="btn-action-icon"
+                                title="삭제"
+                                style={{ color: '#ef4444' }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                       <tr style={{ background: dark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff', fontWeight: 800 }}>
                         <td colSpan={3}>소계</td>
                         <td style={{ textAlign: 'right', color: '#1d4ed8' }}>{formatMoney(ca557Sum)}</td>
+                        <td></td>
                       </tr>
                     </tbody>
                   </table>
@@ -1087,9 +1950,30 @@ export default function KnowledgeIndustryPage() {
           <div className="ki-grid-2col">
             {/* 투자 상세 내역 */}
             <div className="section-card" style={{ padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
-                📋 투자 상세 내역
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                  📋 투자 상세 내역
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => handleOpenInvestDetailModal()}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
+                    color: '#ffffff',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  ➕ 내역 등록
+                </button>
+              </div>
               <div className="table-responsive-container">
                 <table className="data-table">
                   <thead>
@@ -1098,16 +1982,39 @@ export default function KnowledgeIndustryPage() {
                       <th>대상/연월</th>
                       <th>비고</th>
                       <th>투자금액</th>
+                      <th style={{ width: '60px' }}>관리</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.investment.details.map(d => (
+                    {(data.investment?.details || []).map(d => (
                       <tr key={d.id} style={{ fontWeight: d.category === '총분양가' ? 900 : 400 }}>
                         <td style={{ fontWeight: 800 }}>{d.category}</td>
                         <td>{d.target}</td>
                         <td>{d.note}</td>
                         <td style={{ textAlign: 'right', fontWeight: 800, color: d.category === '총분양가' ? '#a855f7' : 'inherit' }}>
                           {formatMoney(d.amount)}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenInvestDetailModal(d)}
+                              className="btn-action-icon"
+                              title="수정"
+                              style={{ color: '#2563eb' }}
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteInvestDetail(d.id)}
+                              className="btn-action-icon"
+                              title="삭제"
+                              style={{ color: '#ef4444' }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1118,9 +2025,33 @@ export default function KnowledgeIndustryPage() {
 
             {/* 전체 투자 비용 요약 및 호실별 회수 분석 */}
             <div className="section-card" style={{ padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
-                📊 호실별 공급가 & 매각 회수 분석
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '6px' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                  📊 호실별 공급가 & 매각 회수 분석
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => handleOpenBreakEvenModal()}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: '#ffffff',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  ➕ 공급가 등록
+                </button>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 600 }}>
+                ※ 차액은 호실별 매각금액 - 공급가액 임
+              </div>
               <div className="table-responsive-container" style={{ marginBottom: '1rem' }}>
                 <table className="data-table">
                   <thead>
@@ -1128,25 +2059,134 @@ export default function KnowledgeIndustryPage() {
                       <th>호실별 공급가</th>
                       <th>공급 금액</th>
                       <th>차액 (투자금 포함)</th>
+                      <th style={{ width: '60px' }}>관리</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.investment.breakEven.map(b => (
+                    {(data.investment?.breakEven || []).map(b => (
                       <tr key={b.id}>
                         <td style={{ fontWeight: 800 }}>{b.unit}</td>
                         <td style={{ textAlign: 'right', fontWeight: 700 }}>{formatMoney(b.supplyPrice)}</td>
                         <td style={{ textAlign: 'right', fontWeight: 800, color: '#10b981' }}>{formatMoney(b.diff)}</td>
+                        <td>
+                          <div style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenBreakEvenModal(b)}
+                              className="btn-action-icon"
+                              title="수정"
+                              style={{ color: '#2563eb' }}
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteBreakEven(b.id)}
+                              className="btn-action-icon"
+                              title="삭제"
+                              style={{ color: '#ef4444' }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
+              {/* 전체 투자 비용 상세 테이블 (첨부 이미지 규격 100% 정밀 복원) */}
+              <div style={{ marginTop: '1.25rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 900, color: 'var(--text-primary)' }}>🏷️ 전체 투자 비용 요약</span>
+                  <button
+                    type="button"
+                    onClick={handleOpenSummaryModal}
+                    style={{
+                      padding: '3px 8px',
+                      borderRadius: '5px',
+                      border: 'none',
+                      background: dark ? 'rgba(248, 113, 113, 0.2)' : '#fee2e2',
+                      color: dark ? '#f87171' : '#b91c1c',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    ✏️ 비용 수정
+                  </button>
+                </div>
+                <div className="table-responsive-container">
+                  <table className="data-table" style={{ border: `2px solid ${dark ? '#475569' : '#000000'}` }}>
+                    <thead>
+                      <tr>
+                        <th
+                          colSpan={3}
+                          style={{
+                            background: dark ? '#9a3412' : '#e2876e',
+                            color: '#000000',
+                            fontSize: '1rem',
+                            fontWeight: 900,
+                            padding: '8px',
+                            border: `1.5px solid ${dark ? '#475569' : '#000000'}`
+                          }}
+                        >
+                          전체 투자 비용
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ background: dark ? 'rgba(234, 88, 12, 0.25)' : '#e2876e' }}>
+                        <td style={{ fontWeight: 800, textAlign: 'left', paddingLeft: '14px', border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#f8fafc' : '#000000', width: '32%' }}>계약금/잔금</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#f8fafc' : '#000000', width: '34%' }}>{formatMoney(summaryData.deposit).replace('원', '')}</td>
+                        <td style={{ border: `1.5px solid ${dark ? '#475569' : '#000000'}`, width: '34%' }}></td>
+                      </tr>
+                      <tr style={{ background: dark ? 'rgba(234, 88, 12, 0.25)' : '#e2876e' }}>
+                        <td style={{ fontWeight: 800, textAlign: 'left', paddingLeft: '14px', border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#f8fafc' : '#000000' }}>시설투자비</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#f8fafc' : '#000000' }}>{formatMoney(summaryData.facility).replace('원', '')}</td>
+                        <td
+                          rowSpan={2}
+                          style={{
+                            textAlign: 'center',
+                            fontWeight: 900,
+                            verticalAlign: 'middle',
+                            fontSize: '0.95rem',
+                            border: `1.5px solid ${dark ? '#475569' : '#000000'}`,
+                            color: dark ? '#fdba74' : '#000000',
+                            background: dark ? 'rgba(234, 88, 12, 0.35)' : '#e2876e'
+                          }}
+                        >
+                          {formatMoney(facilityAndTaxSum).replace('원', '')}
+                        </td>
+                      </tr>
+                      <tr style={{ background: dark ? 'rgba(234, 88, 12, 0.25)' : '#e2876e' }}>
+                        <td style={{ fontWeight: 800, textAlign: 'left', paddingLeft: '14px', border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#f8fafc' : '#000000' }}>등취득/이자</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#f8fafc' : '#000000' }}>{formatMoney(summaryData.taxInterest).replace('원', '')}</td>
+                      </tr>
+                      <tr style={{ background: dark ? '#1e293b' : '#f1f5f9', fontWeight: 900 }}>
+                        <td style={{ textAlign: 'center', fontWeight: 900, fontSize: '0.95rem', border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#f8fafc' : '#000000' }}>합계</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '0.95rem', border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#60a5fa' : '#000000' }}>{formatMoney(summaryData.sumCost).replace('원', '')}</td>
+                        <td style={{ border: `1.5px solid ${dark ? '#475569' : '#000000'}` }}></td>
+                      </tr>
+                      <tr style={{ background: dark ? '#991b1b' : '#d96565', fontWeight: 900 }}>
+                        <td style={{ textAlign: 'center', fontWeight: 900, border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#ffffff' : '#000000' }}>총 투자금</td>
+                        <td style={{ textAlign: 'right', fontWeight: 900, border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#ffffff' : '#000000' }}>{formatMoney(summaryData.totalInvestment).replace('원', '')}</td>
+                        <td style={{ textAlign: 'left', fontSize: '0.82rem', paddingLeft: '8px', border: `1.5px solid ${dark ? '#475569' : '#000000'}`, color: dark ? '#fecaca' : '#000000' }}>모든 경비포함(복비등은 제외)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
               <div style={{ padding: '14px 12px', borderRadius: '12px', background: dark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', border: '1px solid #fca5a5', textAlign: 'center' }}>
                 <div style={{ fontSize: '1.25rem', fontWeight: 900, color: dark ? '#ffffff' : '#991b1b' }}>
                   각 호실별 {formatMoney(173674929)}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>※ 최소 이 금액 이상 매각 시 전체 투자금 완전 회수</div>
+                <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '4px', fontWeight: 600 }}>※ 최소 이 금액 이상 매각 시 전체 투자금 완전 회수</div>
               </div>
             </div>
           </div>
@@ -1160,8 +2200,34 @@ export default function KnowledgeIndustryPage() {
         <div>
           {/* 대출 상환 상단 서브 탭 스위처 & 연도 필터 & 추가 버튼 */}
           <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-              {/* 은행 서브 탭 (모바일에서도 1줄 슬림 정렬) */}
+            {/* 좌측: 연도별 조회 필터 셀렉터 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>📅 조회 연도:</span>
+              <select
+                value={loanYearFilter}
+                onChange={e => setLoanYearFilter(e.target.value)}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--surface)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.85rem',
+                  fontWeight: 800,
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="ALL">전체 연도</option>
+                <option value="2022">2022년</option>
+                <option value="2023">2023년</option>
+                <option value="2024">2024년</option>
+                <option value="2025">2025년</option>
+                <option value="2026">2026년</option>
+              </select>
+            </div>
+
+            {/* 우측: 은행 서브 탭 + 추가 버튼 */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'nowrap', alignItems: 'center' }}>
                 <button
                   type="button"
@@ -1207,7 +2273,7 @@ export default function KnowledgeIndustryPage() {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
-                    border: loanSubTab === 'all' ? '1px solid #047857' : (dark ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid #a7f3d0'),
+                    border: loanSubTab === 'all' ? '1px solid #047857' : (dark ? '1px solid rgba(168, 185, 129, 0.4)' : '1px solid #a7f3d0'),
                     background: loanSubTab === 'all' ? '#059669' : (dark ? 'rgba(5, 150, 105, 0.15)' : '#ecfdf5'),
                     color: loanSubTab === 'all' ? '#ffffff' : (dark ? '#34d399' : '#047857'),
                     fontSize: '0.85rem',
@@ -1221,57 +2287,7 @@ export default function KnowledgeIndustryPage() {
                   📊 모두보기
                 </button>
               </div>
-
-              {/* 연도별 조회 필터 셀렉터 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '6px' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>📅 조회 연도:</span>
-                <select
-                  value={loanYearFilter}
-                  onChange={e => setLoanYearFilter(e.target.value)}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border)',
-                    background: 'var(--surface)',
-                    color: 'var(--text-primary)',
-                    fontSize: '0.85rem',
-                    fontWeight: 800,
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="ALL">전체 연도</option>
-                  <option value="2022">2022년</option>
-                  <option value="2023">2023년</option>
-                  <option value="2024">2024년</option>
-                  <option value="2025">2025년</option>
-                  <option value="2026">2026년</option>
-                </select>
-              </div>
             </div>
-
-            {/* 신규 납부 행 추가 버튼 */}
-            {loanSubTab !== 'all' && (
-              <button
-                type="button"
-                onClick={() => handleOpenLoanModal(loanSubTab)}
-                style={{
-                  padding: '8px 18px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: loanSubTab === 'kb' ? '#2563eb' : '#a855f7',
-                  color: '#ffffff',
-                  fontSize: '0.85rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}
-              >
-                + 추가
-              </button>
-            )}
           </div>
 
           {/* 상환 요약 카드 */}
@@ -1289,7 +2305,7 @@ export default function KnowledgeIndustryPage() {
               <div style={{ fontSize: '1.4rem', fontWeight: 900, color: dark ? '#ffffff' : '#581c87', marginTop: '4px' }}>
                 {formatMoney(nhPaymentTotal)}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>월세 대비 누적 추가부담금: {formatMoney(nhExtraTotal)}</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>임대 대비 누적 추가부담금: {formatMoney(nhExtraTotal)}</div>
             </div>
 
             <div className="section-card" style={{ padding: '1.25rem', background: dark ? 'rgba(245, 158, 11, 0.12)' : '#fffbeb', border: '1px solid #fde68a' }}>
@@ -1396,7 +2412,7 @@ export default function KnowledgeIndustryPage() {
                     🏦 NH (기업성장론) ({filteredNhLoans.length}건)
                   </h3>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    월세 대비 추가부담금 및 2024.02.07 이자환급(-2,685,805원) 상세 관리
+                    임대 대비 추가부담금 및 2024.02.07 이자환급(-2,685,805원) 상세 관리
                   </div>
                 </div>
 
@@ -1417,7 +2433,7 @@ export default function KnowledgeIndustryPage() {
                       <th>연월</th>
                       <th>금리</th>
                       <th>원리금(이자만)</th>
-                      <th>월세대비 추가부담금</th>
+                      <th>임대대비 추가부담금</th>
                       <th>편집</th>
                     </tr>
                   </thead>
@@ -1698,7 +2714,7 @@ export default function KnowledgeIndustryPage() {
                       onClick={() => handleOpenRentModal(displayedContracts[0]?.id || data.rent.contracts[0]?.id)}
                       style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '8px 16px', borderRadius: '99px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#fff', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(168, 85, 247, 0.3)' }}
                     >
-                      ➕ 월세 입금 등록
+                      ➕ 임대 입금 등록
                     </button>
                     <button
                       type="button"
@@ -1864,6 +2880,242 @@ export default function KnowledgeIndustryPage() {
         </div>
       )}
 
+      {/* ========================================================================================= */}
+      {/* 탭 4: 연도별 흐름도 (분양 키불출 -> 인테리어/가전 -> 임대차 변천사) */}
+      {/* ========================================================================================= */}
+      {activeTab === 'timeline' && (
+        <div>
+          <div className="section-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  🗓️ 지식산업센터 흐름도
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px', margin: 0 }}>
+                  최초 분양 잔금 및 키불출 시점부터 호실별 인테리어, 가전, 냉난방 설치 및 임대 계약 변천 흐름입니다.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center', maxWidth: '100%' }}>
+                <div style={{ display: 'inline-flex', background: dark ? 'rgba(255,255,255,0.06)' : '#f1f5f9', borderRadius: '8px', padding: '2px' }}>
+                  <button
+                    type="button"
+                    onClick={() => handleScrollTimeline(-250)}
+                    style={{
+                      padding: '5px 9px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: 'transparent',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title="좌측으로 스크롤"
+                  >
+                    ◀ 좌측
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleScrollTimeline(250)}
+                    style={{
+                      padding: '5px 9px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: 'transparent',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title="우측으로 스크롤"
+                  >
+                    우측 ▶
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleOpenTimelineModal('ca520')}
+                  style={{
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
+                    color: '#ffffff',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '3px',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  ➕ CA520 추가
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOpenTimelineModal('ca557')}
+                  style={{
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
+                    color: '#ffffff',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '3px',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  ➕ CA557 추가
+                </button>
+              </div>
+            </div>
+
+            {/* 연도별 흐름도 다이어그램 */}
+            <div className="timeline-scroll-container" ref={timelineScrollRef} onWheel={handleTimelineWheel}>
+              <table className="flow-diagram-table">
+                <tbody>
+                  {/* CA520 라인 (상단 행) */}
+                  <tr>
+                    {/* 공통 시작 노드 (입주 / 잔금완납 / 키불출) - 2개 행 병합 */}
+                    <td rowSpan={2} style={{ paddingRight: '12px' }}>
+                      <div
+                        className="flow-main-key-box"
+                        onClick={() => handleOpenTimelineModal('keyHandover')}
+                        title="클릭하여 키불출 정보 수정"
+                      >
+                        <div style={{ fontSize: '0.78rem', color: dark ? '#cbd5e1' : '#64748b', fontWeight: 800, marginBottom: '2px' }}>
+                          🏁 시작 공통
+                        </div>
+                        <div style={{ fontSize: '1rem', fontWeight: 900, whiteSpace: 'pre-line', lineHeight: 1.35 }}>
+                          {data.timeline?.keyHandover?.title || '입주\n잔금완납\n키불출'}
+                        </div>
+                        <div style={{ marginTop: '6px', fontSize: '0.92rem', fontWeight: 900, color: dark ? '#38bdf8' : '#0284c7' }}>
+                          {data.timeline?.keyHandover?.date || '22.09.13'}
+                        </div>
+                        <div style={{ marginTop: '4px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                          ✏️ 클릭 수정
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* 분기 화살표 (2개 행 병합) */}
+                    <td rowSpan={2} className="flow-arrow-cell" style={{ padding: '0 12px !important' }}>
+                      &gt;
+                    </td>
+
+                    {/* CA520 단계 노드들 */}
+                    {(data.timeline?.ca520 || []).map((item, idx, arr) => (
+                      <React.Fragment key={item.id || idx}>
+                        <td>
+                          <div className="flow-box">
+                            <div className="flow-box-actions">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenTimelineModal('ca520', item)}
+                                title="수정"
+                                style={{ color: '#60a5fa' }}
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteTimelineItem('ca520', item.id)}
+                                title="삭제"
+                                style={{ color: '#f87171' }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                            <div className={`flow-box-header ${item.type === 'rent' ? 'rent' : 'prep'}`}>
+                              {item.title}
+                            </div>
+                            <div className="flow-box-body">
+                              <div>{item.detail || '-'}</div>
+                              <div className="sub-date">{item.date}</div>
+                            </div>
+                          </div>
+                        </td>
+                        {idx < arr.length - 1 && (
+                          <td className="flow-arrow-cell">&gt;</td>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tr>
+
+                  {/* CA557 라인 (하단 행) */}
+                  <tr>
+                    {/* CA557 단계 노드들 */}
+                    {(data.timeline?.ca557 || []).map((item, idx, arr) => (
+                      <React.Fragment key={item.id || idx}>
+                        <td>
+                          <div className="flow-box">
+                            <div className="flow-box-actions">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenTimelineModal('ca557', item)}
+                                title="수정"
+                                style={{ color: '#60a5fa' }}
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteTimelineItem('ca557', item.id)}
+                                title="삭제"
+                                style={{ color: '#f87171' }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                            <div className={`flow-box-header ${item.type === 'rent' ? 'rent' : 'prep'}`}>
+                              {item.title}
+                            </div>
+                            <div className="flow-box-body">
+                              <div>{item.detail || '-'}</div>
+                              <div className="sub-date">{item.date}</div>
+                            </div>
+                          </div>
+                        </td>
+                        {idx < arr.length - 1 && (
+                          <td className="flow-arrow-cell">&gt;</td>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* 하단 범례 및 안내 */}
+            <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-muted)' }}>구분 범례:</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800 }}>
+                  <span style={{ width: 12, height: 12, borderRadius: 3, background: dark ? '#701a75' : '#fae8ff', border: `1px solid ${dark ? '#fdf4ff' : '#701a75'}` }}></span>
+                  시설/가전/인테리어 시공
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800 }}>
+                  <span style={{ width: 12, height: 12, borderRadius: 3, background: dark ? '#0369a1' : '#e0f2fe', border: `1px solid ${dark ? '#f0f9ff' : '#0369a1'}` }}></span>
+                  임대차 계약 체결 및 갱신
+                </span>
+              </div>
+
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                💡 각 카드를 마우스로 가리키면 수정(✏️) 및 삭제(🗑️)가 가능합니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* --- 대출 상환 내역 등록/수정 모달 --- */}
       {loanModal.open && (
         <div
@@ -2020,7 +3272,7 @@ export default function KnowledgeIndustryPage() {
                 </div>
               ) : (
                 <div style={{ marginBottom: '0.85rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>월세 대비 추가부담금 (원)</label>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>임대 대비 추가부담금 (원)</label>
                   <input
                     type="text"
                     value={loanModal.formData.extra}
@@ -2055,7 +3307,7 @@ export default function KnowledgeIndustryPage() {
         </div>
       )}
 
-      {/* --- 월세 입금 내역 등록/수정 모달 --- */}
+      {/* --- 임대 입금 내역 등록/수정 모달 --- */}
       {rentModal.open && (
         <div
           style={{
@@ -2085,7 +3337,7 @@ export default function KnowledgeIndustryPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
-                💰 {rentModal.paymentId ? '월세 입금 내역 수정' : '월세 입금 내역 등록'}
+                💰 {rentModal.paymentId ? '임대 입금 내역 수정' : '임대 입금 내역 등록'}
               </h3>
               <button
                 type="button"
@@ -2382,7 +3634,7 @@ export default function KnowledgeIndustryPage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>월세 (원)</label>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>임대료 (원)</label>
                   <input
                     type="text"
                     value={contractModal.formData.rent}
@@ -2446,6 +3698,646 @@ export default function KnowledgeIndustryPage() {
                   style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#a855f7', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
                 >
                   저장 완료
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- 호실별 인테리어 비용 등록/수정 모달 --- */}
+      {interiorModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setInteriorModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                🛠️ {interiorModal.unit === 'interiorCA520' ? 'CA520' : 'CA557'} 인테리어 비용 {interiorModal.editId ? '수정' : '등록'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setInteriorModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveInterior}>
+              {/* 호실 선택 */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>대상 호실</label>
+                <select
+                  value={interiorModal.unit}
+                  onChange={e => setInteriorModal(prev => ({ ...prev, unit: e.target.value }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  required
+                >
+                  <option value="interiorCA520">📍 CA520 호실</option>
+                  <option value="interiorCA557">📍 CA557 호실</option>
+                </select>
+              </div>
+
+              {/* 일자 & 품목 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>일자</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="예: 2023-01-29"
+                      value={interiorModal.formData.date}
+                      onChange={e => setInteriorModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }))}
+                      style={{ width: '100%', padding: '8px 32px 8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                      required
+                    />
+                    <input
+                      type="date"
+                      onChange={e => {
+                        if (e.target.value) {
+                          setInteriorModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }));
+                        }
+                      }}
+                      style={{
+                        position: 'absolute',
+                        right: '6px',
+                        width: '24px',
+                        height: '24px',
+                        opacity: 0,
+                        cursor: 'pointer',
+                        zIndex: 2
+                      }}
+                      title="달력 선택"
+                    />
+                    <span style={{ position: 'absolute', right: '8px', pointerEvents: 'none', fontSize: '0.9rem', zIndex: 1 }}>
+                      📅
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>품목</label>
+                  <input
+                    type="text"
+                    placeholder="예: 냉장고, 세탁기, 인테리어"
+                    value={interiorModal.formData.item}
+                    onChange={e => setInteriorModal(prev => ({ ...prev, formData: { ...prev.formData, item: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* 상세 내역 */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>상세 규격 / 내용</label>
+                <input
+                  type="text"
+                  placeholder="예: RB33A300401, 싱크대, 냉난방기"
+                  value={interiorModal.formData.detail}
+                  onChange={e => setInteriorModal(prev => ({ ...prev, formData: { ...prev.formData, detail: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              {/* 금액 */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>금액 (원)</label>
+                <input
+                  type="text"
+                  placeholder="0"
+                  value={interiorModal.formData.amount}
+                  onFocus={() => setInteriorModal(prev => ({ ...prev, formData: { ...prev.formData, amount: unformatComma(prev.formData.amount) } }))}
+                  onBlur={() => setInteriorModal(prev => ({ ...prev, formData: { ...prev.formData, amount: formatComma(prev.formData.amount) } }))}
+                  onChange={e => {
+                    const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                    setInteriorModal(prev => ({ ...prev, formData: { ...prev.formData, amount: cleanVal } }));
+                  }}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setInteriorModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- 투자 상세 내역 등록/수정 모달 --- */}
+      {investDetailModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setInvestDetailModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                📋 투자 상세 내역 {investDetailModal.editId ? '수정' : '등록'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setInvestDetailModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveInvestDetail}>
+              {/* 항목명 */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>항목명</label>
+                <input
+                  type="text"
+                  placeholder="예: 총분양가, 계약금, 법무사비용, 대출금"
+                  value={investDetailModal.formData.category}
+                  onChange={e => setInvestDetailModal(prev => ({ ...prev, formData: { ...prev.formData, category: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              {/* 대상/연월 & 비고 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>대상 / 연월</label>
+                  <input
+                    type="text"
+                    placeholder="예: 2개 호실, 2022.09"
+                    value={investDetailModal.formData.target}
+                    onChange={e => setInvestDetailModal(prev => ({ ...prev, formData: { ...prev.formData, target: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>비고</label>
+                  <input
+                    type="text"
+                    placeholder="예: 잔금 KB, 농협 NH"
+                    value={investDetailModal.formData.note}
+                    onChange={e => setInvestDetailModal(prev => ({ ...prev, formData: { ...prev.formData, note: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  />
+                </div>
+              </div>
+
+              {/* 투자금액 */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>투자금액 (원)</label>
+                <input
+                  type="text"
+                  placeholder="0"
+                  value={investDetailModal.formData.amount}
+                  onFocus={() => setInvestDetailModal(prev => ({ ...prev, formData: { ...prev.formData, amount: unformatComma(prev.formData.amount) } }))}
+                  onBlur={() => setInvestDetailModal(prev => ({ ...prev, formData: { ...prev.formData, amount: formatComma(prev.formData.amount) } }))}
+                  onChange={e => {
+                    const cleanVal = e.target.value.replace(/[^0-9-]/g, '');
+                    setInvestDetailModal(prev => ({ ...prev, formData: { ...prev.formData, amount: cleanVal } }));
+                  }}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setInvestDetailModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- 호실별 공급가 & 매각 회수 분석 등록/수정 모달 --- */}
+      {breakEvenModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setBreakEvenModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                📊 호실별 공급가 & 매각 분석 {breakEvenModal.editId ? '수정' : '등록'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setBreakEvenModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBreakEven}>
+              {/* 호실명 */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>호실명</label>
+                <input
+                  type="text"
+                  placeholder="예: C-A-05-057, C-A-05-020"
+                  value={breakEvenModal.formData.unit}
+                  onChange={e => setBreakEvenModal(prev => ({ ...prev, formData: { ...prev.formData, unit: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              {/* 공급 금액 */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>공급 금액 (원)</label>
+                <input
+                  type="text"
+                  placeholder="0"
+                  value={breakEvenModal.formData.supplyPrice}
+                  onFocus={() => setBreakEvenModal(prev => ({ ...prev, formData: { ...prev.formData, supplyPrice: unformatComma(prev.formData.supplyPrice) } }))}
+                  onBlur={() => setBreakEvenModal(prev => ({ ...prev, formData: { ...prev.formData, supplyPrice: formatComma(prev.formData.supplyPrice) } }))}
+                  onChange={e => {
+                    const cleanVal = e.target.value.replace(/[^0-9-]/g, '');
+                    setBreakEvenModal(prev => ({ ...prev, formData: { ...prev.formData, supplyPrice: cleanVal } }));
+                  }}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              {/* 차액 */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>차액 (투자금 포함, 원)</label>
+                <input
+                  type="text"
+                  placeholder="0"
+                  value={breakEvenModal.formData.diff}
+                  onFocus={() => setBreakEvenModal(prev => ({ ...prev, formData: { ...prev.formData, diff: unformatComma(prev.formData.diff) } }))}
+                  onBlur={() => setBreakEvenModal(prev => ({ ...prev, formData: { ...prev.formData, diff: formatComma(prev.formData.diff) } }))}
+                  onChange={e => {
+                    const cleanVal = e.target.value.replace(/[^0-9-]/g, '');
+                    setBreakEvenModal(prev => ({ ...prev, formData: { ...prev.formData, diff: cleanVal } }));
+                  }}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setBreakEvenModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- 전체 투자 비용 요약 등록/수정 모달 --- */}
+      {summaryModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setSummaryModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                🏷️ 전체 투자 비용 요약 수정
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSummaryModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSummary}>
+              {/* 계약금/잔금 */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>계약금 / 잔금 (원)</label>
+                <input
+                  type="text"
+                  placeholder="0"
+                  value={summaryModal.formData.deposit}
+                  onFocus={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, deposit: unformatComma(prev.formData.deposit) } }))}
+                  onBlur={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, deposit: formatComma(prev.formData.deposit) } }))}
+                  onChange={e => {
+                    const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                    setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, deposit: cleanVal } }));
+                  }}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              {/* 시설투자비 & 등취득/이자 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>시설투자비 (원)</label>
+                  <input
+                    type="text"
+                    placeholder="0"
+                    value={summaryModal.formData.facility}
+                    onFocus={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, facility: unformatComma(prev.formData.facility) } }))}
+                    onBlur={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, facility: formatComma(prev.formData.facility) } }))}
+                    onChange={e => {
+                      const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                      setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, facility: cleanVal } }));
+                    }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>등취득 / 이자 (원)</label>
+                  <input
+                    type="text"
+                    placeholder="0"
+                    value={summaryModal.formData.taxInterest}
+                    onFocus={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, taxInterest: unformatComma(prev.formData.taxInterest) } }))}
+                    onBlur={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, taxInterest: formatComma(prev.formData.taxInterest) } }))}
+                    onChange={e => {
+                      const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                      setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, taxInterest: cleanVal } }));
+                    }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* 총 투자금 */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>총 투자금 (원)</label>
+                <input
+                  type="text"
+                  placeholder="0"
+                  value={summaryModal.formData.totalInvestment}
+                  onFocus={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, totalInvestment: unformatComma(prev.formData.totalInvestment) } }))}
+                  onBlur={() => setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, totalInvestment: formatComma(prev.formData.totalInvestment) } }))}
+                  onChange={e => {
+                    const cleanVal = e.target.value.replace(/[^0-9]/g, '');
+                    setSummaryModal(prev => ({ ...prev, formData: { ...prev.formData, totalInvestment: cleanVal } }));
+                  }}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', textAlign: 'right', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setSummaryModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- 연도별 흐름도 단계 등록/수정 모달 --- */}
+      {timelineModal.open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 3000,
+            background: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setTimelineModal(prev => ({ ...prev, open: false }))}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              background: dark ? '#0f172a' : '#ffffff',
+              borderRadius: '20px',
+              padding: '1.5rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                🗓️ {timelineModal.unit === 'keyHandover' ? '키불출 정보 수정' : `${timelineModal.unit === 'ca520' ? 'CA520' : 'CA557'} 흐름도 단계 ${timelineModal.editId ? '수정' : '추가'}`}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setTimelineModal(prev => ({ ...prev, open: false }))}
+                style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: dark ? 'rgba(255,255,255,0.1)' : '#f1f5f9', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 900 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveTimelineItem}>
+              {timelineModal.unit !== 'keyHandover' && (
+                <div style={{ marginBottom: '0.85rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>구분 (타입)</label>
+                  <select
+                    value={timelineModal.formData.type}
+                    onChange={e => setTimelineModal(prev => ({ ...prev, formData: { ...prev.formData, type: e.target.value } }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  >
+                    <option value="interior">🛠️ 시설 / 가전 / 인테리어</option>
+                    <option value="rent">🚪 임대차 계약</option>
+                  </select>
+                </div>
+              )}
+
+              {/* 제목 (품목/단계명) */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  {timelineModal.unit === 'keyHandover' ? '제목' : '단계명 (예: 인테리어, 가전, 냉난방, 임대)'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="예: 임대, 가전, 냉난방 등"
+                  value={timelineModal.formData.title}
+                  onChange={e => setTimelineModal(prev => ({ ...prev, formData: { ...prev.formData, title: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              {/* 상세 내용 (조건/품목) */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  {timelineModal.unit === 'keyHandover' ? '메모' : '상세 내용 / 임대 조건 (예: 500/50, 냉장고/세탁기)'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="예: 500/50, 300/60, 냉장고/세탁기"
+                  value={timelineModal.formData.detail}
+                  onChange={e => setTimelineModal(prev => ({ ...prev, formData: { ...prev.formData, detail: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                />
+              </div>
+
+              {/* 일자 */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  일자 / 시기 (예: 22.09, 23.01, 24.02)
+                </label>
+                <input
+                  type="text"
+                  placeholder="예: 23.01 또는 2023.01"
+                  value={timelineModal.formData.date}
+                  onChange={e => setTimelineModal(prev => ({ ...prev, formData: { ...prev.formData, date: e.target.value } }))}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 800 }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setTimelineModal(prev => ({ ...prev, open: false }))}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-primary)', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#ffffff', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  저장
                 </button>
               </div>
             </form>

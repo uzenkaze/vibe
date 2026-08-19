@@ -181,8 +181,9 @@ if ($postStatus) {
     git commit -m "build: sync dist and build artifacts ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))"
 }
 git push origin master -f
+git push origin master:main -f
 
-Write-Host ">>> Git 및 GitHub Pages 배포 완료! (Vercel 자동 배포 비활성화됨)" -ForegroundColor Green
+Write-Host ">>> Git(master, main) 및 GitHub Pages 배포 완료! (Vercel 소스 동기화 완료, 배포 Hook 미호출)" -ForegroundColor Green
 Write-Host "접속 주소:"
 Write-Host "- Learn: https://uzenkaze.github.io/vibe/learn/"
 Write-Host "- Task: https://uzenkaze.github.io/vibe/task/task-manager.html"

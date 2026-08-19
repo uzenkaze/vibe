@@ -39,6 +39,16 @@ export default function LoginModal({ onClose }) {
   const [adminVerifyCode, setAdminVerifyCode] = useState('');
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        if (onClose) onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  useEffect(() => {
     const initAccounts = async () => {
       let accs = getAccounts();
       if (accs.length === 0) {

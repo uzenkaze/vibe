@@ -155,6 +155,18 @@ export default function InstallmentPage() {
   const [modalRepayStatus, setModalRepayStatus] = useState('active');
   const [modalRepaidAmount, setModalRepaidAmount] = useState(0);
 
+  // ESC 키 클릭 시 열려있는 모달창 닫기
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        if (activeDetailId) setActiveDetailId(null);
+        if (activePopoverKey) setActivePopoverKey(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeDetailId, activePopoverKey]);
+
   const sections = getCurrentSections();
   const installments = sections.installment || [];
 

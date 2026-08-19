@@ -11,6 +11,7 @@ const PAGE_TITLES = {
   pension: '내 연금',
   insurance: '내 보험',
   taxArticles: '아티클',
+  knowledgeIndustry: '지식산업',
 };
 
 // Custom Dropdown for premium selection UI (prevents native dropdown look)

@@ -144,6 +144,16 @@ function SummaryCard({ label, value, sub, accentColor, accentColorDim, icon, too
 }
 
 function SummaryModal({ label, content, onClose }) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        if (onClose) onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   if (!content) return null;
 
   return (

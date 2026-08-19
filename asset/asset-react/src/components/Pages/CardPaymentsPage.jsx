@@ -417,6 +417,17 @@ export default function CardPaymentsPage() {
   // --- 상세 내역 관리 모달 상태 및 핸들러 ---
   const [detailPayment, setDetailPayment] = useState(null);
 
+  // ESC 키 클릭 시 열려있는 모달창 닫기
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        if (detailPayment) setDetailPayment(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [detailPayment]);
+
   const handleOpenDetails = (p) => {
     setDetailPayment(JSON.parse(JSON.stringify(p)));
   };
