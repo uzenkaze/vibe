@@ -30,28 +30,70 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies and build learn project
+      - name: Build learn app
         continue-on-error: true
         run: |
           cd learn
           npm install
           npm run build
-      
+          cd ..
+
+      - name: Build carrep app
+        continue-on-error: true
+        run: |
+          cd carrep
+          npm install
+          npm run build
+          cd ..
+
+      - name: Build asset-react app
+        continue-on-error: true
+        run: |
+          cd asset/asset-react
+          npm install
+          npm run build
+          cd ../..
+
       - name: Prepare deployment directory
         run: |
           mkdir -p deploy_out
+          touch deploy_out/.nojekyll
           # Copy root files
-          cp index.html deploy_out/
-          # Copy static folders (asset is always deployed)
-          cp -r asset deploy_out/
-          cp -r task deploy_out/
-          cp -r hobby deploy_out/ 2>/dev/null || true
-          # Copy learn dist (pre-built or just built)
+          cp index.html deploy_out/ 2>/dev/null || true
+          cp home.html deploy_out/ 2>/dev/null || true
+          cp 404.html deploy_out/ 2>/dev/null || true
+          cp README.md deploy_out/ 2>/dev/null || true
+          cp *.apk deploy_out/ 2>/dev/null || true
+
+          # Copy learn dist
           if [ -d "learn/dist" ]; then
             mkdir -p deploy_out/learn
             cp -r learn/dist/* deploy_out/learn/
           fi
-          # Copy other apps if they have dist folders
+
+          # Copy carrep dist
+          if [ -d "carrep/dist" ]; then
+            mkdir -p deploy_out/carrep
+            cp -r carrep/dist/* deploy_out/carrep/
+          fi
+
+          # Copy asset dist and data
+          mkdir -p deploy_out/asset
+          if [ -d "asset/data" ]; then cp -r asset/data deploy_out/asset/; fi
+          if [ -d "asset/asset-react/dist" ]; then
+            cp -r asset/asset-react/dist/* deploy_out/asset/
+            mkdir -p deploy_out/asset/asset-react/dist
+            cp -r asset/asset-react/dist/* deploy_out/asset/asset-react/dist/
+          fi
+          # Fallback legacy static files
+          cp asset/*.html deploy_out/asset/ 2>/dev/null || true
+          cp asset/*.js deploy_out/asset/ 2>/dev/null || true
+          cp asset/favicon.png deploy_out/asset/ 2>/dev/null || true
+
+          # Copy task, hobby, livetv
+          cp -r task deploy_out/ 2>/dev/null || true
+          cp -r hobby deploy_out/ 2>/dev/null || true
+          if [ -d "livetv" ]; then cp -r livetv deploy_out/; fi
           if [ -d "livetv-app/dist" ]; then cp -r livetv-app/dist deploy_out/livetv-app; fi
           if [ -d "vibe-hybrid-app/dist" ]; then cp -r vibe-hybrid-app/dist deploy_out/vibe-hybrid-app; fi
 
