@@ -533,6 +533,8 @@ export default function App() {
     setStep(3)
   }
 
+  const [editOriginStep, setEditOriginStep] = useState(null)
+
   const handleSelectReportFromList = (report) => {
     setVehicleInfo(report.vehicleInfo)
     setRepairItems(report.repairItems)
@@ -546,6 +548,7 @@ export default function App() {
     setRepairItems(report.repairItems)
     setAttachedImages(report.attachedImages || [])
     setSavedReportId(report.id)
+    setEditOriginStep(step === 4 ? 4 : (step || 4))
     setStep(2)
     showToast('✏️ 선택한 정비 내역을 수정 모드로 불러왔습니다.', 'info', 3000)
   }
@@ -812,7 +815,27 @@ export default function App() {
 
   const handleGoToRepairStep = (itemName = '') => {
     setPresetItemName(typeof itemName === 'string' ? itemName : '')
+    setEditOriginStep(step === 4 ? 4 : (step || 1))
     setStep(2)
+  }
+
+  const handleStep2Prev = () => {
+    if (editOriginStep) {
+      const dest = editOriginStep
+      setEditOriginStep(null)
+      setStep(dest)
+    } else {
+      goPrev()
+    }
+  }
+
+  const handleRefresh = async () => {
+    try {
+      await loadData()
+      showToast('최신 데이터를 동기화했습니다.', 'info', 2500)
+    } catch (e) {
+      console.error('Refresh error', e)
+    }
   }
 
   return (
@@ -826,6 +849,7 @@ export default function App() {
       onOpenSetting={() => setIsModalOpen(true)}
       onOpenMyCar={() => setIsMyCarModalOpen(true)}
       onLogoClick={handleLogoClick}
+      onRefresh={handleRefresh}
     >
       {step === 1 && (
         <Dashboard
@@ -871,7 +895,7 @@ export default function App() {
           attachedImages={attachedImages}
           setAttachedImages={setAttachedImages}
           onNext={goNext}
-          onPrev={goPrev}
+          onPrev={handleStep2Prev}
           onSave={handleSaveReport}
           isSaved={!!savedReportId}
           presetItemName={presetItemName}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from './FuelPage.module.css'
 import FormattedNumberInput from '../components/FormattedNumberInput'
 
@@ -240,6 +240,9 @@ export default function FuelPage({ fuelHistory = [], onSaveFuel, onDeleteFuel })
   const [volume, setVolume] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [editingId, setEditingId] = useState(null)
+  const [selectedYear, setSelectedYear] = useState('all')
+
+  const formRef = useRef(null)
 
   useEffect(() => {
     const amt = Number(amount) || 0
@@ -265,6 +268,12 @@ export default function FuelPage({ fuelHistory = [], onSaveFuel, onDeleteFuel })
     setUnitPrice(item.unitPrice ? String(item.unitPrice) : '1650')
     setVolume(item.volume ? String(item.volume) : '')
     setDate(item.date || new Date().toISOString().split('T')[0])
+
+    setTimeout(() => {
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 50)
   }
 
   const handleCancelEdit = () => {
@@ -297,7 +306,25 @@ export default function FuelPage({ fuelHistory = [], onSaveFuel, onDeleteFuel })
     handleCancelEdit()
   }
 
+  const availableYears = Array.from(
+    new Set(
+      fuelHistory
+        .map(h => {
+          if (!h.date) return null
+          const y = new Date(h.date).getFullYear()
+          return isNaN(y) ? null : String(y)
+        })
+        .filter(Boolean)
+    )
+  ).sort((a, b) => Number(b) - Number(a))
+
   const sortedHistory = [...fuelHistory].sort((a, b) => new Date(b.date) - new Date(a.date))
+  const filteredHistory = sortedHistory.filter(h => {
+    if (selectedYear === 'all') return true
+    if (!h.date) return false
+    const y = new Date(h.date).getFullYear()
+    return String(y) === selectedYear
+  })
 
   return (
     <div className={styles.page}>
@@ -332,9 +359,16 @@ export default function FuelPage({ fuelHistory = [], onSaveFuel, onDeleteFuel })
         {activeTab === 'record' ? (
           <div className={styles.recordContainer}>
             {/* 폼 카드 */}
-            <form onSubmit={handleSubmit} className={styles.formCard}>
+            <form ref={formRef} onSubmit={handleSubmit} className={`${styles.formCard} ${editingId ? styles.formCardEditing : ''}`}>
               <div className={styles.formTitle}>
-                {editingId ? '✏️ 주유 기록 수정' : '➕ 새 주유 기록 작성'}
+                {editingId ? (
+                  <div className={styles.editingTitleGroup}>
+                    <span>✏️ 주유 기록 수정</span>
+                    <span className={styles.editingBadge}>편집 중</span>
+                  </div>
+                ) : (
+                  '➕ 새 주유 기록 작성'
+                )}
               </div>
 
               <div className={styles.formGrid}>
@@ -441,41 +475,96 @@ export default function FuelPage({ fuelHistory = [], onSaveFuel, onDeleteFuel })
             {/* 히스토리 리스트 */}
             <div className={styles.historySection}>
               <div className={styles.sectionHeader}>
-                <h3 className={styles.sectionTitle}>지난 주유 기록 ({sortedHistory.length}건)</h3>
+                <h3 className={styles.sectionTitle}>
+                  지난 주유 기록 ({filteredHistory.length}건)
+                </h3>
+                {availableYears.length > 0 && (
+                  <div className={styles.yearFilterWrapper}>
+                    <select
+                      className={styles.yearFilterSelect}
+                      value={selectedYear}
+                      onChange={e => setSelectedYear(e.target.value)}
+                      aria-label="연도별 필터"
+                    >
+                      <option value="all">전체</option>
+                      {availableYears.map(year => (
+                        <option key={year} value={year}>
+                          {year}년
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
 
-              {sortedHistory.length === 0 ? (
+              {filteredHistory.length === 0 ? (
                 <div className={styles.emptyState}>
-                  주유 기록이 아직 없습니다.<br />위 양식을 통해 첫 주유 내역을 등록해보세요!
+                  {selectedYear === 'all' ? (
+                    <>주유 기록이 아직 없습니다.<br />위 양식을 통해 첫 주유 내역을 등록해보세요!</>
+                  ) : (
+                    <>{selectedYear}년도 주유 기록이 없습니다.</>
+                  )}
                 </div>
               ) : (
                 <div className={styles.historyList}>
-                  {sortedHistory.map(h => (
-                    <div key={h.id} className={styles.historyCard}>
+                  {filteredHistory.map(h => (
+                    <div key={h.id} className={`${styles.historyCard} ${editingId === h.id ? styles.historyCardActive : ''}`}>
+                      {/* 1행: 주유소 브랜드 + 유종 (좌) / 수정, 삭제 버튼 (우) */}
                       <div className={styles.historyTop}>
-                        <div>
+                        <div className={styles.stationInfo}>
                           <span className={styles.historyStation}>{h.station}</span>
                           <span className={styles.historyFuelType}>{h.fuelType}</span>
                         </div>
-                        <span className={styles.historyDate}>{h.date}</span>
+                        <div className={styles.historyActions}>
+                          <button
+                            type="button"
+                            className={styles.btnEdit}
+                            onClick={() => handleEdit(h)}
+                            title="주유 기록 수정하기"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                            <span>수정</span>
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.btnDelete}
+                            onClick={() => onDeleteFuel(h.id)}
+                            title="주유 기록 삭제하기"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6l-1 14H6L5 6" />
+                              <path d="M10 11v6" />
+                              <path d="M14 11v6" />
+                              <path d="M9 6V4h6v2" />
+                            </svg>
+                            <span>삭제</span>
+                          </button>
+                        </div>
                       </div>
-                      <div className={styles.historyMain}>
-                        <div className={styles.historyAmount}>{h.amount?.toLocaleString()} 원</div>
+
+                      {/* 2행: 주유일자 (좌측 정렬) + 금액 (우측 정렬) */}
+                      <div className={styles.historyPriceRow}>
+                        <span className={styles.historyDate}>📅 {h.date}</span>
+                        <span className={styles.historyAmount}>{h.amount?.toLocaleString()}원</span>
+                      </div>
+
+                      {/* 3행: 리터, 단가, Km (금액 아래 영역에 한줄로 표시) */}
+                      <div className={styles.historySubRow}>
                         <div className={styles.historyDetails}>
-                          <span>{h.volume}L</span>
-                          <span>·</span>
-                          <span>@ {h.unitPrice?.toLocaleString()}원/L</span>
+                          <span>{h.volume ? `${h.volume}L` : ''}</span>
+                          {h.volume && h.unitPrice > 0 && <span className={styles.dot}>·</span>}
+                          {h.unitPrice > 0 && <span>@{h.unitPrice?.toLocaleString()}원/L</span>}
                           {h.mileage > 0 && (
                             <>
-                              <span>·</span>
+                              <span className={styles.dot}>·</span>
                               <span>{h.mileage?.toLocaleString()} km</span>
                             </>
                           )}
                         </div>
-                      </div>
-                      <div className={styles.historyActions}>
-                        <button className={styles.btnEdit} onClick={() => handleEdit(h)}>수정</button>
-                        <button className={styles.btnDelete} onClick={() => onDeleteFuel(h.id)}>삭제</button>
                       </div>
                     </div>
                   ))}

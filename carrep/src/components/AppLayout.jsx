@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import styles from './AppLayout.module.css'
+import PullToRefresh from './PullToRefresh'
 
-export default function AppLayout({ step, goToStep, dbStatus, githubToken, currentUser, onGoAuth, onOpenSetting, onOpenMyCar, onLogoClick, children }) {
+export default function AppLayout({ step, goToStep, dbStatus, githubToken, currentUser, onGoAuth, onOpenSetting, onOpenMyCar, onLogoClick, onRefresh, children }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('carrep_theme') || 'dark')
 
   useEffect(() => {
@@ -92,7 +93,9 @@ export default function AppLayout({ step, goToStep, dbStatus, githubToken, curre
 
       {/* Content */}
       <main className={styles.main}>
-        {children}
+        <PullToRefresh onRefresh={onRefresh}>
+          {children}
+        </PullToRefresh>
       </main>
 
       {/* Footer */}

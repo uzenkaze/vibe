@@ -334,7 +334,9 @@
   font-size: 0.96rem;
   font-weight: 800;
   color: var(--text-main);
-  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
 }
@@ -345,6 +347,24 @@
   gap: 6px;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .repairCardBottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .repairTitle {
+    width: 100%;
+    display: block;
+  }
+
+  .repairMeta {
+    justify-content: flex-end;
+    width: 100%;
+  }
 }
 
 .repairItemCount {
@@ -372,36 +392,8 @@
   flex-shrink: 0;
 }
 
-.btnEdit {
-  padding: 5px 11px;
-  border-radius: 10px;
-  background: rgba(37, 99, 235, 0.12);
-  color: var(--accent-blue);
-  border: 1px solid rgba(37, 99, 235, 0.25);
-  font-size: 0.75rem;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.btnEdit:hover {
-  background: var(--accent-blue);
-  color: #ffffff;
-}
-
-.btnView {
-  padding: 5px 12px;
-  border-radius: 10px;
-  background: var(--bg-btn-primary);
-  color: var(--text-btn-primary);
-  border: none;
-  font-size: 0.75rem;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
+.btnEdit,
+.btnView,
 .btnDelete {
   width: 28px;
   height: 28px;
@@ -413,13 +405,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s, border-color 0.2s;
+  transition: all 0.2s ease;
   flex-shrink: 0;
+  padding: 0;
+}
+
+.btnEdit:hover {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.btnView:hover {
+  color: var(--accent-cyan, #00f0ff);
+  border-color: var(--accent-cyan, #00f0ff);
+  background: rgba(0, 240, 255, 0.1);
 }
 
 .btnDelete:hover {
   color: #ef4444;
   border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* ─────────────────────────────────────────

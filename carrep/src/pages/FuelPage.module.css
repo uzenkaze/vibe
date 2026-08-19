@@ -97,12 +97,40 @@
   flex-direction: column;
   gap: 16px;
   box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  scroll-margin-top: 70px;
+}
+
+.formCardEditing {
+  border-color: var(--accent-blue) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25), 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  animation: pulseCard 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes pulseCard {
+  from { border-color: rgba(59, 130, 246, 0.4); }
+  to { border-color: var(--accent-blue); }
 }
 
 .formTitle {
   font-size: 1rem;
   font-weight: 800;
   color: var(--text-main);
+}
+
+.editingTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editingBadge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--accent-blue);
+  color: #ffffff;
+  font-weight: 800;
 }
 
 .formGrid {
@@ -184,6 +212,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .sectionTitle {
@@ -191,6 +220,30 @@
   font-weight: 800;
   color: var(--text-main);
   margin: 0;
+}
+
+.yearFilterWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.yearFilterSelect {
+  padding: 5px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.yearFilterSelect:hover,
+.yearFilterSelect:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
 .emptyState {
@@ -218,24 +271,41 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: border-color 0.2s;
+  transition: all 0.25s ease;
 }
 
 .historyCard:hover {
   border-color: var(--accent-blue);
 }
 
+.historyCardActive {
+  border-color: var(--accent-blue) !important;
+  background: rgba(59, 130, 246, 0.06) !important;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
 .historyTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+}
+
+.stationInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
 }
 
 .historyStation {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--text-main);
-  margin-right: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .historyFuelType {
@@ -245,54 +315,99 @@
   background: rgba(59, 130, 246, 0.12);
   color: var(--accent-blue);
   font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.historyActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* 2행: 주유일자 (좌측 정렬) + 금액 (우측 정렬) */
+.historyPriceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding-top: 4px;
 }
 
 .historyDate {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.historyMain {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .historyAmount {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 900;
-  color: var(--text-main);
+  color: var(--accent-blue);
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* 3행: 리터, 단가, Km (금액 아래 영역에 한줄로 표시) */
+.historySubRow {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
 }
 
 .historyDetails {
   font-size: 0.78rem;
   color: var(--text-muted);
   display: flex;
+  align-items: center;
   gap: 6px;
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.historyActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  border-top: 1px dashed var(--border);
-  padding-top: 8px;
-  margin-top: 2px;
+.dot {
+  color: var(--border);
 }
 
 .btnEdit, .btnDelete {
-  padding: 4px 10px;
+  padding: 4px 9px;
   border-radius: 8px;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   border: 1px solid var(--border);
   background: var(--bg-input);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
 }
 
-.btnEdit { color: var(--text-sub); }
-.btnDelete { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+.btnEdit {
+  color: var(--text-sub);
+}
+
+.btnEdit:hover {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.btnDelete {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btnDelete:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
 
 /* ── 리포트 탭 ── */
 .reportWrap {
