@@ -731,10 +731,10 @@ export default function Dashboard({
                       </div>
 
                       <div className={styles.repairSummaryRight}>
-                        {/* ⚡ 첨부 이미지 레퍼런스 스타일: 28핀 네온 옐로우 틱 파티션 프로그레스 게이지 */}
+                        {/* ⚡ 첨부 이미지 레퍼런스 스타일: 48핀 네온 옐로우 틱 파티션 프로그레스 게이지 */}
                         <div className={styles.yellowTickGaugeWrap} title={`잔여 수명 ${item.health}%`}>
-                          {Array.from({ length: 28 }).map((_, tIdx) => {
-                            const activeCount = Math.round((item.health / 100) * 28)
+                          {Array.from({ length: 48 }).map((_, tIdx) => {
+                            const activeCount = Math.round((item.health / 100) * 48)
                             const isActive = tIdx < activeCount
                             const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : 'var(--tick-good-color, #ccff00)'
                             return (

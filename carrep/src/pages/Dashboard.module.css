@@ -698,10 +698,10 @@
 .yellowTickGaugeWrapFull {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   background: rgba(15, 23, 42, 0.6);
-  padding: 5px 8px;
-  border-radius: 10px;
+  padding: 4px 6px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   width: 100%;
 }
@@ -715,10 +715,9 @@
 .yellowTickItem {
   flex: 1;
   min-width: 2px;
-  height: 14px;
-  border-radius: 2px;
+  height: 12px;
+  border-radius: 1.5px;
   transition: all 0.25s ease;
-  flex-shrink: 1;
 }
 
 .tickGaugeHeaderRow {
