@@ -2,6 +2,9 @@
 <html lang="ko">
 <head>
   <script type="text/javascript">
+    if (!window.location.pathname.endsWith('/') && !window.location.pathname.split('/').pop().includes('.')) {
+      window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+    }
     if (window.location.port === '5500' && window.self === window.top) {
       window.location.replace('/?p=learn/');
     }
