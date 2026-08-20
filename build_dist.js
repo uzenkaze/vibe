@@ -79,13 +79,21 @@ function buildApp(appName, dir) {
 // Execute builds
 buildApp('learn', path.join(rootDir, 'learn'));
 buildApp('asset-react', path.join(rootDir, 'asset', 'asset-react'));
-const assetReactDistIndex = path.join(rootDir, 'asset', 'asset-react', 'dist', 'index.html');
-const assetRootIndex = path.join(rootDir, 'asset', 'index.html');
-if (fs.existsSync(assetReactDistIndex)) {
-  fs.copyFileSync(assetReactDistIndex, assetRootIndex);
-  console.log(`> Synced ${assetReactDistIndex} -> ${assetRootIndex}`);
-}
 buildApp('carrep', path.join(rootDir, 'carrep'));
+
+// Sync dist index.html & assets to source app roots for seamless root/dist hosting
+[
+  { distDir: path.join(rootDir, 'learn', 'dist'), targetDir: path.join(rootDir, 'learn') },
+  { distDir: path.join(rootDir, 'carrep', 'dist'), targetDir: path.join(rootDir, 'carrep') },
+  { distDir: path.join(rootDir, 'asset', 'asset-react', 'dist'), targetDir: path.join(rootDir, 'asset') }
+].forEach(({ distDir, targetDir }) => {
+  if (fs.existsSync(path.join(distDir, 'index.html'))) {
+    fs.copyFileSync(path.join(distDir, 'index.html'), path.join(targetDir, 'index.html'));
+  }
+  if (fs.existsSync(path.join(distDir, 'assets'))) {
+    copyRecursiveSync(path.join(distDir, 'assets'), path.join(targetDir, 'assets'));
+  }
+});
 
 // 3. Copy Learn dist
 console.log('> Copying learn...');
