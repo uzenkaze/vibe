@@ -115,6 +115,17 @@ if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
   copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), deployCarrepDir);
 }
 
+// Sync compiled dist/assets to source directory for root serving fallback
+if (fs.existsSync(path.join(rootDir, 'learn', 'dist', 'assets'))) {
+  copyRecursiveSync(path.join(rootDir, 'learn', 'dist', 'assets'), path.join(rootDir, 'learn', 'assets'));
+}
+if (fs.existsSync(path.join(rootDir, 'carrep', 'dist', 'assets'))) {
+  copyRecursiveSync(path.join(rootDir, 'carrep', 'dist', 'assets'), path.join(rootDir, 'carrep', 'assets'));
+}
+if (fs.existsSync(path.join(rootDir, 'asset', 'asset-react', 'dist', 'assets'))) {
+  copyRecursiveSync(path.join(rootDir, 'asset', 'asset-react', 'dist', 'assets'), path.join(rootDir, 'asset', 'assets'));
+}
+
 // 5. Copy Asset & Asset-React dist
 console.log('> Copying asset & asset-react dist...');
 const deployAssetDir = path.join(deployDir, 'asset');
