@@ -88,21 +88,7 @@ if (Test-Path "$deployDir/carrep") { Remove-Item -Recurse -Force "$deployDir/car
 New-Item -ItemType Directory -Path "$deployDir/carrep" | Out-Null
 Copy-Item -Path "carrep/dist/*" -Destination "$deployDir/carrep" -Recurse -Force
 
-# 3-2. 소스 폴더 index.html 및 assets 동기화 (Vercel 루트 서빙 호환)
-if (Test-Path "learn/dist/index.html") {
-    Copy-Item -Path "learn/dist/index.html" -Destination "learn/index.html" -Force
-}
-if (Test-Path "learn/dist/assets") {
-    New-Item -ItemType Directory -Path "learn/assets" -Force | Out-Null
-    Copy-Item -Path "learn/dist/assets/*" -Destination "learn/assets/" -Recurse -Force
-}
-if (Test-Path "carrep/dist/index.html") {
-    Copy-Item -Path "carrep/dist/index.html" -Destination "carrep/index.html" -Force
-}
-if (Test-Path "carrep/dist/assets") {
-    New-Item -ItemType Directory -Path "carrep/assets" -Force | Out-Null
-    Copy-Item -Path "carrep/dist/assets/*" -Destination "carrep/assets/" -Recurse -Force
-}
+# 3-2. 소스 폴더의 index.html은 개발 서버 진입점(/src/main.jsx)으로 보존 (빌드 산출물로 덮어쓰지 않음)
 
 # 4. 기타 정적 폴더 복사 (asset, task, hobby 등)
 $staticFolders = @("asset", "task", "hobby", "livetv", "vibe-hybrid-app")
