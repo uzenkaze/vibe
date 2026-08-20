@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CarRep</string>
+    <string name="title_activity_main">CarRep</string>
+    <string name="package_name">com.uzenkaze.carrep</string>
+    <string name="custom_url_scheme">com.uzenkaze.carrep</string>
+</resources>

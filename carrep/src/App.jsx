@@ -269,18 +269,20 @@ export default function App() {
     localStorage.setItem('carrep_fuel_history', JSON.stringify(updated))
 
     const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
-    if (tokenVal && currentUser) {
+    if (currentUser) {
       try {
-        await saveGithubJson(
+        const res = await saveGithubJson(
           getFuelPath(currentUser),
           updated,
           tokenVal,
           'chore(data): sync fuel history'
         )
-        showToast('저장되었습니다.', 'success', 3000, 'git')
-        return
+        if (res && res.success) {
+          showToast('저장되었습니다.', 'success', 3000, res.mode === 'local' ? null : 'git')
+          return
+        }
       } catch (err) {
-        console.error('Save fuel via GitHub API failed', err)
+        console.error('Save fuel failed:', err)
       }
     }
     showToast('저장되었습니다.', 'success', 3000)
@@ -296,7 +298,7 @@ export default function App() {
     localStorage.setItem('carrep_fuel_history', JSON.stringify(updated))
 
     const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
-    if (tokenVal && currentUser) {
+    if (currentUser) {
       try {
         await saveGithubJson(
           getFuelPath(currentUser),
@@ -304,10 +306,10 @@ export default function App() {
           tokenVal,
           'chore(data): delete fuel history item'
         )
-        showToast('🗑️ 주유 기록이 Git(서버)에서 삭제되었습니다.', 'info')
+        showToast('🗑️ 주유 기록이 서버에서 삭제되었습니다.', 'info')
         return
       } catch (err) {
-        console.error('Delete fuel via GitHub API failed', err)
+        console.error('Delete fuel failed:', err)
       }
     }
     showToast('주유 기록이 삭제되었습니다.', 'info')
@@ -595,7 +597,7 @@ export default function App() {
 
     const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
 
-    if (tokenVal && currentUser) {
+    if (currentUser) {
       try {
         await saveGithubJson(
           getReportsPath(currentUser),
@@ -603,10 +605,10 @@ export default function App() {
           tokenVal,
           `chore(data): delete repair report ${id}`
         )
-        showToast('🗑️ 정비 내역이 Git(서버)에서 정상 삭제되었습니다.', 'info', 3000)
+        showToast('🗑️ 정비 내역이 서버에서 정상 삭제되었습니다.', 'info', 3000)
         return
       } catch (err) {
-        console.error('Delete via GitHub API failed', err)
+        console.error('Delete report failed', err)
       }
     }
 
@@ -653,29 +655,26 @@ export default function App() {
 
     const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
 
-    if (tokenVal && currentUser) {
+    if (currentUser) {
       try {
-        await saveGithubJson(
+        const res = await saveGithubJson(
           getReportsPath(currentUser),
           updatedReports,
           tokenVal,
           savedReportId ? `chore(data): update repair report ${newReport.id}` : `chore(data): create repair report ${newReport.id}`
         )
-        setDbStatus('cloud')
-        showToast('저장되었습니다.', 'success', 3000, 'git')
-        setStep(3)
-        return
+        if (res && res.success) {
+          setDbStatus(tokenVal ? 'cloud' : 'local')
+          showToast('저장되었습니다.', 'success', 3000, tokenVal ? 'git' : null)
+          setStep(3)
+          return
+        }
       } catch (err) {
-        console.error('Save via GitHub API failed', err)
-        showToast(`⚠️ Git 저장소 저장 실패: ${err.message}`, 'warning', 5000)
-        setIsModalOpen(true)
-        setStep(3)
-        return
+        console.error('Save report failed', err)
       }
     }
 
-    showToast('⚠️ Git 저장소에 영구 저장하려면 GitHub 토큰 설정이 필요합니다.', 'warning', 5000)
-    setIsModalOpen(true)
+    showToast('저장되었습니다.', 'success', 3000)
     setStep(3)
   }
 
@@ -691,7 +690,7 @@ export default function App() {
 
     const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
 
-    if (tokenVal && currentUser) {
+    if (currentUser) {
       try {
         await saveGithubJson(
           getReportsPath(currentUser),
@@ -699,11 +698,11 @@ export default function App() {
           tokenVal,
           `chore(data): quick add maintenance record ${report.id}`
         )
-        setDbStatus('cloud')
-        showToast('저장되었습니다.', 'success', 3000, 'git')
+        setDbStatus(tokenVal ? 'cloud' : 'local')
+        showToast('저장되었습니다.', 'success', 3000, tokenVal ? 'git' : null)
       } catch (err) {
-        console.error('Quick save via GitHub API failed', err)
-        showToast(`⚠️ Git 저장소 저장 실패: ${err.message}`, 'warning', 5000)
+        console.error('Quick save failed', err)
+        showToast('저장되었습니다.', 'info', 3000)
       }
     } else {
       showToast('저장되었습니다.', 'info', 3000)
@@ -720,7 +719,7 @@ export default function App() {
           localStorage.setItem(`carrep_mycar_${userIdKey}`, JSON.stringify(updatedMyCar))
         }
         localStorage.setItem('carrep_cached_mycar', JSON.stringify(updatedMyCar))
-        if (tokenVal && currentUser) {
+        if (currentUser) {
           try {
             await saveGithubJson(
               getMyCarPath(currentUser),
@@ -729,7 +728,7 @@ export default function App() {
               `chore(data): update mileage to ${newMileage}`
             )
           } catch (e) {
-            console.error('Update mileage to github failed', e)
+            console.error('Update mileage failed', e)
           }
         }
       }
@@ -769,26 +768,24 @@ export default function App() {
 
     const tokenVal = githubToken || localStorage.getItem('carrep_github_token')
 
-    if (tokenVal && currentUser) {
+    if (currentUser) {
       try {
-        await saveGithubJson(
+        const res = await saveGithubJson(
           getMyCarPath(currentUser),
           myCarData,
           tokenVal,
           'chore(data): update MyCar profile'
         )
-        showToast('저장되었습니다.', 'success', 3000, 'git')
-        return
+        if (res && res.success) {
+          showToast('저장되었습니다.', 'success', 3000, tokenVal ? 'git' : null)
+          return
+        }
       } catch (err) {
-        console.error('Save My Car via GitHub API failed', err)
-        showToast(`⚠️ 내차 정보 Git 저장 실패: ${err.message}`, 'warning', 5000)
-        setIsModalOpen(true)
-        return
+        console.error('Save My Car failed', err)
       }
     }
 
-    showToast('⚠️ Git 저장소에 반영하려면 GitHub 토큰 설정이 필요합니다.', 'warning', 5000)
-    setIsModalOpen(true)
+    showToast('저장되었습니다.', 'success', 3000)
   }
 
   const handleSaveInsurance = (data) => {
