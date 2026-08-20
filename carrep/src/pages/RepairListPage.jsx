@@ -392,8 +392,8 @@ export default function RepairListPage({
                       {/* ⚡ 메인과 동일한 틱 파티션 세그먼트 프로그레스 게이지 */}
                       <div className={styles.tickGaugeRow}>
                         <div className={styles.yellowTickGaugeWrapFull} title={`잔여 수명 ${item.health}%`}>
-                          {Array.from({ length: 28 }).map((_, tIdx) => {
-                            const activeCount = Math.round((item.health / 100) * 28)
+                          {Array.from({ length: 48 }).map((_, tIdx) => {
+                            const activeCount = Math.round((item.health / 100) * 48)
                             const isActive = tIdx < activeCount
                             const activeTickColor = isDanger ? '#ef4444' : isWarning ? '#f97316' : 'var(--tick-good-color, #ccff00)'
                             return (
