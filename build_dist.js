@@ -89,26 +89,30 @@ buildApp('carrep', path.join(rootDir, 'carrep'));
 
 // 3. Copy Learn dist
 console.log('> Copying learn...');
+const deployLearnDir = path.join(deployDir, 'learn');
+if (!fs.existsSync(deployLearnDir)) fs.mkdirSync(deployLearnDir, { recursive: true });
 if (fs.existsSync(path.join(rootDir, 'learn', 'docs'))) {
-  copyRecursiveSync(path.join(rootDir, 'learn', 'docs'), path.join(deployDir, 'learn', 'docs'));
+  copyRecursiveSync(path.join(rootDir, 'learn', 'docs'), path.join(deployLearnDir, 'docs'));
 }
 if (fs.existsSync(path.join(rootDir, 'learn', 'dist'))) {
-  copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), path.join(deployDir, 'learn'));
+  copyRecursiveSync(path.join(rootDir, 'learn', 'dist'), deployLearnDir);
 }
 if (fs.existsSync(path.join(rootDir, 'learn', 'data.json'))) {
-  fs.copyFileSync(path.join(rootDir, 'learn', 'data.json'), path.join(deployDir, 'learn', 'data.json'));
+  fs.copyFileSync(path.join(rootDir, 'learn', 'data.json'), path.join(deployLearnDir, 'data.json'));
 }
 
 // 4. Copy CarRep dist
 console.log('> Copying carrep...');
+const deployCarrepDir = path.join(deployDir, 'carrep');
+if (!fs.existsSync(deployCarrepDir)) fs.mkdirSync(deployCarrepDir, { recursive: true });
 if (fs.existsSync(path.join(rootDir, 'carrep', 'data'))) {
-  copyRecursiveSync(path.join(rootDir, 'carrep', 'data'), path.join(deployDir, 'carrep', 'data'));
+  copyRecursiveSync(path.join(rootDir, 'carrep', 'data'), path.join(deployCarrepDir, 'data'));
 }
 if (fs.existsSync(path.join(rootDir, 'carrep', 'avatars'))) {
-  copyRecursiveSync(path.join(rootDir, 'carrep', 'avatars'), path.join(deployDir, 'carrep', 'avatars'));
+  copyRecursiveSync(path.join(rootDir, 'carrep', 'avatars'), path.join(deployCarrepDir, 'avatars'));
 }
 if (fs.existsSync(path.join(rootDir, 'carrep', 'dist'))) {
-  copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), path.join(deployDir, 'carrep'));
+  copyRecursiveSync(path.join(rootDir, 'carrep', 'dist'), deployCarrepDir);
 }
 
 // 5. Copy Asset & Asset-React dist
