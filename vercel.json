@@ -4,12 +4,12 @@
   "outputDirectory": "deploy_dist",
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/learn/:path((?!assets/|data/|docs/|.*\\..*).*)", "destination": "/learn/index.html" },
-    { "source": "/carrep/:path((?!assets/|data/|avatars/|.*\\..*).*)", "destination": "/carrep/index.html" },
-    { "source": "/asset/:path((?!assets/|data/|.*\\..*).*)", "destination": "/asset/index.html" },
-    { "source": "/livetv/:path((?!assets/|data/|.*\\..*).*)", "destination": "/livetv/index.html" },
-    { "source": "/task/:path((?!assets/|data/|.*\\..*).*)", "destination": "/task/task-manager.html" },
-    { "source": "/hobby/:path((?!assets/|data/|.*\\..*).*)", "destination": "/hobby/index.html" }
+    { "source": "/learn/:path*", "destination": "/learn/index.html" },
+    { "source": "/carrep/:path*", "destination": "/carrep/index.html" },
+    { "source": "/asset/:path*", "destination": "/asset/index.html" },
+    { "source": "/livetv/:path*", "destination": "/livetv/index.html" },
+    { "source": "/task/:path*", "destination": "/task/task-manager.html" },
+    { "source": "/hobby/:path*", "destination": "/hobby/index.html" }
   ],
   "headers": [
     {
